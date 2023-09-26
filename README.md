@@ -1,2 +1,2 @@
 # segsmaker
-sagemaker notebook
+with temporary folder for checkpoint, Lora, ControlNET models and Output images
