@@ -1,4 +1,6 @@
 # segsmaker.ipynb
+Stable Diffusion Webui for Sagemaker Studio Lab
+
 with temporary folder for checkpoint, Lora, ControlNET models and Output images
 
   tmp output  |    persistent output
