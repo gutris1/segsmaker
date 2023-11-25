@@ -6,6 +6,7 @@ with temporary folder for Checkpoint, LoRA and ControlNET models
 |  |  |
 | --- | --- |
 SD 1.5 <br /> | [![Open in Studio Lab](https://studiolab.sagemaker.aws/studiolab.svg)](https://studiolab.sagemaker.aws/import/github/pantat88/segsmaker/blob/main/Segsmaker.ipynb) |  
+AnimateDiff SD 1.5 | [![Open in Studio Lab](https://studiolab.sagemaker.aws/studiolab.svg)](https://studiolab.sagemaker.aws/import/github/pantat88/segsmaker/blob/main/Segsmaker_AnimateDiff_SD1.5.ipynb) |  
 SDXL | [![Open in Studio Lab](https://studiolab.sagemaker.aws/studiolab.svg)](https://studiolab.sagemaker.aws/import/github/pantat88/segsmaker/blob/main/Segsmaker_SDXL.ipynb) | 
 ComfyUI <br /> AnimateDiff Evolved | [![Open in Studio Lab](https://studiolab.sagemaker.aws/studiolab.svg)](https://studiolab.sagemaker.aws/import/github/pantat88/segsmaker/blob/main/Segsmaker_ComfyUI.ipynb) | 
 
