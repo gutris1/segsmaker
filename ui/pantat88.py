@@ -26,7 +26,7 @@ def download(line):
 
         display(HTML(f"<span>Downloading: {dfn}</span>"))
         if result.returncode == 0:
-            display(HTML("<span>Done</span>"))
+            print("done")
         elif result.stderr:
             print(result.stderr)
             
@@ -46,7 +46,7 @@ def download(line):
         result = subprocess.run(fc, shell=True, capture_output=True, text=True, cwd=os.getcwd())
         
         if result and result.returncode == 0:
-            display(HTML("<span>Done</span>"))
+            print("done")
         elif result:
             print(result.stderr)
             
