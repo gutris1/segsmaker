@@ -18,24 +18,24 @@ def download(line):
     
     if len(args) == 1:
         fn = os.path.basename(urlparse(args[0]).path)
-        fc = f"curl -O -J -L {auth} {args[0]} > /dev/null"
+        fc = f"curl -O -J -L {auth} {args[0]}"
     elif len(args) == 3:
         path, fn = args[1], args[2]
         os.makedirs(path, exist_ok=True)
-        fc = f"mkdir -p {path} && cd {path} && curl -J -L {auth} {args[0]} -o {fn} > /dev/null"
+        fc = f"mkdir -p {path} && cd {path} && curl -J -L {auth} {args[0]} -o {fn}"
     elif '/' in args[1] or '~/ ' in args[1]:
         path = args[1]
         os.makedirs(path, exist_ok=True)
         fn = os.path.basename(urlparse(args[0]).path)
-        fc = f"mkdir -p {path} && cd {path} && curl -O -J -L {auth} {args[0]} > /dev/null"
+        fc = f"mkdir -p {path} && cd {path} && curl -O -J -L {auth} {args[0]}"
     else:
         fn = args[1]
-        fc = f"curl -J -L {auth} {args[0]} -o {fn} > /dev/null"
+        fc = f"curl -J -L {auth} {args[0]} -o {fn}"
         
     print(f"Downloading: {fn}")
     
     try:
-        result = subprocess.run(fc, shell=True, stderr=subprocess.PIPE, text=True, cwd=os.getcwd(), check=True)
+        result = subprocess.run(fc, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, cwd=os.getcwd(), check=True)
         print("done")
     except subprocess.CalledProcessError as e:
         if "curl: (23)" in e.stderr:
