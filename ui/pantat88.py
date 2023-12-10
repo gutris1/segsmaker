@@ -1,4 +1,4 @@
-from IPython.core.magic import register_line_magic
+from IPython.core.magic import register_line_magic, register_cell_magic
 from IPython.display import display, HTML
 from urllib.parse import urlparse
 import subprocess
@@ -9,7 +9,6 @@ from tqdm import tqdm
 
 @register_line_magic
 def say(line):
-
     args = line.split()
     msg = " ".join(args[:-1])
     color = args[-1]
@@ -17,7 +16,6 @@ def say(line):
     
 @register_line_magic
 def download(line):
-
     args = line.split()
     url, auth = args[0], "-H 'Authorization: Bearer d3bdbbd15377673b43f7ab4b224f2800'" if "civitai.com" in args[0] else ""
     
@@ -49,15 +47,28 @@ def download(line):
             print(e.stderr)
     except KeyboardInterrupt:
         print("^ Canceled")
+        
+@register_cell_magic
+def zipping(line, cell):
+    lines = cell.strip().split('\n')
 
-@register_line_magic
-def zipping(line):
+    input_path = None
+    output_path = None
 
-    args = line.split()
-    if len(args) != 2:
-        print("Usage: %zipper input_path output_path")
+    for line in lines:
+        parts = line.split('=')
+        if len(parts) == 2:
+            arg_name = parts[0].strip()
+            arg_value = parts[1].strip().strip("'")
+
+            if arg_name == 'input_folder':
+                input_path = arg_value
+            elif arg_name == 'output_folder':
+                output_path = arg_value
+
+    if not os.path.exists(input_path):
+        print(f"Error: The specified input folder '{input_path}' does not exist.")
         return
-    input_path, output_path = args
 
     def zip_folder(input_path, output_path, max_size_mb=20):
         os.makedirs(output_path, exist_ok=True)
@@ -71,7 +82,9 @@ def zipping(line):
         current_zip_size = 0
         current_zip_name = os.path.join(output_path, f"part_{zip_number}.zip")
 
-        with tqdm(total=len(all_files), desc='zipping : ', bar_format='{desc}{bar} | {n_fmt}/{total_fmt} [ {elapsed}<{remaining}, {rate_fmt}{postfix} ]', ncols=100, file=sys.stdout) as pbar:
+        with tqdm(total=len(all_files), desc='zipping : ',
+                bar_format='{desc}{bar} | {n_fmt}/{total_fmt} [ {elapsed}<{remaining}, {rate_fmt}{postfix} ]',
+                ncols=100, file=sys.stdout) as pbar:
             with zipfile.ZipFile(current_zip_name, 'w', compression=zipfile.ZIP_DEFLATED) as current_zip:
                 for file_path in all_files:
                     file_size = os.path.getsize(file_path)
