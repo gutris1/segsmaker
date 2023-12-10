@@ -9,7 +9,7 @@ from tqdm import tqdm
 
 @register_line_magic
 def say(line):
-    exec(open('/home/studio-lab-user/.conda/pantat88.py').read())
+
     args = line.split()
     msg = " ".join(args[:-1])
     color = args[-1]
@@ -17,7 +17,7 @@ def say(line):
     
 @register_line_magic
 def download(line):
-    exec(open('/home/studio-lab-user/.conda/pantat88.py').read())
+
     args = line.split()
     url, auth = args[0], "-H 'Authorization: Bearer d3bdbbd15377673b43f7ab4b224f2800'" if "civitai.com" in args[0] else ""
     
