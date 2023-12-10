@@ -50,7 +50,6 @@ def download(line):
     except KeyboardInterrupt:
         print("^ Canceled")
 
-
 @register_line_magic
 def zipping(line):
 
@@ -90,3 +89,4 @@ def zipping(line):
 
     max_size_mb = 200
     zip_folder(input_path, output_path, max_size_mb)
+    
