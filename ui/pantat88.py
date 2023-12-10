@@ -52,13 +52,13 @@ def download(line):
 
 
 @register_line_magic
-def zipper(line):
+def zipping(line):
 
-    input_path  = globals().get('input_folder', '')
-    output_path = globals().get('output_folder', '')
-
-    if not input_path or not output_path:
-        raise ValueError("Please provide both input_folder and output_folder.")
+    args = line.split()
+    if len(args) != 2:
+        print("Usage: %zipper input_path output_path")
+        return
+    input_path, output_path = args
 
     def zip_folder(input_path, output_path, max_size_mb=20):
         os.makedirs(output_path, exist_ok=True)
@@ -72,7 +72,7 @@ def zipper(line):
         current_zip_size = 0
         current_zip_name = os.path.join(output_path, f"part_{zip_number}.zip")
 
-        with tqdm(total=len(all_files), desc='zipping : ', bar_format='{desc}{n_fmt}/{total_fmt} {bar} | {percentage:3.0f}% [ {elapsed}<{remaining}, {rate_fmt}{postfix} ]', ncols=100, file=sys.stdout) as pbar:
+        with tqdm(total=len(all_files), desc='zipping : ', bar_format='{desc}{bar} | {n_fmt}/{total_fmt} [ {elapsed}<{remaining}, {rate_fmt}{postfix} ]', ncols=100, file=sys.stdout) as pbar:
             with zipfile.ZipFile(current_zip_name, 'w', compression=zipfile.ZIP_DEFLATED) as current_zip:
                 for file_path in all_files:
                     file_size = os.path.getsize(file_path)
@@ -87,8 +87,6 @@ def zipper(line):
                     current_zip.write(file_path, os.path.relpath(file_path, input_path))
                     current_zip_size += file_size
                     pbar.update(1)
-
-    exec(open('/home/studio-lab-user/.conda/pantat88.py').read())
 
     max_size_mb = 200
     zip_folder(input_path, output_path, max_size_mb)
