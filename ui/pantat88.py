@@ -1,11 +1,13 @@
 from IPython.core.magic import register_line_magic, register_cell_magic
 from IPython.display import display, HTML
 from urllib.parse import urlparse
+from tqdm import tqdm
 import subprocess
+import time
 import os
 import sys
+import re
 import zipfile
-from tqdm import tqdm
 
 @register_line_magic
 def say(line):
@@ -21,30 +23,47 @@ def download(line):
     
     if len(args) == 1:
         fn = os.path.basename(urlparse(args[0]).path)
-        fc = f"curl -O -J -L {auth} {args[0]}"
+        fc = f"curl -#OJL {auth} {args[0]} 2>&1"
     elif len(args) == 3:
         path, fn = args[1], args[2]
         os.makedirs(path, exist_ok=True)
-        fc = f"mkdir -p {path} && cd {path} && curl -J -L {auth} {args[0]} -o {fn}"
+        fc = f"mkdir -p {path} && cd {path} && curl -#JL {auth} {args[0]} -o {fn} 2>&1"
     elif '/' in args[1] or '~/ ' in args[1]:
         path = args[1]
         os.makedirs(path, exist_ok=True)
         fn = os.path.basename(urlparse(args[0]).path)
-        fc = f"mkdir -p {path} && cd {path} && curl -O -J -L {auth} {args[0]}"
+        fc = f"mkdir -p {path} && cd {path} && curl -#OJL {auth} {args[0]} 2>&1"
     else:
         fn = args[1]
-        fc = f"curl -J -L {auth} {args[0]} -o {fn}"
+        fc = f"curl -#JL {auth} {args[0]} -o {fn} 2>&1"
         
-    print(f"Downloading: {fn}")
-    
     try:
-        result = subprocess.run(fc, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, cwd=os.getcwd(), check=True)
-        print("done")
-    except subprocess.CalledProcessError as e:
-        if "curl: (23)" in e.stderr:
-            print("Error: File exists")
+        process = subprocess.Popen(fc, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, bufsize=1, cwd=os.getcwd())
+        progress_pattern = re.compile(r'(\d+\.\d+)%')
+        accumulated_output = ""
+        time.sleep(1)
+        
+        with tqdm(total=100, desc=f"Downloading {fn}", initial=0, bar_format="{desc} {percentage:3.0f}% ", file=sys.stdout) as pbar:
+            for line in iter(process.stdout.readline, ''):
+                if not line.startswith('  % Total') and not line.startswith('  % '):
+                    match = progress_pattern.search(line)
+                    if match:
+                        progress = float(match.group(1))
+                        pbar.update(progress - pbar.n)
+                        pbar.refresh()
+                        
+                accumulated_output += line
+            pbar.close()
+        process.wait()
+        
+        if process.returncode != 0:
+            if "curl: (23)" in accumulated_output:
+                print("Error: File exists")
+            else:
+                print(f"Error: {accumulated_output}")
         else:
-            print(e.stderr)
+            print(" ")
+                
     except KeyboardInterrupt:
         print("^ Canceled")
         
@@ -102,4 +121,3 @@ def zipping(line, cell):
 
     max_size_mb = 200
     zip_folder(input_path, output_path, max_size_mb)
-    
