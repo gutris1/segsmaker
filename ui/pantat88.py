@@ -3,7 +3,6 @@ from IPython.display import display, HTML
 from urllib.parse import urlparse
 from tqdm import tqdm
 import subprocess
-import time
 import os
 import sys
 import re
@@ -41,7 +40,6 @@ def download(line):
         process = subprocess.Popen(fc, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, bufsize=1, cwd=os.getcwd())
         progress_pattern = re.compile(r'(\d+\.\d+)%')
         accumulated_output = ""
-        time.sleep(1)
         
         with tqdm(total=100, desc=f"Downloading {fn}", initial=0, bar_format="{desc} {percentage:3.0f}% ", file=sys.stdout) as pbar:
             for line in iter(process.stdout.readline, ''):
