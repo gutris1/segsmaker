@@ -84,7 +84,7 @@ def zipping(line, cell):
                 output_path = arg_value
 
     if not os.path.exists(input_path):
-        print(f"Error: The specified input folder '{input_path}' does not exist.")
+        print(f"Error: '{input_path}' does not exist.")
         return
 
     def zip_folder(input_path, output_path, max_size_mb=20):
