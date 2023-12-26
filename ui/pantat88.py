@@ -8,6 +8,9 @@ import sys
 import re
 import zipfile
 
+def mktmp():
+    !mkdir -p /tmp/models /tmp/Lora /tmp/ControlNet
+    
 @register_line_magic
 def say(line):
     args = line.split()
