@@ -64,7 +64,7 @@ def download(line):
             else:
                 print(f"Error: {accumulated_output}")
         else:
-            print(" ")
+            print("")
                 
     except KeyboardInterrupt:
         print("^ Canceled")
