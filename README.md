@@ -8,9 +8,9 @@ with temporary folder for Checkpoint, LoRA and ControlNET models
 | SD 1.5 AnimateDiff | [![Open in Studio Lab](https://studiolab.sagemaker.aws/studiolab.svg)](https://studiolab.sagemaker.aws/import/github/pantat88/segsmaker/blob/main/Segsmaker_AnimateDiff_SD1.5.ipynb) |
 | SDXL | [![Open in Studio Lab](https://studiolab.sagemaker.aws/studiolab.svg)](https://studiolab.sagemaker.aws/import/github/pantat88/segsmaker/blob/main/Segsmaker_SDXL.ipynb) |
 | ComfyUI AnimateDiff Evolved | [![Open in Studio Lab](https://studiolab.sagemaker.aws/studiolab.svg)](https://studiolab.sagemaker.aws/import/github/pantat88/segsmaker/blob/main/Segsmaker_ComfyUI.ipynb) |
-<br />
-
-![image](https://github.com/pantat88/segsmaker/assets/132797949/10c535c7-4dcd-409d-a2b4-ea6c2ea9536b)
-<br />
-
-![image](https://github.com/pantat88/segsmaker/assets/132797949/acc8e533-2a71-4be9-b8ce-d0dd992f9970)
+<h1 align="center">Preview</h1>
+<p align="center">
+  <img src="https://github.com/pantat88/sd-fast-pnginfo/blob/db50e68cc9cbc139b9ab1f7a13387c15d4f17bc4/preview.gif">
+  <img src="https://github.com/pantat88/segsmaker/assets/132797949/10c535c7-4dcd-409d-a2b4-ea6c2ea9536b">
+  <img src="https://github.com/pantat88/segsmaker/assets/132797949/acc8e533-2a71-4be9-b8ce-d0dd992f9970">
+</p>
