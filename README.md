@@ -9,6 +9,5 @@ with temporary folder for Checkpoint, LoRA and ControlNET models [<img align="ri
 <h1 align="center">Preview</h1>
 <p align="center">
   <img src="https://github.com/gutris1/sd-fast-pnginfo/blob/db50e68cc9cbc139b9ab1f7a13387c15d4f17bc4/preview.gif">
-  <img src="https://github.com/gutris1/segsmaker/assets/132797949/10c535c7-4dcd-409d-a2b4-ea6c2ea9536b">
   <img src="https://github.com/gutris1/segsmaker/assets/132797949/acc8e533-2a71-4be9-b8ce-d0dd992f9970">
 </p>
