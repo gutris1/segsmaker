@@ -5,7 +5,9 @@ with temporary folder for Checkpoint, LoRA and ControlNET models [<img align="ri
 | :---------------------------------------- | :-----------------------------------------------------------------------------------------------------------------: |
 | SD 1.5 AnimateDiff | [![Open in Studio Lab](https://studiolab.sagemaker.aws/studiolab.svg)](https://studiolab.sagemaker.aws/import/github/gutris1/segsmaker/blob/main/Segsmaker_AnimateDiff_SD1.5.ipynb) |
 | SDXL | [![Open in Studio Lab](https://studiolab.sagemaker.aws/studiolab.svg)](https://studiolab.sagemaker.aws/import/github/gutris1/segsmaker/blob/main/Segsmaker_SDXL.ipynb) |
-| ComfyUI AnimateDiff Evolved | [![Open in Studio Lab](https://studiolab.sagemaker.aws/studiolab.svg)](https://studiolab.sagemaker.aws/import/github/gutris1/segsmaker/blob/main/Segsmaker_ComfyUI.ipynb) |
+| ComfyUI AnimateDiff Evolved | [![Open in Studio Lab](https://studiolab.sagemaker.aws/studiolab.svg)](https://studiolab.sagemaker.aws/import/github/gutris1/segsmaker/blob/main/Segsmaker_ComfyUI.ipynb) |<br />
+
+find me here https://discord.gg/k5BwmmvJJU
 <h1 align="center">Preview</h1>
 <p align="center">
   <img src="https://github.com/gutris1/sd-fast-pnginfo/blob/db50e68cc9cbc139b9ab1f7a13387c15d4f17bc4/preview.gif">
