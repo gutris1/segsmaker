@@ -227,7 +227,7 @@ def delete(line):
         elif os.path.isdir(item_path):
             shutil.rmtree(item_path)
 
-    display(HTML("<p>Files and folders removed. Please restart JupyterLab.</p>"))
+    display(HTML("<p>Now please restart JupyterLab.</p>"))
 
 @register_line_magic
 def storage(path):
