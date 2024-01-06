@@ -198,7 +198,37 @@ def tempe(line):
         shell=True,
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL)
+
+@register_line_magic
+def delete(line):
+    fp = line.strip() if line else "/home/studio-lab-user"
+
+    target = [
+        '/home/studio-lab-user/tmp/*',
+        '/home/studio-lab-user/.cache/*',
+        '/home/studio-lab-user/.ipython/profile_default/startup/*',
+        '/home/studio-lab-user/.config/*',
+        '/home/studio-lab-user/.conda/*'
+    ]
+    targets = []
+    for path_pattern in target:
+        targets.extend(glob.glob(path_pattern))
     
+    targets.extend(glob.glob(os.path.join(fp, '**', '.ipynb_checkpoints'), recursive=True))
+
+    for item_path in targets:
+        item_name = os.path.basename(item_path)
+        if item_name.startswith('.'):
+            continue
+        if item_name.endswith(".ipynb"):
+            continue
+        if os.path.isfile(item_path):
+            os.remove(item_path)
+        elif os.path.isdir(item_path):
+            shutil.rmtree(item_path)
+
+    display(HTML("<p>Files and folders removed. Please restart JupyterLab.</p>"))
+
 @register_line_magic
 def storage(path):
     def size1(size):
@@ -249,39 +279,6 @@ def storage(path):
             print(f"/{base_path:<20} {padding}{formatted_size}")
 
     du_process.close()
-  
-@register_line_magic
-def delete(line):
-    fp = line.strip() if line else "/home/studio-lab-user"
-
-    target_paths = [
-        '/home/studio-lab-user/tmp/*',
-        '/home/studio-lab-user/.ipython/profile_default/startup/*',
-        '/home/studio-lab-user/.cache/*',
-        '/home/studio-lab-user/.config/*',
-        '/home/studio-lab-user/.conda/*'
-    ]
-    target_files = []
-    for path_pattern in target_paths:
-        target_files.extend(glob.glob(path_pattern))
-    
-    target_files.extend(glob.glob(os.path.join(fp, '**', '.ipynb_checkpoints'), recursive=True))
-
-    for item_path in target_files:
-        item_name = os.path.basename(item_path)
-        if item_name.startswith('.'):
-            continue
-        if item_name.endswith(".ipynb"):
-            continue
-        if os.path.isfile(item_path):
-            os.remove(item_path)
-        elif os.path.isdir(item_path):
-            shutil.rmtree(item_pathem_name = os.path.basename(ip)
-        if item_name.startswith('.'):
-            continue
-        if item_name)
-            
-    display(HTML("<p>Now please restart JupyterLab.</p>"))
       
 @register_cell_magic
 def zipping(line, cell):
