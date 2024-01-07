@@ -5,9 +5,7 @@ from tqdm import tqdm
 import subprocess
 import zipfile
 import psutil
-import shutil
 import shlex
-import glob
 import sys
 import os
 import re
@@ -201,33 +199,24 @@ def tempe(line):
 
 @register_line_magic
 def delete(line):
-    fp = line.strip() if line else "/home/studio-lab-user"
+    input_path = line.strip() if line else '/home/studio-lab-user'
+    targets = [
+        '/tmp/*',
+        '/.cache/*',
+        '/.config/*',
+        '/.conda/*',
+        '/.ipython/profile_default/*']
 
-    target = [
-        '/home/studio-lab-user/tmp/*',
-        '/home/studio-lab-user/.cache/*',
-        '/home/studio-lab-user/.ipython/profile_default/startup/*',
-        '/home/studio-lab-user/.config/*',
-        '/home/studio-lab-user/.conda/*'
-    ]
-    targets = []
-    for path_pattern in target:
-        targets.extend(glob.glob(path_pattern))
-    
-    targets.extend(glob.glob(os.path.join(fp, '**', '.ipynb_checkpoints'), recursive=True))
+    subprocess.run(
+        f"rm -rf {' '.join([input_path + t for t in targets])} && "
+        f"find {input_path}/* -type d -name .ipynb_checkpoints -exec rm -rf {{}} \\; "
+        f" -or -type f ! -name '*.ipynb' -exec rm -f {{}} + "
+        f" -or -type d -empty -delete",
+        shell=True,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL)
 
-    for item_path in targets:
-        item_name = os.path.basename(item_path)
-        if item_name.startswith('.'):
-            continue
-        if item_name.endswith(".ipynb"):
-            continue
-        if os.path.isfile(item_path):
-            os.remove(item_path)
-        elif os.path.isdir(item_path):
-            shutil.rmtree(item_path)
-
-    display(HTML("<p>Now please restart JupyterLab.</p>"))
+    print("Now please restart JupyterLab.")
 
 @register_line_magic
 def storage(path):
