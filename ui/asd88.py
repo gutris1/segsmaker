@@ -205,7 +205,7 @@ def delete(line):
         '/.cache/*',
         '/.config/*',
         '/.conda/*',
-        '/.ipython/profile_default/*']
+        '/.ipython/profile_default/startup/*']
 
     subprocess.run(
         f"rm -rf {' '.join([input_path + t for t in targets])} && "
@@ -223,34 +223,37 @@ def storage(path):
     def size1(size):
         for unit in ['B', 'KB', 'MB', 'GB', 'TB']:
             if size < 1024.0:
-                return f"{size:.1f} {unit}"
+                return f"{size:.2f} {unit}"
+
             size /= 1024.0
-    
+
     def size2(size_in_kb):
         if size_in_kb == 0:
             return "0 KB"
-        
+
         base = 1024
         size_in_bytes = size_in_kb * base
+        
         for unit in ['B', 'KB', 'MB', 'GB', 'TB']:
             if size_in_bytes < base:
                 if unit in ['B', 'KB']:
                     return f"{size_in_bytes:.0f} {unit}"
                 else:
                     return f"{size_in_bytes:.1f} {unit}"
+                    
             size_in_bytes /= base
-    
+
     usage = psutil.disk_usage(path)
     size_str = size1(usage.total)
     used_str = size1(usage.used)
     free_str = size1(usage.free)
-    
+
     used_percentage = f"{usage.percent:.1f}%".ljust(6)
     free_percentage = f"{100 - usage.percent:.1f}%".ljust(6)
 
-    print(f"Size = {size_str.rjust(7)}")
-    print(f"Used = {used_str.rjust(7)} | {used_percentage}")
-    print(f"Free = {free_str.rjust(7)} | {free_percentage}")
+    print(f"Size = {size_str:>8}")
+    print(f"Used = {used_str:>8} | {used_percentage}")
+    print(f"Free = {free_str:>8} | {free_percentage}")
     print()
 
     du_process = os.popen(f'du -h -k --max-depth=1 {path}')
