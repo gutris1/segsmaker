@@ -211,9 +211,9 @@ def delete(line):
         '/.ipython/profile_default/startup/*']
 
     subprocess.run(
-        f'rm -rf {" ".join([input_path + t for t in targets])} && '
-        f'find {input_path} -type d -name ".ipynb_checkpoints" -exec rm -rf {{}} + '
-        f'find {input_path}/* -type f ! -name "*.ipynb" -exec rm -rf {{}} + '
+        f'rm -rf {" ".join([input_path + t for t in targets])}; '
+        f'find {input_path} -type d -name ".ipynb_checkpoints" -exec rm -rf {{}} +; '
+        f'find {input_path}/* -type f ! -name "*.ipynb" -exec rm -rf {{}} +; '
         f'find {input_path}/* -type d -empty -delete',
         shell=True,
         stdout=subprocess.DEVNULL,
