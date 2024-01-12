@@ -1,9 +1,9 @@
 from IPython.display import HTML, display
 import subprocess
 
-def ass(command, message, color):
-    display(HTML(f"<span style='color:{color};'>・・・ {message} ・・・</span>"))
-    result = subprocess.run(command, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+def ass(cmd, bacod, color):
+    display(HTML(f"<span style='color:{color};'>{bacod}</span>"))
+    result = subprocess.run(cmd, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 ass('pip install -q tqdm psutil glib', '', '')
 ass('conda install -qy conda', 'Installing Conda', 'cyan')
