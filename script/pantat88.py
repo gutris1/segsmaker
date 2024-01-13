@@ -208,6 +208,7 @@ def delete(line):
         '/.cache/*',
         '/.config/*',
         '/.conda/*',
+        '/.local/share/jupyter/runtime/*',
         '/.ipython/profile_default/startup/*']
 
     subprocess.run(
@@ -274,7 +275,37 @@ def storage(path):
             print(f"/{base_path:<20} {padding}{formatted_size}")
 
     du_process.close()
-      
+
+@register_line_magic
+def pull(line):
+    args = line.split()
+    if len(args) != 3:
+        return
+
+    rp, dp, tf = args
+
+    path = os.path.expanduser(dp)
+    xxx = {'stdout': subprocess.PIPE, 'stderr': subprocess.PIPE, 'check': True}
+    zzz = subprocess.run
+    zzz(['git', 'clone', '-n', '--depth=1', '--filter=tree:0', rp], cwd=path, **xxx)
+    rf = os.path.join(path, os.path.basename(rp.rstrip('.git')))
+    zzz(['git', 'sparse-checkout', 'set', '--no-cone', tf], cwd=rf, **xxx)
+    zzz(['git', 'checkout'], cwd=rf, **xxx)
+
+    zipin = os.path.join(rf, 'ui', tf)
+    zipout = os.path.join(path, f'{tf}.zip')
+    
+    with zipfile.ZipFile(zipout, 'w') as zipf:
+        for root, dirs, files in os.walk(zipin):
+            for file in files:
+                zp = os.path.join(root, file)
+                arcname = os.path.relpath(zp, zipin)
+                zipf.write(zp, arcname=arcname)
+
+    zzz(['unzip', '-o', zipout], cwd=path, **xxx)
+    os.remove(zipout)
+    zzz(['rm', '-rf', rf], cwd=path, **xxx)
+    
 @register_cell_magic
 def zipping(line, cell):
     lines = cell.strip().split('\n')
