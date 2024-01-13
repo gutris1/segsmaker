@@ -208,6 +208,7 @@ def delete(line):
         '/.cache/*',
         '/.config/*',
         '/.conda/*',
+        '/.local/share/jupyter/runtime/*',
         '/.ipython/profile_default/startup/*']
 
     subprocess.run(
@@ -276,34 +277,34 @@ def storage(path):
     du_process.close()
 
 @register_line_magic
-def minta(line):
+def pull(line):
     args = line.split()
     if len(args) != 3:
         return
 
-    repo_url, desti_path, target_folder = args
+    rp, dp, tf = args
 
-    path = os.path.expanduser(desti_path)
-    shutup = {'stdout': subprocess.PIPE, 'stderr': subprocess.PIPE, 'check': True}
-    swim = subprocess.run
-    swim(['git', 'clone', '-n', '--depth=1', '--filter=tree:0', repo_url], cwd=path, **shutup)
-    repo_dir = os.path.join(path, os.path.basename(repo_url.rstrip('.git')))
-    swim(['git', 'sparse-checkout', 'set', '--no-cone', target_folder], cwd=repo_dir, **shutup)
-    swim(['git', 'checkout'], cwd=repo_dir, **shutup)
+    path = os.path.expanduser(dp)
+    xxx = {'stdout': subprocess.PIPE, 'stderr': subprocess.PIPE, 'check': True}
+    zzz = subprocess.run
+    zzz(['git', 'clone', '-n', '--depth=1', '--filter=tree:0', rp], cwd=path, **xxx)
+    rf = os.path.join(path, os.path.basename(rp.rstrip('.git')))
+    zzz(['git', 'sparse-checkout', 'set', '--no-cone', tf], cwd=rf, **xxx)
+    zzz(['git', 'checkout'], cwd=rf, **xxx)
 
-    input_zip = os.path.join(repo_dir, 'ui', target_folder)
-    output_zip = os.path.join(path, f'{target_folder}.zip')
+    zipin = os.path.join(rf, 'ui', tf)
+    zipout = os.path.join(path, f'{tf}.zip')
     
-    with zipfile.ZipFile(output_zip, 'w') as zipf:
-        for root, dirs, files in os.walk(input_zip):
+    with zipfile.ZipFile(zipout, 'w') as zipf:
+        for root, dirs, files in os.walk(zipin):
             for file in files:
-                file_path = os.path.join(root, file)
-                arcname = os.path.relpath(file_path, input_zip)
-                zipf.write(file_path, arcname=arcname)
+                zp = os.path.join(root, file)
+                arcname = os.path.relpath(zp, zipin)
+                zipf.write(zp, arcname=arcname)
 
-    swim(['unzip', '-o', output_zip], cwd=path, **shutup)
-    os.remove(output_zip)
-    swim(['rm', '-rf', repo_dir], cwd=path, **shutup)
+    zzz(['unzip', '-o', zipout], cwd=path, **xxx)
+    os.remove(zipout)
+    zzz(['rm', '-rf', rf], cwd=path, **xxx)
     
 @register_cell_magic
 def zipping(line, cell):
