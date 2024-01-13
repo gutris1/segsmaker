@@ -1,4 +1,5 @@
 import subprocess
+import os
 
 tempe = [
     ['rm', '-rf', '~/tmp/*', '~/tmp', '~/asd/models/Stable-diffusion/tmp_models', '~/asd/models/Lora/tmp_Lora', '~/asd/models/ControlNet'],
@@ -10,5 +11,6 @@ tempe = [
     ['ln', '-vs', '/tmp/ControlNet', '~/asd/models/ControlNet']
 ]
 
-for tahu in tempe:
-    subprocess.run(tahu, check=True)
+for command in tempe:
+    command_expanded = [os.path.expanduser(arg) for arg in command]
+    subprocess.run(command_expanded, check=True)
