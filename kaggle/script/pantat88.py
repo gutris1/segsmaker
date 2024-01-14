@@ -31,13 +31,14 @@ def say(line):
 
         if color == '{d}':
             color = default_color
-        elif not color or color == '{d}':
+            
+        elif not color or '{d}':
             if i < len(args) - 1 and re.match(r'^\{[^\{\}]+\}$', args[i + 1].lower()):
                 color = args[i + 1][1:-1]
                 i += 1
+                
             else:
-                color = default_color
-                msg = args[i]
+                msg = line
 
         span_text = f"<span"
         if color:
