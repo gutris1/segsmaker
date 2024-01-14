@@ -1,0 +1,9 @@
+https://huggingface.co/neggles/animatediff-modules/resolve/main/mm_sd_v15_v2.fp16.safetensors ~/asd/extensions/sd-webui-animatediff/model
+https://huggingface.co/guoyww/animatediff/resolve/main/v2_lora_PanLeft.ckpt ~/asd/models/Lora/motion-lora
+https://huggingface.co/guoyww/animatediff/resolve/main/v2_lora_PanRight.ckpt ~/asd/models/Lora/motion-lora
+https://huggingface.co/guoyww/animatediff/resolve/main/v2_lora_RollingAnticlockwise.ckpt ~/asd/models/Lora/motion-lora
+https://huggingface.co/guoyww/animatediff/resolve/main/v2_lora_RollingClockwise.ckpt ~/asd/models/Lora/motion-lora
+https://huggingface.co/guoyww/animatediff/resolve/main/v2_lora_TiltDown.ckpt ~/asd/models/Lora/motion-lora
+https://huggingface.co/guoyww/animatediff/resolve/main/v2_lora_TiltUp.ckpt ~/asd/models/Lora/motion-lora
+https://huggingface.co/guoyww/animatediff/resolve/main/v2_lora_ZoomIn.ckpt ~/asd/models/Lora/motion-lora
+https://huggingface.co/guoyww/animatediff/resolve/main/v2_lora_ZoomOut.ckpt ~/asd/models/Lora/motion-lora
