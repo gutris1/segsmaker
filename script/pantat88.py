@@ -282,18 +282,18 @@ def pull(line):
     if len(args) != 3:
         return
 
-    rp, dp, tf = args
+    repo, tarfold, despath = args
 
-    path = os.path.expanduser(dp)
+    path = os.path.expanduser(despath)
     xxx = {'stdout': subprocess.PIPE, 'stderr': subprocess.PIPE, 'check': True}
     zzz = subprocess.run
-    zzz(['git', 'clone', '-n', '--depth=1', '--filter=tree:0', rp], cwd=path, **xxx)
-    rf = os.path.join(path, os.path.basename(rp.rstrip('.git')))
-    zzz(['git', 'sparse-checkout', 'set', '--no-cone', tf], cwd=rf, **xxx)
-    zzz(['git', 'checkout'], cwd=rf, **xxx)
+    zzz(['git', 'clone', '-n', '--depth=1', '--filter=tree:0', repo], cwd=path, **xxx)
+    repofold = os.path.join(path, os.path.basename(repo.rstrip('.git')))
+    zzz(['git', 'sparse-checkout', 'set', '--no-cone', tarfold], cwd=repofold, **xxx)
+    zzz(['git', 'checkout'], cwd=repofold, **xxx)
 
-    zipin = os.path.join(rf, 'ui', tf)
-    zipout = os.path.join(path, f'{tf}.zip')
+    zipin = os.path.join(repofold, 'ui', tarfold)
+    zipout = os.path.join(path, f'{tarfold}.zip')
     
     with zipfile.ZipFile(zipout, 'w') as zipf:
         for root, dirs, files in os.walk(zipin):
@@ -304,7 +304,7 @@ def pull(line):
 
     zzz(['unzip', '-o', zipout], cwd=path, **xxx)
     os.remove(zipout)
-    zzz(['rm', '-rf', rf], cwd=path, **xxx)
+    zzz(['rm', '-rf', repofold], cwd=path, **xxx)
     
 @register_cell_magic
 def zipping(line, cell):
