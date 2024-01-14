@@ -2,6 +2,7 @@ from IPython.core.magic import register_line_magic, register_cell_magic
 from urllib.parse import urlparse
 from tqdm import tqdm
 import subprocess
+import zipfile
 import shlex
 import sys
 import os
