@@ -209,7 +209,7 @@ def delete(line):
         '/.config/*',
         '/.conda/*',
         '/.local/share/jupyter/runtime/*',
-        '/.ipython/profile_default/startup/*']
+        '/.ipython/profile_default/*']
 
     subprocess.run(
         f'rm -rf {" ".join([input_path + t for t in targets])}; '
