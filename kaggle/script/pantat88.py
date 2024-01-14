@@ -1,5 +1,4 @@
 from IPython.core.magic import register_line_magic
-from IPython.display import display, HTML
 from urllib.parse import urlparse
 from tqdm import tqdm
 import subprocess
@@ -8,47 +7,6 @@ import shlex
 import sys
 import os
 import re
-
-@register_line_magic
-def say(line):
-    args = line.split()
-    output = []
-    theme = get_ipython().config.get('InteractiveShellApp', {}).get('theme', 'light')
-    default_color = 'white' if theme == 'dark' else 'black'
-
-    i = 0
-    while i < len(args):
-        msg = args[i]
-        color = None
-
-        if re.match(r'^\{[^\{\}]+\}$', args[i].lower()):
-            color = args[i][1:-1]
-            msg = ""
-
-        while i < len(args) - 1 and not re.match(r'^\{[^\{\}]+\}$', args[i + 1].lower()):
-            msg += " " + args[i + 1]
-            i += 1
-
-        if color == '{d}':
-            color = default_color
-            
-        elif not color or '{d}':
-            if i < len(args) - 1 and re.match(r'^\{[^\{\}]+\}$', args[i + 1].lower()):
-                color = args[i + 1][1:-1]
-                i += 1
-                
-            else:
-                msg = line
-
-        span_text = f"<span"
-        if color:
-            span_text += f" style='color:{color};'"
-
-        span_text += f">{msg}</span>"
-        output.append(span_text)
-        i += 1
-
-    display(HTML(" ".join(output)))
     
 momoiro = "-H 'Authorization: Bearer d3bdbbd15377673b43f7ab4b224f2800'"
 @register_line_magic
