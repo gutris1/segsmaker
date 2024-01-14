@@ -19,12 +19,13 @@
     "ui_tab_order": [
         "txt2img",
         "img2img",
-        "Fast PNG Info"
+        "Fast PNG Info",
+        "SuperMerger"
     ],
     "hidden_tabs": [
         "PNG Info",
-	"Checkpoint Merger",
-	"Extras",
-        "Train"
+        "Train",
+        "Extras",
+        "Checkpoint Merger"
     ]
 }
