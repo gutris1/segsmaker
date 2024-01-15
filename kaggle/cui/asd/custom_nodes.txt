@@ -1,4 +1,4 @@
-git clone https://github.com/ssitu/ComfyUI_UltimateSDUpscale --recursive
+git clone --recursive https://github.com/ssitu/ComfyUI_UltimateSDUpscale
 git clone https://github.com/ltdrdata/ComfyUI-Manager
 git clone https://github.com/pythongosssss/ComfyUI-Custom-Scripts
 git clone https://github.com/city96/SD-Latent-Upscaler
