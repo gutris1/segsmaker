@@ -138,11 +138,12 @@ def ketsuno_ana(fc, fn, use_auth=False):
 
         with tqdm(
             total=100,
-            desc=f"{fn.ljust(56)}",
+            desc=f"{fn.ljust(58):>{58 + 2}}",
             initial=0,
-            bar_format="{desc} [{bar:20}] [{percentage:3.0f}%]",
+            bar_format="{desc} 【{bar:20}】【{percentage:3.0f}%】",
             ascii="▷▶",
-            file=sys.stdout) as pbar:
+            file=sys.stdout
+        ) as pbar:
 
             for line in iter(zura.stdout.readline, ''):
                 if not line.startswith('  % Total') and not line.startswith('  % '):
@@ -161,20 +162,20 @@ def ketsuno_ana(fc, fn, use_auth=False):
         if zura.returncode != 0:
 
             if "curl: (23)" in oppai:
-                print("^ Error: File exists. Add a custom naming after the URL or PATH to overwrite")
+                print(f"{'':>2}^ Error: File exists. Add a custom naming after the URL or PATH to overwrite")
             elif "curl: (3)" in oppai:
                 print("")
             else:
-                print(f"^ Error: {oppai}")
+                print(f"{'':>2}^ Error: {oppai}")
 
         else:
             pass
         
     except UnicodeDecodeError:
-        print("^ Error: Remove '?type=Model&format=SafeTensor&size=pruned&fp=fp16' from the civitai URL")
+        print(f"{'':>2}^ Error: Remove '?type=Model&format=SafeTensor&size=pruned&fp=fp16' from the civitai URL")
     
     except KeyboardInterrupt:
-        print("^ Canceled")
+        print(f"{'':>2}^ Canceled")
 
 @register_line_magic
 def clone(line):
