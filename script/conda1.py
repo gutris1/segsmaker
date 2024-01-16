@@ -12,3 +12,6 @@ ass('pip install torch==2.0.1+cu118 torchvision==0.15.2+cu118 --extra-index-url 
 ass('pip install xformers==0.0.20 triton==2.0.0', '【 Installing xformers 】', 'orange')
 ass('curl -Lo ~/.ipython/profile_default/startup/pantat88.py https://github.com/gutris1/segsmaker/raw/main/script/pantat88.py', '【 Gathering Magic 】', 'red')
 display(HTML('<span style="color: cyan;">【 Done 】</span>'))
+
+from IPython import get_ipython
+get_ipython().kernel.do_shutdown(True)
