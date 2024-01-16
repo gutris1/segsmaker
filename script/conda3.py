@@ -10,3 +10,6 @@ ass('conda install -y -n base python=3.10.12', '【 Installing Python 3.10 】',
 ass('conda clean -y --all', '【 Cleaning Conda 】', '#66ff00')
 ass('curl -Lo ~/.ipython/profile_default/startup/pantat88.py https://github.com/gutris1/segsmaker/raw/main/script/pantat88.py', '【 Gathering Magic 】', 'red')
 display(HTML('<span style="color: cyan;">【 Done 】</span>'))
+
+from IPython import get_ipython
+get_ipython().kernel.do_shutdown(True)
