@@ -103,6 +103,9 @@ def netorare(line, auth):
 
         fn = fn or os.path.basename(urlparse(urlll).path)
 
+        use_auth = "civitai.com" in urlll
+        auth = momoiro if use_auth else ""
+
         if path and fn:
             os.makedirs(path, exist_ok=True)
             fc = f"mkdir -p {path} && cd {path} && curl -#JL {auth} {urlll} -o {fn} 2>&1"
@@ -117,7 +120,7 @@ def netorare(line, auth):
         else:
             fc = f"curl -#OJL {auth} {urlll} 2>&1"
 
-        ketsuno_ana(fc, fn, use_auth="civitai.com" in urlll)
+        ketsuno_ana(fc, fn, use_auth=use_auth)
 
 def ketsuno_ana(fc, fn, use_auth=False):
     try:
