@@ -103,6 +103,9 @@ def netorare(line, auth):
 
         fn = fn or os.path.basename(urlparse(urlll).path)
 
+        use_auth = "civitai.com" in urlll
+        auth = momoiro if use_auth else ""
+
         if path and fn:
             os.makedirs(path, exist_ok=True)
             fc = f"mkdir -p {path} && cd {path} && curl -#JL {auth} {urlll} -o {fn} 2>&1"
@@ -117,7 +120,7 @@ def netorare(line, auth):
         else:
             fc = f"curl -#OJL {auth} {urlll} 2>&1"
 
-        ketsuno_ana(fc, fn, use_auth="civitai.com" in urlll)
+        ketsuno_ana(fc, fn, use_auth=use_auth)
 
 def ketsuno_ana(fc, fn, use_auth=False):
     try:
@@ -138,11 +141,12 @@ def ketsuno_ana(fc, fn, use_auth=False):
 
         with tqdm(
             total=100,
-            desc=f"{fn.ljust(56)}",
+            desc=f"{fn.ljust(58):>{58 + 2}}",
             initial=0,
-            bar_format="{desc} [{bar:20}] [{percentage:3.0f}%]",
+            bar_format="{desc} 【{bar:20}】【{percentage:3.0f}%】",
             ascii="▷▶",
-            file=sys.stdout) as pbar:
+            file=sys.stdout
+        ) as pbar:
 
             for line in iter(zura.stdout.readline, ''):
                 if not line.startswith('  % Total') and not line.startswith('  % '):
@@ -161,20 +165,20 @@ def ketsuno_ana(fc, fn, use_auth=False):
         if zura.returncode != 0:
 
             if "curl: (23)" in oppai:
-                print("^ Error: File exists. Add a custom naming after the URL or PATH to overwrite")
+                print(f"{'':>2}^ Error: File exists. Add a custom naming after the URL or PATH to overwrite")
             elif "curl: (3)" in oppai:
                 print("")
             else:
-                print(f"^ Error: {oppai}")
+                print(f"{'':>2}^ Error: {oppai}")
 
         else:
             pass
         
     except UnicodeDecodeError:
-        print("^ Error: Remove '?type=Model&format=SafeTensor&size=pruned&fp=fp16' from the civitai URL")
+        print(f"{'':>2}^ Error: Remove '?type=Model&format=SafeTensor&size=pruned&fp=fp16' from the civitai URL")
     
     except KeyboardInterrupt:
-        print("^ Canceled")
+        print(f"{'':>2}^ Canceled")
 
 @register_line_magic
 def clone(line):
@@ -209,7 +213,7 @@ def delete(line):
         '/.config/*',
         '/.conda/*',
         '/.local/share/jupyter/runtime/*',
-        '/.ipython/profile_default/startup/*']
+        '/.ipython/profile_default/*']
 
     subprocess.run(
         f'rm -rf {" ".join([input_path + t for t in targets])}; '
@@ -282,18 +286,18 @@ def pull(line):
     if len(args) != 3:
         return
 
-    rp, dp, tf = args
+    repo, tarfold, despath = args
 
-    path = os.path.expanduser(dp)
+    path = os.path.expanduser(despath)
     xxx = {'stdout': subprocess.PIPE, 'stderr': subprocess.PIPE, 'check': True}
     zzz = subprocess.run
-    zzz(['git', 'clone', '-n', '--depth=1', '--filter=tree:0', rp], cwd=path, **xxx)
-    rf = os.path.join(path, os.path.basename(rp.rstrip('.git')))
-    zzz(['git', 'sparse-checkout', 'set', '--no-cone', tf], cwd=rf, **xxx)
-    zzz(['git', 'checkout'], cwd=rf, **xxx)
+    zzz(['git', 'clone', '-n', '--depth=1', '--filter=tree:0', repo], cwd=path, **xxx)
+    repofold = os.path.join(path, os.path.basename(repo.rstrip('.git')))
+    zzz(['git', 'sparse-checkout', 'set', '--no-cone', tarfold], cwd=repofold, **xxx)
+    zzz(['git', 'checkout'], cwd=repofold, **xxx)
 
-    zipin = os.path.join(rf, 'ui', tf)
-    zipout = os.path.join(path, f'{tf}.zip')
+    zipin = os.path.join(repofold, 'ui', tarfold)
+    zipout = os.path.join(path, f'{tarfold}.zip')
     
     with zipfile.ZipFile(zipout, 'w') as zipf:
         for root, dirs, files in os.walk(zipin):
@@ -304,7 +308,7 @@ def pull(line):
 
     zzz(['unzip', '-o', zipout], cwd=path, **xxx)
     os.remove(zipout)
-    zzz(['rm', '-rf', rf], cwd=path, **xxx)
+    zzz(['rm', '-rf', repofold], cwd=path, **xxx)
     
 @register_cell_magic
 def zipping(line, cell):
