@@ -8,7 +8,7 @@ import sys
 import os
 import re
     
-momoiro = "-H 'Authorization: Bearer d3bdbbd15377673b43f7ab4b224f2800'"
+momoiro = "-H 'Authorization: Bearer 268143672c63a79e3fbf7fa8e9c72603'"
 @register_line_magic
 def download(line):
     args = line.split()
