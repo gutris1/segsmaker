@@ -10,7 +10,7 @@ def hitozuma(token):
     else:
         print("")
 
-    ass = "/home/studio-lab-user/.zrok/bin/zrok share public localhost:7860 --headless 2>&1 | grep 'zrok.io'"
+    ass = "/home/studio-lab-user/.zrok/bin/zrok share public localhost:8188 --headless 2>&1 | grep 'zrok.io'"
     subprocess.run(ass, shell=True, stdout=sys.stdout, stderr=subprocess.STDOUT)
 
 if __name__ == '__hitozuma__':
