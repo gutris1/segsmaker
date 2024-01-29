@@ -1,7 +1,7 @@
 import sys
 import subprocess
 
-def main(token):
+def hitozuma(token):
     oppai = subprocess.run(['/home/studio-lab-user/.zrok/bin/zrok', 'enable', token], 
                             check=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
 
@@ -17,4 +17,4 @@ if __name__ == '__main__':
     if len(sys.argv) != 2:
         sys.exit(1)
 
-    main(sys.argv[1])
+    hitozuma(sys.argv[1])
