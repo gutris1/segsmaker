@@ -3,4 +3,4 @@ https://huggingface.co/pantat88/ui/resolve/main/4x-AnimeSharp.pth ~/asd/models/E
 https://huggingface.co/pantat88/ui/resolve/main/4x_NMKD-Superscale-SP_178000_G.pth ~/asd/models/ESRGAN
 https://huggingface.co/pantat88/ui/resolve/main/4x_RealisticRescaler_100000_G.pth ~/asd/models/ESRGAN
 https://huggingface.co/pantat88/ui/resolve/main/8x_RealESRGAN.pth ~/asd/models/ESRGAN
-https://civitai.com/api/download/models/264491 ~/asd/models/VAE XL_VAE_F1.safetensors
+https://civitai.com/api/download/models/264491 XL_VAE_F1.safetensors ~/asd/models/VAE
