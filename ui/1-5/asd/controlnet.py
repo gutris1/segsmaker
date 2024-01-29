@@ -77,7 +77,7 @@ url_list = {
         "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-plusv2_sd15_lora.safetensors ~/asd/models/Lora/tmp_Lora \
         ip-adapter-faceid-plusv2_sd15_lora.safetensors"],
     "IP Adapter FaceID Portrait 1.5": [
-        "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-portrait_sd15.bin"],
+        "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-portrait_sd15.bin"]
 
 }
 
