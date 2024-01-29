@@ -92,7 +92,7 @@ url_list = {
     "IP Adapter FaceID Plusv2 SDXL": [
         "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-plusv2_sdxl.bin ip-adapter-faceid-plusv2_sdxl.bin",
         "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-plusv2_sdxl_lora.safetensors ~/asd/models/Lora/tmp_Lora \
-        ip-adapter-faceid-plusv2_sdxl_lora.safetensors"],
+        ip-adapter-faceid-plusv2_sdxl_lora.safetensors"]
 }
 
 list_half = len(url_list) // 2
