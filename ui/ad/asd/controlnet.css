@@ -15,7 +15,7 @@
     background-size: 110% 110%;
     background-position: 50% 80%;
     overflow: visible;
-    animation: slideFromAbove 0.5s, pulse 2s infinite;
+    animation: slideFromAbove 0.5s, pulse 6s infinite;
 }
 
 .widget-container {
@@ -103,7 +103,7 @@
     cursor: pointer;
     transition: none;
     vertical-align: middle;
-    animation: pulse 2s infinite;
+    animation: pulse 6s infinite;
 }
 
 .border-style {
@@ -187,25 +187,61 @@
 
 @keyframes pulse {
   0% {
-    border-color: red;
+    border-color: rgba(255, 0, 0, 1);
   }
-  15% {
-    border-color: rgb(255, 255, 0);
+  6% {
+    border-color: rgba(255, 0, 85, 0.5);
   }
-  30% {
-    border-color: lime;
+  11% {
+    border-color: rgba(255, 0, 170, 1);
+  }
+  17% {
+    border-color: rgba(255, 0, 255, 0.5);
+  }
+  22% {
+    border-color: rgba(170, 0, 255, 1);
+  }
+  28% {
+    border-color: rgba(85, 0, 255, 0.5);
+  }
+  33% {
+    border-color: rgba(0, 0, 255, 1);
+  }
+  39% {
+    border-color: rgba(0, 85, 255, 0.5);
+  }
+  44% {
+    border-color: rgba(0, 175, 255, 1);
   }
   50% {
-    border-color: cyan;
+    border-color: rgba(0, 255, 255, 0.5);
   }
-  65% {
-    border-color: blue;
+  56% {
+    border-color: rgba(0, 255, 170, 1);
   }
-  80% {
-    border-color: magenta;
+  61% {
+    border-color: rgba(0, 255, 85, 0.5);
+  }
+  67% {
+    border-color: rgba(0, 255, 0, 1);
+  }
+  72% {
+    border-color: rgba(85, 255, 0, 0.5);
+  }
+  78% {
+    border-color: rgba(170, 255, 0, 1);
+  }
+  83% {
+    border-color: rgba(255, 255, 0, 0.5);
+  }
+  89% {
+    border-color: rgba(255, 170, 0, 1);
+  }
+  94% {
+    border-color: rgba(255, 85, 0, 0.5);
   }
   100% {
-    border-color: red;
+    border-color: rgba(255, 0, 0, 1);
   }
 }
 
