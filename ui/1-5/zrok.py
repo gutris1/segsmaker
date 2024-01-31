@@ -6,9 +6,12 @@ def hitozuma(token):
                             check=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
 
     if oppai.returncode == 0:
-        print("")
+        print("[ZROK] environment enabled")
     else:
-        print("")
+        if "enabled environment" in oppai.stdout:
+            print("[ZROK] environment already enabled")
+        else:
+            print(oppai.stdout)
 
     ass = "/home/studio-lab-user/.zrok/bin/zrok share public localhost:7860 --headless 2>&1 | grep 'zrok.io'"
     subprocess.run(ass, shell=True, stdout=sys.stdout, stderr=subprocess.STDOUT)
