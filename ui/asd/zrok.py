@@ -1,7 +1,11 @@
 import sys
 import subprocess
+import os
 
 def hitozuma(token):
+    
+    os.environ['LD_PRELOAD'] = '/home/studio-lab-user/.conda/envs/default/lib/libtcmalloc_minimal.so.4'
+    
     oppai = subprocess.run(['/home/studio-lab-user/.zrok/bin/zrok', 'enable', token], 
                             check=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
 
