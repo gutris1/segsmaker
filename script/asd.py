@@ -6,6 +6,7 @@ import subprocess
 import zipfile
 import psutil
 import shlex
+import json
 import sys
 import os
 import re
@@ -203,6 +204,10 @@ def tempe(line):
 
 @register_line_magic
 def delete(line):
+  
+    if 'LD_PRELOAD' in os.environ:
+        del os.environ['LD_PRELOAD']
+        
     input_path = line.strip() if line else '/home/studio-lab-user'
     targets = [
         '/tmp/*',
@@ -214,17 +219,50 @@ def delete(line):
         '/.conda/*',
         '/.local/share/jupyter/runtime/*',
         '/.ipython/profile_default/*']
-
+    
+    del_cmd = (
+        f'find {input_path} -type d -name ".ipynb_checkpoints" '
+        f'! -path "{input_path}/.ipynb_checkpoints" '
+        f'-exec rm -rf {{}} +')
+    
     subprocess.run(
-        f'rm -rf {" ".join([input_path + t for t in targets])}; '
-        f'find {input_path} -type d -name ".ipynb_checkpoints" -exec rm -rf {{}} +; '
-        f'find {input_path}/* -type f ! -name "*.ipynb" -exec rm -rf {{}} +; '
-        f'find {input_path}/* -type d -empty -delete',
+        del_cmd,
         shell=True,
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL)
+    
+    nbfound = False
+    
+    try:
+        find_cmd = f'find {input_path} -type d -name ".*" -prune -o -type f -name "*.ipynb" -print'
+        nbfiles = subprocess.check_output(
+            find_cmd,
+            shell=True,
+            text=True).strip().split('\n')
+        
+        for nbpath in nbfiles:
+            if nbpath:
+                nb_clear(nbpath)
+                nbfound = True
+                
+    except subprocess.CalledProcessError as e:
+        pass
 
-    print("Now please restart JupyterLab.")
+    if nbfound:
+        print("Now, Please Restart JupyterLab")
+
+def nb_clear(nbpath):
+    try:
+        with open(nbpath, 'r') as f:
+            nbcontent = json.load(f)
+            
+        nbcontent['metadata'] = {}
+        
+        with open(nbpath, 'w') as f:
+            json.dump(nbcontent, f, indent=1, sort_keys=True)
+
+    except Exception as e:
+        pass
 
 @register_line_magic
 def storage(path):
