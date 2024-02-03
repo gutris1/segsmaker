@@ -175,3 +175,11 @@ def pull(line):
     zzz(['unzip', '-o', zipout], cwd=path, **xxx)
     os.remove(zipout)
     zzz(['rm', '-rf', repofold], cwd=path, **xxx)
+
+@register_line_magic
+def tempe(line):
+    subprocess.run(
+        f"mkdir -p /kaggle/temp/models /kaggle/temp/Lora /kaggle/temp/ControlNet",
+        shell=True,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL)
