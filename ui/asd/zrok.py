@@ -11,8 +11,6 @@ def hitozuma(token):
     os.environ['LD_PRELOAD'] = '/home/studio-lab-user/.conda/envs/default/lib/libtcmalloc_minimal.so.4'
     
     try:
-        asu = "▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲"
-        asw = "▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼"
         oppai = subprocess.run(['/home/studio-lab-user/.zrok/bin/zrok', 'enable', token], 
                                 check=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
 
@@ -22,18 +20,18 @@ def hitozuma(token):
         urlp = re.compile(r'https?://[^\s]*\.zrok\.io')
         
         if oppai.returncode == 0:
-            print(f"{asu}\n[ZROK] environment enabled.")
+            print("\n[ZROK] environment enabled.")
             
         else:
             if "enabled environment" in oppai.stdout:
-                print(f"{asu}\n[ZROK] environment already enabled.")
+                print("\n[ZROK] environment already enabled.")
             else:
                 print(oppai.stdout)
 
         for line in ass.stdout:
             urls = urlp.findall(line)
             for url in urls:
-                zurl(f"[ZROK] {url}\n{asw}")
+                zurl(f"[ZROK] {url}\n")
 
         ass.wait()
 
@@ -46,6 +44,6 @@ def zurl(url):
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
-        sys.exit(1)
+        sys.exit("")
 
     hitozuma(sys.argv[1])
