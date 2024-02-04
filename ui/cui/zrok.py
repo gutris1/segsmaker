@@ -14,7 +14,7 @@ def hitozuma(token):
         oppai = subprocess.run(['/home/studio-lab-user/.zrok/bin/zrok', 'enable', token], 
                                 check=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
 
-        ass = subprocess.Popen(["/home/studio-lab-user/.zrok/bin/zrok", "share", "public", "localhost:7860", "--headless"],
+        ass = subprocess.Popen(["/home/studio-lab-user/.zrok/bin/zrok", "share", "public", "localhost:8188", "--headless"],
                                stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
         
         urlp = re.compile(r'https?://[^\s]*\.zrok\.io')
