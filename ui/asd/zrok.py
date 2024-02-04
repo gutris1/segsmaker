@@ -2,11 +2,9 @@ import subprocess
 import sys
 import os
 import re
-import threading
+from multiprocessing import Process, Queue
 
-plock = threading.Lock()
-
-def hitozuma(token):
+def hitozuma(token, zrok_out):
     
     os.environ['LD_PRELOAD'] = '/home/studio-lab-user/.conda/envs/default/lib/libtcmalloc_minimal.so.4'
     
@@ -18,32 +16,38 @@ def hitozuma(token):
                                stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
         
         urlp = re.compile(r'https?://[^\s]*\.zrok\.io')
+        asu = ("◼◼◼◼◼◼◼◼◼◼◼◼◼◼◼◼◼◼◼◼◼◼◼◼◼◼◼◼◼")
         
         if oppai.returncode == 0:
-            print("\n[ZROK] environment enabled.")
+            zrok_out.put(f"\n{asu}\n[ZROK] environment enabled.\n")
             
         else:
             if "enabled environment" in oppai.stdout:
-                print("\n[ZROK] environment already enabled.")
+                zrok_out.put(f"\n{asu}\n[ZROK] environment already enabled.\n")
             else:
-                print(oppai.stdout)
+                zrok_out.put(oppai.stdout)
 
         for line in ass.stdout:
             urls = urlp.findall(line)
             for url in urls:
-                zurl(f"[ZROK] {url}\n")
+                zrok_out.put(f"[ZROK] {url}\n{asu}\n\n")
 
         ass.wait()
 
     except:
         pass
 
-def zurl(url):
-    with plock:
-        print(url)
-
 if __name__ == '__main__':
     if len(sys.argv) != 2:
         sys.exit("")
 
-    hitozuma(sys.argv[1])
+    zrok_out = Queue()
+
+    process = Process(target=hitozuma, args=(sys.argv[1], zrok_out))
+    process.start()
+
+    while process.is_alive() or not zrok_out.empty():
+        while not zrok_out.empty():
+            print(zrok_out.get(), end='', flush=True)
+
+    process.join()
