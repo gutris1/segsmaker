@@ -6,6 +6,7 @@ import subprocess
 import zipfile
 import psutil
 import shlex
+import json
 import sys
 import os
 import re
@@ -203,8 +204,12 @@ def tempe(line):
 
 @register_line_magic
 def delete(line):
-    input_path = line.strip() if line else '/home/studio-lab-user'
-    targets = [
+
+    if 'LD_PRELOAD' in os.environ:
+        del os.environ['LD_PRELOAD']
+        
+    indel = line.strip() if line else '/home/studio-lab-user'
+    delist = [
         '/tmp/*',
         '/tmp',
         '/asd',
@@ -216,15 +221,48 @@ def delete(line):
         '/.ipython/profile_default/*']
 
     subprocess.run(
-        f'rm -rf {" ".join([input_path + t for t in targets])}; '
-        f'find {input_path} -type d -name ".ipynb_checkpoints" -exec rm -rf {{}} +; '
-        f'find {input_path}/* -type f ! -name "*.ipynb" -exec rm -rf {{}} +; '
-        f'find {input_path}/* -type d -empty -delete',
+        f'rm -rf {" ".join([indel + t for t in delist])}; '
+        f'find {indel} -type d -name ".ipynb_checkpoints" -exec rm -rf {{}} +; ',
         shell=True,
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL)
 
-    print("Now please restart JupyterLab.")
+    nbfound = False
+    try:
+        findnb = f'find {indel} -type d -name ".*" -prune -o -type f -name "*.ipynb" -print'
+        nbfiles = subprocess.check_output(findnb, shell=True, text=True).strip().split('\n')
+        
+        for nbpath in nbfiles:
+            if nbpath:
+                nbclear(nbpath)
+                nbfound = True
+                
+    except subprocess.CalledProcessError:
+        pass
+
+    if nbfound:
+        print("Now, Please Restart JupyterLab.")
+
+def nbclear(nbpath):
+    try:
+        with open(nbpath, 'r') as f:
+            nbcontent = json.load(f)
+
+        nbcontent['metadata'] = {
+            "language_info": {
+                "name": ""
+            },
+            "kernelspec": {
+                "name": "",
+                "display_name": ""
+            }
+        }
+        
+        with open(nbpath, 'w') as f:
+            json.dump(nbcontent, f, indent=1, sort_keys=True)
+
+    except:
+        pass
 
 @register_line_magic
 def storage(path):
