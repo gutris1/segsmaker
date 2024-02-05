@@ -16,6 +16,7 @@ def zrok_launch(token, launch_args):
                 if process.stdout is not None:
                     for line in process.stdout:
                         print(line.strip())
+                        
             except Exception:
                 pass
 
@@ -30,6 +31,7 @@ def zrok_launch(token, launch_args):
 
     except KeyboardInterrupt:
         pass
+    
     except Exception as e:
         print("Error:", str(e))
 

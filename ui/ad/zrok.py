@@ -1,13 +1,9 @@
+from multiprocessing import Process, Queue
 import subprocess
 import sys
-import os
 import re
-from multiprocessing import Process, Queue
 
 def hitozuma(token, zrok_out):
-    
-    os.environ['LD_PRELOAD'] = '/home/studio-lab-user/.conda/envs/default/lib/libtcmalloc_minimal.so.4'
-    
     try:
         oppai = subprocess.run(['/home/studio-lab-user/.zrok/bin/zrok', 'enable', token], 
                                 check=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
