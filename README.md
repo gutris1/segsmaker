@@ -8,8 +8,10 @@ with temporary folder for Checkpoint, LoRA and ControlNET models [<img align="ri
 | ComfyUI AnimateDiff Evolved | [![Open in Studio Lab](https://studiolab.sagemaker.aws/studiolab.svg)](https://studiolab.sagemaker.aws/import/github/gutris1/segsmaker/blob/main/Segsmaker_ComfyUI.ipynb) |<br />
 
 find me here https://discord.gg/k5BwmmvJJU
+
 <h1 align="center">Preview</h1>
 <p align="center">
+  <img src="https://github.com/gutris1/segsmaker/blob/4839cf9b51036d95671d5e74d49bd5fa86d0552b/preview1.gif">
   <img src="https://github.com/gutris1/sd-fast-pnginfo/blob/e59a97f28d20397da5b78bdd6a8a79299cf139f1/preview.gif">
   <img src="https://github.com/gutris1/segsmaker/assets/132797949/acc8e533-2a71-4be9-b8ce-d0dd992f9970">
 </p>
