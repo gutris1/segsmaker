@@ -1,9 +1,18 @@
 import subprocess
 import threading
 import sys
-import traceback
+import os
+
+os.environ['LD_PRELOAD'] = '/home/studio-lab-user/.conda/envs/default/lib/libtcmalloc_minimal.so.4'
 
 def zrok_launch(token, launch_args):
+    
+    subprocess.run(
+        f"mkdir -p /tmp/models /tmp/Lora /tmp/ControlNet",
+        shell=True,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL)
+    
     try:
         zrok_process = subprocess.Popen(['python', 'zrok.py', token], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         launch_process = subprocess.Popen(['python', 'launch.py'] + launch_args,
@@ -27,6 +36,9 @@ def zrok_launch(token, launch_args):
         zrok_thread.join()
         launch_thread.join()
 
+    except KeyboardInterrupt:
+        pass
+    
     except Exception as e:
         print("Error:", str(e))
 
