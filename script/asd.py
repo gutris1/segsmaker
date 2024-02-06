@@ -52,7 +52,7 @@ def say(line):
 
     display(HTML(" ".join(output)))
 
-momoiro = "-H 'Authorization: Bearer 268143672c63a79e3fbf7fa8e9c72603'"
+momoiro = "-H 'Authorization: Bearer YOUR_API_KEY'"
 @register_line_magic
 def download(line):
     args = line.split()
