@@ -1,0 +1,147 @@
+.widget-container {
+    font-family: 'Roboto Mono', monospace;
+}
+
+.boxs {
+    border: 3px solid transparent;
+    border-radius: 10px;
+    margin: 0;
+    background: url('https://wallpapercave.com/dwp1x/wp5126154.jpg');
+    background-size: 100% 100%;
+    background-position: 100% 200%;
+    animation: slideFromAbove 1s, pulse 6s infinite;
+}
+    
+.widget-container {
+    margin-top: 0px;
+    margin-right: 0px;
+    margin-bottom: 0px;
+    margin-left: 0px;
+    position: relative;
+    overflow: visible;
+}
+
+.api-input input[type="text"] {
+    margin-top: -10px;
+    margin-right: 0px;
+    margin-bottom: 0px;
+    margin-left: 0px;
+    font-size: 17px;
+    height: 35px;
+    color: #2197f2;
+    text-align: center;
+    border-radius: 10px;
+    border: 3px solid #ab22fe;
+    transform: scale(110%);
+}
+
+.api-input input:focus {
+    height: 35px;
+    text-align: center;
+    border-radius: 10px;
+    border: 3px solid transparent;
+    animation: pulse 6s infinite;
+}
+
+.api-input input:hover {
+    height: 35px;
+    text-align: center;
+    border-radius: 10px;
+    border: 3px solid #2197f2;
+}
+
+.save-button {
+    margin-top: 0px;
+    margin-right: 0px;
+    margin-bottom: -10px;
+    margin-left: 0px;
+    font-size: 20px;
+    width: 100px;
+    height: 40px;
+    color: white;
+    border-radius: 10px;
+    border: 3px solid #2197f2;
+    background: transparent;
+}
+
+.save-button:hover {
+    color: #ab22fe;
+    border-radius: 10px;
+    border: 3px solid transparent;
+    background: transparent;
+    transition: ;
+    cursor: pointer;
+    transition: none;
+    animation: pulse 6s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    border-color: rgba(255, 0, 0, 1);
+  }
+  6% {
+    border-color: rgba(255, 0, 85, 0.5);
+  }
+  11% {
+    border-color: rgba(255, 0, 170, 1);
+  }
+  17% {
+    border-color: rgba(255, 0, 255, 0.5);
+  }
+  22% {
+    border-color: rgba(170, 0, 255, 1);
+  }
+  28% {
+    border-color: rgba(85, 0, 255, 0.5);
+  }
+  33% {
+    border-color: rgba(0, 0, 255, 1);
+  }
+  39% {
+    border-color: rgba(0, 85, 255, 0.5);
+  }
+  44% {
+    border-color: rgba(0, 175, 255, 1);
+  }
+  50% {
+    border-color: rgba(0, 255, 255, 0.5);
+  }
+  56% {
+    border-color: rgba(0, 255, 170, 1);
+  }
+  61% {
+    border-color: rgba(0, 255, 85, 0.5);
+  }
+  67% {
+    border-color: rgba(0, 255, 0, 1);
+  }
+  72% {
+    border-color: rgba(85, 255, 0, 0.5);
+  }
+  78% {
+    border-color: rgba(170, 255, 0, 1);
+  }
+  83% {
+    border-color: rgba(255, 255, 0, 0.5);
+  }
+  89% {
+    border-color: rgba(255, 170, 0, 1);
+  }
+  94% {
+    border-color: rgba(255, 85, 0, 0.5);
+  }
+  100% {
+    border-color: rgba(255, 0, 0, 1);
+  }
+}
+
+@keyframes slideFromAbove {
+    from {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
