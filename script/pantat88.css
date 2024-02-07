@@ -26,13 +26,13 @@
     margin-right: 0px;
     margin-bottom: 0px;
     margin-left: 0px;
-    font-size: 17px;
+    font-size: 14px;
     height: 35px;
     color: #2197f2;
     text-align: center;
     border-radius: 10px;
     border: 3px solid #ab22fe;
-    transform: scale(110%);
+    transform: scale(125%);
 }
 
 .api-input input:focus {
