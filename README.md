@@ -15,6 +15,7 @@ find me here https://discord.gg/k5BwmmvJJU
   <img src="https://github.com/gutris1/segsmaker/assets/132797949/7420b6ff-7080-46f2-bd20-cd2088d64ff6" width="486" height="169">
 - get your own API key at https://civitai.com/user/account click the 'Add API Key' button, give it a name and then copy. <br />
   <img src="https://github.com/gutris1/segsmaker/assets/132797949/d3fa05b6-4cdd-4ffc-9a50-43bf550de627" width="367" height="169">
+- don't worry, you only need to do that once.
 
 <h1 align="center">Preview</h1>
 <p align="center">
