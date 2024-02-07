@@ -17,7 +17,7 @@ susu = widgets.Output()
 sb = widgets.Button(description="Save")
 sb.add_class("save-button")
 
-ink = widgets.Text(placeholder='insert your civitai API KEY here')
+ink = widgets.Text(placeholder='enter your civitai API KEY here')
 ink.add_class("api-input")
 
 boxs = VBox([ink, sb], layout=Layout(
@@ -82,7 +82,7 @@ def eeeee():
 
         if not api_key:
             with susu:
-                display(HTML('<span style="color: red;">Please insert your CivitAI API KEY</span>'))
+                display(HTML('<span style="color: red;">Please enter your CivitAI API KEY</span>'))
             return
 
         if len(api_key) < 32:
