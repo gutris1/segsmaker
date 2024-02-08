@@ -20,12 +20,12 @@
         "txt2img",
         "img2img",
         "Fast PNG Info",
+        "Extras",
         "SuperMerger"
     ],
     "hidden_tabs": [
         "PNG Info",
         "Train",
-        "Extras",
         "Checkpoint Merger"
     ]
 }
