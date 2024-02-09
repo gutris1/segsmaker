@@ -63,7 +63,7 @@ def ddddd():
             display(HTML(f"<span style='color:{rainbow};'>{cod}</span>"))
             subprocess.run(cmd, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-    ass('conda install -y conda glib gxx_linux-64 ffmpeg imageio imageio-ffmpeg av gst-libav psutil gperftools aria2',
+    ass('conda install -y conda glib gxx_linux-64 ffmpeg imageio imageio-ffmpeg av gst-libav psutil gperftools aria2 gdown',
         '【 Installing Conda 】', 'cyan')
     ass('conda install -y -n base python=3.10.12',
         '【 Installing Python 3.10 】', '#D48900')
