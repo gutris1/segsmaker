@@ -16,11 +16,19 @@ find me here https://discord.gg/k5BwmmvJJU
 - Else default to Curl.
 
 Usage:
-```
+```python
+# only url
 %download URL
-%download URL ~/asd/models/asdasd
-%download URL ~/asd/models/zzzzzz 789789.txt
+
+# url and filename
 %download URL 123456.safetensors
+
+# url and path
+%download URL ~/asd/models/asdasd
+
+# url path and filename
+%download URL ~/asd/models/zzzzzz 789789.txt
+
 ```
 
 ### 2024-02-07
