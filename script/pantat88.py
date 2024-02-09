@@ -5,12 +5,15 @@ from tqdm import tqdm
 import subprocess
 import zipfile
 import psutil
+import select
 import shlex
+import errno
 import json
+import pty
 import sys
 import os
 import re
-    
+
 @register_line_magic
 def say(line):
     args = line.split()
@@ -51,148 +54,242 @@ def say(line):
         i += 1
 
     display(HTML(" ".join(output)))
-
-momoiro = "-H 'Authorization: Bearer YOUR_API_KEY'"
+    
+toket = "?token=YOUR_API_KEY"
 @register_line_magic
 def download(line):
     args = line.split()
-    url, auth = args[0], momoiro if "civitai.com" in args[0] else ""
+    url = args[0]
 
-    if len(args) == 1:
-        if args[0].endswith('.txt'):
-            with open(os.path.expanduser(args[0]), 'r') as file:
-                for line in file:
-                    netorare(line, auth)
-        else:
-            fn = os.path.basename(urlparse(args[0]).path)
-            fc = f"curl -#OJL {auth} {args[0]} 2>&1"
-            ketsuno_ana(fc, fn)
-
-    elif len(args) == 3:
-        path, fn = args[1], args[2]
-        os.makedirs(path, exist_ok=True)
-        fc = f"mkdir -p {path} && cd {path} && curl -#JL {auth} {url} -o {fn} 2>&1"
-        ketsuno_ana(fc, fn)
-
-    elif len(args) > 1 and ('/' in args[1] or '~/' in args[1]):
-        path = args[1]
-        os.makedirs(path, exist_ok=True)
-        fn = os.path.basename(urlparse(args[0]).path)
-        url = url.replace('\\', '')
-        fc = f"mkdir -p {path} && cd {path} && curl -#OJL {auth} {url} -o {fn} 2>&1"
-        ketsuno_ana(fc, fn)
-
+    if url.endswith('.txt'):
+        with open(os.path.expanduser(url), 'r') as file:
+            for line in file:
+                netorare(line)
     else:
-        fn = args[1]
-        fc = f"curl -#JL {auth} {args[0]} -o {fn} 2>&1"
-        ketsuno_ana(fc, fn)
+        netorare(line)
 
-def netorare(line, auth):
+def netorare(line):
     hitozuma = line.strip().split()
-
-    if len(hitozuma) >= 1:
-        urlll = hitozuma[0].replace('\\', '')
-        path, fn = "", ""
-
-        if len(hitozuma) >= 3:
-            path, fn = hitozuma[1], hitozuma[2]
-        elif len(hitozuma) >= 2 and ('/' in hitozuma[1] or '~/' in hitozuma[1]):
-            path = hitozuma[1]
-            fn = os.path.basename(urlparse(urlll).path)
-        elif len(hitozuma) >= 2:
-            fn = hitozuma[1]
-
-        fn = fn or os.path.basename(urlparse(urlll).path)
-
-        use_auth = "civitai.com" in urlll
-        auth = momoiro if use_auth else ""
-
-        if path and fn:
-            os.makedirs(path, exist_ok=True)
-            fc = f"mkdir -p {path} && cd {path} && curl -#JL {auth} {urlll} -o {fn} 2>&1"
-            
-        elif path:
-            os.makedirs(path, exist_ok=True)
-            fc = f"mkdir -p {path} && cd {path} && curl -#OJL {auth} {urlll} -o {fn} 2>&1"
-            
-        elif fn:
-            fc = f"curl -#JL {auth} {urlll} -o {fn} 2>&1"
-            
+    url = hitozuma[0].replace('\\', '')
+    civ = "civitai.com" in url
+    togel = "drive.google.com" in url
+    path, fn = "", ""
+    aria2c = "aria2c --console-log-level=error --summary-interval=1 -c -x16 -s16 -k1M -j5"
+    susu = "mkdir -p {path} && cd {path} &&"
+    
+    if len(hitozuma) >= 3:
+        path, fn = os.path.expanduser(hitozuma[1]), hitozuma[2]
+        os.makedirs(path, exist_ok=True)
+        if civ:
+            fc = f"{susu.format(path=path)} {aria2c} '{url}{toket}' -o '{fn}'"
+            ketsuno_ana(fc, fn)
+        elif togel:
+            gdrown(url, path, fn)
         else:
-            fc = f"curl -#OJL {auth} {urlll} 2>&1"
-
-        ketsuno_ana(fc, fn, use_auth=use_auth)
-
-def ketsuno_ana(fc, fn, use_auth=False):
-    try:
-        auth = momoiro if use_auth else ""
-        fc = f"{fc.replace('#OJL', '#OJL ' + auth)}"
-
-        zura = subprocess.Popen(
-            fc,
-            shell=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-            bufsize=1,
-            cwd=os.getcwd())
-
-        progress_pattern = re.compile(r'(\d+\.\d+)%')
-        oppai = ""
-
-        with tqdm(
-            total=100,
-            desc=f"{fn.ljust(58):>{58 + 2}}",
-            initial=0,
-            bar_format="{desc} 【{bar:20}】【{percentage:3.0f}%】",
-            ascii="▷▶",
-            file=sys.stdout
-        ) as pbar:
-
-            for line in iter(zura.stdout.readline, ''):
-                if not line.startswith('  % Total') and not line.startswith('  % '):
-                    match = progress_pattern.search(line)
-                    if match:
-                        progress = float(match.group(1))
-                        pbar.update(progress - pbar.n)
-                        pbar.refresh()
-
-                oppai += line
-                
-            pbar.close()
-            
-        zura.wait()
-
-        if zura.returncode != 0:
-
-            if "curl: (23)" in oppai:
-                print(f"{'':>2}^ Error: File exists. Add a custom naming after the URL or PATH to overwrite")
-            elif "curl: (3)" in oppai:
-                print("")
-            else:
-                print(f"{'':>2}^ Error: {oppai}")
-
-        else:
-            pass
+            fc = f"{susu.format(path=path)} curl -#JL '{url}' -o '{fn}' 2>&1"
+            ketsuno_ana(fc, fn)
         
+    elif len(hitozuma) >= 2 and ('/' in hitozuma[1] or '~/' in hitozuma[1]):
+        path = os.path.expanduser(hitozuma[1])
+        os.makedirs(path, exist_ok=True)
+        if civ:
+            fc = f"{susu.format(path=path)} {aria2c} '{url}{toket}'"
+            ketsuno_ana(fc, fn)
+        elif togel:
+            gdrown(url, path)
+        else:
+            fn = os.path.basename(urlparse(url).path)
+            fc = f"{susu.format(path=path)} curl -#OJL '{url}' 2>&1"
+            ketsuno_ana(fc, fn)
+            
+    elif len(hitozuma) >= 2:
+        fn = hitozuma[1]
+        if civ:
+            fc = f"{aria2c} '{url}{toket}' -o '{fn}'"
+            ketsuno_ana(fc, fn)
+        elif togel:
+            gdrown(url, None, fn)
+        else:
+            fc = f"curl -#JL '{url}' -o '{fn}' 2>&1"
+            ketsuno_ana(fc, fn)
+    else:
+        if civ:
+            fc = f"{aria2c} '{url}{toket}'"
+            ketsuno_ana(fc, fn)
+        elif togel:
+            gdrown(url)
+        else:
+            fn = os.path.basename(urlparse(url).path)
+            fc = f"curl -#OJL '{url}' 2>&1"
+            ketsuno_ana(fc, fn)
+    
+def gdrown(url, path=None, fn=None):
+    asdasd = "drive.google.com/drive/folders" in url
+    susu = "mkdir -p {path} && cd {path} &&"
+    
+    if path and fn:
+        aduuhh = os.path.expanduser(path)
+        os.makedirs(aduuhh, exist_ok=True)
+        awawaw = os.path.join(aduuhh, fn)
+        fc = f"gdown --fuzzy {url} -O {awawaw}" + (" --folder" if asdasd else "")
+        
+    elif path:
+        fc = f"{susu.format(path=path)} gdown --fuzzy '{url}'" + (" --folder" if asdasd else "")
+
+    elif fn:
+        fc = f"gdown --fuzzy {url} -O {fn}" + (" --folder" if asdasd else "")
+        
+    else:
+        fc = f"gdown --fuzzy {url}" + (" --folder" if asdasd else "")
+
+    weww, woww = pty.openpty()
+    proc = subprocess.Popen(fc, stdout=woww, stderr=woww, close_fds=True, shell=True)
+    os.close(woww)
+
+    try:
+        while True:
+            r, _, _ = select.select([weww], [], [], 0.1)
+            if r:
+                six = os.read(weww, 1024).decode()
+                print(six, end='')
+            if proc.poll() is not None:
+                all_that_remains = os.read(weww, 2048).decode()
+                if all_that_remains:
+                    print(all_that_remains, end='')
+                break
+    except OSError as e:
+        pass
+    finally:
+        os.close(weww)
+
+def ariari(fc, fn):
+    woiii, appaa = pty.openpty()
+    qqqqq = subprocess.Popen(fc, shell=True, stdin=appaa, stdout=appaa, stderr=subprocess.STDOUT, close_fds=True)
+    os.close(appaa)
+
+    malam = ""
+    while True:
+        r, _, _ = select.select([woiii], [], [], 0.1)
+        if woiii in r:
+            try:
+                petualangan = os.read(woiii, 8192).decode()
+                malam += petualangan
+                for minggu in petualangan.splitlines():
+                    if re.match(r'\[#\w{6}\s.*\]', minggu):
+                        sys.stdout.write("\r" + " "*80 + "\r")
+                        sys.stdout.write(f"  {minggu}")
+                        sys.stdout.flush()
+                        break
+                        
+            except OSError as e:
+                if e.errno == errno.EIO:
+                    break
+
+        if qqqqq.poll() is not None and not r:
+            break
+                   
+    kemarin = malam.find("Download Results:")
+    if kemarin != -1:
+        hhhhh = malam[kemarin:]
+        jjjjj = hhhhh.splitlines()
+        kkkkk = False
+        for ggggg in jjjjj:
+            if ggggg.strip().startswith("======+====+==========="):
+                kkkkk = True
+                print("\n" + f"  {ggggg}")
+                continue
+            elif ggggg.strip().startswith("Status Legend:"):
+                break
+            elif kkkkk:
+                print(f"  {ggggg}")
+
+    qqqqq.wait()
+    os.close(woiii)
+
+def curlly(fc, fn):  
+    zura = subprocess.Popen(
+        fc,
+        shell=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        bufsize=1,
+        cwd=os.getcwd())
+
+    progress_pattern = re.compile(r'(\d+\.\d+)%')
+    oppai = ""
+
+    with tqdm(
+        total=100,
+        desc=f"{fn.ljust(58):>{58 + 2}}",
+        initial=0,
+        bar_format="{desc} 【{bar:20}】【{percentage:3.0f}%】",
+        ascii="▷▶",
+        file=sys.stdout
+    ) as pbar:
+
+        for line in iter(zura.stdout.readline, ''):
+            if not line.startswith('  % Total') and not line.startswith('  % '):
+                match = progress_pattern.search(line)
+                if match:
+                    progress = float(match.group(1))
+                    pbar.update(progress - pbar.n)
+                    pbar.refresh()
+
+            oppai += line
+
+        pbar.close()
+
+    zura.wait()
+
+    if zura.returncode != 0:
+        if "curl: (23)" in oppai:
+            print(f"{'':>2}^ Error: File exists. Add a custom naming after the URL or PATH to overwrite")
+        elif "curl: (3)" in oppai:
+            print("")
+        else:
+            print(f"{'':>2}^ Error: {oppai}")
+    else:
+        pass
+    
+def ketsuno_ana(fc, fn):
+    try:
+        if "aria2c" in fc:
+            ariari(fc, fn)
+
+        else:
+            curlly(fc, fn)
+
     except UnicodeDecodeError:
         print(f"{'':>2}^ Error: Remove '?type=Model&format=SafeTensor&size=pruned&fp=fp16' from the civitai URL")
-    
+
     except KeyboardInterrupt:
         print(f"{'':>2}^ Canceled")
-
+        
 @register_line_magic
 def clone(line):
-    file_path = os.path.expanduser(line.strip())
+    milkita = os.path.expanduser(line.strip())
 
-    if not os.path.exists(file_path):
-        print(f"Error: File not found - {file_path}")
+    if not os.path.exists(milkita):
+        print(f"Error: File not found - {milkita}")
         return
 
-    with open(file_path, 'r') as file:
-        for git_command in map(str.strip, file):
-            command_list = shlex.split(git_command)
-            subprocess.run(command_list, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    with open(milkita, 'r') as file:
+        for gita in map(str.strip, file):
+            fc = shlex.split(gita)
+            
+            aaahhh = subprocess.Popen(fc, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+
+            while True:
+                ikuuhh = aaahhh.stdout.readline()
+                if not ikuuhh and aaahhh.poll() is not None:
+                    break
+                if ikuuhh:
+                    ikuuhh = ikuuhh.strip()
+                    if ikuuhh.startswith("Cloning into"):
+                        print("  " + ikuuhh)
+
+            aaahhh.wait()
             
 @register_line_magic
 def tempe(line):
@@ -314,7 +411,7 @@ def storage(path):
 
         if base_path != 'studio-lab-user':
             padding = " " * max(0, 9 - len(formatted_size))
-            print(f"/{base_path:<20} {padding}{formatted_size}")
+            print(f"/{base_path:<25} {padding}{formatted_size}")
 
     du_process.close()
 

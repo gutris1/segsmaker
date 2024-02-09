@@ -53,7 +53,7 @@ def ccccc(api_key):
     with open(sp, "r") as file:
         lalalala = file.read()
         
-    hantu = lalalala.replace("-H 'Authorization: Bearer YOUR_API_KEY'", f"-H 'Authorization: Bearer {api_key}'")
+    hantu = lalalala.replace("?token=YOUR_API_KEY", f"?token={api_key}")
     with open(sp, "w") as file:
         file.write(hantu)
 
