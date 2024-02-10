@@ -38,7 +38,7 @@ Usage:
   <img src="https://github.com/gutris1/segsmaker/assets/132797949/d3fa05b6-4cdd-4ffc-9a50-43bf550de627" width="367" height="169">
 - Don't worry, you only need to do that once. next time you reinstall conda, you will not be prompted again.
 
-<h1 align="center">Preview</h1>
+# Preview
 <p align="center">
   <img src="https://github.com/gutris1/segsmaker/blob/4839cf9b51036d95671d5e74d49bd5fa86d0552b/preview1.gif">
   <img src="https://github.com/gutris1/sd-fast-pnginfo/blob/e59a97f28d20397da5b78bdd6a8a79299cf139f1/preview.gif">
