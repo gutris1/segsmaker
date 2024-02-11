@@ -1,4 +1,4 @@
-# Stable Diffusion Webui and ComfyUI notebook for Sagemaker Studio Lab
+# Stable Diffusion Webui and ComfyUI notebook for Sagemaker Studio Lab | **[日本語で](README-JP.md)**
 with temporary folder for Checkpoint, LoRA and ControlNET models [<img align="right" src="https://api.visitorbadge.io/api/visitors?path=https%3A%2F%2Fgithub.com%2Fpantat88%2Fsegsmaker&label=Visitors&countColor=%232ccce4&style=flat">](https://visitorbadge.io/status?path=https%3A%2F%2Fgithub.com%2Fpantat88%2Fsegsmaker)<br />[<img align="right" src="https://img.shields.io/badge/Support%20me%20on%20Ko--fi-F16061?logo=ko-fi&logoColor=white&style=flat">](https://ko-fi.com/gutris1)
 
 | SD 1.5 | [![Open in Studio Lab](https://studiolab.sagemaker.aws/studiolab.svg)](https://studiolab.sagemaker.aws/import/github/gutris1/segsmaker/blob/main/Segsmaker.ipynb) |
@@ -7,7 +7,7 @@ with temporary folder for Checkpoint, LoRA and ControlNET models [<img align="ri
 | SDXL | [![Open in Studio Lab](https://studiolab.sagemaker.aws/studiolab.svg)](https://studiolab.sagemaker.aws/import/github/gutris1/segsmaker/blob/main/Segsmaker_SDXL.ipynb) |
 | ComfyUI AnimateDiff Evolved | [![Open in Studio Lab](https://studiolab.sagemaker.aws/studiolab.svg)](https://studiolab.sagemaker.aws/import/github/gutris1/segsmaker/blob/main/Segsmaker_ComfyUI.ipynb) |<br />
 
-find me here https://discord.gg/k5BwmmvJJU
+you can find me here https://discord.gg/k5BwmmvJJU
 
 # Changelog
 ### 2024-02-09
@@ -28,7 +28,6 @@ Usage:
 
 # url path and filename
 %download URL ~/asd/models/zzzzzz 789789.txt
-
 ```
 
 ### 2024-02-07
@@ -36,7 +35,7 @@ Usage:
   <img src="https://github.com/gutris1/segsmaker/assets/132797949/7420b6ff-7080-46f2-bd20-cd2088d64ff6" width="486" height="169">
 - Get your own API key at https://civitai.com/user/account click the 'Add API Key' button, give it a name and then copy. <br />
   <img src="https://github.com/gutris1/segsmaker/assets/132797949/d3fa05b6-4cdd-4ffc-9a50-43bf550de627" width="367" height="169">
-- Don't worry, you only need to do that once. next time you reinstall conda, you will not be prompted again.
+- Don't worry, you only need to do that once. next time you reinstall Conda, you will not be prompted again.
 
 # Preview
 <p align="center">
