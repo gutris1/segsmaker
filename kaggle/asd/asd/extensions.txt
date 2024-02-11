@@ -3,7 +3,6 @@ git clone --depth 1 https://github.com/hako-mikan/sd-webui-lora-block-weight lor
 git clone --depth 1 https://github.com/gutris1/huggingface
 git clone --depth 1 https://github.com/gutris1/supermerger
 git clone --depth 1 https://github.com/thomasasfk/sd-webui-aspect-ratio-helper aspect-ratio-helper
-git clone --depth 1 https://github.com/civitai/sd_civitai_extension
 git clone --depth 1 https://github.com/gutris1/dynamic-thresholding 1dynamic-thresholding
 git clone --depth 1 https://github.com/Coyote-A/ultimate-upscale-for-automatic1111 ultimate-upscale
 git clone --depth 1 https://github.com/wcde/custom-hires-fix-for-automatic1111 2custom-hires-fix
