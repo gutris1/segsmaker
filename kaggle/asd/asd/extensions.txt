@@ -1,0 +1,13 @@
+git clone --depth 1 https://github.com/arenasys/stable-diffusion-webui-model-toolkit model-toolkit
+git clone --depth 1 https://github.com/hako-mikan/sd-webui-lora-block-weight lora-block-weight
+git clone --depth 1 https://github.com/gutris1/huggingface
+git clone --depth 1 https://github.com/gutris1/supermerger
+git clone --depth 1 https://github.com/thomasasfk/sd-webui-aspect-ratio-helper aspect-ratio-helper
+git clone --depth 1 https://github.com/civitai/sd_civitai_extension
+git clone --depth 1 https://github.com/gutris1/dynamic-thresholding 1dynamic-thresholding
+git clone --depth 1 https://github.com/Coyote-A/ultimate-upscale-for-automatic1111 ultimate-upscale
+git clone --depth 1 https://github.com/wcde/custom-hires-fix-for-automatic1111 2custom-hires-fix
+git clone --depth 1 https://github.com/portu-sim/sd-webui-bmab 3bmab
+git clone --depth 1 https://github.com/gutris1/4adetailer
+git clone --depth 1 https://github.com/Mikubill/sd-webui-controlnet
+git clone --depth 1 https://github.com/IDEA-Research/DWPose
