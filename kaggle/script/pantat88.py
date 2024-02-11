@@ -55,7 +55,7 @@ def say(line):
 
     display(HTML(" ".join(output)))
     
-toket = "?token=YOUR_API_KEY"
+toket = ""
 @register_line_magic
 def download(line):
     args = line.split()
