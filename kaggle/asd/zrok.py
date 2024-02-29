@@ -5,10 +5,10 @@ import re
 
 def hitozuma(token, zrok_out):
     try:
-        oppai = subprocess.run(['/kaggle/working/.zrok/bin/zrok', 'enable', token], 
+        oppai = subprocess.run(['/kaggle/working/asd/zrok/bin/zrok', 'enable', token],
                                 check=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
 
-        ass = subprocess.Popen(["/kaggle/working/.zrok/bin/zrok", "share", "public", "localhost:7860", "--headless"],
+        ass = subprocess.Popen(["/kaggle/working/asd/zrok/bin/zrok", "share", "public", "localhost:7860", "--headless"],
                                stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
         
         urlp = re.compile(r'https?://[^\s]*\.zrok\.io')
