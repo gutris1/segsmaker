@@ -2,11 +2,13 @@ import subprocess
 import threading
 import sys
 
+vpy = '/kaggle/opt/conda/envs/venv/bin/python3'
+
 def zrok_launch(token, launch_args):
     
     try:
-        zrok_process = subprocess.Popen(['python', 'zrok.py', token], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        launch_process = subprocess.Popen(['python', 'launch.py'] + launch_args,
+        zrok_process = subprocess.Popen([vpy, 'zrok.py', token], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        launch_process = subprocess.Popen([vpy, 'launch.py'] + launch_args,
                                            stdout=sys.stdout, stderr=sys.stdout, text=True)
 
         def capture_output(process):
