@@ -2,7 +2,7 @@ import subprocess
 import threading
 import sys
 
-vpy = '/kaggle/opt/conda/envs/venv/bin/python3'
+vpy = '/kaggle/venv/bin/python3'
 
 def zrok_launch(token, launch_args):
     
