@@ -1,0 +1,8 @@
+https://huggingface.co/pantat88/ui/resolve/main/embeddings.zip ~/sdwf
+https://civitai.com/api/download/models/150491 ~/sdwf/embeddings edgQuality.pt
+https://huggingface.co/pantat88/ui/resolve/main/4x-UltraSharp.pth ~/sdwf/models/ESRGAN
+https://huggingface.co/pantat88/ui/resolve/main/4x-AnimeSharp.pth ~/sdwf/models/ESRGAN
+https://huggingface.co/pantat88/ui/resolve/main/4x_NMKD-Superscale-SP_178000_G.pth ~/sdwf/models/ESRGAN
+https://huggingface.co/pantat88/ui/resolve/main/4x_RealisticRescaler_100000_G.pth ~/sdwf/models/ESRGAN
+https://huggingface.co/pantat88/ui/resolve/main/8x_RealESRGAN.pth ~/sdwf/models/ESRGAN
+https://huggingface.co/stabilityai/sd-vae-ft-mse-original/resolve/main/vae-ft-mse-840000-ema-pruned.safetensors ~/sdwf/models/VAE
