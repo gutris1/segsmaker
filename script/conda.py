@@ -71,9 +71,9 @@ def ddddd():
         '【 Installing Conda Packages 】', 'cyan')
     ass('conda clean -y --all',
         '【 Cleaning Conda 】', '#66ff00')
-    ass('pip install torch==2.0.1+cu118 torchvision==0.15.2+cu118 --extra-index-url https://download.pytorch.org/whl/cu118',
+    ass('pip install torch==2.1.2+cu121 torchvision==0.16.2+cu121 torchaudio==2.1.2 --extra-index-url https://download.pytorch.org/whl/cu121',
         '【 Installing Torch 】', 'magenta')
-    ass('pip install xformers==0.0.20 triton==2.0.0',
+    ass('pip install xformers==0.0.23.post1 triton==2.1.0',
         '【 Installing xformers 】', 'orange')
 
     with susu:
