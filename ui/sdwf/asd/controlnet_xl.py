@@ -2,7 +2,7 @@ import ipywidgets as widgets
 from IPython.display import display, HTML, clear_output
 from gutris1 import download
 
-bura = "/home/studio-lab-user/asd/asd/controlnet_xl.css"
+bura = "/home/studio-lab-user/sdwf/asd/controlnet_xl.css"
 with open(bura, "r") as oppai:
     susu = oppai.read()
 display(HTML(f"<style>{susu}</style>"))
@@ -87,11 +87,11 @@ url_list = {
 
     "IP Adapter FaceID SDXL": [
         "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid_sdxl.bin ip-adapter-faceid_sdxl.bin",
-        "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid_sdxl_lora.safetensors ~/asd/models/Lora/tmp_Lora \
+        "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid_sdxl_lora.safetensors ~/sdwf/models/Lora/tmp_Lora \
         ip-adapter-faceid_sdxl_lora.safetensors"],
     "IP Adapter FaceID Plusv2 SDXL": [
         "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-plusv2_sdxl.bin ip-adapter-faceid-plusv2_sdxl.bin",
-        "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-plusv2_sdxl_lora.safetensors ~/asd/models/Lora/tmp_Lora \
+        "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-plusv2_sdxl_lora.safetensors ~/sdwf/models/Lora/tmp_Lora \
         ip-adapter-faceid-plusv2_sdxl_lora.safetensors"]
 }
 
