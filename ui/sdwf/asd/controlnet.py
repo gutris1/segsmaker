@@ -66,15 +66,15 @@ url_list = {
 
     "IP Adapter FaceID 1.5": [
         "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid_sd15.bin",
-        "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid_sd15_lora.safetensors ~/asd/models/Lora/tmp_Lora \
+        "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid_sd15_lora.safetensors ~/sdwf/models/Lora/tmp_Lora \
         ip-adapter-faceid_sd15_lora.safetensors"],
     "IP Adapter FaceID Plus 1.5": [
         "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-plus_sd15.bin ip-adapter-faceid-plus_sd15.bin",
-        "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-plus_sd15_lora.safetensors ~/asd/models/Lora/tmp_Lora \
+        "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-plus_sd15_lora.safetensors ~/sdwf/models/Lora/tmp_Lora \
         ip-adapter-faceid-plus_sd15_lora.safetensors"],
     "IP Adapter FaceID PlusV2 1.5": [
         "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-plusv2_sd15.bin ip-adapter-faceid-plusv2_sd15.bin",
-        "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-plusv2_sd15_lora.safetensors ~/asd/models/Lora/tmp_Lora \
+        "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-plusv2_sd15_lora.safetensors ~/sdwf/models/Lora/tmp_Lora \
         ip-adapter-faceid-plusv2_sd15_lora.safetensors"],
     "IP Adapter FaceID Portrait 1.5": [
         "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-portrait_sd15.bin"]
