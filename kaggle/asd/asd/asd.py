@@ -9,6 +9,7 @@ minyak = [
     ['ln', '-vs', '/kaggle/temp/output', '/kaggle/working/asd/outputs'],
     ['unzip', '-o', '/kaggle/working/asd/embeddings.zip', '-d', '/kaggle/working/asd/embeddings'],
     ['rm', '/kaggle/working/asd/embeddings.zip']]
+    ['mkdir', '-p', '/kaggle/temp/checkpoint', '/kaggle/temp/lora', '/kaggle/temp/output'],
 
 for tepung in minyak:
     gorengan = [os.path.expanduser(arg) for arg in tepung]
