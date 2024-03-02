@@ -10,6 +10,11 @@ with temporary folder for Checkpoint, LoRA and ControlNET models [<img align="ri
 you can find me here https://discord.gg/k5BwmmvJJU
 
 # Changelog
+### 2024-03-02
+- add notebook for [SD Webui Forge](https://github.com/lllyasviel/stable-diffusion-webui-forge)
+- update A1111 SD Webui to 1.8.0
+- update Conda script to install Torch 2.1.2+cu121
+
 ### 2024-02-09
 - Switch to aria2 for civitai.com downloads.
 - Add gdown for Google Drive downloads. For Google Drive file or folder, simply paste the public URL directly.
