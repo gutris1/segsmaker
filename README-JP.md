@@ -11,6 +11,11 @@
 こちらで私を見つけることができます https://discord.gg/k5BwmmvJJU
 
 # 変更履歴
+### 2024-03-02
+- [SD Webui Forge](https://github.com/lllyasviel/stable-diffusion-webui-forge)のノートブックを追加
+- A1111 SD Webuiを1.8.0に更新
+- Condaスクリプトを更新して、Torch 2.1.2+cu121をインストール
+
 ### 2024-02-09
 - civitai.comのダウンロードにaria2に切り替えました。
 - Google Driveのダウンロードにgdownを追加しました。Google Driveのファイルまたはフォルダーについては、公開URLを直接貼り付けるだけです。
