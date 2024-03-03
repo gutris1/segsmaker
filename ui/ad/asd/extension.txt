@@ -11,6 +11,5 @@ git clone --depth 1 https://github.com/thomasasfk/sd-webui-aspect-ratio-helper
 git clone --depth 1 https://github.com/Coyote-A/ultimate-upscale-for-automatic1111
 git clone --depth 1 https://github.com/etherealxx/batchlinks-webui
 git clone https://github.com/Mikubill/sd-webui-controlnet
-git clone --depth 1 https://github.com/fkunn1326/openpose-editor
 git clone --depth 1 https://github.com/IDEA-Research/DWPose
 git clone https://github.com/continue-revolution/sd-webui-animatediff
