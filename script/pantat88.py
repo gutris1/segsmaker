@@ -310,6 +310,7 @@ def delete(line):
         '/tmp/*',
         '/tmp',
         '/asd',
+        '/sdwf',
         '/ComfyUI',
         '/.cache/*',
         '/.config/*',
