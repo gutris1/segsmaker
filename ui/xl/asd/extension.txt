@@ -12,5 +12,4 @@ git clone --depth 1 https://github.com/Coyote-A/ultimate-upscale-for-automatic11
 git clone --depth 1 https://github.com/etherealxx/batchlinks-webui
 git clone --depth 1 https://github.com/ahgsql/StyleSelectorXL
 git clone https://github.com/Mikubill/sd-webui-controlnet
-git clone --depth 1 https://github.com/fkunn1326/openpose-editor
 git clone --depth 1 https://github.com/IDEA-Research/DWPose
