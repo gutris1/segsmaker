@@ -7,8 +7,6 @@ minyak = [
     ['ln', '-vs', '/kaggle/temp/checkpoint', '/kaggle/working/asd/models/Stable-diffusion'],
     ['ln', '-vs', '/kaggle/temp/lora', '/kaggle/working/asd/models/Lora'],
     ['ln', '-vs', '/kaggle/temp/output', '/kaggle/working/asd/outputs'],
-    ['unzip', '-qo', '/kaggle/working/asd/embeddings.zip', '-d', '/kaggle/working/asd/embeddings'],
-    ['rm', '-f', '/kaggle/working/asd/embeddings.zip'],
     ['mkdir', '-p', '/kaggle/temp/checkpoint', '/kaggle/temp/lora', '/kaggle/temp/output']]
 
 for tepung in minyak:
