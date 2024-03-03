@@ -10,4 +10,4 @@ git clone --depth 1 https://github.com/portu-sim/sd-webui-bmab 3bmab
 git clone --depth 1 https://github.com/gutris1/4adetailer
 git clone --depth 1 https://github.com/Mikubill/sd-webui-controlnet
 git clone --depth 1 https://github.com/IDEA-Research/DWPose
-git clone --depth 1 https://github.com/Echoflare/a1111-sd-encrypt-image
+git clone --depth 1 https://github.com/viyiviyi/sd-encrypt-image
