@@ -1,10 +1,5 @@
-https://huggingface.co/pantat88/ui/resolve/main/embeddings.zip /kaggle/working/asd
-https://civitai.com/api/download/models/150491 /kaggle/working/asd/embeddings edgQuality.pt
-https://huggingface.co/pantat88/ui/resolve/main/4x-UltraSharp.pth /kaggle/working/asd/models/ESRGAN
-https://huggingface.co/pantat88/ui/resolve/main/4x-AnimeSharp.pth /kaggle/working/asd/models/ESRGAN
-https://huggingface.co/pantat88/ui/resolve/main/4x_NMKD-Superscale-SP_178000_G.pth /kaggle/working/asd/models/ESRGAN
-https://huggingface.co/pantat88/ui/resolve/main/4x_RealisticRescaler_100000_G.pth /kaggle/working/asd/models/ESRGAN
-https://huggingface.co/pantat88/ui/resolve/main/8x_RealESRGAN.pth /kaggle/working/asd/models/ESRGAN
-https://huggingface.co/stabilityai/sd-vae-ft-mse-original/resolve/main/vae-ft-mse-840000-ema-pruned.safetensors /kaggle/working/asd/models/VAE
 https://huggingface.co/pantat88/ui/resolve/main/hashes.py /kaggle/working/asd/modules hashes.py
 https://huggingface.co/pantat88/ui/resolve/main/lora_block_weight.py /kaggle/working/asd/extensions/lora-block-weight/scripts lora_block_weight.py
+https://huggingface.co/pantat88/ui/resolve/main/custom_hires_fix.py /kaggle/working/asd/extensions/2custom-hires-fix/scripts custom_hires_fix.py
+https://huggingface.co/pantat88/ui/resolve/main/ADetailer.zip /kaggle/working/asd/models/adetailer
+https://huggingface.co/pantat88/ui/resolve/main/ADetailer.zip /kaggle/working/asd/models/bmab
