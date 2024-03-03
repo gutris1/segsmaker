@@ -13,7 +13,7 @@ minyak = [
 
 for tepung in minyak:
     gorengan = [os.path.expanduser(arg) for arg in tepung]
-    subprocess.run(gorengan, check=True)
+    subprocess.run(gorengan, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 def zzz():
     try:
