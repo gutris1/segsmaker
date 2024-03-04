@@ -244,7 +244,7 @@ def curlly(fc, fn):
 
     if zura.returncode != 0:
         if "curl: (23)" in oppai:
-            print(f"{'':>2}^ Error: File exists. Add a custom naming after the URL or PATH to overwrite")
+            print(f"{'':>2}^ File already exists; download skipped. Append a custom name after the URL or PATH to overwrite.")
         elif "curl: (3)" in oppai:
             print("")
         else:
