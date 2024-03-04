@@ -19,7 +19,7 @@
     "ui_tab_order": [
         "txt2img",
         "img2img",
-		"Extras",
+	"Extras",
         "Fast PNG Info",
         "SuperMerger"
     ],
