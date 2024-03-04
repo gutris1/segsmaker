@@ -1,6 +1,7 @@
-import ipywidgets as widgets
 from IPython.display import display, HTML, clear_output
+import ipywidgets as widgets
 from gutris1 import download
+import subprocess
 
 subprocess.run(
     f"mkdir -p /tmp/models /tmp/Lora /tmp/ControlNet /tmp/svd /tmp/z123",
