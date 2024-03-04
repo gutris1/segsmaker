@@ -8,7 +8,7 @@ os.environ['LD_PRELOAD'] = '/home/studio-lab-user/.conda/envs/default/lib/libtcm
 def zrok_launch(token, launch_args):
     
     subprocess.run(
-        f"mkdir -p /tmp/models /tmp/Lora /tmp/ControlNet",
+        f"mkdir -p /tmp/models /tmp/Lora /tmp/ControlNet /tmp/svd /tmp/z123",
         shell=True,
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL)
