@@ -14,6 +14,10 @@ import sys
 import os
 import re
 
+xxx = "/kaggle/working"
+zzz = "/kaggle/working/asd"
+fff = "/kaggle/venv/bin/python3"
+
 @register_line_magic
 def say(line):
     args = line.split()
@@ -424,12 +428,12 @@ def pull(line):
     repo, tarfold, despath = args
 
     path = os.path.expanduser(despath)
-    xxx = {'stdout': subprocess.PIPE, 'stderr': subprocess.PIPE, 'check': True}
-    zzz = subprocess.run
-    zzz(['git', 'clone', '-n', '--depth=1', '--filter=tree:0', repo], cwd=path, **xxx)
+    prok = {'stdout': subprocess.PIPE, 'stderr': subprocess.PIPE, 'check': True}
+    kont = subprocess.run
+    kont(['git', 'clone', '-n', '--depth=1', '--filter=tree:0', repo], cwd=path, **prok)
     repofold = os.path.join(path, os.path.basename(repo.rstrip('.git')))
-    zzz(['git', 'sparse-checkout', 'set', '--no-cone', tarfold], cwd=repofold, **xxx)
-    zzz(['git', 'checkout'], cwd=repofold, **xxx)
+    kont(['git', 'sparse-checkout', 'set', '--no-cone', tarfold], cwd=repofold, **prok)
+    kont(['git', 'checkout'], cwd=repofold, **prok)
 
     zipin = os.path.join(repofold, 'kaggle', tarfold)
     zipout = os.path.join(path, f'{tarfold}.zip')
@@ -441,9 +445,9 @@ def pull(line):
                 arcname = os.path.relpath(zp, zipin)
                 zipf.write(zp, arcname=arcname)
 
-    zzz(['unzip', '-o', zipout], cwd=path, **xxx)
+    kont(['unzip', '-o', zipout], cwd=path, **prok)
     os.remove(zipout)
-    zzz(['rm', '-rf', repofold], cwd=path, **xxx)
+    kont(['rm', '-rf', repofold], cwd=path, **prok)
     
 @register_cell_magic
 def zipping(line, cell):
