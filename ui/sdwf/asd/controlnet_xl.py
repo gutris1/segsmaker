@@ -2,6 +2,12 @@ import ipywidgets as widgets
 from IPython.display import display, HTML, clear_output
 from gutris1 import download
 
+subprocess.run(
+    f"mkdir -p /tmp/models /tmp/Lora /tmp/ControlNet /tmp/svd /tmp/z123",
+    shell=True,
+    stdout=subprocess.DEVNULL,
+    stderr=subprocess.DEVNULL)
+
 bura = "/home/studio-lab-user/sdwf/asd/controlnet_xl.css"
 with open(bura, "r") as oppai:
     susu = oppai.read()
