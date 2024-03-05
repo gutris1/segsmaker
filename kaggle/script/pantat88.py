@@ -298,7 +298,7 @@ def clone(line):
 @register_line_magic
 def tempe(line):
     subprocess.run(
-        f"mkdir -p /tmp/models /tmp/Lora /tmp/ControlNet",
+        f"mkdir -p /kaggle/temp/checkpoint /kaggle/temp/lora /kaggle/temp/controlnet /kaggle/temp/output /kaggle/temp/svd /kaggle/temp/z123",
         shell=True,
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL)
