@@ -20,7 +20,7 @@ fff = "/kaggle/venv/bin/python3"
 
 @register_line_magic
 def say(line):
-    args = line.split()
+    args = re.findall(r'\{[^\{\}]+\}|[^\s\{\}]+', line)
     output = []
     theme = get_ipython().config.get('InteractiveShellApp', {}).get('theme', 'light')
     default_color = 'white' if theme == 'dark' else 'black'
@@ -30,29 +30,24 @@ def say(line):
         msg = args[i]
         color = None
 
-        if re.match(r'^\{[^\{\}]+\}$', args[i].lower()):
-            color = args[i][1:-1]
+        if re.match(r'^\{[^\{\}]+\}$', msg.lower()):
+            color = msg[1:-1]
             msg = ""
+        else:
+            while i < len(args) - 1 and not re.match(r'^\{[^\{\}]+\}$', args[i + 1].lower()):
+                i += 1
+                msg += " " + args[i]
 
-        while i < len(args) - 1 and not re.match(r'^\{[^\{\}]+\}$', args[i + 1].lower()):
-            msg += " " + args[i + 1]
-            i += 1
-
-        if color == '{d}':
+        if color == 'd':
             color = default_color
-            
-        elif not color or '{d}':
-            if i < len(args) - 1 and re.match(r'^\{[^\{\}]+\}$', args[i + 1].lower()):
+        elif color is None and i < len(args) - 1:
+            if re.match(r'^\{[^\{\}]+\}$', args[i + 1].lower()):
                 color = args[i + 1][1:-1]
                 i += 1
-                
-            else:
-                msg = line
 
         span_text = f"<span"
         if color:
             span_text += f" style='color:{color};'"
-
         span_text += f">{msg}</span>"
         output.append(span_text)
         i += 1
