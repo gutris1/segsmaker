@@ -19,8 +19,8 @@
     "ui_tab_order": [
         "txt2img",
         "img2img",
-        "Fast PNG Info",
         "Extras",
+        "Fast PNG Info",
         "SuperMerger"
     ],
     "hidden_tabs": [
