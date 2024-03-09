@@ -281,7 +281,7 @@ def clone(line):
 
             aaahhh.wait()
 
-def tempe(line):
+def tempe():
     subprocess.run(
         f"mkdir -p /tmp/models /tmp/Lora /tmp/ControlNet /tmp/svd /tmp/z123",
         shell=True,
