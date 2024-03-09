@@ -1,4 +1,4 @@
-.boxs {
+.boxxx {
   border: 3px solid transparent;
   border-radius: 10px;
   margin: 0;
@@ -16,20 +16,11 @@
   position: relative;
   overflow: visible;}
 
-.widget-button {
+.b1, .b2, .out {
   font-family: 'Times New Roman', serif;
   font-size: 25px;
   text-align: center;
   background: transparent;}
-
-.widget-button:hover {
-  transform: scale(1.1);
-  color: #ab22fe;
-  background-image: linear-gradient(to right, transparent, #000000);
-  background-size: 500% 100%;
-  background-position: center;
-  animation: pulse 7s infinite;
-  transition: 1s background-position ease-out, transform 0.2s ease;}
 
 .b1 { margin-left: 0px;}
 .b2 { margin-left: 100px;}
@@ -43,6 +34,28 @@
   height: 40px;
   color: white;
   border-radius: 10px;}
+
+.out {
+  margin-top: 0px;
+  margin-right: 0px;
+  margin-bottom: 0px;
+  margin-left: 0px;
+  font-size: 25px;
+  width: 110px;
+  height: 40px;
+  color: white;
+  border-radius: 10px;
+  border: 2px solid #2197f2;
+  background: transparent;}
+
+.b1:hover, .b2:hover, .out:hover {
+  transform: scale(1.1);
+  color: #ab22fe;
+  background-image: linear-gradient(to right, transparent, #000000);
+  background-size: 500% 100%;
+  background-position: center;
+  animation: pulse 7s infinite;
+  transition: 1s background-position ease-out, transform 0.2s ease;}
 
 .b1:focus, .b2:focus {
   transform: scale(1.1);
@@ -72,19 +85,6 @@
     rgba(255, 0, 0, 1));
   animation: slideBackground 20s linear infinite;
   transition: all 0.5s ease-out;}
-
-.out {
-  margin-top: 0px;
-  margin-right: 0px;
-  margin-bottom: 0px;
-  margin-left: 0px;
-  font-size: 25px;
-  width: 110px;
-  height: 40px;
-  color: white;
-  border-radius: 10px;
-  border: 2px solid #2197f2;
-  background: transparent;}
 
 @keyframes slideBackground {
   0% { background-position: 0% 50%; }
