@@ -6,17 +6,18 @@ import json
 import os
 
 xxx = "/home/studio-lab-user"
+cp = f"{xxx}/.conda/pantat88.css"
+sp = f"{xxx}/.ipython/profile_default/startup/pantat88.py"
+ewe = f"{xxx}/.your-civitai-api-key"
+uwaaah = os.path.join(ewe, "api_key.json")
 
-jalanan = [f'curl -sLo {xxx}/.ipython/profile_default/startup/pantat88.py https://github.com/gutris1/segsmaker/raw/main/script/pantat88.py',
+jalanan = [f'curl -sLo {sp} https://github.com/gutris1/segsmaker/raw/main/script/pantat88.py',
            f'curl -sLo {xxx}/.ipython/profile_default/startup/nenen88.py https://github.com/gutris1/segsmaker/raw/main/script/nenen88.py',
            f'curl -sLo {xxx}/.ipython/profile_default/startup/00-startup.py https://github.com/gutris1/segsmaker/raw/main/script/00-startup.py',
-           f'curl -sLo {xxx}/.conda/pantat88.css https://github.com/gutris1/segsmaker/raw/main/script/pantat88.css']
+           f'curl -sLo {cp} https://github.com/gutris1/segsmaker/raw/main/script/pantat88.css']
 
 for janda in jalanan:
     subprocess.run(janda, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    
-ewe = "{xxx}/.your-civitai-api-key"
-uwaaah = os.path.join(ewe, "api_key.json")
 
 susu = widgets.Output()
 sb = widgets.Button(description="Save")
