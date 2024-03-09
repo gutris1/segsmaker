@@ -73,8 +73,8 @@ def ddddd():
 
     with susu:
         display(HTML('<span style="color: cyan;">【 Done 】</span>'))
-        
-    susu.clear_output(wait=True)
+        susu.clear_output(wait=True)
+               
     get_ipython().kernel.do_shutdown(True)
     
 def eeeee():
