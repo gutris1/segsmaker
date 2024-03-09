@@ -140,9 +140,12 @@ def d_b_click(b):
     with dbo:
         say("【{red} Downloading{cyan} Controlnet{magenta} Models{yellow} 】{red}")
         os.chdir("/home/studio-lab-user/asd/models/ControlNet")
+        
         for url in surl:
             download(url)
-
+            
+        say("【{red} Done{d} 】{red}")
+            
 tempe()
 display(dbo)
 db.on_click(d_b_click)
