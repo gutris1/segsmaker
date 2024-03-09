@@ -5,7 +5,7 @@
   background: url('https://wallpapercave.com/dwp1x/wp5126154.jpg');
   background-size: 100% 100%;
   background-position: 100% 200%;
-  animation: slideFromAbove 1s, pulse 7s infinite;
+  animation: slideAndBlurFromCenter 1s, pulse 7s infinite;
   transition: border-color 0.1s ease-out;}
 
 .widget-container {
@@ -111,25 +111,15 @@
   94% { border-color: rgba(255, 85, 0, 0.5); }
   100% { border-color: rgba(255, 0, 0, 1); } }
 
-@keyframes slideFromAbove {
+@keyframes slideAndBlurFromCenter {
     from {
-        transform: translateY(-100%);
+        transform: scale(0.1);
         opacity: 0;
+        filter: blur(10px);
     }
     to {
-        transform: translateY(0);
+        transform: scale(1);
         opacity: 1;
-    }
-}
-
-@keyframes scaleFocus {
-    0% {
-        transform: scale(1.0);
-    }
-    50% {
-        transform: scale(1.1);
-    }
-    100% {
-        transform: scale(1.0);
+        filter: blur(0px);
     }
 }
