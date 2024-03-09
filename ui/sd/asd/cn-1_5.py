@@ -1,6 +1,7 @@
 from IPython.display import display, HTML, clear_output
 import ipywidgets as widgets
-from nenen88 import download, say
+import os
+from nenen88 import download, say, tempe
 
 bura = "/home/studio-lab-user/asd/asd/cn-1_5.css"
 with open(bura, "r") as oppai:
@@ -138,8 +139,10 @@ def d_b_click(b):
     
     with dbo:
         say("【{red} Downloading{cyan} Controlnet{magenta} Models{yellow} 】{red}")
+        os.chdir("/home/studio-lab-user/asd/models/ControlNet")
         for url in surl:
             download(url)
-            
+
+tempe()
 display(dbo)
 db.on_click(d_b_click)
