@@ -45,7 +45,7 @@ def bbbbb(css_path):
         css_content = file.read()
         
     display(HTML(f"<style>{css_content}</style>"))
-
+    
 def ccccc(api_key):
     with open(sp, "r") as file:
         lalalala = file.read()
@@ -53,7 +53,8 @@ def ccccc(api_key):
     hantu = lalalala.replace("?token=YOUR_API_KEY", f"?token={api_key}")
     with open(sp, "w") as file:
         file.write(hantu)
-
+        
+@susu.capture(clear_output=True)
 def ddddd():
     def ass(cmd, cod, rainbow):
         with susu:
@@ -72,14 +73,13 @@ def ddddd():
         '【 Installing xformers 】', 'orange')
 
     with susu:
-        display(HTML('<span style="color: cyan;">【 Done 】</span>'))
         susu.clear_output()
-               
+        display(HTML('<span style="color: cyan;">【 Done 】</span>'))
+        
     get_ipython().kernel.do_shutdown(True)
     
 def eeeee():
     def fffff(b):
-        
         api_key = ink.value.strip()
 
         if not api_key:
@@ -95,34 +95,27 @@ def eeeee():
         kagi = {"api_key": api_key}
         with open(uwaaah, "w") as file:
             json.dump(kagi, file)
-        
+            
         ccccc(api_key)
         widgets.Widget.close(boxs)
-        
-        with susu:
-            clear_output(wait=True)
-            
         ddddd()
         
     sb.on_click(fffff)
-
+              
+@susu.capture(clear_output=True)
 def ggggg():
     if os.path.exists(uwaaah):
         with open(uwaaah, "r") as file:
             bau = json.load(file)
         api_key = bau.get("api_key", "")
         
-        with susu:
-            clear_output(wait=True)
-            
         ccccc(api_key)
-        display(susu)
         ddddd()
         
     else:
         bbbbb(cp)
         display(boxs)
-        display(susu)
         eeeee()
-        
+              
+display(susu)
 ggggg()
