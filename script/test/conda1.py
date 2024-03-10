@@ -7,14 +7,15 @@ import os
 
 xxx = "/home/studio-lab-user"
 cp = f"{xxx}/.conda/pantat88.css"
-sp = f"{xxx}/.ipython/profile_default/startup/pantat88.py"
+sp = f"{xxx}/.ipython/profile_default/startup"
+fsp = f"{xxx}/.ipython/profile_default/startup/pantat88.py"
 ewe = f"{xxx}/.your-civitai-api-key"
 uwaaah = os.path.join(ewe, "api_key.json")
 
-jalanan = [f'curl -sLo {sp} https://github.com/gutris1/segsmaker/raw/main/script/pantat88.py',
-           f'curl -sLo {xxx}/.ipython/profile_default/startup/nenen88.py https://github.com/gutris1/segsmaker/raw/main/script/nenen88.py',
-           f'curl -sLo {xxx}/.ipython/profile_default/startup/00-startup.py https://github.com/gutris1/segsmaker/raw/main/script/00-startup.py',
-           f'curl -sLo {cp} https://github.com/gutris1/segsmaker/raw/main/script/pantat88.css']
+jalanan = [f"curl -sLo {fsp} https://github.com/gutris1/segsmaker/raw/main/script/pantat88.py",
+           f"curl -sLo {sp}/nenen88.py https://github.com/gutris1/segsmaker/raw/main/script/nenen88.py",
+           f"curl -sLo {sp}/00-startup.py https://github.com/gutris1/segsmaker/raw/main/script/00-startup.py",
+           f"curl -sLo {cp} https://github.com/gutris1/segsmaker/raw/main/script/pantat88.css"]
 
 for janda in jalanan:
     subprocess.run(janda, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
@@ -37,25 +38,25 @@ boxs = VBox([ink, sb], layout=Layout(
 boxs.add_class("boxs")
 
 os.makedirs(os.path.dirname(cp), exist_ok=True)
-os.makedirs(os.path.dirname(sp), exist_ok=True)
+os.makedirs(os.path.dirname(fsp), exist_ok=True)
 os.makedirs(ewe, exist_ok=True)
 
-def bbbbb(css_path):
+def aaaaa(css_path):
     with open(css_path, "r") as file:
         css_content = file.read()
         
     display(HTML(f"<style>{css_content}</style>"))
     
-def ccccc(api_key):
-    with open(sp, "r") as file:
+def bbbbb(api_key):
+    with open(fsp, "r") as file:
         lalalala = file.read()
         
     hantu = lalalala.replace("?token=YOUR_API_KEY", f"?token={api_key}")
-    with open(sp, "w") as file:
+    with open(fsp, "w") as file:
         file.write(hantu)
         
 @susu.capture(clear_output=True)
-def ddddd():
+def ccccc():
     def ass(cmd, cod, rainbow):
         with susu:
             display(HTML(f"<span style='color:{rainbow};'>{cod}</span>"))
@@ -78,8 +79,8 @@ def ddddd():
         
     get_ipython().kernel.do_shutdown(True)
     
-def eeeee():
-    def fffff(b):
+def ddddd():
+    def eeeee(b):
         api_key = ink.value.strip()
 
         if not api_key:
@@ -96,26 +97,26 @@ def eeeee():
         with open(uwaaah, "w") as file:
             json.dump(kagi, file)
             
-        ccccc(api_key)
+        bbbbb(api_key)
         widgets.Widget.close(boxs)
-        ddddd()
+        ccccc()
         
-    sb.on_click(fffff)
+    sb.on_click(eeeee)
               
 @susu.capture(clear_output=True)
-def ggggg():
+def fffff():
     if os.path.exists(uwaaah):
         with open(uwaaah, "r") as file:
             bau = json.load(file)
         api_key = bau.get("api_key", "")
         
-        ccccc(api_key)
-        ddddd()
+        bbbbb(api_key)
+        ccccc()
         
     else:
-        bbbbb(cp)
+        aaaaa(cp)
         display(boxs)
-        eeeee()
+        ddddd()
               
 display(susu)
-ggggg()
+fffff()
