@@ -1,3 +1,67 @@
+:root {
+  --conda-bg: linear-gradient(to right,
+    rgb(255, 0, 0),
+    rgb(255, 0, 25),
+    rgb(255, 0, 50),
+    rgb(255, 0, 75),
+    rgb(255, 0, 100),
+    rgb(255, 0, 125),
+    rgb(255, 0, 150),
+    rgb(255, 0, 175),
+    rgb(255, 0, 200),
+    rgb(255, 0, 225),
+    rgb(255, 0, 255),
+    rgb(225, 0, 255),
+    rgb(200, 0, 255),
+    rgb(175, 0, 255),
+    rgb(150, 0, 255),
+    rgb(125, 0, 255),
+    rgb(100, 0, 255),
+    rgb(75, 0, 255),
+    rgb(50, 0, 255),
+    rgb(25, 0, 255),
+    rgb(0, 0, 255),
+    rgb(0, 25, 255),
+    rgb(0, 50, 255),
+    rgb(0, 75, 255),
+    rgb(0, 100, 255),
+    rgb(0, 125, 255),
+    rgb(0, 150, 255),
+    rgb(0, 175, 255),
+    rgb(0, 200, 255),
+    rgb(0, 225, 255),
+    rgb(0, 255, 255),
+    rgb(0, 255, 225),
+    rgb(0, 255, 200),
+    rgb(0, 255, 175),
+    rgb(0, 255, 150),
+    rgb(0, 255, 125),
+    rgb(0, 255, 100),
+    rgb(0, 255, 75),
+    rgb(0, 255, 50),
+    rgb(0, 255, 25),
+    rgb(0, 255, 0),
+    rgb(25, 255, 0),
+    rgb(50, 255, 0),
+    rgb(75, 255, 0),
+    rgb(100, 255, 0),
+    rgb(125, 255, 0),
+    rgb(150, 255, 0),
+    rgb(175, 255, 0),
+    rgb(200, 255, 0),
+    rgb(225, 255, 0),
+    rgb(255, 255, 0),      
+    rgb(255, 225, 0),
+    rgb(255, 200, 0),
+    rgb(255, 175, 0),
+    rgb(255, 150, 0),
+    rgb(255, 125, 0),
+    rgb(255, 100, 0),
+    rgb(255, 75, 0),
+    rgb(255, 50, 0),
+    rgb(255, 25, 0),
+    rgb(255, 0, 0));}
+
 .boxs {
     border: 3px solid transparent;
     border-radius: 10px;
@@ -59,8 +123,7 @@
     border-radius: 10px;
     border: 3px solid #2197f2;
     background: transparent;
-    transition: all 0.5s ease-out;
-}
+    transition: transform 0.5s ease;}
 
 .save-button:hover {
     transform: scale(1.3);
@@ -69,70 +132,19 @@
     border: 3px solid transparent;
     background-size: 800% 100%;
     cursor: pointer;
-    background-image: linear-gradient(to right,
-        rgb(255, 0, 0),
-        rgb(255, 0, 25),
-        rgb(255, 0, 50),
-        rgb(255, 0, 75),
-        rgb(255, 0, 100),
-        rgb(255, 0, 125),
-        rgb(255, 0, 150),
-        rgb(255, 0, 175),
-        rgb(255, 0, 200),
-        rgb(255, 0, 225),
-        rgb(255, 0, 255),
-        rgb(225, 0, 255),
-        rgb(200, 0, 255),
-        rgb(175, 0, 255),
-        rgb(150, 0, 255),
-        rgb(125, 0, 255),
-        rgb(100, 0, 255),
-        rgb(75, 0, 255),
-        rgb(50, 0, 255),
-        rgb(25, 0, 255),
-        rgb(0, 0, 255),
-        rgb(0, 25, 255),
-        rgb(0, 50, 255),
-        rgb(0, 75, 255),
-        rgb(0, 100, 255),
-        rgb(0, 125, 255),
-        rgb(0, 150, 255),
-        rgb(0, 175, 255),
-        rgb(0, 200, 255),
-        rgb(0, 225, 255),
-        rgb(0, 255, 255),
-        rgb(0, 255, 225),
-        rgb(0, 255, 200),
-        rgb(0, 255, 175),
-        rgb(0, 255, 150),
-        rgb(0, 255, 125),
-        rgb(0, 255, 100),
-        rgb(0, 255, 75),
-        rgb(0, 255, 50),
-        rgb(0, 255, 25),
-        rgb(0, 255, 0),
-        rgb(25, 255, 0),
-        rgb(50, 255, 0),
-        rgb(75, 255, 0),
-        rgb(100, 255, 0),
-        rgb(125, 255, 0),
-        rgb(150, 255, 0),
-        rgb(175, 255, 0),
-        rgb(200, 255, 0),
-        rgb(225, 255, 0),
-        rgb(255, 255, 0),      
-        rgb(255, 225, 0),
-        rgb(255, 200, 0),
-        rgb(255, 175, 0),
-        rgb(255, 150, 0),
-        rgb(255, 125, 0),
-        rgb(255, 100, 0),
-        rgb(255, 75, 0),
-        rgb(255, 50, 0),
-        rgb(255, 25, 0),
-        rgb(255, 0, 0));
-    animation: slideBackground 10s linear infinite, BorderPulse 7s infinite;
-    transition: all 0.3s ease-out;}
+    background-image: var(--conda-bg);
+    animation: slideBackground 10s linear infinite, BorderPulse 7s infinite;}
+
+.gradient-conda {
+  width: 200px;
+  height: 5px;
+  font-size: 0px;
+  background-image: var(--conda-bg);
+  background-size: 800% 500%;
+  border-radius: 2px;
+  border: 1px solid transparent;
+  display: inline-block;
+  animation: slideBackground 10s linear infinite, BorderPulse 7s infinite;}
 
 @keyframes slideBackground {
   0% { background-position: 0% 50%; }
@@ -205,11 +217,8 @@
     from {
         transform: scale(0.1);
         opacity: 0;
-        filter: blur(1000px);
-    }
+        filter: blur(1000px);}
     to {
         transform: scale(1);
         opacity: 1;
-        filter: blur(0px);
-    }
-}
+        filter: blur(0px);}}
