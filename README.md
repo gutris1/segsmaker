@@ -1,9 +1,9 @@
 # Stable Diffusion Webui and ComfyUI notebook for Sagemaker Studio Lab | **[日本語で](README-JP.md)**
 with temporary folder for Checkpoint, LoRA and ControlNET models [<img align="right" src="https://api.visitorbadge.io/api/visitors?path=https%3A%2F%2Fgithub.com%2Fpantat88%2Fsegsmaker&label=Visitors&countColor=%232ccce4&style=flat">](https://visitorbadge.io/status?path=https%3A%2F%2Fgithub.com%2Fpantat88%2Fsegsmaker)<br />[<img align="right" src="https://img.shields.io/badge/Support%20me%20on%20Ko--fi-F16061?logo=ko-fi&logoColor=white&style=flat">](https://ko-fi.com/gutris1)
 
-| SD 1.5 | [![Open in Studio Lab](https://studiolab.sagemaker.aws/studiolab.svg)](https://studiolab.sagemaker.aws/import/github/gutris1/segsmaker/blob/main/Segsmaker.ipynb) |
+| SD 1.5 / SDXL | [![Open in Studio Lab](https://studiolab.sagemaker.aws/studiolab.svg)](https://studiolab.sagemaker.aws/import/github/gutris1/segsmaker/blob/main/Segsmaker.ipynb) |
 | :---------------------------------------- | :-----------------------------------------------------------------------------------------------------------------: |
-| SD Webui Forge | [![Open in Studio Lab](https://studiolab.sagemaker.aws/studiolab.svg)](https://studiolab.sagemaker.aws/import/github/gutris1/segsmaker/blob/main/Segsmaker_Forge.ipynb) |
+| SD Forge | [![Open in Studio Lab](https://studiolab.sagemaker.aws/studiolab.svg)](https://studiolab.sagemaker.aws/import/github/gutris1/segsmaker/blob/main/Segsmaker_Forge.ipynb) |
 | SD 1.5 AnimateDiff | [![Open in Studio Lab](https://studiolab.sagemaker.aws/studiolab.svg)](https://studiolab.sagemaker.aws/import/github/gutris1/segsmaker/blob/main/Segsmaker_AnimateDiff_SD1.5.ipynb) |
 | ComfyUI AnimateDiff Evolved | [![Open in Studio Lab](https://studiolab.sagemaker.aws/studiolab.svg)](https://studiolab.sagemaker.aws/import/github/gutris1/segsmaker/blob/main/Segsmaker_ComfyUI.ipynb) |<br />
 
@@ -15,7 +15,7 @@ you can find me here https://discord.gg/k5BwmmvJJU
 - Select either SD 1.5 or SDXL for installation in Segsmaker.ipynb and Segsmaker_Forge.ipynb using the widget.
 
 ### 2024-03-02
-- Add notebook for [SD Webui Forge](https://github.com/lllyasviel/stable-diffusion-webui-forge)
+- Add notebook for [SD Forge](https://github.com/lllyasviel/stable-diffusion-webui-forge)
 - Update A1111 SD Webui to 1.8.0.
 - Update Conda script to install Torch 2.1.2+cu121.
 
