@@ -1,12 +1,68 @@
-.widget-container,
-.download-button,
-.select-all-button,
-.unselect-all-button {
-    font-family: 'Roboto Mono', monospace;
-    
-}
+:root {
+  --cn-gradient-bg2: linear-gradient(to right,
+    rgb(255, 0, 0),
+    rgb(255, 0, 25),
+    rgb(255, 0, 50),
+    rgb(255, 0, 75),
+    rgb(255, 0, 100),
+    rgb(255, 0, 125),
+    rgb(255, 0, 150),
+    rgb(255, 0, 175),
+    rgb(255, 0, 200),
+    rgb(255, 0, 225),
+    rgb(255, 0, 255),
+    rgb(225, 0, 255),
+    rgb(200, 0, 255),
+    rgb(175, 0, 255),
+    rgb(150, 0, 255),
+    rgb(125, 0, 255),
+    rgb(100, 0, 255),
+    rgb(75, 0, 255),
+    rgb(50, 0, 255),
+    rgb(25, 0, 255),
+    rgb(0, 0, 255),
+    rgb(0, 25, 255),
+    rgb(0, 50, 255),
+    rgb(0, 75, 255),
+    rgb(0, 100, 255),
+    rgb(0, 125, 255),
+    rgb(0, 150, 255),
+    rgb(0, 175, 255),
+    rgb(0, 200, 255),
+    rgb(0, 225, 255),
+    rgb(0, 255, 255),
+    rgb(0, 255, 225),
+    rgb(0, 255, 200),
+    rgb(0, 255, 175),
+    rgb(0, 255, 150),
+    rgb(0, 255, 125),
+    rgb(0, 255, 100),
+    rgb(0, 255, 75),
+    rgb(0, 255, 50),
+    rgb(0, 255, 25),
+    rgb(0, 255, 0),
+    rgb(25, 255, 0),
+    rgb(50, 255, 0),
+    rgb(75, 255, 0),
+    rgb(100, 255, 0),
+    rgb(125, 255, 0),
+    rgb(150, 255, 0),
+    rgb(175, 255, 0),
+    rgb(200, 255, 0),
+    rgb(225, 255, 0),
+    rgb(255, 255, 0),      
+    rgb(255, 225, 0),
+    rgb(255, 200, 0),
+    rgb(255, 175, 0),
+    rgb(255, 150, 0),
+    rgb(255, 125, 0),
+    rgb(255, 100, 0),
+    rgb(255, 75, 0),
+    rgb(255, 50, 0),
+    rgb(255, 25, 0),
+    rgb(255, 0, 0));}
 
-.boks {
+.boks2 {
     border: 3px solid transparent;
     border-radius: 15px;
     padding: 5px;
@@ -15,101 +71,82 @@
     background-size: 110% 110%;
     background-position: 50% 80%;
     overflow: visible;
-    animation: slideFromAbove 0.5s, pulse 6s infinite;
+    animation: slide-blur-above 1s, BorderPulse 15s infinite;
 }
 
 .widget-container {
     position: relative;
     width: 630px;
     height: 0px;
-    margin-top: 3px;
+    margin-top: 0px;
     margin-right: 0px;
     margin-bottom: 0px;
     margin-left: 0px;
     overflow: visible;
 }
-
+.download-button, .select-all-button, .unselect-all-button {
+  font-family: 'Times New Roman', serif;
+  text-align: center;
+  height: 40px;
+  color: #ab22fe;
+  border: 3px solid #2197f2;
+  background-color: transparent;
+  border-radius: 4px;
+  background-position: left bottom;
+  transition: all 0.5s ease-out;
+  transform: scale(0.8);
+  vertical-align: middle;
+  z-index: 1;
+}
 .download-button {
-    margin-top: 390px;
+    margin-top: 380px;
     margin-right: 30px;
     margin-bottom: 0px;
     margin-left: 100px;
-    font-size: 17px;
+    font-size: 22px;
     width: 500px;
-    height: 40px;
     font-weight: bold;
-    color: white;
-    border-radius: 4px;
-    border: 3px solid #2197f2;
-    background-image: radial-gradient(circle at top left, #212121 10%, #2197f2 90%);
-    background-size: 200% 200%;
-    background-position: left bottom;
-    transition: background 0.5s ease-in-out, transform 0.3s ease;
-    transform: scale(0.8);
-    vertical-align: middle;
-    z-index: 1;
 }
 
 .select-all-button {
-    margin-top: 390px;
+    margin-top: 380px;
     margin-right: -30px;
     margin-bottom: 0px;
     margin-left: 30px;
-    font-size: 15px;
+    font-size: 21px;
     width: 300px;
-    height: 40px;
-    color: white;
-    border-radius: 4px;
-    border: 3px solid #2197f2;
-    background-image: radial-gradient(circle at top left, #212121 10%, #2197f2 90%);
-    background-size: 200% 200%;
-    background-position: left bottom;
-    transition: background 0.5s ease-in-out, transform 0.3s ease;
-    transform: scale(0.8);
-    vertical-align: middle;
-    z-index: 1;
 }
 
 .unselect-all-button {
-    margin-top: 390px;
+    margin-top: 380px;
     margin-right: -30px;
     margin-bottom: 0px;
     margin-left: 20px;
-    font-size: 15px;
+    font-size: 21px;
     width: 300px;
-    height: 40px;
-    color: white;
-    border-radius: 4px;
-    border: 3px solid #2197f2;
-    background-image: radial-gradient(circle at top left, #212121 10%, #2197f2 90%);
-    background-size: 200% 200%;
-    background-position: left bottom;
-    transition: background 0.5s ease-in-out, transform 0.3s ease;
-    transform: scale(0.8);
-    vertical-align: middle;
-    z-index: 1;
 }
 
-.download-button:hover,
-.select-all-button:hover,
-.unselect-all-button:hover {
-    color: #ab22fe;
+.download-button:hover, .select-all-button:hover, .unselect-all-button:hover {
+    font-weight: bold;
+    color: #212121;
     border-radius: 4px;
     border: 3px solid transparent;
-    background-image: radial-gradient(circle at top left, #212121 10%, #ff7171 90%);
-    background-size: 200% 200%;
+    background-image: var(--cn-gradient-bg2);
+    background-size: 800% 500%;
     background-position: left bottom;
     transition: border 0s;
     cursor: pointer;
     transition: none;
     vertical-align: middle;
-    animation: pulse 6s infinite;
+    transform: scale(0.9);
+    animation: slideBackground 10s linear infinite, BorderPulse 7s infinite;
+    transition: all 0.3s ease-out;
 }
 
 .border-style {
     position: absolute;
     display: block;
-    bottom: -440px;
+    bottom: -430px;
     left: 49%;
     transform: translateX(-50%);
     width: 600px;
@@ -132,17 +169,16 @@
 .checkbox-group1 label {
     font-size: 12px;
     color: white;
-    margin-top: 0px;
+    margin-top: 2px;
     margin-right: -50px;
     margin-left: 50px;
     margin-bottom: -5px;
-    vertical-align: middle;
 }
 
 .checkbox-group2 label {
     font-size: 12px;
     color: white;
-    margin-top: 0px;
+    margin-top: 2px;
     margin-right: -50px;
     margin-left: 0px;
     margin-bottom: -5px;
@@ -185,73 +221,100 @@
     transition: none;
 }
 
-@keyframes pulse {
-  0% {
-    border-color: rgba(255, 0, 0, 1);
-  }
-  6% {
-    border-color: rgba(255, 0, 85, 0.5);
-  }
-  11% {
-    border-color: rgba(255, 0, 170, 1);
-  }
-  17% {
-    border-color: rgba(255, 0, 255, 0.5);
-  }
-  22% {
-    border-color: rgba(170, 0, 255, 1);
-  }
-  28% {
-    border-color: rgba(85, 0, 255, 0.5);
-  }
-  33% {
-    border-color: rgba(0, 0, 255, 1);
-  }
-  39% {
-    border-color: rgba(0, 85, 255, 0.5);
-  }
-  44% {
-    border-color: rgba(0, 175, 255, 1);
-  }
-  50% {
-    border-color: rgba(0, 255, 255, 0.5);
-  }
-  56% {
-    border-color: rgba(0, 255, 170, 1);
-  }
-  61% {
-    border-color: rgba(0, 255, 85, 0.5);
-  }
-  67% {
-    border-color: rgba(0, 255, 0, 1);
-  }
-  72% {
-    border-color: rgba(85, 255, 0, 0.5);
-  }
-  78% {
-    border-color: rgba(170, 255, 0, 1);
-  }
-  83% {
-    border-color: rgba(255, 255, 0, 0.5);
-  }
-  89% {
-    border-color: rgba(255, 170, 0, 1);
-  }
-  94% {
-    border-color: rgba(255, 85, 0, 0.5);
-  }
-  100% {
-    border-color: rgba(255, 0, 0, 1);
-  }
-}
+.checkbox-group1 label:active, .checkbox-group2 label:active {
+  background-image: var(--cn-gradient-bg2);
+  background-size: 800% 500%;
+  animation: slideBackground 10s linear infinite, BorderPulse 7s infinite;
+  font-weight: bold;
+  color: #212121;}
 
-@keyframes slideFromAbove {
+@keyframes slideBackground {
+  0% { background-position: 0% 50%; }
+  100% { background-position: -800% 50%; }}
+
+@keyframes BorderPulse {
+  0% {border-color: rgba(255, 0, 0, 1);}
+  1.67% {border-color: rgba(255, 0, 25, 0.75);}
+  3.33% {border-color: rgba(255, 0, 50, 0.5);}
+  5.00% {border-color: rgba(255, 0, 75, 0.75);}
+  6.67% {border-color: rgba(255, 0, 100, 1);}
+  8.33% {border-color: rgba(255, 0, 125, 0.75);}
+  10.00% {border-color: rgba(255, 0, 150, 0.5);}
+  11.67% {border-color: rgba(255, 0, 175, 0.75);}
+  13.33% {border-color: rgba(255, 0, 200, 1);}
+  15.00% {border-color: rgba(255, 0, 225, 0.75);}
+  16.67% {border-color: rgba(255, 0, 255, 0.5);}
+  18.33% {border-color: rgba(225, 0, 255, 0.75);}
+  20.00% {border-color: rgba(200, 0, 255, 1);}
+  21.67% {border-color: rgba(175, 0, 255, 0.75);}
+  23.33% {border-color: rgba(150, 0, 255, 0.5);}
+  25.00% {border-color: rgba(125, 0, 255, 0.75);}
+  26.67% {border-color: rgba(100, 0, 255, 1);}
+  28.33% {border-color: rgba(75, 0, 255, 0.75);}
+  30.00% {border-color: rgba(50, 0, 255, 0.5);}
+  31.67% {border-color: rgba(25, 0, 255, 0.75);}
+  33.33% {border-color: rgba(0, 0, 255, 1);}
+  35.00% {border-color: rgba(0, 25, 255, 0.75);}
+  36.67% {border-color: rgba(0, 50, 255, 0.5);}
+  38.33% {border-color: rgba(0, 75, 255, 0.75);}
+  40.00% {border-color: rgba(0, 100, 255, 1);}
+  41.67% {border-color: rgba(0, 125, 255, 0.75);}
+  43.33% {border-color: rgba(0, 150, 255, 0.5);}
+  45.00% {border-color: rgba(0, 175, 255, 0.75);}
+  46.67% {border-color: rgba(0, 200, 255, 1);}
+  48.33% {border-color: rgba(0, 225, 255, 0.75);}
+  50.00% {border-color: rgba(0, 255, 255, 0.5);}
+  51.67% {border-color: rgba(0, 255, 225, 0.75);}
+  53.33% {border-color: rgba(0, 255, 200, 1);}
+  55.00% {border-color: rgba(0, 255, 175, 0.75);}
+  56.67% {border-color: rgba(0, 255, 150, 0.5);}
+  58.33% {border-color: rgba(0, 255, 125, 0.75);}
+  60.00% {border-color: rgba(0, 255, 100, 1);}
+  61.67% {border-color: rgba(0, 255, 75, 0.75);}
+  63.33% {border-color: rgba(0, 255, 50, 0.5);}
+  65.00% {border-color: rgba(0, 255, 25, 0.75);}
+  66.67% {border-color: rgba(0, 255, 0, 1);}
+  68.33% {border-color: rgba(25, 255, 0, 0.75);}
+  70.00% {border-color: rgba(50, 255, 0, 0.5);}
+  71.67% {border-color: rgba(75, 255, 0, 0.75);}
+  73.33% {border-color: rgba(100, 255, 0, 1);}
+  75.00% {border-color: rgba(125, 255, 0, 0.75);}
+  76.67% {border-color: rgba(150, 255, 0, 0.5);}
+  78.33% {border-color: rgba(175, 255, 0, 0.75);}
+  80.00% {border-color: rgba(200, 255, 0, 1);}
+  81.67% {border-color: rgba(225, 255, 0, 0.75);}
+  83.33% {border-color: rgba(255, 255, 0, 0.5);}
+  85.00% {border-color: rgba(255, 225, 0, 0.75);}
+  86.67% {border-color: rgba(255, 200, 0, 1);}
+  88.33% {border-color: rgba(255, 175, 0, 0.75);}
+  90.00% {border-color: rgba(255, 150, 0, 0.5);}
+  91.67% {border-color: rgba(255, 125, 0, 0.75);}
+  93.33% {border-color: rgba(255, 100, 0, 1);}
+  95.00% {border-color: rgba(255, 75, 0, 0.75);}
+  96.67% {border-color: rgba(255, 50, 0, 0.5);}
+  98.33% {border-color: rgba(255, 25, 0, 0.75);}
+  100% {border-color: rgba(255, 0, 0, 1);}}
+
+@keyframes slide-blur-above {
     from {
         height: 0px;
         opacity: 0;
+        filter: blur(100px);
     }
     to {
-        height: 450px;
+        height: 455px;
         opacity: 1;
-    }
-}
+        filter: blur(0px);}}
+
+.gradient-cn2 {
+  width: 750px;
+  height: 5px;
+  font-size: 0px;
+  background-image: var(--cn-gradient-bg2);
+  background-size: 800% 500%;
+  color: black;
+  border-radius: 2px;
+  border: 1px solid transparent;
+  display: inline-block;
+  animation: slideBackground 20s linear infinite, BorderPulse 7s infinite;
+  transition: all 0.3s ease-out;}
