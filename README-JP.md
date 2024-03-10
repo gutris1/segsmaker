@@ -6,12 +6,15 @@
 | :---------------------------------------- | :-----------------------------------------------------------------------------------------------------------------: |
 | SD Webui Forge | [![Open in Studio Lab](https://studiolab.sagemaker.aws/studiolab.svg)](https://studiolab.sagemaker.aws/import/github/gutris1/segsmaker/blob/main/Segsmaker_Forge.ipynb) |
 | SD 1.5 AnimateDiff | [![Open in Studio Lab](https://studiolab.sagemaker.aws/studiolab.svg)](https://studiolab.sagemaker.aws/import/github/gutris1/segsmaker/blob/main/Segsmaker_AnimateDiff_SD1.5.ipynb) |
-| SDXL | [![Open in Studio Lab](https://studiolab.sagemaker.aws/studiolab.svg)](https://studiolab.sagemaker.aws/import/github/gutris1/segsmaker/blob/main/Segsmaker_SDXL.ipynb) |
 | ComfyUI AnimateDiff Evolved | [![Open in Studio Lab](https://studiolab.sagemaker.aws/studiolab.svg)](https://studiolab.sagemaker.aws/import/github/gutris1/segsmaker/blob/main/Segsmaker_ComfyUI.ipynb) |<br />
 
 こちらで私を見つけることができます https://discord.gg/k5BwmmvJJU
 
 # 変更履歴
+### 2024-03-11
+- 細かな変更、SDXLのノートブックをデリートしました。
+- ウィジェットを使用して、Segsmaker.ipynbとSegsmaker_Forge.ipynbにSD 1.5かSDXLをインストールしてください。
+
 ### 2024-03-02
 - [SD Webui Forge](https://github.com/lllyasviel/stable-diffusion-webui-forge)のノートブックを追加
 - A1111 SD Webuiを1.8.0に更新

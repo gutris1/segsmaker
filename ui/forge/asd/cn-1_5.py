@@ -1,8 +1,9 @@
 from IPython.display import display, HTML, clear_output
-import ipywidgets as widgets
-from gutris1 import download
+from ipywidgets import widgets, Layout
+import os
+from nenen88 import download, say, tempe
 
-bura = "/home/studio-lab-user/forge/asd/controlnet.css"
+bura = "/home/studio-lab-user/forge/asd/cn-1_5.css"
 with open(bura, "r") as oppai:
     susu = oppai.read()
 display(HTML(f"<style>{susu}</style>"))
@@ -77,9 +78,7 @@ url_list = {
         "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-plusv2_sd15_lora.safetensors ~/forge/models/Lora/tmp_Lora \
         ip-adapter-faceid-plusv2_sd15_lora.safetensors"],
     "IP Adapter FaceID Portrait 1.5": [
-        "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-portrait_sd15.bin"]
-
-}
+        "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-portrait_sd15.bin"]}
 
 list_half = len(url_list) // 2
 half_list_1 = dict(list(url_list.items())[:list_half])
@@ -99,6 +98,9 @@ db = widgets.Button(description="Download")
 db.add_class("download-button")
 dbo = widgets.Output()
 cbc = widgets.HBox([cb1, cb2], layout=widgets.Layout(align_items='flex-start'))
+
+gariz3 = """<div class="gradient-cn2">forge</div>"""
+garis3 = widgets.Output()
 
 def sa_cb(b):
     for checkbox in cb1.children + cb2.children:
@@ -120,22 +122,39 @@ bs = widgets.Button(description="")
 bs.add_class("border-style")
 
 bl = widgets.HBox([sab, usab, db, bs])
-boks = widgets.VBox([bl, cbc])
-boks.layout.width = '630px'
-boks.layout.height = '455px'
-boks.layout.padding = '0px'
-boks.add_class("boks")
-display(boks)
+boks2 = widgets.VBox([bl, cbc], layout=Layout(
+    display='flex',
+    flex_flow='column',
+    width='630px',
+    height='455px',
+    align_items='center',
+    padding='10px'))
+boks2.add_class("boks2")
         
 def d_b_click(b):
     surl = []
     for checkbox, key in zip(cb1.children + cb2.children, list(url_list.keys())):
         if checkbox.value:
             surl.extend(url_list[key])
-    widgets.Widget.close(boks)
+            
+    widgets.Widget.close(boks2)
+    dbo.clear_output()
+    
+    with garis3:
+        display(HTML(gariz3))
+        
     with dbo:
+        say("【{red} Downloading{cyan} Controlnet{magenta} Models{yellow} 】{red}")
+        os.chdir("/home/studio-lab-user/forge/models/ControlNet")
+        
         for url in surl:
             download(url)
             
-display(dbo)
+        with garis3:
+            garis3.clear_output()
+            
+        say("【{red} Done{d} 】{red}")
+            
+tempe()
+display(boks2, dbo, garis3)
 db.on_click(d_b_click)

@@ -7,11 +7,11 @@ import os
 from nenen88 import pull, say, download, clone, tempe
 
 xxx = "/home/studio-lab-user"
-zzz = f"{xxx}/asd"
+zzz = f"{xxx}/forge"
 
 if os.path.exists(zzz):
-    say("/home/studio-lab-user/asd{cyan} already exists. Delete it first.")
-    say("/home/studio-lab-user/asd{cyan} のおっぱいはすでに存在します。先に消してね。")
+    say("/home/studio-lab-user/forge{cyan} already exists. Delete it first.")
+    say("/home/studio-lab-user/forge{cyan} のおっぱいはすでに存在します。先に消してね。")
     
 else:
     mama = f"{xxx}/.conda/setup.css"
@@ -19,9 +19,9 @@ else:
     gariz = """
     <div class="gradient-text">asd</div>
     """
-    subprocess.run(f"curl -sLo {mama} https://github.com/gutris1/segsmaker/raw/main/ui/sd/asd/setup.css",
+    subprocess.run(f"curl -sLo {mama} https://github.com/gutris1/segsmaker/raw/main/ui/forge/asd/setup.css",
                **fff)
-    
+
     garis = widgets.Output()
     selected = [None]
     b1 = widgets.Button(description='SD 1.5')
@@ -52,21 +52,23 @@ else:
 
     def gorengan(xxx, zzz):
         return [
-            f"pip install -q -r requirements.txt basicsr",
-            f"rm -rf {xxx}/tmp/* {xxx}/tmp {zzz}/models/Stable-diffusion/tmp_models {zzz}/models/Lora/tmp_Lora {zzz}/models/ControlNet",
+            f"pip install -q -r requirements.txt basicsr insightface onnxruntime-gpu",
+            f"rm -rf {xxx}/tmp/* {xxx}/tmp {zzz}/models/Stable-diffusion/tmp_models {zzz}/models/Lora/tmp_Lora {zzz}/models/ControlNet {zzz}/models/svd {zzz}/models/z123",
             f"mkdir -p {zzz}/models/Lora",
             f"mkdir -p {zzz}/models/ESRGAN",
             f"ln -vs /tmp {xxx}/tmp",
             f"ln -vs /tmp/models {zzz}/models/Stable-diffusion/tmp_models",
             f"ln -vs /tmp/Lora {zzz}/models/Lora/tmp_Lora",
+            f"ln -vs /tmp/z123 {zzz}/models/z123",
+            f"ln -vs /tmp/svd {zzz}/models/svd",
             f"ln -vs /tmp/ControlNet {zzz}/models/ControlNet",]
 
     def sd_1_5(xxx, zzz, fff):
-        asu = f"git clone -q -b v1.8.0 https://github.com/gutris1/asd"
+        asu = f"git clone -q https://github.com/lllyasviel/stable-diffusion-webui-forge forge"
         subprocess.run(asu, **fff)
 
         time.sleep(2)
-        pull(f"https://github.com/gutris1/segsmaker sd {zzz}")
+        pull(f"https://github.com/gutris1/segsmaker forge {zzz}")
 
         # requirements , tmp symlink
         os.chdir(zzz)
@@ -94,18 +96,18 @@ else:
 
         # extension
         os.chdir(f"{zzz}/extensions")
-        clone(f"{zzz}/asd/ext-1_5.txt")
+        clone(f"{zzz}/asd/extension.txt")
 
         weww = f"{zzz}/asd/cn-1_5.py"
         woww = f"{zzz}/asd/controlnet.py"
         os.rename(weww, woww)
 
     def sd_xl(xxx, zzz, fff):
-        asu = f"git clone -q -b v1.8.0 https://github.com/gutris1/asd"
+        asu = f"git clone -q https://github.com/lllyasviel/stable-diffusion-webui-forge forge"
         subprocess.run(asu, **fff)
 
         time.sleep(2)
-        pull(f"https://github.com/gutris1/segsmaker sd {zzz}")
+        pull(f"https://github.com/gutris1/segsmaker forge {zzz}")
 
         # requirements , tmp symlink
         os.chdir(zzz)
@@ -132,7 +134,7 @@ else:
 
         # extension
         os.chdir(f"{zzz}/extensions")
-        clone(f"{zzz}/asd/ext-xl.txt")
+        clone(f"{zzz}/asd/extension.txt")
 
         weww = f"{zzz}/asd/cn-xl.py"
         woww = f"{zzz}/asd/controlnet.py"
@@ -153,17 +155,17 @@ else:
 
         with sd_setup:
             sd_setup.clear_output()
-            say("【{red} Installing Stable Diffusion{d} 】{red}")
+            say("【{red} Installing Stable Diffusion Forge{d} 】{red}")
             os.chdir(xxx)
 
             if selection == 'SD 1.5':
                 sd_1_5(xxx, zzz, fff)
             else:
                 sd_xl(xxx, zzz, fff)
-                
+
             with garis:
                 garis.clear_output()
-                
+
             say("【{red} Done{d} 】{red}")
 
     def cb(button):

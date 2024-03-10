@@ -1,8 +1,9 @@
-import ipywidgets as widgets
 from IPython.display import display, HTML, clear_output
-from gutris1 import download
+from ipywidgets import widgets, Layout
+import os
+from nenen88 import download, say, tempe
 
-bura = "/home/studio-lab-user/asd/asd/controlnet.css"
+bura = "/home/studio-lab-user/forge/asd/cn-xl.css"
 with open(bura, "r") as oppai:
     susu = oppai.read()
 display(HTML(f"<style>{susu}</style>"))
@@ -87,13 +88,12 @@ url_list = {
 
     "IP Adapter FaceID SDXL": [
         "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid_sdxl.bin ip-adapter-faceid_sdxl.bin",
-        "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid_sdxl_lora.safetensors ~/asd/models/Lora/tmp_Lora \
+        "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid_sdxl_lora.safetensors ~/forge/models/Lora/tmp_Lora \
         ip-adapter-faceid_sdxl_lora.safetensors"],
     "IP Adapter FaceID Plusv2 SDXL": [
         "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-plusv2_sdxl.bin ip-adapter-faceid-plusv2_sdxl.bin",
-        "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-plusv2_sdxl_lora.safetensors ~/asd/models/Lora/tmp_Lora \
-        ip-adapter-faceid-plusv2_sdxl_lora.safetensors"]
-}
+        "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-plusv2_sdxl_lora.safetensors ~/forge/models/Lora/tmp_Lora \
+        ip-adapter-faceid-plusv2_sdxl_lora.safetensors"]}
 
 list_half = len(url_list) // 2
 half_list_1 = dict(list(url_list.items())[:list_half])
@@ -113,7 +113,8 @@ db = widgets.Button(description="Download")
 db.add_class("download-button")
 dbo = widgets.Output()
 cbc = widgets.HBox([cb1, cb2], layout=widgets.Layout(align_items='flex-start'))
-
+gariz2 = """<div class="gradient-cn">forge</div>"""
+garis2 = widgets.Output()
 def sa_cb(b):
     for checkbox in cb1.children + cb2.children:
         checkbox.value = True
@@ -134,22 +135,38 @@ bs = widgets.Button(description="")
 bs.add_class("border-style")
 
 bl = widgets.HBox([sab, usab, db, bs])
-boks = widgets.VBox([bl, cbc])
-boks.layout.width = '630px'
-boks.layout.height = '455px'
-boks.layout.padding = '0px'
+boks = widgets.VBox([bl, cbc], layout=Layout(
+    display='flex',
+    flex_flow='column',
+    width='630px',
+    height='455px',
+    padding='0px'))
 boks.add_class("boks")
-display(boks)
         
 def d_b_click(b):
     surl = []
     for checkbox, key in zip(cb1.children + cb2.children, list(url_list.keys())):
         if checkbox.value:
             surl.extend(url_list[key])
+            
     widgets.Widget.close(boks)
+    dbo.clear_output()
+    
+    with garis2:
+        display(HTML(gariz2))
+        
     with dbo:
+        say("【{red} Downloading{cyan} Controlnet{magenta} Models{yellow} 】{red}")
+        os.chdir("/home/studio-lab-user/forge/models/ControlNet")
+        
         for url in surl:
             download(url)
+        
+        with garis2:
+            garis2.clear_output()
             
-display(dbo)
+        say("【{red} Done{d} 】{red}")
+            
+tempe()
+display(boks, dbo, garis2)
 db.on_click(d_b_click)

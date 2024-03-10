@@ -5,16 +5,19 @@ with temporary folder for Checkpoint, LoRA and ControlNET models [<img align="ri
 | :---------------------------------------- | :-----------------------------------------------------------------------------------------------------------------: |
 | SD Webui Forge | [![Open in Studio Lab](https://studiolab.sagemaker.aws/studiolab.svg)](https://studiolab.sagemaker.aws/import/github/gutris1/segsmaker/blob/main/Segsmaker_Forge.ipynb) |
 | SD 1.5 AnimateDiff | [![Open in Studio Lab](https://studiolab.sagemaker.aws/studiolab.svg)](https://studiolab.sagemaker.aws/import/github/gutris1/segsmaker/blob/main/Segsmaker_AnimateDiff_SD1.5.ipynb) |
-| SDXL | [![Open in Studio Lab](https://studiolab.sagemaker.aws/studiolab.svg)](https://studiolab.sagemaker.aws/import/github/gutris1/segsmaker/blob/main/Segsmaker_SDXL.ipynb) |
 | ComfyUI AnimateDiff Evolved | [![Open in Studio Lab](https://studiolab.sagemaker.aws/studiolab.svg)](https://studiolab.sagemaker.aws/import/github/gutris1/segsmaker/blob/main/Segsmaker_ComfyUI.ipynb) |<br />
 
 you can find me here https://discord.gg/k5BwmmvJJU
 
 # Changelog
+### 2024-03-11
+- Minor changes, SDXL notebook removed.
+- Select either SD 1.5 or SDXL for installation in Segsmaker.ipynb and Segsmaker_Forge.ipynb using the widget.
+
 ### 2024-03-02
-- add notebook for [SD Webui Forge](https://github.com/lllyasviel/stable-diffusion-webui-forge)
-- update A1111 SD Webui to 1.8.0
-- update Conda script to install Torch 2.1.2+cu121
+- Add notebook for [SD Webui Forge](https://github.com/lllyasviel/stable-diffusion-webui-forge)
+- Update A1111 SD Webui to 1.8.0.
+- Update Conda script to install Torch 2.1.2+cu121.
 
 ### 2024-02-09
 - Switch to aria2 for civitai.com downloads.
