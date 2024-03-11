@@ -19,8 +19,8 @@ else:
     gariz = """
     <div class="gradient-text">asd</div>
     """
-    subprocess.run(f"curl -sLo {mama} https://github.com/gutris1/segsmaker/raw/main/ui/sd/asd/setup.css",
-               **fff)
+    subprocess.run(f"rm -rf {xxx}/.zrok", **fff)
+    subprocess.run(f"curl -sLo {mama} https://github.com/gutris1/segsmaker/raw/main/ui/sd/asd/setup.css", **fff)
     
     garis = widgets.Output()
     selected = [None]
