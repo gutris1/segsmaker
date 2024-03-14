@@ -167,6 +167,8 @@ def ariari(fc, fn):
     os.close(appaa)
 
     malam = ""
+    ayu_putri_kurniawan = False
+    
     while True:
         r, _, _ = select.select([woiii], [], [], 0.1)
         if woiii in r:
@@ -178,15 +180,20 @@ def ariari(fc, fn):
                         sys.stdout.write("\r" + " "*80 + "\r")
                         sys.stdout.write(f"  {minggu}")
                         sys.stdout.flush()
+                        ayu_putri_kurniawan = True
                         break
-                        
+
             except OSError as e:
                 if e.errno == errno.EIO:
                     break
 
         if qqqqq.poll() is not None and not r:
             break
-                   
+    os.close(woiii)
+
+    if ayu_putri_kurniawan:
+        print()
+
     kemarin = malam.find("Download Results:")
     if kemarin != -1:
         hhhhh = malam[kemarin:]
@@ -195,15 +202,14 @@ def ariari(fc, fn):
         for ggggg in jjjjj:
             if ggggg.strip().startswith("======+====+==========="):
                 kkkkk = True
-                print("\n" + f"  {ggggg}")
                 continue
             elif ggggg.strip().startswith("Status Legend:"):
                 break
             elif kkkkk:
-                print(f"  {ggggg}")
+                if "|" in ggggg:
+                    print(f"  {ggggg}")
 
     qqqqq.wait()
-    os.close(woiii)
 
 def curlly(fc, fn):  
     zura = subprocess.Popen(
