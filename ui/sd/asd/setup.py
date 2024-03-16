@@ -116,7 +116,6 @@ else:
         # embedding upscaler vae
         jalanan = [
             f"https://civitai.com/api/download/models/182974 {zzz}/embeddings",
-            f"https://civitai.com/api/download/models/356370 {zzz}/embeddings",
             f"https://civitai.com/api/download/models/159385 {zzz}/embeddings",
             f"https://civitai.com/api/download/models/159184 {zzz}/embeddings",
             f"https://huggingface.co/pantat88/ui/resolve/main/4x-UltraSharp.pth {zzz}/models/ESRGAN",
