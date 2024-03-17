@@ -93,7 +93,11 @@ url_list = {
     "IP Adapter FaceID Plusv2 SDXL": [
         "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-plusv2_sdxl.bin ip-adapter-faceid-plusv2_sdxl.bin",
         "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-plusv2_sdxl_lora.safetensors ~/asd/models/Lora/tmp_Lora \
-        ip-adapter-faceid-plusv2_sdxl_lora.safetensors"]}
+        ip-adapter-faceid-plusv2_sdxl_lora.safetensors"],
+    
+    "Instant ID": [
+        "https://huggingface.co/InstantX/InstantID/resolve/main/ip-adapter.bin ip-adapter_instant_id_sdxl.bin",
+        "https://huggingface.co/InstantX/InstantID/resolve/main/ControlNetModel/diffusion_pytorch_model.safetensors control_instant_id_sdxl.safetensors"]}
 
 list_half = len(url_list) // 2
 half_list_1 = dict(list(url_list.items())[:list_half])
@@ -139,7 +143,7 @@ boks = widgets.VBox([bl, cbc], layout=Layout(
     display='flex',
     flex_flow='column',
     width='630px',
-    height='455px',
+    height='480px',
     padding='0px'))
 boks.add_class("boks")
         

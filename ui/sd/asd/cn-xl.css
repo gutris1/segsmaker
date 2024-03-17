@@ -65,7 +65,7 @@
 .boks {
     border: 3px solid transparent;
     border-radius: 15px;
-    padding: 5px;
+    padding: 10px;
     margin: 0;
     background: url('https://wallpapercave.com/dwp1x/wp5126154.jpg');
     background-size: 110% 110%;
@@ -99,7 +99,7 @@
   z-index: 1;
 }
 .download-button {
-    margin-top: 390px;
+    margin-top: 420px;
     margin-right: 30px;
     margin-bottom: 0px;
     margin-left: 100px;
@@ -109,19 +109,19 @@
 }
 
 .select-all-button {
-    margin-top: 390px;
+    margin-top: 420px;
     margin-right: -30px;
     margin-bottom: 0px;
-    margin-left: 30px;
+    margin-left: 20px;
     font-size: 21px;
     width: 300px;
 }
 
 .unselect-all-button {
-    margin-top: 390px;
+    margin-top: 420px;
     margin-right: -30px;
     margin-bottom: 0px;
-    margin-left: 20px;
+    margin-left: 30px;
     font-size: 21px;
     width: 300px;
 }
@@ -146,7 +146,7 @@
 .border-style {
     position: absolute;
     display: block;
-    bottom: -440px;
+    bottom: -470px;
     left: 49%;
     transform: translateX(-50%);
     width: 600px;
@@ -273,7 +273,7 @@
         filter: blur(100px);
     }
     to {
-        height: 455px;
+        height: 480px;
         opacity: 1;
         filter: blur(0px);}}
 
