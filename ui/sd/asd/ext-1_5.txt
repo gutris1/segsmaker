@@ -7,6 +7,7 @@ git clone --depth 1 https://github.com/zixaphir/Stable-Diffusion-Webui-Civitai-H
 git clone --depth 1 https://github.com/zanllp/sd-webui-infinite-image-browsing
 git clone --depth 1 https://github.com/DominikDoom/a1111-sd-webui-tagcomplete
 git clone --depth 1 https://github.com/gutris1/huggingface
+git clone --depth 1 https://github.com/gutris1/sd-fast-pnginfo
 git clone --depth 1 https://github.com/thomasasfk/sd-webui-aspect-ratio-helper
 git clone --depth 1 https://github.com/Coyote-A/ultimate-upscale-for-automatic1111
 git clone --depth 1 https://github.com/etherealxx/batchlinks-webui

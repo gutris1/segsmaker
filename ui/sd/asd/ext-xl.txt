@@ -13,3 +13,4 @@ git clone --depth 1 https://github.com/ahgsql/StyleSelectorXL
 git clone https://github.com/Mikubill/sd-webui-controlnet
 git clone --depth 1 https://github.com/IDEA-Research/DWPose
 git clone --depth 1 https://github.com/gutris1/huggingface
+git clone --depth 1 https://github.com/gutris1/sd-fast-pnginfo
