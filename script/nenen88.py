@@ -58,21 +58,37 @@ def download(line):
                 netorare(line)
     else:
         netorare(line)
+        
+def strip_(url):
+    if '?' in url:
+        url = url.split('?')[0]
+    return url
 
+def get_fn(url):
+    fn_fn = urlparse(url)
+
+    if "civitai.com" in fn_fn.netloc or "drive.google.com" in fn_fn.netloc:
+        return None
+    else:
+        fn = Path(fn_fn.path).name
+        return fn
+    
 def netorare(line):
     hitozuma = line.strip().split()
     url = hitozuma[0].replace('\\', '')
-    civ = "civitai.com" in url
+    civ = any(domain in url for domain in ["civitai.com", "huggingface.co", "github.com"])
     togel = "drive.google.com" in url
     path, fn = "", ""
-    aria2c = "aria2c --console-log-level=error --summary-interval=1 -c -x16 -s16 -k1M -j5"
     susu = "mkdir -p {path} && cd {path} &&"
+    url = strip_(url)
+
+    aria2c = "aria2c --header='User-Agent: Mozilla/5.0' --console-log-level=error --summary-interval=1 -c -x16 -s16 -k1M -j5"
     
     if len(hitozuma) >= 3:
         path, fn = os.path.expanduser(hitozuma[1]), hitozuma[2]
         os.makedirs(path, exist_ok=True)
         if civ:
-            fc = f"{susu.format(path=path)} {aria2c} '{url}{toket}' -o '{fn}'"
+            fc = f"{susu.format(path=path)} {aria2c} '{url}{toket if 'civitai.com' in url else ''}' -o '{fn}'"
             ketsuno_ana(fc, fn)
         elif togel:
             gdrown(url, path, fn)
@@ -84,7 +100,10 @@ def netorare(line):
         path = os.path.expanduser(hitozuma[1])
         os.makedirs(path, exist_ok=True)
         if civ:
-            fc = f"{susu.format(path=path)} {aria2c} '{url}{toket}'"
+            fn = get_fn(url)
+            fc = f"{susu.format(path=path)} {aria2c} '{url}{toket if 'civitai.com' in url else ''}'"
+            if 'civitai.com' not in url:
+                fc += f" -o '{fn}'"
             ketsuno_ana(fc, fn)
         elif togel:
             gdrown(url, path)
@@ -96,7 +115,7 @@ def netorare(line):
     elif len(hitozuma) >= 2:
         fn = hitozuma[1]
         if civ:
-            fc = f"{aria2c} '{url}{toket}' -o '{fn}'"
+            fc = f"{aria2c} '{url}{toket if 'civitai.com' in url else ''}' -o '{fn}'"
             ketsuno_ana(fc, fn)
         elif togel:
             gdrown(url, None, fn)
@@ -105,7 +124,10 @@ def netorare(line):
             ketsuno_ana(fc, fn)
     else:
         if civ:
-            fc = f"{aria2c} '{url}{toket}'"
+            fn = get_fn(url)
+            fc = f"{aria2c} '{url}{toket if 'civitai.com' in url else ''}'"
+            if 'civitai.com' not in url:
+                fc += f" -o '{fn}'"
             ketsuno_ana(fc, fn)
         elif togel:
             gdrown(url)
@@ -154,52 +176,38 @@ def gdrown(url, path=None, fn=None):
         os.close(weww)
 
 def ariari(fc, fn):
-    woiii, appaa = pty.openpty()
-    qqqqq = subprocess.Popen(fc, shell=True, stdin=appaa, stdout=appaa, stderr=subprocess.STDOUT, close_fds=True)
-    os.close(appaa)
+    qqqqq = subprocess.Popen(fc, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
 
     malam = ""
     ayu_putri_kurniawan = False
     
     while True:
-        r, _, _ = select.select([woiii], [], [], 0.1)
-        if woiii in r:
-            try:
-                petualangan = os.read(woiii, 8192).decode()
-                malam += petualangan
-                for minggu in petualangan.splitlines():
-                    if re.match(r'\[#\w{6}\s.*\]', minggu):
-                        sys.stdout.write("\r" + " "*80 + "\r")
-                        sys.stdout.write(f"  {minggu}")
-                        sys.stdout.flush()
-                        ayu_putri_kurniawan = True
-                        break
-
-            except OSError as e:
-                if e.errno == errno.EIO:
-                    break
-
-        if qqqqq.poll() is not None and not r:
+        petualangan = qqqqq.stdout.readline()
+        if petualangan == '' and qqqqq.poll() is not None:
             break
-    os.close(woiii)
+            
+        if petualangan:
+            malam += petualangan
+            
+            for minggu in petualangan.splitlines():
+                if 'errorCode' in minggu:
+                    print("  " + minggu)
+                    
+                if re.match(r'\[#\w{6}\s.*\]', minggu):
+                    sys.stdout.write("\r" + " "*80 + "\r")
+                    sys.stdout.write(f"  {minggu}")
+                    sys.stdout.flush()
+                    ayu_putri_kurniawan = True
+                    break
 
     if ayu_putri_kurniawan:
         print()
 
-    kemarin = malam.find("Download Results:")
+    kemarin = malam.find("======+====+===========")
     if kemarin != -1:
-        hhhhh = malam[kemarin:]
-        jjjjj = hhhhh.splitlines()
-        kkkkk = False
-        for ggggg in jjjjj:
-            if ggggg.strip().startswith("======+====+==========="):
-                kkkkk = True
-                continue
-            elif ggggg.strip().startswith("Status Legend:"):
-                break
-            elif kkkkk:
-                if "|" in ggggg:
-                    print(f"  {ggggg}")
+        for tidur in malam[kemarin:].splitlines():
+            if "|" in tidur:
+                print(f"  {tidur}")
 
     qqqqq.wait()
 
@@ -256,9 +264,6 @@ def ketsuno_ana(fc, fn):
 
         else:
             curlly(fc, fn)
-
-    except UnicodeDecodeError:
-        print(f"{'':>2}^ Error: Remove '?type=Model&format=SafeTensor&size=pruned&fp=fp16' from the civitai URL")
 
     except KeyboardInterrupt:
         print(f"{'':>2}^ Canceled")
