@@ -1,6 +1,7 @@
 from IPython.core.magic import register_line_magic, register_cell_magic
 from IPython.display import display, HTML
 from urllib.parse import urlparse
+from pathlib import Path
 from tqdm import tqdm
 import subprocess
 import zipfile

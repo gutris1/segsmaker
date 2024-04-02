@@ -1,6 +1,7 @@
 from IPython.display import display, HTML
 from urllib.parse import urlparse
 from IPython import get_ipython
+from pathlib import Path
 from tqdm import tqdm
 import subprocess
 import zipfile
