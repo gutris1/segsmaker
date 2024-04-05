@@ -83,7 +83,7 @@ def netorare(line):
     susu = "mkdir -p {path} && cd {path} &&"
     url = strip_(url)
 
-    aria2c = "aria2c --header='User-Agent: Mozilla/5.0' --console-log-level=error --summary-interval=1 -c -x16 -s16 -k1M -j5"
+    aria2c = "aria2c --header='User-Agent: Mozilla/5.0' --allow-overwrite=true --console-log-level=error --summary-interval=1 -c -x16 -s16 -k1M -j5"
     
     if len(hitozuma) >= 3:
         path, fn = os.path.expanduser(hitozuma[1]), hitozuma[2]
