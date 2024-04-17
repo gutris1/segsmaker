@@ -11,13 +11,20 @@
 こちらで私を見つけることができます https://discord.gg/k5BwmmvJJU
 
 # 変更履歴
+### 2024-04-17
+- AUTO1111 SD Webuiを1.9.0に更新しました。
+- プリインストール拡張機能リストから[batchlinks-webui](https://github.com/etherealxx/batchlinks-webui)拡張機能を削除しました。
+- プリインストール拡張機能リストから[Stable-Diffusion-Webui-Civitai-Helper](https://github.com/zixaphir/Stable-Diffusion-Webui-Civitai-Helper)拡張機能を削除しました。
+- プリインストール拡張機能リストに[sd-hub](https://github.com/gutris1/sd-hub)を追加しました。
+- プリインストール拡張機能リストに[sd-civitai-browser-plus](https://github.com/BlafKing/sd-civitai-browser-plus)を追加しました。
+
 ### 2024-03-11
 - 細かな変更、SDXLのノートブックをデリートしました。
 - ウィジェットを使用して、Segsmaker.ipynbとSegsmaker_Forge.ipynbにSD 1.5かSDXLをインストールしてください。
 
 ### 2024-03-02
 - [SD Forge](https://github.com/lllyasviel/stable-diffusion-webui-forge)のノートブックを追加
-- A1111 SD Webuiを1.8.0に更新
+- AUTO1111 SD Webuiを1.8.0に更新
 - Condaスクリプトを更新して、Torch 2.1.2+cu121をインストール
 
 ### 2024-02-09

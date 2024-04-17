@@ -10,13 +10,20 @@ with temporary folder for Checkpoint, LoRA and ControlNET models [<img align="ri
 you can find me here https://discord.gg/k5BwmmvJJU
 
 # Changelog
+### 2024-04-17
+- Updated AUTO1111 SD Webui to 1.9.0
+- Removed [batchlinks-webui](https://github.com/etherealxx/batchlinks-webui) from pre-install extension list.
+- Removed [Stable-Diffusion-Webui-Civitai-Helper](https://github.com/zixaphir/Stable-Diffusion-Webui-Civitai-Helper) from pre-install extension list.
+- Added [sd-hub](https://github.com/gutris1/sd-hub) to pre-install extension list.
+- Added [sd-civitai-browser-plus](https://github.com/BlafKing/sd-civitai-browser-plus) to pre-install extension list.
+
 ### 2024-03-11
 - Minor changes, SDXL notebook removed.
 - Select either SD 1.5 or SDXL for installation in Segsmaker.ipynb and Segsmaker_Forge.ipynb using the widget.
 
 ### 2024-03-02
 - Add notebook for [SD Forge](https://github.com/lllyasviel/stable-diffusion-webui-forge)
-- Update A1111 SD Webui to 1.8.0.
+- Update AUTO1111 SD Webui to 1.8.0.
 - Update Conda script to install Torch 2.1.2+cu121.
 
 ### 2024-02-09
