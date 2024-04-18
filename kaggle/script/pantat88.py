@@ -69,15 +69,18 @@ def download(line):
         netorare(line)
         
 def strip_(url):
-    if '?' in url:
-        url = url.split('?')[0]
+    if any(domain in url for domain in ["civitai.com", "huggingface.co"]):
+        if '?' in url:
+            url = url.split('?')[0]
+            
     return url
 
 def get_fn(url):
     fn_fn = urlparse(url)
 
-    if "civitai.com" in fn_fn.netloc or "drive.google.com" in fn_fn.netloc:
+    if any(domain in fn_fn.netloc for domain in ["civitai.com", "drive.google.com"]):
         return None
+    
     else:
         fn = Path(fn_fn.path).name
         return fn
@@ -90,6 +93,9 @@ def netorare(line):
     path, fn = "", ""
     susu = "mkdir -p {path} && cd {path} &&"
     url = strip_(url)
+
+    if 'huggingface.co' in url and '/blob/' in url:
+        url = url.replace('/blob/', '/resolve/')
 
     aria2c = "aria2c --header='User-Agent: Mozilla/5.0' --allow-overwrite=true --console-log-level=error --summary-interval=1 -c -x16 -s16 -k1M -j5"
         
