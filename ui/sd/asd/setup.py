@@ -62,7 +62,7 @@ else:
             f"ln -vs /tmp/ControlNet {zzz}/models/ControlNet",]
 
     def sd_1_5(xxx, zzz, fff):
-        asu = f"git clone -q -b v1.9.0 https://github.com/gutris1/asd"
+        asu = f"git clone -q -b v1.9.3 https://github.com/gutris1/asd"
         subprocess.run(asu, **fff)
 
         time.sleep(2)
@@ -101,7 +101,7 @@ else:
         os.rename(weww, woww)
 
     def sd_xl(xxx, zzz, fff):
-        asu = f"git clone -q -b v1.9.0 https://github.com/gutris1/asd"
+        asu = f"git clone -q -b v1.9.3 https://github.com/gutris1/asd"
         subprocess.run(asu, **fff)
 
         time.sleep(2)
