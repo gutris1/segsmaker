@@ -1,5 +1,3 @@
 https://huggingface.co/pantat88/ui/resolve/main/hashes.py /kaggle/working/asd/modules hashes.py
-https://huggingface.co/pantat88/ui/resolve/main/lora_block_weight.py /kaggle/working/asd/extensions/lora-block-weight/scripts lora_block_weight.py
-https://huggingface.co/pantat88/ui/resolve/main/custom_hires_fix.py /kaggle/working/asd/extensions/2custom-hires-fix/scripts custom_hires_fix.py
 https://huggingface.co/pantat88/ui/resolve/main/ADetailer.zip /kaggle/working/asd/models/adetailer
 https://huggingface.co/pantat88/ui/resolve/main/ADetailer.zip /kaggle/working/asd/models/bmab
