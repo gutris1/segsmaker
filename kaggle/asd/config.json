@@ -23,12 +23,12 @@
     "ui_tab_order": [
         "txt2img",
         "img2img",
+        "Extras",
         "Fast PNG Info"
     ],
     "hidden_tabs": [
         "PNG Info",
         "Checkpoint Merger",
-        "Extras",
         "Train"
     ],
     "multiple_tqdm": true,
@@ -160,10 +160,10 @@
     "extra_networks_show_hidden_directories": true,
     "extra_networks_hidden_models": "When searched",
     "extra_networks_default_multiplier": 1,
-    "extra_networks_card_width": 0.0,
-    "extra_networks_card_height": 0.0,
-    "extra_networks_card_text_scale": 1,
-    "extra_networks_card_show_desc": true,
+    "extra_networks_card_width": 150.0,
+    "extra_networks_card_height": 70.0,
+    "extra_networks_card_text_scale": 0.5,
+    "extra_networks_card_show_desc": false,
     "extra_networks_add_text_separator": " ",
     "ui_extra_networks_tab_reorder": "",
     "textual_inversion_print_at_load": false,
