@@ -1,12 +1,3 @@
-.extra-network-cards .card{
-    width: 5em !important;
-    height: 5em !important;
-}
-
-.extra-network-cards .card .actions .name{
-    font-size: 1em !important;
-}
-
 #txt2img_gallery, #img2img_gallery{
     /* Output height */
     height: 680px;
