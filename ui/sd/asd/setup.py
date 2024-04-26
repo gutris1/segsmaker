@@ -1,18 +1,29 @@
 from IPython.display import display, HTML, clear_output
 from ipywidgets import widgets, Layout
 from IPython import get_ipython
+from pathlib import Path
 import subprocess
 import time
 import os
 from nenen88 import pull, say, download, clone, tempe
 
+version = "v1.9.3"
 xxx = "/home/studio-lab-user"
-zzz = f"{xxx}/asd"
+zzz = Path(xxx) / "asd"
 
-if os.path.exists(zzz):
-    say("/home/studio-lab-user/asd{cyan} already exists. Delete it first.")
-    say("/home/studio-lab-user/asd{cyan} のおっぱいはすでに存在します。先に消してね。")
-    
+if zzz.exists():
+    try:
+        git_dir = zzz / '.git'
+        if git_dir.exists():
+            os.chdir(zzz)
+            commit_hash = os.popen('git rev-parse HEAD').read().strip()
+
+            if commit_hash != version:
+                os.system(f"git pull origin {version}")
+                
+    except Exception as e:
+        print(f"{e}")
+        
 else:
     mama = f"{xxx}/.conda/setup.css"
     fff = {"shell": True, "stdout": subprocess.DEVNULL, "stderr": subprocess.DEVNULL}
@@ -62,7 +73,7 @@ else:
             f"ln -vs /tmp/ControlNet {zzz}/models/ControlNet",]
 
     def sd_1_5(xxx, zzz, fff):
-        asu = f"git clone -q -b v1.9.3 https://github.com/gutris1/asd"
+        asu = f"git clone -q -b {version} https://github.com/gutris1/asd"
         subprocess.run(asu, **fff)
 
         time.sleep(2)
@@ -101,7 +112,7 @@ else:
         os.rename(weww, woww)
 
     def sd_xl(xxx, zzz, fff):
-        asu = f"git clone -q -b v1.9.3 https://github.com/gutris1/asd"
+        asu = f"git clone -q -b {version} https://github.com/gutris1/asd"
         subprocess.run(asu, **fff)
 
         time.sleep(2)
