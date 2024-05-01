@@ -20,6 +20,7 @@ if zzz.exists():
 
             if commit_hash != version:
                 os.system(f"git pull origin {version}")
+                os.system("git fetch --tags")
                 
     except Exception as e:
         print(f"{e}")
