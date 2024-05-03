@@ -2,7 +2,7 @@ from multiprocessing import Process, Queue
 import subprocess
 import sys
 import re
-
+# asdasd
 def hitozuma(token, zrok_out):
     try:
         oppai = subprocess.run(['/kaggle/working/asd/zrok/bin/zrok', 'enable', token],
