@@ -1,0 +1,6 @@
+__pycache__/
+*.png
+*.gif
+*.jpg
+kaggle/
+.ipynb_checkpoints/
