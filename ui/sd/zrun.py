@@ -48,12 +48,9 @@ def zrok_enable(token, zrok_output):
 
 
 def zrok_launch(token, launch_args, zrok_output):
-    subprocess.run(
-        f"mkdir -p /tmp/models /tmp/Lora /tmp/ControlNet",
-        shell=True,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL
-    )
+    tmp = ["/tmp/models", "/tmp/Lora", "/tmp/ControlNet"]
+    for dir in tmp:
+        Path(dir).mkdir(parents=True, exist_ok=True)
     
     try:
         _process = subprocess.Popen(
