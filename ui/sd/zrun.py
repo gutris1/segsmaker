@@ -12,7 +12,7 @@ def zrok_enable(token):
     if oppai.returncode == 0:
         print(f"\n[ZROK] environment enabled.\n")
 
-def zrok_process(launch_args):
+def zrok_launch(launch_args):
     tmp = ["/tmp/models", "/tmp/Lora", "/tmp/ControlNet"]
     for dir in tmp:
         Path(dir).mkdir(parents=True, exist_ok=True)
@@ -43,4 +43,4 @@ if __name__ == "__main__":
     launch_args = sys.argv[2:]
     
     zrok_enable(token)
-    zrok_process(launch_args)
+    zrok_launch(launch_args)
