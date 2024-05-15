@@ -11,7 +11,7 @@ you can find me here https://discord.gg/k5BwmmvJJU
 
 # Changelog
 ### 2024-04-17
-- Updated AUTO1111 SD Webui to 1.9.0
+- Updated AUTO1111 SD Webui to 1.9.3
 - Removed [batchlinks-webui](https://github.com/etherealxx/batchlinks-webui) from pre-install extension list.
 - Removed [Stable-Diffusion-Webui-Civitai-Helper](https://github.com/zixaphir/Stable-Diffusion-Webui-Civitai-Helper) from pre-install extension list.
 - Added [sd-hub](https://github.com/gutris1/sd-hub) to pre-install extension list.
