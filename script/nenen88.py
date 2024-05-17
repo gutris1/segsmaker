@@ -3,15 +3,8 @@ from urllib.parse import urlparse
 from IPython import get_ipython
 from pathlib import Path
 from tqdm import tqdm
-import subprocess
-import zipfile
-import select
-import shlex
-import errno
-import pty
-import sys
-import os
-import re
+import subprocess, zipfile, shlex, sys, os, re
+
 
 def say(line):
     args = re.findall(r'\{[^\{\}]+\}|[^\s\{\}]+', line)
@@ -47,186 +40,189 @@ def say(line):
         i += 1
 
     display(HTML(" ".join(output)))
-    
+
+
 toket = "?token=YOUR_API_KEY"
 def download(line):
     args = line.split()
     url = args[0]
 
-    if url.endswith('.txt'):
-        with open(os.path.expanduser(url), 'r') as file:
+    if url.endswith('.txt') and Path(url).expanduser().is_file():
+        with open(Path(url).expanduser(), 'r') as file:
             for line in file:
                 netorare(line)
     else:
         netorare(line)
-        
+
+
 def strip_(url):
     if any(domain in url for domain in ["civitai.com", "huggingface.co"]):
         if '?' in url:
             url = url.split('?')[0]
-            
     return url
+
 
 def get_fn(url):
     fn_fn = urlparse(url)
-
     if any(domain in fn_fn.netloc for domain in ["civitai.com", "drive.google.com"]):
         return None
-    
     else:
         fn = Path(fn_fn.path).name
         return fn
-    
+
+
 def netorare(line):
     hitozuma = line.strip().split()
     url = hitozuma[0].replace('\\', '')
-    civ = any(domain in url for domain in ["civitai.com", "huggingface.co", "github.com"])
-    togel = "drive.google.com" in url
+    chg = any(domain in url for domain in ["civitai.com", "huggingface.co", "github.com"])
+    dg = "drive.google.com" in url
     path, fn = "", ""
-    susu = "mkdir -p {path} && cd {path} &&"
     url = strip_(url)
+    _dir = Path.cwd()
 
     if 'huggingface.co' in url and '/blob/' in url:
         url = url.replace('/blob/', '/resolve/')
 
-    aria2c = "aria2c --header='User-Agent: Mozilla/5.0' --allow-overwrite=true --console-log-level=error --summary-interval=1 -c -x16 -s16 -k1M -j5"
-    
-    if len(hitozuma) >= 3:
-        path, fn = os.path.expanduser(hitozuma[1]), hitozuma[2]
-        os.makedirs(path, exist_ok=True)
-        if civ:
-            fc = f"{susu.format(path=path)} {aria2c} '{url}{toket if 'civitai.com' in url else ''}' -o '{fn}'"
-            ketsuno_ana(fc, fn)
-        elif togel:
-            gdrown(url, path, fn)
-        else:
-            fc = f"{susu.format(path=path)} curl -#JL '{url}' -o '{fn}' 2>&1"
-            ketsuno_ana(fc, fn)
-        
-    elif len(hitozuma) >= 2 and ('/' in hitozuma[1] or '~/' in hitozuma[1]):
-        path = os.path.expanduser(hitozuma[1])
-        os.makedirs(path, exist_ok=True)
-        if civ:
-            fn = get_fn(url)
-            fc = f"{susu.format(path=path)} {aria2c} '{url}{toket if 'civitai.com' in url else ''}'"
-            if 'civitai.com' not in url:
-                fc += f" -o '{fn}'"
-            ketsuno_ana(fc, fn)
-        elif togel:
-            gdrown(url, path)
-        else:
-            fn = os.path.basename(urlparse(url).path)
-            fc = f"{susu.format(path=path)} curl -#OJL '{url}' 2>&1"
-            ketsuno_ana(fc, fn)
-            
-    elif len(hitozuma) >= 2:
-        fn = hitozuma[1]
-        if civ:
-            fc = f"{aria2c} '{url}{toket if 'civitai.com' in url else ''}' -o '{fn}'"
-            ketsuno_ana(fc, fn)
-        elif togel:
-            gdrown(url, None, fn)
-        else:
-            fc = f"curl -#JL '{url}' -o '{fn}' 2>&1"
-            ketsuno_ana(fc, fn)
-    else:
-        if civ:
-            fn = get_fn(url)
-            fc = f"{aria2c} '{url}{toket if 'civitai.com' in url else ''}'"
-            if 'civitai.com' not in url:
-                fc += f" -o '{fn}'"
-            ketsuno_ana(fc, fn)
-        elif togel:
-            gdrown(url)
-        else:
-            fn = os.path.basename(urlparse(url).path)
-            fc = f"curl -#OJL '{url}' 2>&1"
-            ketsuno_ana(fc, fn)
-    
-def gdrown(url, path=None, fn=None):
-    asdasd = "drive.google.com/drive/folders" in url
-    susu = "mkdir -p {path} && cd {path} &&"
-    
-    if path and fn:
-        aduuhh = os.path.expanduser(path)
-        os.makedirs(aduuhh, exist_ok=True)
-        awawaw = os.path.join(aduuhh, fn)
-        fc = f"gdown --fuzzy {url} -O {awawaw}" + (" --folder" if asdasd else "")
-        
-    elif path:
-        fc = f"{susu.format(path=path)} gdown --fuzzy '{url}'" + (" --folder" if asdasd else "")
-
-    elif fn:
-        fc = f"gdown --fuzzy {url} -O {fn}" + (" --folder" if asdasd else "")
-        
-    else:
-        fc = f"gdown --fuzzy {url}" + (" --folder" if asdasd else "")
-
-    weww, woww = pty.openpty()
-    proc = subprocess.Popen(fc, stdout=woww, stderr=woww, close_fds=True, shell=True)
-    os.close(woww)
+    aria2c = (
+        "aria2c --header='User-Agent: Mozilla/5.0' --allow-overwrite=true "
+        "--console-log-level=error --stderr=true -c -x16 -s16 -k1M -j5"
+    )
 
     try:
-        while True:
-            r, _, _ = select.select([weww], [], [], 0.1)
-            if r:
-                six = os.read(weww, 1024).decode()
-                print(six, end='')
-            if proc.poll() is not None:
-                all_that_remains = os.read(weww, 2048).decode()
-                if all_that_remains:
-                    print(all_that_remains, end='')
-                break
-    except OSError as e:
-        pass
+        if len(hitozuma) >= 3:
+            path, fn = Path(hitozuma[1]).expanduser(), hitozuma[2]
+            path.mkdir(parents=True, exist_ok=True)
+            os.chdir(path)
+            if chg:
+                fc = f"{aria2c} {url}{toket if 'civitai.com' in url else ''} -o {fn}"
+                ketsuno_ana(fc, fn)
+            elif dg:
+                gdrown(url, path, fn)
+            else:
+                fc = f"curl -#JL {url} -o {fn}"
+                ketsuno_ana(fc, fn)
+            
+        elif len(hitozuma) >= 2:
+            if '/' in hitozuma[1] or '~/' in hitozuma[1]:
+                path = Path(hitozuma[1]).expanduser()
+                path.mkdir(parents=True, exist_ok=True)
+                os.chdir(path)
+                if chg:
+                    fn = get_fn(url)
+                    fc = f"{aria2c} {url}{toket if 'civitai.com' in url else ''}"
+                    if 'civitai.com' not in url:
+                        fc += f" -o {fn}"
+                    ketsuno_ana(fc, fn)
+                elif dg:
+                    gdrown(url, path)
+                else:
+                    fn = Path(urlparse(url).path).name
+                    fc = f"curl -#OJL {url}"
+                    ketsuno_ana(fc, fn)
+            else:
+                fn = hitozuma[1]
+                if chg:
+                    fc = f"{aria2c} {url}{toket if 'civitai.com' in url else ''} -o {fn}"
+                    ketsuno_ana(fc, fn)
+                elif dg:
+                    gdrown(url, None, fn)
+                else:
+                    fc = f"curl -#JL {url} -o {fn}"
+                    ketsuno_ana(fc, fn)
+
+        else:
+            if chg:
+                fn = get_fn(url)
+                fc = f"{aria2c} {url}{toket if 'civitai.com' in url else ''}"
+                if 'civitai.com' not in url:
+                    fc += f" -o {fn}"
+                ketsuno_ana(fc, fn)
+            elif dg:
+                gdrown(url)
+            else:
+                fn = Path(urlparse(url).path).name
+                fc = f"curl -#OJL {url}"
+                ketsuno_ana(fc, fn)
     finally:
-        os.close(weww)
+        os.chdir(_dir)
+
+
+def gdrown(url, path=None, fn=None):
+    is_folder = "drive.google.com/drive/folders" in url
+    cmd = "gdown --fuzzy " + url
+
+    if path:
+        path = str(Path(path).expanduser())
+        os.makedirs(path, exist_ok=True)
+        cwd = path
+        if fn:
+            fn = str(Path(path) / fn)
+            cmd += " -O " + fn
+    else:
+        cwd = None
+
+    if fn and not path:
+        cmd += " -O " + fn
+
+    if is_folder:
+        cmd += " --folder"
+
+    if cwd:
+        get_ipython().system(f"cd {cwd} && {cmd}")
+    else:
+        get_ipython().system(f"{cmd}")
+
 
 def ariari(fc, fn):
-    qqqqq = subprocess.Popen(fc, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+    qqqqq = subprocess.Popen(
+        shlex.split(fc),
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True
+    )
 
-    malam = ""
-    ayu_putri_kurniawan = False
-    
+    result = ""
+    br = False
+
     while True:
-        petualangan = qqqqq.stdout.readline()
-        if petualangan == '' and qqqqq.poll() is not None:
+        lines = qqqqq.stderr.readline()
+        if lines == '' and qqqqq.poll() is not None:
             break
             
-        if petualangan:
-            malam += petualangan
+        if lines:
+            result += lines
             
-            for minggu in petualangan.splitlines():
-                if 'errorCode' in minggu:
-                    print("  " + minggu)
+            for outputs in lines.splitlines():
+                if 'errorCode' in outputs:
+                    print("  " + lines)
                     
-                if re.match(r'\[#\w{6}\s.*\]', minggu):
-                    sys.stdout.write("\r" + " "*80 + "\r")
-                    sys.stdout.write(f"  {minggu}")
-                    sys.stdout.flush()
-                    ayu_putri_kurniawan = True
+                if re.match(r'\[#\w{6}\s.*\]', outputs):
+                    print("\r" + " "*80 + "\r", end="")
+                    print(f"  {outputs}", end="", flush=True)
+                    br = True
                     break
 
-    if ayu_putri_kurniawan:
+    if br:
         print()
 
-    kemarin = malam.find("======+====+===========")
-    if kemarin != -1:
-        for tidur in malam[kemarin:].splitlines():
-            if "|" in tidur:
-                print(f"  {tidur}")
+    stripe = result.find("======+====+===========")
+    if stripe != -1:
+        for lines in result[stripe:].splitlines():
+            if "|" in lines:
+                print(f"  {lines}")
 
     qqqqq.wait()
 
+
 def curlly(fc, fn):  
     zura = subprocess.Popen(
-        fc,
-        shell=True,
+        shlex.split(fc),
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         text=True,
         bufsize=1,
-        cwd=os.getcwd())
+        cwd=str(Path.cwd())
+    )
 
     progress_pattern = re.compile(r'(\d+\.\d+)%')
     oppai = ""
@@ -256,81 +252,116 @@ def curlly(fc, fn):
 
     if zura.returncode != 0:
         if "curl: (23)" in oppai:
-            print(f"{'':>2}^ File already exists; download skipped. Append a custom name after the URL or PATH to overwrite.")
+            print(
+                f"{'':>2}^ File already exists; download skipped. "
+                "Append a custom name after the URL or PATH to overwrite."
+            )
         elif "curl: (3)" in oppai:
             print("")
         else:
             print(f"{'':>2}^ Error: {oppai}")
     else:
         pass
-    
+
+
 def ketsuno_ana(fc, fn):
     try:
         if "aria2c" in fc:
             ariari(fc, fn)
-
         else:
             curlly(fc, fn)
 
     except KeyboardInterrupt:
         print(f"{'':>2}^ Canceled")
 
-def clone(line):
-    milkita = os.path.expanduser(line.strip())
 
-    if not os.path.exists(milkita):
-        print(f"Error: File not found - {milkita}")
+def clone(line):
+    path = Path(line.strip()).expanduser()
+
+    if not path.exists():
+        print(f"Error: File not found - {path}")
         return
 
-    with open(milkita, 'r') as file:
-        for gita in map(str.strip, file):
-            fc = shlex.split(gita)
-            
-            aaahhh = subprocess.Popen(fc, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+    with open(path, 'r') as file:
+        #print("\n  Cloning Extension:")
+        
+        for ext in map(str.strip, file):
+            cmd = shlex.split(ext)
+
+            url = None
+            for repo in cmd:
+                if re.match(r'https?://', repo):
+                    url = repo
+                    break
+
+            proc = subprocess.Popen(
+                cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True
+            )
 
             while True:
-                ikuuhh = aaahhh.stdout.readline()
-                if not ikuuhh and aaahhh.poll() is not None:
-                    break
-                if ikuuhh:
-                    ikuuhh = ikuuhh.strip()
-                    if ikuuhh.startswith("Cloning into"):
-                        print("  " + ikuuhh)
+                output = proc.stdout.readline()
 
-            aaahhh.wait()
+                if not output and proc.poll() is not None:
+                    break
+
+                if output:
+                    output = output.strip()
+
+                    if output.startswith("Cloning into"):
+                        name = output.replace("Cloning into", "")
+                        name = output.split("'")[1]
+                        print(f"{'':>2}{name} -> {url}")
+
+            proc.wait()
+
 
 def tempe():
-    subprocess.run(
-        f"mkdir -p /tmp/models /tmp/Lora /tmp/ControlNet /tmp/svd /tmp/z123",
-        shell=True,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL)
+    tmp = [
+        "/tmp/ckpt",
+        "/tmp/lora",
+        "/tmp/controlnet",
+        "/tmp/svd",
+        "/tmp/z123"
+    ]
+
+    for path in tmp:
+        Path(path).mkdir(parents=True, exist_ok=True)
+
 
 def pull(line):
-    args = line.split()
-    if len(args) != 3:
+    inputs = line.split()
+    if len(inputs) != 3:
         return
 
-    repo, tarfold, despath = args
+    repo, tarfold, despath = inputs
 
-    path = os.path.expanduser(despath)
-    xxx = {'stdout': subprocess.PIPE, 'stderr': subprocess.PIPE, 'check': True}
-    zzz = subprocess.run
-    zzz(['git', 'clone', '-n', '--depth=1', '--filter=tree:0', repo], cwd=path, **xxx)
-    repofold = os.path.join(path, os.path.basename(repo.rstrip('.git')))
-    zzz(['git', 'sparse-checkout', 'set', '--no-cone', tarfold], cwd=repofold, **xxx)
-    zzz(['git', 'checkout'], cwd=repofold, **xxx)
+    print(
+    f"\n{'':>2}{'pull':<4} : {tarfold}",
+    f"\n{'':>2}{'from':<4} : {repo}",
+    f"\n{'':>2}{'into':<4} : {despath}\n")
 
-    zipin = os.path.join(repofold, 'ui', tarfold)
-    zipout = os.path.join(path, f'{tarfold}.zip')
+    path = Path(despath).expanduser()
+    opts = {'stdout': subprocess.PIPE, 'stderr': subprocess.PIPE, 'check': True}
+    subs = subprocess.run
+    cmd1 = f'git clone -n --depth=1 --filter=tree:0 {repo}'
+    subs(shlex.split(cmd1), cwd=str(path), **opts)
+    repofold = path / Path(repo).name.rstrip('.git')
+    cmd2 = f'git sparse-checkout set --no-cone {tarfold}'
+    subs(shlex.split(cmd2), cwd=str(repofold), **opts)
+    cmd3 = 'git checkout'
+    subs(shlex.split(cmd3), cwd=str(repofold), **opts)
+
+    zipin = repofold / 'ui' / tarfold
+    zipout = path / f'{tarfold}.zip'
     
-    with zipfile.ZipFile(zipout, 'w') as zipf:
-        for root, dirs, files in os.walk(zipin):
-            for file in files:
-                zp = os.path.join(root, file)
-                arcname = os.path.relpath(zp, zipin)
-                zipf.write(zp, arcname=arcname)
+    with zipfile.ZipFile(str(zipout), 'w') as zipf:
+        for root in zipin.rglob('*'):
+            if root.is_file():
+                arcname = str(root.relative_to(zipin))
+                zipf.write(str(root), arcname=arcname)
 
-    zzz(['unzip', '-o', zipout], cwd=path, **xxx)
-    os.remove(zipout)
-    zzz(['rm', '-rf', repofold], cwd=path, **xxx)
+    cmd4 = f'unzip -o {str(zipout)}'
+    subs(shlex.split(cmd4), cwd=str(path), **opts)
+    zipout.unlink()
+    cmd5 = f'rm -rf {str(repofold)}'
+    subs(shlex.split(cmd5), cwd=str(path), **opts)

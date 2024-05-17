@@ -1,49 +1,45 @@
-from multiprocessing import Process, Queue
-import subprocess
-import sys
-import re
+import subprocess, sys, os, re
+from pathlib import Path
 
-def hitozuma(token, zrok_out):
+if 'LD_PRELOAD' not in os.environ:
+    os.environ['LD_PRELOAD'] = '/home/studio-lab-user/.conda/envs/default/lib/libtcmalloc_minimal.so.4'
+
+tmp = ["/tmp/ckpt", "/tmp/lora", "/tmp/controlnet"]
+for path in tmp:
+    Path(path).mkdir(parents=True, exist_ok=True)
+
+def zrok_enable(token):
+    oppai = subprocess.run(['/home/studio-lab-user/.zrok/bin/zrok', 'enable', token],
+                           check=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+
+    if oppai.returncode == 0:
+        print(f"\n[ZROK] environment enabled.\n")
+
+def zrok_launch(launch_args):
     try:
-        oppai = subprocess.run(['/home/studio-lab-user/.zrok/bin/zrok', 'enable', token], 
-                                check=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
-
-        ass = subprocess.Popen(["/home/studio-lab-user/.zrok/bin/zrok", "share", "public", "localhost:8188", "--headless"],
-                               stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+        zrok_ = subprocess.Popen(["/home/studio-lab-user/.zrok/bin/zrok", "share", "public", "localhost:8188", "--headless"],
+                                 stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
         
-        urlp = re.compile(r'https?://[^\s]*\.zrok\.io')
-        asu = ("◼◼◼◼◼◼◼◼◼◼◼◼◼◼◼◼◼◼◼◼◼◼◼◼◼◼◼◼◼")
+        launch_process = subprocess.Popen(['python', 'main.py'] + launch_args,
+                                          stdout=sys.stdout, stderr=sys.stdout, text=True)
         
-        if oppai.returncode == 0:
-            zrok_out.put(f"\n{asu}\n[ZROK] environment enabled.\n")
-            
-        else:
-            if "enabled environment" in oppai.stdout:
-                zrok_out.put(f"\n{asu}\n[ZROK] environment already enabled.\n")
-            else:
-                zrok_out.put(oppai.stdout)
-
-        for line in ass.stdout:
-            urls = urlp.findall(line)
+        get_url = re.compile(r'https?://[^\s]*\.zrok\.io')
+        for line in zrok_.stdout:
+            urls = get_url.findall(line)
             for url in urls:
-                zrok_out.put(f"[ZROK] {url}\n{asu}\n\n")
-
-        ass.wait()
-
+                print(f"\n[ZROK] {url}\n")
+                
+        zrok_.wait()
+        
     except:
         pass
 
-if __name__ == '__main__':
-    if len(sys.argv) != 2:
-        sys.exit("")
-
-    zrok_out = Queue()
-
-    process = Process(target=hitozuma, args=(sys.argv[1], zrok_out))
-    process.start()
-
-    while process.is_alive() or not zrok_out.empty():
-        while not zrok_out.empty():
-            print(zrok_out.get(), end='', flush=True)
-
-    process.join()
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        sys.exit(1)
+    
+    token = sys.argv[1]
+    launch_args = sys.argv[2:]
+    
+    zrok_enable(token)
+    zrok_launch(launch_args)
