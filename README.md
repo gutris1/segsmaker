@@ -9,6 +9,11 @@ with temporary folder for Checkpoint, LoRA and ControlNET models [<img align="ri
 you can find me here https://discord.gg/k5BwmmvJJU
 
 # Changelog
+### 2024-05-18
+- Upgraded Torch to version 2.2.0+cu121.
+- Added Pinggy tunnel.
+- Removed Segsmaker animatediff notebook.
+
 ### 2024-04-17
 - Updated AUTO1111 SD Webui to 1.9.3
 - Removed [batchlinks-webui](https://github.com/etherealxx/batchlinks-webui) from pre-install extension list.
