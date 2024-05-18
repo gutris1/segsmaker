@@ -89,7 +89,9 @@ def ccccc():
         susu.clear_output()
         garis1.clear_output()
         display(HTML('<span style="color: cyan;">【 Done 】</span>'))
-    
+
+    get_ipython().kernel.do_shutdown(True)
+
 def ddddd():
     def eeeee(b):
         api_key = ink.value.strip()
@@ -132,4 +134,3 @@ def fffff():
 
 aaaaa(cp)
 fffff()
-get_ipython().kernel.do_shutdown(True)
