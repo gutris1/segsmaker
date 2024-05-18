@@ -5,29 +5,33 @@
 | SD 1.5 / SDXL | [![Open in Studio Lab](https://studiolab.sagemaker.aws/studiolab.svg)](https://studiolab.sagemaker.aws/import/github/gutris1/segsmaker/blob/main/Segsmaker.ipynb) |
 | :---------------------------------------- | :-----------------------------------------------------------------------------------------------------------------: |
 | SD Forge | [![Open in Studio Lab](https://studiolab.sagemaker.aws/studiolab.svg)](https://studiolab.sagemaker.aws/import/github/gutris1/segsmaker/blob/main/Segsmaker_Forge.ipynb) |
-| SD 1.5 AnimateDiff | [![Open in Studio Lab](https://studiolab.sagemaker.aws/studiolab.svg)](https://studiolab.sagemaker.aws/import/github/gutris1/segsmaker/blob/main/Segsmaker_AnimateDiff_SD1.5.ipynb) |
-| ComfyUI AnimateDiff Evolved | [![Open in Studio Lab](https://studiolab.sagemaker.aws/studiolab.svg)](https://studiolab.sagemaker.aws/import/github/gutris1/segsmaker/blob/main/Segsmaker_ComfyUI.ipynb) |<br />
+| ComfyUI | [![Open in Studio Lab](https://studiolab.sagemaker.aws/studiolab.svg)](https://studiolab.sagemaker.aws/import/github/gutris1/segsmaker/blob/main/Segsmaker_ComfyUI.ipynb) |<br />
 
 こちらで私を見つけることができます https://discord.gg/k5BwmmvJJU
 
 # 変更履歴
-### 2024-04-17
-- AUTO1111 SD Webuiを1.9.0に更新しました。
+### 2024年5月18日
+- Torchをバージョン2.2.0+cu121にアップグレードしました。
+- Pinggyトンネルを追加しました。
+- Segsmaker animatediffノートブックを削除しました。
+
+### 2024年4月17日
+- AUTO1111 SD Webuiを1.9.3に更新しました。
 - プリインストール拡張機能リストから[batchlinks-webui](https://github.com/etherealxx/batchlinks-webui)拡張機能を削除しました。
 - プリインストール拡張機能リストから[Stable-Diffusion-Webui-Civitai-Helper](https://github.com/zixaphir/Stable-Diffusion-Webui-Civitai-Helper)拡張機能を削除しました。
 - プリインストール拡張機能リストに[sd-hub](https://github.com/gutris1/sd-hub)を追加しました。
 - プリインストール拡張機能リストに[sd-civitai-browser-plus](https://github.com/BlafKing/sd-civitai-browser-plus)を追加しました。
 
-### 2024-03-11
+### 2024年3月11日
 - 細かな変更、SDXLのノートブックをデリートしました。
 - ウィジェットを使用して、Segsmaker.ipynbとSegsmaker_Forge.ipynbにSD 1.5かSDXLをインストールしてください。
 
-### 2024-03-02
+### 2024年3月2日
 - [SD Forge](https://github.com/lllyasviel/stable-diffusion-webui-forge)のノートブックを追加
 - AUTO1111 SD Webuiを1.8.0に更新
 - Condaスクリプトを更新して、Torch 2.1.2+cu121をインストール
 
-### 2024-02-09
+### 2024年2月9日
 - civitai.comのダウンロードにaria2に切り替えました。
 - Google Driveのダウンロードにgdownを追加しました。Google Driveのファイルまたはフォルダーについては、公開URLを直接貼り付けるだけです。
 - それ以外の場合はCurlをデフォルトとします。
@@ -47,7 +51,7 @@
 %download URL ~/asd/models/zzzzzz 789789.txt
 ```
 
-### 2024-02-07
+### 2024年2月7日
 - 私たち全員、特に私のアカウントの安全のため、これからはCondaセルを再実行して自分のAPIキーを入力してください。 <br />
   <img src="https://github.com/gutris1/segsmaker/assets/132797949/7420b6ff-7080-46f2-bd20-cd2088d64ff6" width="486" height="169">
 - 自分のAPIキーは https://civitai.com/user/account にアクセスし、「APIキーを追加」ボタンをクリックして名前を付け、その後コピーしてください。<br />

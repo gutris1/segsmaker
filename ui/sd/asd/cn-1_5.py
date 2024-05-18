@@ -1,10 +1,13 @@
 from IPython.display import display, HTML, clear_output
-from ipywidgets import widgets, Layout
-import os
 from nenen88 import download, say, tempe
+from ipywidgets import widgets, Layout
+from pathlib import Path
+import os
 
-bura = "/home/studio-lab-user/asd/asd/cn-1_5.css"
-with open(bura, "r") as oppai:
+path = Path(__file__).parent.parent
+css = Path(__file__).parent / "cn-1_5.css"
+
+with open(css, "r") as oppai:
     susu = oppai.read()
 display(HTML(f"<style>{susu}</style>"))
     
@@ -67,18 +70,19 @@ url_list = {
 
     "IP Adapter FaceID 1.5": [
         "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid_sd15.bin",
-        "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid_sd15_lora.safetensors ~/asd/models/Lora/tmp_Lora \
+        f"https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid_sd15_lora.safetensors {path}/models/Lora/tmp_lora \
         ip-adapter-faceid_sd15_lora.safetensors"],
     "IP Adapter FaceID Plus 1.5": [
         "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-plus_sd15.bin ip-adapter-faceid-plus_sd15.bin",
-        "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-plus_sd15_lora.safetensors ~/asd/models/Lora/tmp_Lora \
+        f"https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-plus_sd15_lora.safetensors {path}/models/Lora/tmp_lora \
         ip-adapter-faceid-plus_sd15_lora.safetensors"],
     "IP Adapter FaceID PlusV2 1.5": [
         "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-plusv2_sd15.bin ip-adapter-faceid-plusv2_sd15.bin",
-        "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-plusv2_sd15_lora.safetensors ~/asd/models/Lora/tmp_Lora \
+        f"https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-plusv2_sd15_lora.safetensors {path}/models/Lora/tmp_lora \
         ip-adapter-faceid-plusv2_sd15_lora.safetensors"],
     "IP Adapter FaceID Portrait 1.5": [
-        "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-portrait_sd15.bin"]}
+        "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-portrait_sd15.bin"]
+}
 
 list_half = len(url_list) // 2
 half_list_1 = dict(list(url_list.items())[:list_half])
@@ -145,7 +149,7 @@ def d_b_click(b):
         
     with dbo:
         say("【{red} Downloading{cyan} Controlnet{magenta} Models{yellow} 】{red}")
-        os.chdir("/home/studio-lab-user/asd/models/ControlNet")
+        os.chdir(f"{path}/models/ControlNet")
         
         for url in surl:
             download(url)

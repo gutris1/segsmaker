@@ -4,7 +4,7 @@ from pathlib import Path
 if 'LD_PRELOAD' not in os.environ:
     os.environ['LD_PRELOAD'] = '/home/studio-lab-user/.conda/envs/default/lib/libtcmalloc_minimal.so.4'
 
-tmp = ["/tmp/ckpt", "/tmp/lora", "/tmp/controlnet"]
+tmp = ["/tmp/ckpt", "/tmp/lora", "/tmp/controlnet", "/tmp/svd", "/tmp/z123"]
 for path in tmp:
     Path(path).mkdir(parents=True, exist_ok=True)
 
@@ -17,15 +17,15 @@ def zrok_enable(token):
     if oppai.returncode == 0:
         print(f"\n[ZROK] environment enabled.\n")
 
-def zrok_launch(launch_args):
+def zrok_launch(launch_args):        
     try:
         zrok_ = subprocess.Popen(
-            ["/home/studio-lab-user/.zrok/bin/zrok", "share", "public", "localhost:8188", "--headless"],
+            ["/home/studio-lab-user/.zrok/bin/zrok", "share", "public", "localhost:7860", "--headless"],
             stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True
         )
         
         launch_process = subprocess.Popen(
-            ['python', 'main.py'] + launch_args,
+            ['python', 'launch.py'] + launch_args,
             stdout=sys.stdout, stderr=sys.stdout, text=True
         )
         

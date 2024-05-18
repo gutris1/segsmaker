@@ -2,9 +2,7 @@ from IPython.display import display, HTML, clear_output
 from ipywidgets import widgets, Layout
 from IPython import get_ipython
 from pathlib import Path
-import subprocess
-import time
-import os
+import subprocess, time, os, shlex
 from nenen88 import pull, say, download, clone, tempe
 
 version = "v1.9.3"
@@ -12,30 +10,24 @@ xxx = "/home/studio-lab-user"
 zzz = Path(xxx) / "asd"
 
 if zzz.exists():
-    try:
-        git_dir = zzz / '.git'
-        if git_dir.exists():
-            os.chdir(zzz)
-            commit_hash = os.popen('git rev-parse HEAD').read().strip()
+    git_dir = zzz / '.git'
+    if git_dir.exists():
+        os.chdir(zzz)
+        commit_hash = os.popen('git rev-parse HEAD').read().strip()
 
-            if commit_hash != version:
-                os.system(f"git pull origin {version}")
-                os.system("git fetch --tags")
-                
-    except Exception as e:
-        print(f"{e}")
-        
+        if commit_hash != version:
+            get_ipython().system(f"git pull origin {version}")
+            get_ipython().system("git fetch --tags")
+
 else:
     mama = f"{xxx}/.conda/setup.css"
-    fff = {"shell": True, "stdout": subprocess.DEVNULL, "stderr": subprocess.DEVNULL}
-    gariz = """
-    <div class="gradient-text">asd</div>
-    """
-    subprocess.run(f"rm -rf {xxx}/.zrok", **fff)
-    subprocess.run(f"curl -sLo {mama} https://github.com/gutris1/segsmaker/raw/main/ui/sd/asd/setup.css", **fff)
-    
+    fff = {"stdout": subprocess.DEVNULL, "stderr": subprocess.DEVNULL}
+
+    get_ipython().system(f"rm -rf {xxx}/.zrok")
+    get_ipython().system(f"curl -sLo {mama} https://github.com/gutris1/segsmaker/raw/main/ui/sd/asd/setup.css")
+
+    gariz = """<div class="gradient-text">asd</div>"""
     garis = widgets.Output()
-    selected = [None]
     b1 = widgets.Button(description='SD 1.5')
     b2 = widgets.Button(description='SDXL')
     ikuuuhhh = widgets.Button(description='Install')
@@ -55,6 +47,7 @@ else:
     b2.add_class("b2")
     ikuuuhhh.add_class("out")
     boxxx.add_class("boxxx")
+    selected = [None]
 
     def ccss(mama):
         with open(mama, "r") as gantung:
@@ -62,32 +55,31 @@ else:
 
         display(HTML(f"<style>{susu}</style>"))
 
-    def gorengan(xxx, zzz):
+    def req_list(xxx, zzz):
         return [
-            f"pip install -q -r requirements.txt basicsr",
-            f"rm -rf {xxx}/tmp/* {xxx}/tmp {zzz}/models/Stable-diffusion/tmp_models {zzz}/models/Lora/tmp_Lora {zzz}/models/ControlNet",
+            f"pip install -q -r requirements.txt basicsr insightface onnxruntime-gpu",
+            f"rm -rf {xxx}/tmp/* {xxx}/tmp {zzz}/models/Stable-diffusion/tmp_ckpt {zzz}/models/Lora/tmp_lora {zzz}/models/ControlNet",
             f"mkdir -p {zzz}/models/Lora",
             f"mkdir -p {zzz}/models/ESRGAN",
             f"ln -vs /tmp {xxx}/tmp",
-            f"ln -vs /tmp/models {zzz}/models/Stable-diffusion/tmp_models",
-            f"ln -vs /tmp/Lora {zzz}/models/Lora/tmp_Lora",
-            f"ln -vs /tmp/ControlNet {zzz}/models/ControlNet",]
+            f"ln -vs /tmp/ckpt {zzz}/models/Stable-diffusion/tmp_ckpt",
+            f"ln -vs /tmp/lora {zzz}/models/Lora/tmp_lora",
+            f"ln -vs /tmp/controlnet {zzz}/models/ControlNet"
+        ]
 
-    def sd_1_5(xxx, zzz, fff):
-        asu = f"git clone -q -b {version} https://github.com/gutris1/asd"
-        subprocess.run(asu, **fff)
-
-        time.sleep(2)
+    def sd_clone(xxx, zzz, fff):
+        time.sleep(1)
         pull(f"https://github.com/gutris1/segsmaker sd {zzz}")
 
-        # requirements , tmp symlink
         os.chdir(zzz)
-        minyak = gorengan(xxx, zzz)
-        for tepung in minyak:
-            subprocess.run(tepung, **fff)
+        req = req_list(xxx, zzz)
+        for lines in req:
+            subprocess.run(shlex.split(lines), **fff)
 
-        # embedding upscaler vae
-        jalanan = [
+    def sd_1_5(xxx, zzz, fff):
+        sd_clone(xxx, zzz, fff)
+
+        extras = [
             f"https://huggingface.co/pantat88/ui/resolve/main/embeddings.zip {zzz}",
             f"https://civitai.com/api/download/models/150491 {zzz}/embeddings edgQuality.pt",
             f"https://huggingface.co/pantat88/ui/resolve/main/4x-UltraSharp.pth {zzz}/models/ESRGAN",
@@ -96,37 +88,27 @@ else:
             f"https://huggingface.co/pantat88/ui/resolve/main/4x_RealisticRescaler_100000_G.pth {zzz}/models/ESRGAN",
             f"https://huggingface.co/pantat88/ui/resolve/main/8x_RealESRGAN.pth {zzz}/models/ESRGAN",
             f"https://huggingface.co/pantat88/ui/resolve/main/4x_foolhardy_Remacri.pth {zzz}/models/ESRGAN",
-            f"https://huggingface.co/stabilityai/sd-vae-ft-mse-original/resolve/main/vae-ft-mse-840000-ema-pruned.safetensors {zzz}/models/VAE"]
+            f"https://huggingface.co/stabilityai/sd-vae-ft-mse-original/resolve/main/vae-ft-mse-840000-ema-pruned.safetensors {zzz}/models/VAE",
+            f"https://github.com/gutris1/segsmaker/raw/main/script/zrok_reg.py {zzz}/asd",
+            f"https://github.com/gutris1/segsmaker/raw/main/script/zrok.py {zzz}",
+            f"https://github.com/gutris1/segsmaker/raw/main/script/pinggy.py {zzz}"
+        ]
 
-        for janda in jalanan:
-            download(janda)
+        for items in extras:
+            download(items)
 
-        unzip = f"unzip -qo {zzz}/embeddings.zip -d {zzz}/embeddings && rm {zzz}/embeddings.zip"
-        subprocess.run(unzip, **fff)
+        get_ipython().system(f"unzip -qo {zzz}/embeddings.zip -d {zzz}/embeddings && rm {zzz}/embeddings.zip")
 
-        # extension
+        say("<br><b>【{red} Installing Extensions{d} 】{red}</b>")
         os.chdir(f"{zzz}/extensions")
         clone(f"{zzz}/asd/ext-1_5.txt")
 
-        weww = f"{zzz}/asd/cn-1_5.py"
-        woww = f"{zzz}/asd/controlnet.py"
-        os.rename(weww, woww)
+        os.rename(f"{zzz}/asd/cn-1_5.py", f"{zzz}/asd/controlnet.py")
 
     def sd_xl(xxx, zzz, fff):
-        asu = f"git clone -q -b {version} https://github.com/gutris1/asd"
-        subprocess.run(asu, **fff)
+        sd_clone(xxx, zzz, fff)
 
-        time.sleep(2)
-        pull(f"https://github.com/gutris1/segsmaker sd {zzz}")
-
-        # requirements , tmp symlink
-        os.chdir(zzz)
-        minyak = gorengan(xxx, zzz)
-        for tepung in minyak:
-            subprocess.run(tepung, **fff)
-
-        # embedding upscaler vae
-        jalanan = [
+        extras = [
             f"https://civitai.com/api/download/models/182974 {zzz}/embeddings",
             f"https://civitai.com/api/download/models/159385 {zzz}/embeddings",
             f"https://civitai.com/api/download/models/159184 {zzz}/embeddings",
@@ -136,36 +118,40 @@ else:
             f"https://huggingface.co/pantat88/ui/resolve/main/4x_RealisticRescaler_100000_G.pth {zzz}/models/ESRGAN",
             f"https://huggingface.co/pantat88/ui/resolve/main/8x_RealESRGAN.pth {zzz}/models/ESRGAN",
             f"https://huggingface.co/pantat88/ui/resolve/main/4x_foolhardy_Remacri.pth {zzz}/models/ESRGAN",
-            f"https://civitai.com/api/download/models/264491 {zzz}/models/VAE XL_VAE_F1.safetensors"]
+            f"https://civitai.com/api/download/models/264491 {zzz}/models/VAE XL_VAE_F1.safetensors",
+            f"https://github.com/gutris1/segsmaker/raw/main/script/zrok_reg.py {zzz}/asd",
+            f"https://github.com/gutris1/segsmaker/raw/main/script/zrok.py {zzz}",
+            f"https://github.com/gutris1/segsmaker/raw/main/script/pinggy.py {zzz}"
+        ]
 
-        for janda in jalanan:
-            download(janda)
+        for items in extras:
+            download(items)
 
-        # extension
+        say("<br><b>【{red} Installing Extensions{d} 】{red}</b>")
         os.chdir(f"{zzz}/extensions")
         clone(f"{zzz}/asd/ext-xl.txt")
 
-        weww = f"{zzz}/asd/cn-xl.py"
-        woww = f"{zzz}/asd/controlnet.py"
-        os.rename(weww, woww)
+        os.rename(f"{zzz}/asd/cn-xl.py", f"{zzz}/asd/controlnet.py")
 
-    def zrok_in():
-        zorok = f"{xxx}/.zrok/bin"
-        os.makedirs(zorok, exist_ok=True)
-        tarok = f"{zorok}/zrok_0.4.25_linux_amd64.tar.gz"
-        subprocess.run(f"curl -sLo {tarok} https://github.com/openziti/zrok/releases/download/v0.4.25/zrok_0.4.25_linux_amd64.tar.gz", **fff)
-        subprocess.run(f"tar -xzf {tarok} -C {zorok} --wildcards *zrok", **fff)
-        subprocess.run(f"rm -rf {xxx}/.cache/*", **fff)
-        os.remove(tarok)
+    def zrok_install():
+        zrok = Path(f"{xxx}/.zrok/bin")
+        zrok.mkdir(parents=True, exist_ok=True)
+        url = "https://github.com/openziti/zrok/releases/download/v0.4.25/zrok_0.4.25_linux_amd64.tar.gz"
+        z = zrok / Path(url).name
 
-    def install(selection):  
+        get_ipython().system(f"curl -sLo {z} {url}")
+        get_ipython().system(f"tar -xzf {z} -C {zrok} --wildcards *zrok")
+        get_ipython().system(f"rm -rf {xxx}/.cache/* {z}")
+
+    def sd_install(selection):  
         with garis:
             display(HTML(gariz))
 
         with sd_setup:
             sd_setup.clear_output()
-            say("【{red} Installing Stable Diffusion{d} 】{red}")
             os.chdir(xxx)
+            say("<b>【{red} Installing Stable Diffusion{d} 】{red}</b>")
+            get_ipython().system(f"git clone -q -b {version} https://github.com/gutris1/asd")
 
             if selection == 'SD 1.5':
                 sd_1_5(xxx, zzz, fff)
@@ -175,7 +161,7 @@ else:
             with garis:
                 garis.clear_output()
                 
-            say("【{red} Done{d} 】{red}")
+            say("<br><b>【{red} Done{d} 】{red}</b>")
 
     def cb(button):
         selected[0] = button.description
@@ -186,7 +172,7 @@ else:
         if selection:
             widgets.Widget.close(boxxx)
             sd_setup.clear_output()
-            install(selection)
+            sd_install(selection)
 
         else:
             with sd_setup:
@@ -200,5 +186,5 @@ else:
 
     ccss(mama)
     display(boxxx, sd_setup, garis)
-    zrok_in()
+    zrok_install()
     tempe()

@@ -1,10 +1,15 @@
 from threading import Timer
 from queue import Queue
 from pyngrok import ngrok
-import sys
-import os
+from pathlib import Path
+import sys, os
 
-os.environ['LD_PRELOAD'] = '/home/studio-lab-user/.conda/envs/default/lib/libtcmalloc_minimal.so.4'
+if 'LD_PRELOAD' not in os.environ:
+    os.environ['LD_PRELOAD'] = '/home/studio-lab-user/.conda/envs/default/lib/libtcmalloc_minimal.so.4'
+
+tmp = ["/tmp/ckpt", "/tmp/lora", "/tmp/controlnet"]
+for path in tmp:
+    Path(path).mkdir(parents=True, exist_ok=True)
 
 def ngrok_tunnel(port, queue, auth_token):
     ngrok.set_auth_token(auth_token)

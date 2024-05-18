@@ -1,10 +1,13 @@
 from IPython.display import display, HTML, clear_output
-from ipywidgets import widgets, Layout
-import os
 from nenen88 import download, say, tempe
+from ipywidgets import widgets, Layout
+from pathlib import Path
+import os
 
-bura = "/home/studio-lab-user/forge/asd/cn-xl.css"
-with open(bura, "r") as oppai:
+path = Path(__file__).parent.parent
+css = Path(__file__).parent / "cn-xl.css"
+
+with open(css, "r") as oppai:
     susu = oppai.read()
 display(HTML(f"<style>{susu}</style>"))
     
@@ -88,16 +91,17 @@ url_list = {
 
     "IP Adapter FaceID SDXL": [
         "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid_sdxl.bin ip-adapter-faceid_sdxl.bin",
-        "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid_sdxl_lora.safetensors ~/forge/models/Lora/tmp_Lora \
+        f"https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid_sdxl_lora.safetensors {path}/models/Lora/tmp_lora \
         ip-adapter-faceid_sdxl_lora.safetensors"],
     "IP Adapter FaceID Plusv2 SDXL": [
         "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-plusv2_sdxl.bin ip-adapter-faceid-plusv2_sdxl.bin",
-        "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-plusv2_sdxl_lora.safetensors ~/forge/models/Lora/tmp_Lora \
+        f"https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-plusv2_sdxl_lora.safetensors {path}/models/Lora/tmp_lora \
         ip-adapter-faceid-plusv2_sdxl_lora.safetensors"],
     
     "Instant ID": [
         "https://huggingface.co/InstantX/InstantID/resolve/main/ip-adapter.bin ip-adapter_instant_id_sdxl.bin",
-        "https://huggingface.co/InstantX/InstantID/resolve/main/ControlNetModel/diffusion_pytorch_model.safetensors control_instant_id_sdxl.safetensors"]}
+        "https://huggingface.co/InstantX/InstantID/resolve/main/ControlNetModel/diffusion_pytorch_model.safetensors control_instant_id_sdxl.safetensors"]
+}
 
 list_half = len(url_list) // 2
 half_list_1 = dict(list(url_list.items())[:list_half])
@@ -161,7 +165,7 @@ def d_b_click(b):
         
     with dbo:
         say("【{red} Downloading{cyan} Controlnet{magenta} Models{yellow} 】{red}")
-        os.chdir("/home/studio-lab-user/forge/models/ControlNet")
+        os.chdir(f"{path}/models/ControlNet")
         
         for url in surl:
             download(url)

@@ -1,16 +1,25 @@
+import shlex
 import subprocess
-import os
+from pathlib import Path
+from IPython import get_ipython
 
-minyak = [
-    ['rm', '-rf', '~/tmp/*', '~/tmp', '~/ComfyUI/models/checkpoints', '~/ComfyUI/models/loras', '~/ComfyUI/models/controlnet'],
-    ['ln', '-vs', '/tmp', '~/tmp'],
-    ['ln', '-vs', '/tmp/models', '~/ComfyUI/models/checkpoints'],
-    ['ln', '-vs', '/tmp/Lora', '~/ComfyUI/models/loras'],
-    ['ln', '-vs', '/tmp/ControlNet', '~/ComfyUI/models/controlnet'],
-    ['unzip', '-o', '~/ComfyUI/models/embeddings.zip', '-d', '~/ComfyUI/models/embeddings'],
-    ['rm', '~/ComfyUI/models/embeddings.zip']
+list_1 = [
+    "rm -rf ~/tmp/* ~/tmp ~/ComfyUI/models/checkpoints ~/ComfyUI/models/loras ~/ComfyUI/models/controlnet",
+    "unzip -qo ~/ComfyUI/models/embeddings.zip -d ~/ComfyUI/models/embeddings",
+    "rm -rf ~/ComfyUI/models/embeddings.zip"
 ]
 
-for tepung in minyak:
-    gorengan = [os.path.expanduser(arg) for arg in tepung]
-    subprocess.run(gorengan, check=True)
+list_2 = [
+    "ln -vs /tmp ~/tmp",
+    "ln -vs /tmp/ckpt ~/ComfyUI/models/checkpoints",
+    "ln -vs /tmp/lora ~/ComfyUI/models/loras",
+    "ln -vs /tmp/controlnet ~/ComfyUI/models/controlnet"
+]
+
+for cmd in list_1:
+    get_ipython().system(cmd)
+
+for cmd in list_2:
+    run = shlex.split(cmd)
+    run = [str(Path(arg).expanduser()) for arg in run]
+    subprocess.run(run, check=True)
