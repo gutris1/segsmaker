@@ -88,7 +88,11 @@ else:
             f"https://huggingface.co/pantat88/ui/resolve/main/4x_RealisticRescaler_100000_G.pth {zzz}/models/ESRGAN",
             f"https://huggingface.co/pantat88/ui/resolve/main/8x_RealESRGAN.pth {zzz}/models/ESRGAN",
             f"https://huggingface.co/pantat88/ui/resolve/main/4x_foolhardy_Remacri.pth {zzz}/models/ESRGAN",
-            f"https://huggingface.co/stabilityai/sd-vae-ft-mse-original/resolve/main/vae-ft-mse-840000-ema-pruned.safetensors {zzz}/models/VAE"]
+            f"https://huggingface.co/stabilityai/sd-vae-ft-mse-original/resolve/main/vae-ft-mse-840000-ema-pruned.safetensors {zzz}/models/VAE",
+            f"https://github.com/gutris1/segsmaker/raw/main/script/zrok_reg.py {zzz}/asd",
+            f"https://github.com/gutris1/segsmaker/raw/main/script/zrok.py {zzz}",
+            f"https://github.com/gutris1/segsmaker/raw/main/script/pinggy.py {zzz}"
+        ]
 
         for items in extras:
             download(items)
@@ -114,7 +118,11 @@ else:
             f"https://huggingface.co/pantat88/ui/resolve/main/4x_RealisticRescaler_100000_G.pth {zzz}/models/ESRGAN",
             f"https://huggingface.co/pantat88/ui/resolve/main/8x_RealESRGAN.pth {zzz}/models/ESRGAN",
             f"https://huggingface.co/pantat88/ui/resolve/main/4x_foolhardy_Remacri.pth {zzz}/models/ESRGAN",
-            f"https://civitai.com/api/download/models/264491 {zzz}/models/VAE XL_VAE_F1.safetensors"]
+            f"https://civitai.com/api/download/models/264491 {zzz}/models/VAE XL_VAE_F1.safetensors",
+            f"https://github.com/gutris1/segsmaker/raw/main/script/zrok_reg.py {zzz}/asd",
+            f"https://github.com/gutris1/segsmaker/raw/main/script/zrok.py {zzz}",
+            f"https://github.com/gutris1/segsmaker/raw/main/script/pinggy.py {zzz}"
+        ]
 
         for items in extras:
             download(items)

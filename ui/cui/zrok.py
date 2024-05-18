@@ -9,19 +9,25 @@ for path in tmp:
     Path(path).mkdir(parents=True, exist_ok=True)
 
 def zrok_enable(token):
-    oppai = subprocess.run(['/home/studio-lab-user/.zrok/bin/zrok', 'enable', token],
-                           check=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+    oppai = subprocess.run(
+        ['/home/studio-lab-user/.zrok/bin/zrok', 'enable', token],
+        check=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True
+    )
 
     if oppai.returncode == 0:
         print(f"\n[ZROK] environment enabled.\n")
 
 def zrok_launch(launch_args):
     try:
-        zrok_ = subprocess.Popen(["/home/studio-lab-user/.zrok/bin/zrok", "share", "public", "localhost:8188", "--headless"],
-                                 stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+        zrok_ = subprocess.Popen(
+            ["/home/studio-lab-user/.zrok/bin/zrok", "share", "public", "localhost:8188", "--headless"],
+            stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True
+        )
         
-        launch_process = subprocess.Popen(['python', 'main.py'] + launch_args,
-                                          stdout=sys.stdout, stderr=sys.stdout, text=True)
+        launch_process = subprocess.Popen(
+            ['python', 'main.py'] + launch_args,
+            stdout=sys.stdout, stderr=sys.stdout, text=True
+        )
         
         get_url = re.compile(r'https?://[^\s]*\.zrok\.io')
         for line in zrok_.stdout:

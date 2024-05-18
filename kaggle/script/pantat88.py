@@ -200,7 +200,7 @@ def ariari(fc, fn):
             
             for outputs in lines.splitlines():
                 if 'errorCode' in outputs:
-                    print("  " + lines)
+                    print("  " + outputs)
                     
                 if re.match(r'\[#\w{6}\s.*\]', outputs):
                     print("\r" + " "*80 + "\r", end="")
