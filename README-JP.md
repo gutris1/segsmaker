@@ -5,14 +5,13 @@
 | SD 1.5 / SDXL | [![Open in Studio Lab](https://studiolab.sagemaker.aws/studiolab.svg)](https://studiolab.sagemaker.aws/import/github/gutris1/segsmaker/blob/main/Segsmaker.ipynb) |
 | :---------------------------------------- | :-----------------------------------------------------------------------------------------------------------------: |
 | SD Forge | [![Open in Studio Lab](https://studiolab.sagemaker.aws/studiolab.svg)](https://studiolab.sagemaker.aws/import/github/gutris1/segsmaker/blob/main/Segsmaker_Forge.ipynb) |
-| SD 1.5 AnimateDiff | [![Open in Studio Lab](https://studiolab.sagemaker.aws/studiolab.svg)](https://studiolab.sagemaker.aws/import/github/gutris1/segsmaker/blob/main/Segsmaker_AnimateDiff_SD1.5.ipynb) |
-| ComfyUI AnimateDiff Evolved | [![Open in Studio Lab](https://studiolab.sagemaker.aws/studiolab.svg)](https://studiolab.sagemaker.aws/import/github/gutris1/segsmaker/blob/main/Segsmaker_ComfyUI.ipynb) |<br />
+| ComfyUI | [![Open in Studio Lab](https://studiolab.sagemaker.aws/studiolab.svg)](https://studiolab.sagemaker.aws/import/github/gutris1/segsmaker/blob/main/Segsmaker_ComfyUI.ipynb) |<br />
 
 こちらで私を見つけることができます https://discord.gg/k5BwmmvJJU
 
 # 変更履歴
 ### 2024-04-17
-- AUTO1111 SD Webuiを1.9.0に更新しました。
+- AUTO1111 SD Webuiを1.9.3に更新しました。
 - プリインストール拡張機能リストから[batchlinks-webui](https://github.com/etherealxx/batchlinks-webui)拡張機能を削除しました。
 - プリインストール拡張機能リストから[Stable-Diffusion-Webui-Civitai-Helper](https://github.com/zixaphir/Stable-Diffusion-Webui-Civitai-Helper)拡張機能を削除しました。
 - プリインストール拡張機能リストに[sd-hub](https://github.com/gutris1/sd-hub)を追加しました。
