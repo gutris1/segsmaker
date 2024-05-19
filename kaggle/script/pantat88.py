@@ -190,23 +190,51 @@ def ariari(fc, fn):
     result = ""
     br = False
 
+    code = []
+    err = []
+
+    MAGENTA = "\033[35m"
+    RED = "\033[31m"
+    CYAN = "\033[36m"
+    GREEN = "\033[38;5;35m"
+    YELLOW = "\033[33m"
+    BLUE = "\033[38;5;69m"
+    PURPLE = "\033[38;5;135m"
+    RESET = "\033[0m"
+
     while True:
         lines = qqqqq.stderr.readline()
         if lines == '' and qqqqq.poll() is not None:
             break
-            
+
         if lines:
             result += lines
             
             for outputs in lines.splitlines():
                 if 'errorCode' in outputs:
-                    print("  " + outputs)
-                    
+                    code.append(outputs)
+                if '|' in outputs and 'ERR' in outputs:
+                    outputs = re.sub(r'(\|\s*)(ERR)(\s*\|)', f'\\1{RED}\\2{RESET}\\3', outputs)
+                    err.append(outputs)
+                
                 if re.match(r'\[#\w{6}\s.*\]', outputs):
-                    print("\r" + " "*80 + "\r", end="")
-                    print(f"  {outputs}", end="", flush=True)
+                    outputs = re.sub(r'\[', MAGENTA + '【' + RESET, outputs)
+                    outputs = re.sub(r'\]', MAGENTA + '】' + RESET, outputs)
+                    outputs = re.sub(r'(#)(\w+)', f'\\1{GREEN}\\2{RESET}', outputs)
+                    outputs = re.sub(r'(\(\d+%\))', f'{CYAN}\\1{RESET}', outputs)
+                    outputs = re.sub(r'(CN:)(\d+)', f"\\1{BLUE}\\2{RESET}", outputs)
+                    outputs = re.sub(r'(DL:)(\d+\w+)', f"\\1{PURPLE}\\2{RESET}", outputs)
+                    outputs = re.sub(r'(ETA:)(\d+\w+)', f"\\1{YELLOW}\\2{RESET}", outputs)
+                    lines = outputs.splitlines()
+                    for line in lines:
+                        print(f"\r{' '*180}\r {line}", end="")
+                        sys.stdout.flush()
                     br = True
                     break
+        
+    error = code + err
+    for lines in error:
+        print(f"  {lines}")
 
     if br:
         print()
@@ -214,7 +242,8 @@ def ariari(fc, fn):
     stripe = result.find("======+====+===========")
     if stripe != -1:
         for lines in result[stripe:].splitlines():
-            if "|" in lines:
+            if '|' in lines and 'OK' in lines:
+                lines = re.sub(r'(\|\s*)(OK)(\s*\|)', f'\\1{GREEN}\\2{RESET}\\3', lines)
                 print(f"  {lines}")
 
     qqqqq.wait()
