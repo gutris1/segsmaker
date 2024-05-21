@@ -74,9 +74,9 @@ def ccccc():
          "【 Installing Python 3.10.12 】", "#F50707"),
         ("conda clean -y --all",
          "【 Cleaning Conda 】", "cyan"),
-        ("pip install torch==2.2.0+cu121 torchsde torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu121",
+        ("pip install torch==2.3.0+cu121 torchsde torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu121",
          "【 Installing Torch 】", "magenta"),
-        ("pip install xformers==0.0.24 triton psutil aria2 gdown",
+        ("pip install xformers==0.0.26.post1 triton psutil aria2 gdown",
          "【 Installing xformers 】", "orange")
     ]
 
