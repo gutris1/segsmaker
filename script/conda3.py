@@ -70,8 +70,8 @@ def ccccc():
     kamar_kos = [
         ("conda install -y conda openssh glib gxx_linux-64 ffmpeg imageio imageio-ffmpeg av gst-libav gperftools pyngrok",
          "【 Installing Anaconda 】", "#42b02b"),
-        ("conda install -y -n base python=3.10.12",
-         "【 Installing Python 3.10.12 】", "#F50707"),
+        ("conda install -y -n base python=3.10.13",
+         "【 Installing Python 3.10.13 】", "#F50707"),
         ("conda clean -y --all",
          "【 Cleaning Conda 】", "cyan"),
         ("pip install torch==2.3.0+cu121 torchsde torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu121",
