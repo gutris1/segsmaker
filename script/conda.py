@@ -68,7 +68,7 @@ def ccccc():
         display(HTML(garizzzz))
     
     kamar_kos = [
-        ("conda install -y conda==23.11.0 glib gperftools openssh",
+        ("conda install -yc defaults conda=23.11.0 glib gperftools openssh",
          "【 Installing Anaconda 】", "#42b02b"),
         ("conda update --all",
          "【 Installing Conda Packages 】", "yellow"),
