@@ -68,9 +68,11 @@ def ccccc():
         display(HTML(garizzzz))
     
     kamar_kos = [
-        ("conda install -y conda openssh glib gxx_linux-64 ffmpeg imageio imageio-ffmpeg av gst-libav gperftools pyngrok",
+        ("conda install -y conda=23.11.0",
          "【 Installing Anaconda 】", "#42b02b"),
-        ("conda install -y -n base python=3.10.13",
+        ("conda install -y glib gperftools openssh gxx_linux-64 ffmpeg imageio imageio-ffmpeg av gst-libav gperftools pyngrok",
+         "【 Installing Conda Packages 】", "yellow"),
+        ("conda install -y python=3.10.13",
          "【 Installing Python 3.10.13 】", "#F50707"),
         ("conda clean -y --all",
          "【 Cleaning Conda 】", "cyan"),
