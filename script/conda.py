@@ -13,7 +13,6 @@ ewe = f"{xxx}/.your-civitai-api-key"
 uwaaah = Path(ewe) / "api_key.json"
 
 jalanan = [f"curl -sLo {fsp} https://github.com/gutris1/segsmaker/raw/main/script/pantat88.py",
-           f"curl -sLo {xxx}/.condarc https://github.com/gutris1/segsmaker/raw/main/script/.condarc",
            f"curl -sLo {nsp} https://github.com/gutris1/segsmaker/raw/main/script/nenen88.py",
            f"curl -sLo {sp}/00-startup.py https://github.com/gutris1/segsmaker/raw/main/script/00-startup.py",
            f"curl -sLo {cp} https://github.com/gutris1/segsmaker/raw/main/script/pantat88.css"]
@@ -69,7 +68,7 @@ def ccccc():
         display(HTML(garizzzz))
     
     kamar_kos = [
-        ("conda install -y conda=24.5.0 glib gperftools openssh",
+        ("conda install -y conda==23.11.0 glib gperftools openssh",
          "【 Installing Anaconda 】", "#42b02b"),
         ("conda update --all",
          "【 Installing Conda Packages 】", "yellow"),
