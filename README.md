@@ -9,6 +9,9 @@ with temporary folder for Checkpoint, LoRA and ControlNET models [<img align="ri
 you can find me here https://discord.gg/k5BwmmvJJU
 
 # Changelog
+### 2024-05-29
+- Fixed Conda Installation.
+
 ### 2024-05-18
 - Upgraded Torch to version 2.2.0+cu121.
 - Added Pinggy tunnel.
