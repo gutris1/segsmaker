@@ -69,7 +69,7 @@ def ccccc():
         display(HTML(garizzzz))
     
     kamar_kos = [
-        ("conda install -y conda glib gperftools",
+        ("conda install -y conda==23.11.0 glib gperftools",
          "【 Installing Anaconda 】", "#42b02b"),
         ("conda install -y -n base python=3.10.13",
          "【 Installing Python 3.10.13 】", "#F50707"),
