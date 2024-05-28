@@ -69,12 +69,10 @@ def ccccc():
         display(HTML(garizzzz))
     
     kamar_kos = [
-        ("conda install -y conda==23.11.0 glib gperftools",
+        ("conda install -y conda==23.11.0 glib gperftools openssh",
          "【 Installing Anaconda 】", "#42b02b"),
         ("conda install -y -n base python=3.10.13",
          "【 Installing Python 3.10.13 】", "#F50707"),
-        ("conda install -yc conda-forge openssh",
-         "【 Installing openssh 】", "yellow"),
         ("conda clean -y --all",
          "【 Cleaning Conda 】", "cyan"),
         ("pip install torch==2.3.0+cu121 torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu121",
