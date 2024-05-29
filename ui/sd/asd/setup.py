@@ -5,7 +5,7 @@ from pathlib import Path
 import subprocess, time, os, shlex
 from nenen88 import pull, say, download, clone, tempe
 
-version = "v1.9.3"
+version = "v1.9.4"
 xxx = "/home/studio-lab-user"
 zzz = Path(xxx) / "asd"
 
