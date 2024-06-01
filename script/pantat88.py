@@ -407,34 +407,35 @@ def tempe(line):
 def delete(line):
     if 'LD_PRELOAD' in os.environ:
         del os.environ['LD_PRELOAD']
-        
-    del_input = line.strip() if line else '/home/studio-lab-user'
+    
+    del_input = Path(line.strip()) if line else Path('/home/studio-lab-user')
+    
     del_list = [
-        '/tmp/*',
-        '/tmp',
-        '/asd',
-        '/forge',
-        '/ComfyUI',
-        '/.cache/*',
-        '/.config/*',
-        '/.conda/*',
-        '/.local/share/jupyter/runtime/*',
-        '/.ipython/profile_default/*']
-
+        'tmp/*',
+        'tmp',
+        'asd',
+        'forge',
+        'ComfyUI',
+        '.cache/*',
+        '.config/*',
+        '.conda/*',
+        '.local/share/jupyter/runtime/*',
+        '.ipython/profile_default/*'
+    ]
+    
     del_cmd = [
-        f"rm -rf {' '.join([del_input + t for t in del_list])}",
+        f"rm -rf {' '.join([str(del_input / t) for t in del_list])}",
+        f"rm -rf /opt/conda/*",
         f"find {del_input} -type d -name '.ipynb_checkpoints' -exec rm -rf {{}} +"
     ]
 
     for cmd_del in del_cmd:
-        subprocess.run(
-            shlex.split(cmd_del), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
-        )
+        subprocess.run(cmd_del, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     is_nb = False
     try:
         nb_find = f"find {del_input} -type d -name '.*' -prune -o -type f -name '*.ipynb' -print"
-        nb_files = subprocess.check_output(shlex.split(nb_find), text=True).strip().split('\n')
+        nb_files = subprocess.check_output(nb_find, shell=True, text=True, stderr=subprocess.DEVNULL).strip().split('\n')
         
         for nb_path in nb_files:
             if nb_path:
