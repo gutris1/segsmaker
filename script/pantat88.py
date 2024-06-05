@@ -474,6 +474,7 @@ def nb_clear(nb_path):
 @register_line_magic
 def storage(path):
     get_ipython().system("rm -rf /home/studio-lab-user/.cache/*")
+    get_ipython().system("conda clean -qy --all")
 
     path = Path(path)
 
