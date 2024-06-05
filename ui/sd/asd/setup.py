@@ -73,6 +73,8 @@ else:
 
         os.chdir(zzz)
         req = req_list(xxx, zzz)
+        print("Installing requirements...")
+
         for lines in req:
             subprocess.run(shlex.split(lines), **fff)
 
