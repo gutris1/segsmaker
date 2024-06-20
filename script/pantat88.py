@@ -472,16 +472,20 @@ def nb_clear(nb_path):
 
 
 @register_line_magic
-def storage(path):
+def storage(line):
     get_ipython().system("rm -rf /home/studio-lab-user/.cache/*")
-    get_ipython().system("conda clean -qy --all")
+    paths = ["/home/studio-lab-user", "/tmp"]
 
-    path = Path(path)
+    def size1(size, dcml=1):
+        if size == 0:
+            return "0 KB"
 
-    def size1(size):
         for unit in ['B', 'KB', 'MB', 'GB', 'TB']:
             if size < 1024.0:
-                return f"{size:.2f} {unit}"
+                if unit in ['B', 'KB']:
+                    return f"{size:.0f} {unit}"
+                else:
+                    return f"{size:.{dcml}f} {unit}"
             size /= 1024.0
 
     def size2(size_in_kb):
@@ -498,32 +502,46 @@ def storage(path):
                     return f"{size_in_bytes:.1f} {unit}"
             size_in_bytes /= base
 
-    usage = psutil.disk_usage(path)
-    size_str = size1(usage.total)
-    used_str = size1(usage.used)
-    free_str = size1(usage.free)
+    for path_str in paths:
+        path = Path(path_str)
 
-    used_percentage = f"{usage.percent:.1f}%".ljust(6)
-    free_percentage = f"{100 - usage.percent:.1f}%".ljust(6)
+        usage = psutil.disk_usage(path)
+        size_str = size1(usage.total, dcml=0)
+        used_str = size1(usage.used, dcml=1)
+        free_str = size1(usage.free, dcml=1)
 
-    print(f"Size = {size_str:>8}")
-    print(f"Used = {used_str:>8} | {used_percentage}")
-    print(f"Free = {free_str:>8} | {free_percentage}")
-    print()
+        if path_str == "/home/studio-lab-user":
+            storage_type = "Persistent Storage"
+        elif path_str == "/tmp":
+            storage_type = "Temporary Storage"
 
-    du_process = subprocess.Popen(['du', '-h', '-k', '--max-depth=1', str(path)], stdout=subprocess.PIPE)
+        display(HTML(f"{storage_type}"))
+
+        print(f" Size = {size_str:>8}")
+        print(f" Used = {used_str:>8} | {usage.percent:.1f}%")
+        print(f" Free = {free_str:>8} | {100 - usage.percent:.1f}%")
+        print()
+
+    home_path = Path("/home/studio-lab-user")
+    du_process = subprocess.Popen(['du', '-h', '-k', '--max-depth=1', str(home_path)], stdout=subprocess.PIPE)
     du_output = du_process.communicate()[0].decode()
     lines = du_output.split('\n')
-    paths = [Path(line.split('\t')[1]) for line in lines if line]
+    sub_paths = [Path(line.split('\t')[1]) for line in lines if line]
     sizes_kb = [int(line.split('\t')[0]) for line in lines if line]
 
-    for path, size_kb in zip(paths, sizes_kb):
+    subdirectories = []
+
+    for sub_path, size_kb in zip(sub_paths, sizes_kb):
         formatted_size = size2(size_kb)
-        base_path = path.name
+        base_path = sub_path.name
 
         if base_path != 'studio-lab-user':
+            subdirectories.append((base_path, formatted_size))
+
+    if subdirectories:
+        for base_path, formatted_size in subdirectories:
             padding = " " * max(0, 9 - len(formatted_size))
-            print(f"/{base_path:<25} {padding}{formatted_size}")
+            print(f"/{base_path:<30} {padding}{formatted_size}")
 
 
 @register_cell_magic
