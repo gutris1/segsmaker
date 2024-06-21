@@ -70,16 +70,12 @@ def ccccc():
     kamar_kos = [
         ("conda install -yc conda-forge conda=23.11.0",
          "【 Installing Anaconda 】", "#42b02b"),
-        ("conda install -yc conda-forge glib gperftools openssh",
+        ("conda install -yc conda-forge glib gperftools openssh pv && pip install psutil aria2 gdown",
          "【 Installing Conda Packages 】", "yellow"),
         ("conda install -yc conda-forge python=3.10.13",
          "【 Installing Python 3.10.13 】", "#F50707"),
         ("conda clean -y --all",
-         "【 Cleaning Conda 】", "cyan"),
-        ("pip install torch==2.3.0+cu121 torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu121",
-         "【 Installing Torch 】", "magenta"),
-        ("pip install xformers==0.0.26.post1 triton psutil aria2 gdown",
-         "【 Installing xformers 】", "orange")
+         "【 Cleaning 】", "cyan")               
     ]
 
     for aku, kamu, dia in kamar_kos:
@@ -92,6 +88,7 @@ def ccccc():
         garis1.clear_output()
         display(HTML('<span style="color: cyan;">【 Done 】</span>'))
 
+    get_ipython().system('rm -rf /home/studio-lab-user/.cache/*')
     get_ipython().kernel.do_shutdown(True)
 
 def ddddd():
