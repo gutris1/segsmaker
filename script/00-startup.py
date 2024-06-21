@@ -1,3 +1,3 @@
-import sys
+import os
 
-sys.path.append("/home/studio-lab-user/.ipython/profile_default/startup")
+os.environ['PYTHONPATH'] = '/home/studio-lab-user/.ipython/profile_default/startup:' + os.environ.get('PYTHONPATH', '')
