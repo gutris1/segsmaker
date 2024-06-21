@@ -10,7 +10,7 @@ for path in tmp:
     Path(path).mkdir(parents=True, exist_ok=True)
 
 def launch():
-    os.system(f'python launch.py {" ".join(sys.argv[1:])} &'
+    os.system(f'/tmp/venv/bin/python3 launch.py {" ".join(sys.argv[1:])} &'
               f'ssh -o StrictHostKeyChecking=no -p 80 -R0:localhost:7860 a.pinggy.io > log.txt')
 
 def pinggy():
@@ -21,17 +21,12 @@ def pinggy():
                 url = line[line.find('http:'):line.find('.pinggy.link') + len('.pinggy.link')]
                 print(f'\n[pinggy] {url}\n')
                 return
-        pinggy()
 
-if __name__ == "__main__":
-    try:
-        p_app = Process(target=launch)
-        p_url = Process(target=pinggy)
+p_app = Process(target=launch)
+p_url = Process(target=pinggy)
 
-        p_app.start()
-        p_url.start()
+p_app.start()
+p_url.start()
 
-        p_app.join()
-        p_url.join()
-    except KeyboardInterrupt:
-        print("^C")
+p_app.join()
+p_url.join()
