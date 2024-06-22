@@ -1,6 +1,6 @@
-from multiprocessing import Process
+import os, sys, subprocess, time
+from threading import Thread
 from pathlib import Path
-import sys, time, os
 
 if 'LD_PRELOAD' not in os.environ:
     os.environ['LD_PRELOAD'] = '/home/studio-lab-user/.conda/envs/default/lib/libtcmalloc_minimal.so.4'
@@ -10,8 +10,12 @@ for path in tmp:
     Path(path).mkdir(parents=True, exist_ok=True)
 
 def launch():
-    os.system(f'/tmp/venv/bin/python3 launch.py {" ".join(sys.argv[1:])} &'
-              f'ssh -o StrictHostKeyChecking=no -p 80 -R0:localhost:7860 a.pinggy.io > log.txt')
+    webui = subprocess.Popen(['/tmp/venv/bin/python3', 'launch.py'] + sys.argv[1:])
+    ssh = subprocess.Popen(['ssh', '-o', 'StrictHostKeyChecking=no', '-p', '80', '-R0:localhost:7860', 'a.pinggy.io'],
+                           stdout=open('log.txt', 'w'))
+
+    webui.wait()
+    ssh.terminate()
 
 def pinggy():
     time.sleep(2)
@@ -22,11 +26,11 @@ def pinggy():
                 print(f'\n[pinggy] {url}\n')
                 return
 
-p_app = Process(target=launch)
-p_url = Process(target=pinggy)
+app = Thread(target=launch)
+url = Thread(target=pinggy)
 
-p_app.start()
-p_url.start()
+app.start()
+url.start()
 
-p_app.join()
-p_url.join()
+app.join()
+url.join()
