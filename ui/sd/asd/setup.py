@@ -57,7 +57,6 @@ else:
 
     def req_list(xxx, zzz):
         return [
-            f"pip install -q -r requirements.txt basicsr insightface onnxruntime-gpu",
             f"rm -rf {xxx}/tmp/* {xxx}/tmp {zzz}/models/Stable-diffusion/tmp_ckpt {zzz}/models/Lora/tmp_lora {zzz}/models/ControlNet",
             f"mkdir -p {zzz}/models/Lora",
             f"mkdir -p {zzz}/models/ESRGAN",
@@ -73,10 +72,29 @@ else:
 
         os.chdir(zzz)
         req = req_list(xxx, zzz)
-        print("Installing requirements...")
 
         for lines in req:
             subprocess.run(shlex.split(lines), **fff)
+            
+        py = [
+            f"https://github.com/gutris1/segsmaker/raw/main/script/zrok_reg.py {zzz}/asd",
+            f"https://github.com/gutris1/segsmaker/raw/main/script/zrok.py {zzz}",
+            f"https://github.com/gutris1/segsmaker/raw/main/script/pinggy.py {zzz}",
+            f"https://github.com/gutris1/segsmaker/raw/main/script/venv.py {zzz}"
+        ]
+        for items in py:
+            download(items)
+            
+        upscaler = [
+            f"https://huggingface.co/pantat88/ui/resolve/main/4x-UltraSharp.pth {zzz}/models/ESRGAN",
+            f"https://huggingface.co/pantat88/ui/resolve/main/4x-AnimeSharp.pth {zzz}/models/ESRGAN",
+            f"https://huggingface.co/pantat88/ui/resolve/main/4x_NMKD-Superscale-SP_178000_G.pth {zzz}/models/ESRGAN",
+            f"https://huggingface.co/pantat88/ui/resolve/main/4x_RealisticRescaler_100000_G.pth {zzz}/models/ESRGAN",
+            f"https://huggingface.co/pantat88/ui/resolve/main/8x_RealESRGAN.pth {zzz}/models/ESRGAN",
+            f"https://huggingface.co/pantat88/ui/resolve/main/4x_foolhardy_Remacri.pth {zzz}/models/ESRGAN"
+        ]
+        for items in upscaler:
+            download(items)
 
     def sd_1_5(xxx, zzz, fff):
         sd_clone(xxx, zzz, fff)
@@ -84,18 +102,8 @@ else:
         extras = [
             f"https://huggingface.co/pantat88/ui/resolve/main/embeddings.zip {zzz}",
             f"https://civitai.com/api/download/models/150491 {zzz}/embeddings edgQuality.pt",
-            f"https://huggingface.co/pantat88/ui/resolve/main/4x-UltraSharp.pth {zzz}/models/ESRGAN",
-            f"https://huggingface.co/pantat88/ui/resolve/main/4x-AnimeSharp.pth {zzz}/models/ESRGAN",
-            f"https://huggingface.co/pantat88/ui/resolve/main/4x_NMKD-Superscale-SP_178000_G.pth {zzz}/models/ESRGAN",
-            f"https://huggingface.co/pantat88/ui/resolve/main/4x_RealisticRescaler_100000_G.pth {zzz}/models/ESRGAN",
-            f"https://huggingface.co/pantat88/ui/resolve/main/8x_RealESRGAN.pth {zzz}/models/ESRGAN",
-            f"https://huggingface.co/pantat88/ui/resolve/main/4x_foolhardy_Remacri.pth {zzz}/models/ESRGAN",
-            f"https://huggingface.co/stabilityai/sd-vae-ft-mse-original/resolve/main/vae-ft-mse-840000-ema-pruned.safetensors {zzz}/models/VAE",
-            f"https://github.com/gutris1/segsmaker/raw/main/script/zrok_reg.py {zzz}/asd",
-            f"https://github.com/gutris1/segsmaker/raw/main/script/zrok.py {zzz}",
-            f"https://github.com/gutris1/segsmaker/raw/main/script/pinggy.py {zzz}"
+            f"https://huggingface.co/stabilityai/sd-vae-ft-mse-original/resolve/main/vae-ft-mse-840000-ema-pruned.safetensors {zzz}/models/VAE"
         ]
-
         for items in extras:
             download(items)
 
@@ -114,16 +122,7 @@ else:
             f"https://civitai.com/api/download/models/182974 {zzz}/embeddings",
             f"https://civitai.com/api/download/models/159385 {zzz}/embeddings",
             f"https://civitai.com/api/download/models/159184 {zzz}/embeddings",
-            f"https://huggingface.co/pantat88/ui/resolve/main/4x-UltraSharp.pth {zzz}/models/ESRGAN",
-            f"https://huggingface.co/pantat88/ui/resolve/main/4x-AnimeSharp.pth {zzz}/models/ESRGAN",
-            f"https://huggingface.co/pantat88/ui/resolve/main/4x_NMKD-Superscale-SP_178000_G.pth {zzz}/models/ESRGAN",
-            f"https://huggingface.co/pantat88/ui/resolve/main/4x_RealisticRescaler_100000_G.pth {zzz}/models/ESRGAN",
-            f"https://huggingface.co/pantat88/ui/resolve/main/8x_RealESRGAN.pth {zzz}/models/ESRGAN",
-            f"https://huggingface.co/pantat88/ui/resolve/main/4x_foolhardy_Remacri.pth {zzz}/models/ESRGAN",
-            f"https://civitai.com/api/download/models/264491 {zzz}/models/VAE XL_VAE_F1.safetensors",
-            f"https://github.com/gutris1/segsmaker/raw/main/script/zrok_reg.py {zzz}/asd",
-            f"https://github.com/gutris1/segsmaker/raw/main/script/zrok.py {zzz}",
-            f"https://github.com/gutris1/segsmaker/raw/main/script/pinggy.py {zzz}"
+            f"https://civitai.com/api/download/models/264491 {zzz}/models/VAE XL_VAE_F1.safetensors"
         ]
 
         for items in extras:
