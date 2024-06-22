@@ -1,4 +1,5 @@
-import subprocess, sys, os, re
+import os, sys, json, re, subprocess, time
+from threading import Thread
 from pathlib import Path
 
 if 'LD_PRELOAD' not in os.environ:
@@ -9,43 +10,57 @@ for path in tmp:
     Path(path).mkdir(parents=True, exist_ok=True)
 
 def zrok_enable(token):
-    oppai = subprocess.run(
-        ['/home/studio-lab-user/.zrok/bin/zrok', 'enable', token],
-        check=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True
-    )
+    zrok = Path('/home/studio-lab-user/.zrok')
+    if not zrok.exists():
+        print("ZROK is not installed.")
+        return
 
-    if oppai.returncode == 0:
-        print(f"\n[ZROK] environment enabled.\n")
+    env = zrok / 'environment.json'
+    if env.exists():
+        with open(env, 'r') as f:
+            value = json.load(f)
+            zrok_token = value.get('zrok_token')
 
-def zrok_launch(launch_args):        
-    try:
-        zrok_ = subprocess.Popen(
-            ["/home/studio-lab-user/.zrok/bin/zrok", "share", "public", "localhost:7860", "--headless"],
-            stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True
-        )
-        
-        launch_process = subprocess.Popen(
-            ['python', 'launch.py'] + launch_args,
-            stdout=sys.stdout, stderr=sys.stdout, text=True
-        )
-        
-        get_url = re.compile(r'https?://[^\s]*\.zrok\.io')
-        for line in zrok_.stdout:
-            urls = get_url.findall(line)
-            for url in urls:
-                print(f"\n[ZROK] {url}\n")
-                
-        zrok_.wait()
-        
-    except:
-        pass
+        if zrok_token == token:
+            pass
+        else:
+            os.system(f'zrok enable {token}')
+    else:
+        os.system(f'zrok enable {token}')
 
-if __name__ == "__main__":
+def launch(zrok):
+    webui = subprocess.Popen(['/tmp/venv/bin/python3', 'launch.py'] + sys.argv[2:])
+    zrok.append(subprocess.Popen(["zrok", "share", "public", "localhost:7860", "--headless"],
+                                 stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True))
+
+    webui.wait()
+    zrok[0].terminate()
+
+def zrok_url(zrok):
+    time.sleep(2)
+    get_url = re.compile(r'https?://[^\s]*\.zrok\.io')
+    for line in zrok[0].stdout:
+        urls = get_url.findall(line)
+        for url in urls:
+            print(f"\n【ZROK】{url}\n")
+            break
+
+try:
     if len(sys.argv) < 2:
         sys.exit(1)
-    
+
     token = sys.argv[1]
-    launch_args = sys.argv[2:]
-    
     zrok_enable(token)
-    zrok_launch(launch_args)
+
+    zrok = []
+    app = Thread(target=launch, args=(zrok,))
+    url = Thread(target=zrok_url, args=(zrok,))
+
+    app.start()
+    url.start()
+
+    app.join()
+    url.join()
+
+except KeyboardInterrupt:
+    pass
