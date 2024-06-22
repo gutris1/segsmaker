@@ -1,4 +1,4 @@
-from IPython.display import clear_output
+from IPython.display import clear_output, Image, display
 from IPython import get_ipython
 from pathlib import Path
 from nenen88 import download, say, tempe
@@ -7,10 +7,13 @@ import os
 url = 'https://huggingface.co/pantat88/back_up/resolve/main/venv.tar.lz4'
 fn = Path(url).name
 tmp_ = Path('/tmp')
-venv_ = tmp_ / 'venv'
+venv_ = tmp_ / "venv"
+home = Path.home()
+conda = home / ".conda"
 cwd = os.getcwd()
 
-print('checking venv...')
+img = conda / "loading.png"
+display(Image(filename=str(img)))
 
 def check(folder):
     du = get_ipython().getoutput(f'du -s -b {folder}')
