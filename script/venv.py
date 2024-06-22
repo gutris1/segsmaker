@@ -1,7 +1,7 @@
 from IPython.display import clear_output
 from IPython import get_ipython
 from pathlib import Path
-from nenen import download, say, tempe
+from nenen88 import download, say, tempe
 import os
 
 url = 'https://huggingface.co/pantat88/back_up/resolve/main/venv.tar.lz4'
