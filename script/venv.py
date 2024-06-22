@@ -10,7 +10,7 @@ tmp_ = Path('/tmp')
 venv_ = tmp_ / 'venv'
 cwd = os.getcwd()
 
-say('【{red} Checking VENV{d} 】{red}')
+print('checking venv...')
 
 def check(folder):
     du = get_ipython().getoutput(f'du -s -b {folder}')
