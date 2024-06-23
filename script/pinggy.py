@@ -23,7 +23,7 @@ def pinggy():
         for line in file:
             if 'http:' in line and '.pinggy.link' in line:
                 url = line[line.find('http:'):line.find('.pinggy.link') + len('.pinggy.link')]
-                print(f'\n[pinggy] {url}\n')
+                print(f'\n【PINGGY】{url}\n')
                 return
 
 app = Thread(target=launch)
