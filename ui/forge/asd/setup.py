@@ -84,6 +84,7 @@ else:
             f"https://github.com/gutris1/segsmaker/raw/main/script/zrok_reg.py {webui}/asd",
             f"https://github.com/gutris1/segsmaker/raw/main/script/zrok.py {webui}",
             f"https://github.com/gutris1/segsmaker/raw/main/script/pinggy.py {webui}",
+            f"https://github.com/gutris1/segsmaker/raw/main/script/ngrok.py {webui}",
             f"https://github.com/gutris1/segsmaker/raw/main/script/venv.py {webui}"]
             
         upscalers = [
