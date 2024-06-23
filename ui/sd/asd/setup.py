@@ -101,6 +101,8 @@ else:
         sd_clone(home, webui, devnull)
 
         extras = [
+            f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn-1_5.css {webui}/asd",
+            f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn-1_5.py {webui}/asd",
             f"https://huggingface.co/pantat88/ui/resolve/main/embeddings.zip {webui}",
             f"https://civitai.com/api/download/models/150491 {webui}/embeddings edgQuality.pt",
             f"https://huggingface.co/stabilityai/sd-vae-ft-mse-original/resolve/main/vae-ft-mse-840000-ema-pruned.safetensors {webui}/models/VAE"]
@@ -120,6 +122,8 @@ else:
         sd_clone(home, webui, devnull)
 
         extras = [
+            f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn-xl.css {webui}/asd",
+            f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn-xl.py {webui}/asd",
             f"https://civitai.com/api/download/models/182974 {webui}/embeddings",
             f"https://civitai.com/api/download/models/159385 {webui}/embeddings",
             f"https://civitai.com/api/download/models/159184 {webui}/embeddings",
