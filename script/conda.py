@@ -6,13 +6,12 @@ import subprocess, json, shlex
 
 home = Path.home()
 css = home / ".conda/pantat88.css"
-conda = home / ".conda"
 startup = home / ".ipython/profile_default/startup"
 nenen = startup / "nenen88.py"
 pantat = startup / "pantat88.py"
 key_path = home / ".your-civitai-api-key"
 key_file = key_path / "api_key.json"
-img = conda / "loading.png"
+img = home / ".conda/loading.png"
 
 scripts = [
     f"curl -sLo {pantat} https://github.com/gutris1/segsmaker/raw/main/script/pantat88.py",
