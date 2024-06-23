@@ -4,8 +4,7 @@ from urllib.parse import urlparse
 from IPython import get_ipython
 from pathlib import Path
 from tqdm import tqdm
-import subprocess, zipfile, sys, os, re, json, shlex
-import psutil
+import subprocess, zipfile, sys, os, re, shlex, psutil
 
 
 @register_line_magic
@@ -417,75 +416,6 @@ def tempe(line):
 
     for path in tmp:
         Path(path).mkdir(parents=True, exist_ok=True)
-
-
-@register_line_magic
-def delete(line):
-    if 'LD_PRELOAD' in os.environ:
-        del os.environ['LD_PRELOAD']
-    
-    home_path = Path.home()
-    
-    folder_list = [
-        'tmp/*',
-        'tmp',
-        'asd',
-        'forge',
-        'ComfyUI',
-        '.cache/*',
-        '.config/*',
-        '.ssh',
-        '.zrok',
-        '.sagemaker',
-        '.nv',
-        '.conda',
-        '.ipython/profile_default/startup'
-    ]
-    
-    cmd_list = [
-        f"rm -rf {' '.join([str(home_path / folder) for folder in folder_list])}",
-    ]
-
-    for deleting in cmd_list:
-        get_ipython().system(deleting)
-
-    is_nb = False
-    try:
-        nb_find = f"find {home_path} -type d -name '.*' -prune -o -type f -name '*.ipynb' -print"
-        nb_files = subprocess.check_output(nb_find, shell=True, text=True, stderr=subprocess.DEVNULL).strip().split('\n')
-        
-        for nb_path in nb_files:
-            if nb_path:
-                nb_clear(nb_path)
-                is_nb = True
-                
-    except subprocess.CalledProcessError:
-        pass
-
-    if is_nb:
-        print("Now, Please Restart JupyterLab.")
-
-
-def nb_clear(nb_path):
-    try:
-        with open(nb_path, 'r') as f:
-            nb_contents = json.load(f)
-
-        nb_contents['metadata'] = {
-            "language_info": {
-                "name": ""
-            },
-            "kernelspec": {
-                "name": "",
-                "display_name": ""
-            }
-        }
-        
-        with open(nb_path, 'w') as f:
-            json.dump(nb_contents, f, indent=1, sort_keys=True)
-
-    except:
-        pass
 
 
 @register_line_magic
