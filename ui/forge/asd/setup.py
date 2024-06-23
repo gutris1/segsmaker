@@ -10,6 +10,7 @@ repo = f"git clone -q https://github.com/lllyasviel/stable-diffusion-webui-forge
 home = Path.home()
 webui = home / "forge"
 conda = home / ".conda"
+img = conda / "loading.png"
 
 os.chdir(home)
 
@@ -139,7 +140,6 @@ else:
     def sd_install(selection):
         with loading:
             clear_output()
-            img = conda / "loading.png"
             display(Image(filename=str(img)))
 
         with sd_setup:
