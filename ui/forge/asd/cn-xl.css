@@ -62,7 +62,7 @@
     rgb(255, 25, 0),
     rgb(255, 0, 0));}
 
-.boks {
+.controlnet-xl {
     border: 3px solid transparent;
     border-radius: 15px;
     padding: 10px;
@@ -121,7 +121,7 @@
     margin-top: 420px;
     margin-right: -30px;
     margin-bottom: 0px;
-    margin-left: 20px;
+    margin-left: 30px;
     font-size: 21px;
     width: 300px;
 }
