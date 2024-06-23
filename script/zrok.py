@@ -20,6 +20,7 @@ def zrok_enable(token):
         if zrok_token == token:
             pass
         else:
+            os.system('zrok disable')
             os.system(f'zrok enable {token}')
     else:
         os.system(f'zrok enable {token}')
