@@ -12,8 +12,7 @@ home = Path.home()
 conda = home / ".conda"
 cwd = os.getcwd()
 
-img = conda / "loading.png"
-display(Image(filename=str(img)))
+print('checking venv...')
 
 def check(folder):
     du = get_ipython().getoutput(f'du -s -b {folder}')
@@ -28,9 +27,14 @@ def venv():
     if venv_.exists() and check(venv_) > 7 * 1024**3:
         return
     else:
+        clear_output(wait=True)
+        img = conda / "loading.png"
+        display(Image(filename=str(img)))
+
         say('【{red} Installing VENV{d} 】{red}')
         os.chdir(venv_)
         download(url)
+
         get_ipython().system(f'pv {fn} | lz4 -d | tar xf -')
         get_ipython().system(f'rm -rf {venv_ / "bin" / "pip*"}')
         get_ipython().system(f'rm -rf {venv_ / "bin" / "python*"}')
@@ -39,5 +43,5 @@ def venv():
 
 tempe()
 venv()
-clear_output()
+clear_output(wait=True)
 os.chdir(cwd)
