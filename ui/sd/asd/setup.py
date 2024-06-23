@@ -10,8 +10,7 @@ repo = f"git clone -q -b {version} https://github.com/gutris1/asd"
 
 home = Path.home()
 webui = home / "asd"
-conda = home / ".conda"
-img = conda / "loading.png"
+img = home / ".conda/loading.png"
 
 os.chdir(home)
 
@@ -26,7 +25,7 @@ if webui.exists():
             get_ipython().system("git fetch --tags")
 
 else:
-    css = conda / "setup.css"
+    css = home / ".conda/setup.css"
     devnull = {"stdout": subprocess.DEVNULL, "stderr": subprocess.DEVNULL}
 
     get_ipython().system(f"curl -sLo {css} https://github.com/gutris1/segsmaker/raw/main/ui/sd/asd/setup.css")
