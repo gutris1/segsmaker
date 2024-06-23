@@ -45,6 +45,11 @@ def say(line):
 toket = "YOUR_CIVITAI_API_KEY"
 def download(line):
     args = line.split()
+
+    if not args:
+        print("  Missing URL")
+        return
+
     url = args[0]
 
     if url.endswith('.txt') and Path(url).expanduser().is_file():
