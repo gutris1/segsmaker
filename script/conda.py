@@ -1,138 +1,150 @@
-from ipywidgets import widgets, Button, Text, VBox, Layout
-from IPython.display import display, HTML, clear_output
+from ipywidgets import widgets, VBox, Layout
+from IPython.display import display, HTML, clear_output, Image
 from IPython import get_ipython
 from pathlib import Path
 import subprocess, json, shlex
 
-xxx = "/home/studio-lab-user"
-cp = f"{xxx}/.conda/pantat88.css"
-sp = f"{xxx}/.ipython/profile_default/startup"
-nsp = f"{sp}/nenen88.py"
-fsp = f"{xxx}/.ipython/profile_default/startup/pantat88.py"
-ewe = f"{xxx}/.your-civitai-api-key"
-uwaaah = Path(ewe) / "api_key.json"
+home = Path.home()
+css = home / ".conda/pantat88.css"
+conda = home / ".conda"
+startup = home / ".ipython/profile_default/startup"
+nenen = startup / "nenen88.py"
+pantat = startup / "pantat88.py"
+key_path = home / ".your-civitai-api-key"
+key_file = key_path / "api_key.json"
+img = conda / "loading.png"
 
-jalanan = [f"curl -sLo {fsp} https://github.com/gutris1/segsmaker/raw/main/script/pantat88.py",
-           f"curl -sLo {nsp} https://github.com/gutris1/segsmaker/raw/main/script/nenen88.py",
-           f"curl -sLo {sp}/00-startup.py https://github.com/gutris1/segsmaker/raw/main/script/00-startup.py",
-           f"curl -sLo {cp} https://github.com/gutris1/segsmaker/raw/main/script/pantat88.css"]
+scripts = [
+    f"curl -sLo {pantat} https://github.com/gutris1/segsmaker/raw/main/script/pantat88.py",
+    f"curl -sLo {css} https://github.com/gutris1/segsmaker/raw/main/script/pantat88.css",
+    f"curl -sLo {nenen} https://github.com/gutris1/segsmaker/raw/main/script/nenen88.py",
+    f"curl -sLo {startup}/00-startup.py https://github.com/gutris1/segsmaker/raw/main/script/00-startup.py",
+    f"curl -sLo {img} https://github.com/gutris1/segsmaker/raw/main/script/loading.png"
+]
 
-for janda in jalanan:
-    subprocess.run(shlex.split(janda), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+for items in scripts:
+    subprocess.run(shlex.split(items), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-susu = widgets.Output()
-sb = widgets.Button(description="Save")
-sb.add_class("save-button")
+main_output = widgets.Output()
+save_button = widgets.Button(description="Save")
+save_button.add_class("save-button")
 
-ink = widgets.Text(placeholder='enter your civitai API KEY here')
-ink.add_class("api-input")
+input_box = widgets.Text(placeholder='enter your Civitai API KEY here')
+input_box.add_class("api-input")
 
-boxs = VBox([ink, sb], layout=Layout(
-    width='450px',
-    height='150px',
-    display='flex',
-    flex_flow='column',
-    align_items='center',
-    justify_content='space-around',
-    padding='20px'))
+boxs = VBox([input_box, save_button],
+            layout=Layout(width='450px',
+                          height='150px',
+                          display='flex',
+                          flex_flow='column',
+                          align_items='center',
+                          justify_content='space-around',
+                          padding='20px'))
 boxs.add_class("boxs")
 
-garizzzz = """
-    <div class="gradient-conda">.</div>
-    """
-garis1 = widgets.Output()
+Path(css).parent.mkdir(parents=True, exist_ok=True)
+Path(pantat).parent.mkdir(parents=True, exist_ok=True)
+Path(key_path).mkdir(parents=True, exist_ok=True)
 
-Path(cp).parent.mkdir(parents=True, exist_ok=True)
-Path(fsp).parent.mkdir(parents=True, exist_ok=True)
-Path(ewe).mkdir(parents=True, exist_ok=True)
+def zrok_install():
+    zrok = home / ".zrok/bin"
+    if zrok.exists():
+        return
 
-def aaaaa(cp):
-    with open(cp, "r") as file:
-        ccpp = file.read()
+    zrok.mkdir(parents=True, exist_ok=True)
+    url = "https://github.com/openziti/zrok/releases/download/v0.4.32/zrok_0.4.32_linux_amd64.tar.gz"
+    name = zrok / Path(url).name
+
+    get_ipython().system(f"curl -sLo {name} {url}")
+    get_ipython().system(f"tar -xzf {name} -C {zrok} --wildcards *zrok")
+    get_ipython().system(f"rm -rf {home}/.cache/* {name}")
+
+def load_css(css):
+    with open(css, "r") as file:
+        panel = file.read()
         
-    display(HTML(f"<style>{ccpp}</style>"))
+    display(HTML(f"<style>{panel}</style>"))
 
-def bbbbb(api_key):
-    wc = [fsp, nsp]
+def key_inject(api_key):
+    target = [pantat, nenen]
     
-    for itu in wc:
-        with open(itu, "r") as anu:
-            kenapa = anu.read()
+    for line in target:
+        with open(line, "r") as file:
+            variable = file.read()
             
-        entah = kenapa.replace("?token=YOUR_API_KEY", f"?token={api_key}")
-        with open(itu, "w") as hantu:
-            hantu.write(entah)
+        value = variable.replace("YOUR_CIVITAI_API_KEY", f"{api_key}")
+        with open(line, "w") as file:
+            file.write(value)
             
-def ccccc():    
-    with garis1:
-        display(HTML(garizzzz))
-    
-    kamar_kos = [
-        ("conda install -yc conda-forge conda=23.11.0",
-         "【 Installing Anaconda 】", "#42b02b"),
-        ("conda install -yc conda-forge glib gperftools openssh",
-         "【 Installing Conda Packages 】", "yellow"),
-        ("conda install -yc conda-forge python=3.10.12",
-         "【 Installing Python 3.10.12 】", "#F50707"),
-        ("conda clean -y --all",
-         "【 Cleaning Conda 】", "cyan"),
-        ("pip install torch==2.3.0+cu121 torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu121",
-         "【 Installing Torch 】", "magenta"),
-        ("pip install xformers==0.0.26.post1 triton psutil aria2 gdown",
-         "【 Installing xformers 】", "orange")
-    ]
+def conda_install():
+    try:
+        display(Image(filename=str(img)))
 
-    for aku, kamu, dia in kamar_kos:
-        with susu:
-            display(HTML(f"<span style='color:{dia};'>{kamu}</span>"))
-        subprocess.run(shlex.split(aku), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        
-    with susu:
-        susu.clear_output()
-        garis1.clear_output()
+        conda_list = [
+            ("conda install -yc conda-forge conda=23.11.0", "【 Installing Anaconda 】", "#42b02b"),
+            ("conda install -yc conda-forge glib gperftools openssh pv gxx_linux-64 gst-libav", "【 Installing Conda Packages 】", "yellow"),
+            ("conda install -yc conda-forge python=3.10.13", "【 Installing Python 3.10.13 】", "#F50707"),
+            ("pip install psutil aria2 gdown", "【 Installing Python Packages 】", "magenta"),
+            ("conda clean -y --all", "【 Cleaning 】", "cyan")
+        ]
+
+        for cmd, txts, colors in conda_list:
+            with main_output:
+                display(HTML(f"<span style='color:{colors};'>{txts}</span>"))
+            subprocess.run(shlex.split(cmd), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+        get_ipython().system('rm -rf /home/studio-lab-user/.cache/*')
+        zrok_install()
+
+        clear_output()
         display(HTML('<span style="color: cyan;">【 Done 】</span>'))
 
-    get_ipython().kernel.do_shutdown(True)
+        get_ipython().kernel.do_shutdown(True)
 
-def ddddd():
-    def eeeee(b):
-        api_key = ink.value.strip()
+    except KeyboardInterrupt:
+        clear_output()
+        display(HTML(f"<p>^Canceled</p>"))
+
+def key_widget():
+    def column(b):
+        api_key = input_box.value.strip()
 
         if not api_key:
-            with susu:
+            with main_output:
                 print("Please enter your CivitAI API KEY")
                 print("CivitAI APIキーのおっぱいを入力してください。")
             return
 
         if len(api_key) < 32:
-            with susu:
+            with main_output:
                 print("API key must be at least 32 characters long")
                 print("APIキーは少なくとも32オッパイの長さに達する必要があります。")
             return
 
-        kagi = {"api_key": api_key}
-        with open(uwaaah, "w") as file:
-            json.dump(kagi, file)
+        key_value = {"api_key": api_key}
+        with open(key_file, "w") as file:
+            json.dump(key_value, file)
             
-        bbbbb(api_key)
+        key_inject(api_key)
         widgets.Widget.close(boxs)
-        susu.clear_output()
-        ccccc()
+        main_output.clear_output()
+        conda_install()
         
-    sb.on_click(eeeee)
+    save_button.on_click(column)
     
-def fffff():
-    if uwaaah.exists():
-        with open(uwaaah, "r") as file:
-            bau = json.load(file)
-        api_key = bau.get("api_key", "")
-        bbbbb(api_key)
-        display(susu, garis1)
-        ccccc()
+def key_check():
+    if key_file.exists():
+        with open(key_file, "r") as file:
+            value = json.load(file)
+
+        api_key = value.get("api_key", "")
+        key_inject(api_key)
+        display(main_output)
+        conda_install()
         
     else:
-        display(boxs, susu, garis1)
-        ddddd()
+        display(boxs, main_output)
+        key_widget()
 
-aaaaa(cp)
-fffff()
+load_css(css)
+key_check()
