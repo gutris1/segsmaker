@@ -51,12 +51,12 @@ def zrok_install():
         return
 
     zrok.mkdir(parents=True, exist_ok=True)
-    url = "https://github.com/openziti/zrok/releases/download/v0.4.25/zrok_0.4.25_linux_amd64.tar.gz"
-    z = zrok / Path(url).name
+    url = "https://github.com/openziti/zrok/releases/download/v0.4.32/zrok_0.4.32_linux_amd64.tar.gz"
+    name = zrok / Path(url).name
 
-    get_ipython().system(f"curl -sLo {z} {url}")
-    get_ipython().system(f"tar -xzf {z} -C {zrok} --wildcards *zrok")
-    get_ipython().system(f"rm -rf {home}/.cache/* {z}")
+    get_ipython().system(f"curl -sLo {name} {url}")
+    get_ipython().system(f"tar -xzf {name} -C {zrok} --wildcards *zrok")
+    get_ipython().system(f"rm -rf {home}/.cache/* {name}")
 
 def load_css(css):
     with open(css, "r") as file:
@@ -71,7 +71,7 @@ def key_inject(api_key):
         with open(line, "r") as file:
             variable = file.read()
             
-        value = variable.replace("?token=YOUR_API_KEY", f"?token={api_key}")
+        value = variable.replace("YOUR_CIVITAI_API_KEY", f"{api_key}")
         with open(line, "w") as file:
             file.write(value)
             
