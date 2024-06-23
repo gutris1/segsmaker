@@ -15,7 +15,7 @@ def zrok_install():
 
     get_ipython().system(f"curl -sLo {name} {url}")
     get_ipython().system(f"tar -xzf {name} -C {zrok} --wildcards *zrok")
-    get_ipython().system(f"rm -rf {home}/.cache/*")
+    get_ipython().system(f"rm -rf {home}/.cache/* {name}")
 
 zrok_install()
 
