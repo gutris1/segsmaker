@@ -11,6 +11,7 @@ repo = f"git clone -q -b {version} https://github.com/gutris1/asd"
 home = Path.home()
 webui = home / "asd"
 conda = home / ".conda"
+img = conda / "loading.png"
 
 os.chdir(home)
 
@@ -137,7 +138,6 @@ else:
     def sd_install(selection):
         with loading:
             clear_output()
-            img = conda / "loading.png"
             display(Image(filename=str(img)))
 
         with sd_setup:
