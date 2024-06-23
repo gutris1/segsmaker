@@ -59,11 +59,13 @@ else:
 
     def req_list(home, webui):
         return [
-            f"rm -rf {home}/tmp/* {home}/tmp {webui}/models/checkpoints/tmp_ckpt {webui}/models/loras/tmp_lora {webui}/models/controlnet",
+            f"rm -rf {home}/tmp/* {home}/tmp {webui}/models/checkpoints/tmp_ckpt {webui}/models/loras/tmp_lora",
+            f"rm -rf {webui}/models/controlnet {webui}/models/facerestore_models",
             f"ln -vs /tmp {home}/tmp",
             f"ln -vs /tmp/ckpt {webui}/models/checkpoints/tmp_ckpt",
             f"ln -vs /tmp/lora {webui}/models/loras/tmp_lora",
             f"ln -vs /tmp/controlnet {webui}/models/controlnet",
+            f"ln -vs /tmp/z123 {webui}/models/facerestore_models",
             f"ln -vs {webui}/models/checkpoints {webui}/models/checkpoints_symlink"]
 
     def clone_comfyui(home, webui, devnull):
@@ -77,8 +79,8 @@ else:
             subprocess.run(shlex.split(lines), **devnull)
             
         scripts = [
-            f"https://github.com/gutris1/segsmaker/raw/dev/script/zrok_reg.py {webui}/asd",
-            f"https://github.com/gutris1/segsmaker/raw/dev/script/venv.py {webui}"]
+            f"https://github.com/gutris1/segsmaker/raw/main/script/zrok_reg.py {webui}/asd",
+            f"https://github.com/gutris1/segsmaker/raw/main/script/venv.py {webui}"]
             
         upscalers = [
             f"https://huggingface.co/pantat88/ui/resolve/main/4x-UltraSharp.pth {webui}/models/upscale_models",
@@ -108,7 +110,7 @@ else:
         clone_comfyui(home, webui, devnull)
 
         extras = [
-            f"https://github.com/gutris1/segsmaker/raw/dev/script/controlnet/cn-1_5.css {webui}/asd",
+            f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn-1_5.css {webui}/asd",
             f"https://huggingface.co/pantat88/ui/resolve/main/embeddings.zip {webui}/models",
             f"https://civitai.com/api/download/models/150491 {webui}/models/embeddings edgQuality.pt",
             f"https://huggingface.co/stabilityai/sd-vae-ft-mse-original/resolve/main/vae-ft-mse-840000-ema-pruned.safetensors {webui}/models/vae"]
@@ -127,7 +129,7 @@ else:
         clone_comfyui(home, webui, devnull)
 
         extras = [
-            f"https://github.com/gutris1/segsmaker/raw/dev/script/controlnet/cn-xl.css {webui}/asd",
+            f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn-xl.css {webui}/asd",
             f"https://civitai.com/api/download/models/182974 {webui}/models/embeddings",
             f"https://civitai.com/api/download/models/159385 {webui}/models/embeddings",
             f"https://civitai.com/api/download/models/159184 {webui}/models/embeddings",
