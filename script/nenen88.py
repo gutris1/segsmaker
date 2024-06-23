@@ -5,6 +5,7 @@ from pathlib import Path
 from tqdm import tqdm
 import subprocess, zipfile, shlex, sys, os, re
 
+
 def say(line):
     args = re.findall(r'\{[^\{\}]+\}|[^\s\{\}]+', line)
     output = []
@@ -41,7 +42,7 @@ def say(line):
     display(HTML(" ".join(output)))
 
 
-toket = "?token=YOUR_API_KEY"
+toket = "YOUR_CIVITAI_API_KEY"
 def download(line):
     args = line.split()
     url = args[0]
@@ -55,9 +56,20 @@ def download(line):
 
 
 def strip_(url):
-    if any(domain in url for domain in ["civitai.com", "huggingface.co"]):
+    if "civitai.com" in url:
+        if '?token=' in url:
+            url = url.split('?token=')[0]
+        if '?type=' in url:
+            url = url.replace('?type=', f'?token={toket}&type=')
+        else:
+            url = f"{url}?token={toket}"
+
+    elif "huggingface.co" in url:
+        if '/blob/' in url:
+            url = url.replace('/blob/', '/resolve/')
         if '?' in url:
             url = url.split('?')[0]
+
     return url
 
 
@@ -65,6 +77,7 @@ def get_fn(url):
     fn_fn = urlparse(url)
     if any(domain in fn_fn.netloc for domain in ["civitai.com", "drive.google.com"]):
         return None
+
     else:
         fn = Path(fn_fn.path).name
         return fn
@@ -79,9 +92,6 @@ def netorare(line):
     url = strip_(url)
     _dir = Path.cwd()
 
-    if 'huggingface.co' in url and '/blob/' in url:
-        url = url.replace('/blob/', '/resolve/')
-
     aria2c = (
         "aria2c --header='User-Agent: Mozilla/5.0' --allow-overwrite=true "
         "--console-log-level=error --stderr=true -c -x16 -s16 -k1M -j5"
@@ -93,12 +103,12 @@ def netorare(line):
             path.mkdir(parents=True, exist_ok=True)
             os.chdir(path)
             if chg:
-                fc = f"{aria2c} {url}{toket if 'civitai.com' in url else ''} -o {fn}"
+                fc = f"{aria2c} '{url}' -o '{fn}'"
                 ketsuno_ana(fc, fn)
             elif dg:
                 gdrown(url, path, fn)
             else:
-                fc = f"curl -#JL {url} -o {fn}"
+                fc = f"curl -#JL '{url}' -o '{fn}'"
                 ketsuno_ana(fc, fn)
             
         elif len(hitozuma) >= 2:
@@ -108,39 +118,39 @@ def netorare(line):
                 os.chdir(path)
                 if chg:
                     fn = get_fn(url)
-                    fc = f"{aria2c} {url}{toket if 'civitai.com' in url else ''}"
+                    fc = f"{aria2c} '{url}'"
                     if 'civitai.com' not in url:
-                        fc += f" -o {fn}"
+                        fc += f" -o '{fn}'"
                     ketsuno_ana(fc, fn)
                 elif dg:
                     gdrown(url, path)
                 else:
                     fn = Path(urlparse(url).path).name
-                    fc = f"curl -#OJL {url}"
+                    fc = f"curl -#OJL '{url}'"
                     ketsuno_ana(fc, fn)
             else:
                 fn = hitozuma[1]
                 if chg:
-                    fc = f"{aria2c} {url}{toket if 'civitai.com' in url else ''} -o {fn}"
+                    fc = f"{aria2c} '{url}' -o '{fn}'"
                     ketsuno_ana(fc, fn)
                 elif dg:
                     gdrown(url, None, fn)
                 else:
-                    fc = f"curl -#JL {url} -o {fn}"
+                    fc = f"curl -#JL '{url}' -o '{fn}'"
                     ketsuno_ana(fc, fn)
 
         else:
             if chg:
                 fn = get_fn(url)
-                fc = f"{aria2c} {url}{toket if 'civitai.com' in url else ''}"
+                fc = f"{aria2c} '{url}'"
                 if 'civitai.com' not in url:
-                    fc += f" -o {fn}"
+                    fc += f" -o '{fn}'"
                 ketsuno_ana(fc, fn)
             elif dg:
                 gdrown(url)
             else:
                 fn = Path(urlparse(url).path).name
-                fc = f"curl -#OJL {url}"
+                fc = f"curl -#OJL '{url}'"
                 ketsuno_ana(fc, fn)
     finally:
         os.chdir(_dir)
