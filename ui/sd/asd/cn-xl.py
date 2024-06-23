@@ -1,17 +1,21 @@
-from IPython.display import display, HTML, clear_output
+from IPython.display import display, HTML, clear_output, Image
 from nenen88 import download, say, tempe
 from ipywidgets import widgets, Layout
 from pathlib import Path
 import os
 
-path = Path(__file__).parent.parent
+home = Path.home()
+conda = home / ".conda"
+img = conda / "loading.png"
+
+webui = Path(__file__).parent.parent
 css = Path(__file__).parent / "cn-xl.css"
 
-with open(css, "r") as oppai:
-    susu = oppai.read()
-display(HTML(f"<style>{susu}</style>"))
+with open(css, "r") as file:
+    css = file.read()
+display(HTML(f"<style>{css}</style>"))
     
-url_list = {
+controlnet_list = {
     "Diffusers XL Canny Mid": [
         "https://huggingface.co/lllyasviel/sd_control_collection/resolve/main/diffusers_xl_canny_mid.safetensors \
         diffusers_xl_canny_mid.safetensors"],
@@ -91,11 +95,11 @@ url_list = {
 
     "IP Adapter FaceID SDXL": [
         "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid_sdxl.bin ip-adapter-faceid_sdxl.bin",
-        f"https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid_sdxl_lora.safetensors {path}/models/Lora/tmp_lora \
+        f"https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid_sdxl_lora.safetensors {webui}/models/Lora/tmp_lora \
         ip-adapter-faceid_sdxl_lora.safetensors"],
     "IP Adapter FaceID Plusv2 SDXL": [
         "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-plusv2_sdxl.bin ip-adapter-faceid-plusv2_sdxl.bin",
-        f"https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-plusv2_sdxl_lora.safetensors {path}/models/Lora/tmp_lora \
+        f"https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-plusv2_sdxl_lora.safetensors {webui}/models/Lora/tmp_lora \
         ip-adapter-faceid-plusv2_sdxl_lora.safetensors"],
     
     "Instant ID": [
@@ -103,78 +107,77 @@ url_list = {
         "https://huggingface.co/InstantX/InstantID/resolve/main/ControlNetModel/diffusion_pytorch_model.safetensors control_instant_id_sdxl.safetensors"]
 }
 
-list_half = len(url_list) // 2
-half_list_1 = dict(list(url_list.items())[:list_half])
-half_list_2 = dict(list(url_list.items())[list_half:])
+half_list = len(controlnet_list) // 2
+left_side = dict(list(controlnet_list.items())[:half_list])
+right_side = dict(list(controlnet_list.items())[half_list:])
 
-cb1 = widgets.VBox(
+checkbox1 = widgets.VBox(
     [widgets.Checkbox(value=False, description=name, style={'description_width': '0px'})
-     for name in half_list_1])
-cb1.add_class("checkbox-group1")
+     for name in left_side])
+checkbox1.add_class("checkbox-group1")
 
-cb2 = widgets.VBox(
+checkbox2 = widgets.VBox(
     [widgets.Checkbox(value=False, description=name, style={'description_width': '0px'})
-     for name in half_list_2])
-cb2.add_class("checkbox-group2")
+     for name in right_side])
+checkbox2.add_class("checkbox-group2")
 
-db = widgets.Button(description="Download")
-db.add_class("download-button")
-dbo = widgets.Output()
-cbc = widgets.HBox([cb1, cb2], layout=widgets.Layout(align_items='flex-start'))
-gariz2 = """<div class="gradient-cn">asd</div>"""
-garis2 = widgets.Output()
-def sa_cb(b):
-    for checkbox in cb1.children + cb2.children:
-        checkbox.value = True
+download_button = widgets.Button(description="Download")
+download_button.add_class("download-button")
+download_output = widgets.Output()
+checkbox_layout = widgets.HBox([checkbox1, checkbox2], layout=widgets.Layout(align_items='flex-start'))
 
-def usa_cb(b):
-    for checkbox in cb1.children + cb2.children:
-        checkbox.value = False
+loading = widgets.Output()
+
+def select_all_checkboxs(b):
+    for check in checkbox1.children + checkbox2.children:
+        check.value = True
+
+def unselect_all_checkboxs(b):
+    for check in checkbox1.children + checkbox2.children:
+        check.value = False
         
-sab = widgets.Button(description="Select All")
-sab.add_class("select-all-button")
-sab.on_click(sa_cb)
+select_all_button = widgets.Button(description="Select All")
+select_all_button.add_class("select-all-button")
+select_all_button.on_click(select_all_checkboxs)
 
-usab = widgets.Button(description="Unselect All")
-usab.add_class("unselect-all-button")
-usab.on_click(usa_cb)
+unselect_all_button = widgets.Button(description="Unselect All")
+unselect_all_button.add_class("unselect-all-button")
+unselect_all_button.on_click(unselect_all_checkboxs)
 
-bs = widgets.Button(description="")
-bs.add_class("border-style")
+bottom_box = widgets.Button(description="")
+bottom_box.add_class("border-style")
 
-bl = widgets.HBox([sab, usab, db, bs])
-boks = widgets.VBox([bl, cbc], layout=Layout(
-    display='flex',
-    flex_flow='column',
-    width='630px',
-    height='480px',
-    padding='0px'))
-boks.add_class("boks")
+button_layout = widgets.HBox([select_all_button, unselect_all_button, download_button, bottom_box])
+controlnet_widget = widgets.VBox([button_layout, checkbox_layout],
+                                 layout=Layout(
+                                     display='flex',
+                                     flex_flow='column',
+                                     width='630px',
+                                     height='480px',
+                                     padding='0px'))
+
+controlnet_widget.add_class("controlnet-xl")
         
-def d_b_click(b):
-    surl = []
-    for checkbox, key in zip(cb1.children + cb2.children, list(url_list.keys())):
-        if checkbox.value:
-            surl.extend(url_list[key])
-            
-    widgets.Widget.close(boks)
-    dbo.clear_output()
-    
-    with garis2:
-        display(HTML(gariz2))
+def download_button_click(b):
+    download_list = []
+    for check, key in zip(checkbox1.children + checkbox2.children, list(controlnet_list.keys())):
+        if check.value:
+            download_list.extend(controlnet_list[key])
+
+    clear_output(wait=True)
+    widgets.Widget.close(controlnet_widget)
+
+    with loading:
+        display(Image(filename=str(img)))
         
-    with dbo:
-        say("【{red} Downloading{cyan} Controlnet{magenta} Models{yellow} 】{red}")
-        os.chdir(f"{path}/models/ControlNet")
-        
-        for url in surl:
+    with download_output:
+        os.chdir(f"{webui}/models/ControlNet")
+        for url in download_list:
             download(url)
-        
-        with garis2:
-            garis2.clear_output()
-            
+
+        loading.clear_output()
         say("【{red} Done{d} 】{red}")
             
 tempe()
-display(boks, dbo, garis2)
-db.on_click(d_b_click)
+display(controlnet_widget, download_output, loading)
+download_button.on_click(download_button_click)
