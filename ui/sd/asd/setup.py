@@ -29,7 +29,6 @@ else:
     css = conda / "setup.css"
     devnull = {"stdout": subprocess.DEVNULL, "stderr": subprocess.DEVNULL}
 
-    get_ipython().system(f"rm -rf {home}/.zrok")
     get_ipython().system(f"curl -sLo {css} https://github.com/gutris1/segsmaker/raw/main/ui/sd/asd/setup.css")
 
     loading = widgets.Output()
