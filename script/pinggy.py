@@ -5,10 +5,6 @@ from pathlib import Path
 if 'LD_PRELOAD' not in os.environ:
     os.environ['LD_PRELOAD'] = '/home/studio-lab-user/.conda/envs/default/lib/libtcmalloc_minimal.so.4'
 
-tmp = ["/tmp/ckpt", "/tmp/lora", "/tmp/controlnet", "/tmp/svd", "/tmp/z123"]
-for path in tmp:
-    Path(path).mkdir(parents=True, exist_ok=True)
-
 def launch():
     webui = subprocess.Popen(['/tmp/venv/bin/python3', 'launch.py'] + sys.argv[1:])
     ssh = subprocess.Popen(['ssh', '-o', 'StrictHostKeyChecking=no', '-p', '80', '-R0:localhost:7860', 'a.pinggy.io'],
