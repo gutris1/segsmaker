@@ -9,8 +9,7 @@ fn = Path(url).name
 tmp_ = Path('/tmp')
 venv_ = tmp_ / "venv"
 home = Path.home()
-conda = home / ".conda"
-img = conda / "loading.png"
+img = home / ".conda/loading.png"
 cwd = os.getcwd()
 
 print('checking venv...')
