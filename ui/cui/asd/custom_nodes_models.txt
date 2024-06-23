@@ -1,2 +1,0 @@
-https://github.com/sczhou/CodeFormer/releases/download/v0.1.0/codeformer.pth ~/ComfyUI/models/facerestore_models
-https://github.com/TencentARC/GFPGAN/releases/download/v1.3.4/GFPGANv1.4.pth ~/ComfyUI/models/facerestore_models
