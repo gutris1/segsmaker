@@ -51,6 +51,11 @@ toket = ""
 @register_line_magic
 def download(line):
     args = line.split()
+
+    if not args:
+        print("  Missing URL")
+        return
+
     url = args[0]
 
     if url.endswith('.txt') and Path(url).expanduser().is_file():
@@ -370,7 +375,7 @@ def tempe(line):
         "/kaggle/temp/controlnet",
         "/kaggle/temp/output",
         "/kaggle/temp/svd",
-        "/tmp/z123"
+        "/kaggle/temp/z123"
     ]
 
     for path in tmp:
