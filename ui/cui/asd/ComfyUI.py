@@ -62,13 +62,13 @@ else:
 
     def req_list(home, webui):
         return [
-            f"rm -rf {home}/tmp/* {home}/tmp {webui}/models/checkpoints/tmp_ckpt {webui}/models/loras/tmp_lora",
-            f"rm -rf {webui}/models/controlnet {webui}/models/facerestore_models",
+            f"unlink {webui}/models/checkpoints_symlink",
+            f"rm -rf {home}/tmp/* {home}/tmp {webui}/models/checkpoints/tmp_ckpt",
+            f"rm -rf {webui}/models/loras/tmp_lora {webui}/models/controlnet",
             f"ln -vs /tmp {home}/tmp",
             f"ln -vs /tmp/ckpt {webui}/models/checkpoints/tmp_ckpt",
             f"ln -vs /tmp/lora {webui}/models/loras/tmp_lora",
             f"ln -vs /tmp/controlnet {webui}/models/controlnet",
-            f"ln -vs /tmp/z123 {webui}/models/facerestore_models",
             f"ln -vs {webui}/models/checkpoints {webui}/models/checkpoints_symlink"]
 
     def clone_comfyui(home, webui, devnull):
