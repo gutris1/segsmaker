@@ -10,6 +10,7 @@ tmp_ = Path('/tmp')
 venv_ = tmp_ / "venv"
 home = Path.home()
 conda = home / ".conda"
+img = conda / "loading.png"
 cwd = os.getcwd()
 
 print('checking venv...')
@@ -28,7 +29,6 @@ def venv():
         return
     else:
         clear_output(wait=True)
-        img = conda / "loading.png"
         display(Image(filename=str(img)))
 
         say('【{red} Installing VENV{d} 】{red}')
