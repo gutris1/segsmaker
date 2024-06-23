@@ -424,9 +424,9 @@ def delete(line):
     if 'LD_PRELOAD' in os.environ:
         del os.environ['LD_PRELOAD']
     
-    del_input = Path(line.strip()) if line else Path('/home/studio-lab-user')
+    home_path = Path.home()
     
-    del_list = [
+    folder_list = [
         'tmp/*',
         'tmp',
         'asd',
@@ -434,23 +434,24 @@ def delete(line):
         'ComfyUI',
         '.cache/*',
         '.config/*',
-        '.conda/*',
-        '.local/share/jupyter/runtime/*',
-        '.ipython/profile_default/*'
+        '.ssh',
+        '.zrok',
+        '.sagemaker',
+        '.nv',
+        '.conda',
+        '.ipython/profile_default/startup'
     ]
     
-    del_cmd = [
-        f"rm -rf {' '.join([str(del_input / t) for t in del_list])}",
-        f"rm -rf /opt/conda/*",
-        f"find {del_input} -type d -name '.ipynb_checkpoints' -exec rm -rf {{}} +"
+    cmd_list = [
+        f"rm -rf {' '.join([str(home_path / folder) for folder in folder_list])}",
     ]
 
-    for cmd_del in del_cmd:
-        subprocess.run(cmd_del, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    for deleting in cmd_list:
+        get_ipython().system(deleting)
 
     is_nb = False
     try:
-        nb_find = f"find {del_input} -type d -name '.*' -prune -o -type f -name '*.ipynb' -print"
+        nb_find = f"find {home_path} -type d -name '.*' -prune -o -type f -name '*.ipynb' -print"
         nb_files = subprocess.check_output(nb_find, shell=True, text=True, stderr=subprocess.DEVNULL).strip().split('\n')
         
         for nb_path in nb_files:
