@@ -11,7 +11,4 @@ git clone https://github.com/SLAPaper/ComfyUI-Image-Selector
 git clone https://github.com/Derfuu/Derfuu_ComfyUI_ModdedNodes
 git clone https://github.com/FizzleDorf/ComfyUI_FizzNodes
 git clone https://github.com/WASasquatch/was-node-suite-comfyui
-git clone https://github.com/Kosinkadink/ComfyUI-VideoHelperSuite
 git clone https://github.com/Gourieff/comfyui-reactor-node
-git clone https://github.com/Kosinkadink/ComfyUI-AnimateDiff-Evolved
-git clone https://github.com/cubiq/ComfyUI_IPAdapter_plus

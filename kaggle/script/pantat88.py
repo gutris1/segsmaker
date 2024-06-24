@@ -51,6 +51,11 @@ toket = ""
 @register_line_magic
 def download(line):
     args = line.split()
+
+    if not args:
+        print("  Missing URL")
+        return
+
     url = args[0]
 
     if url.endswith('.txt') and Path(url).expanduser().is_file():
@@ -62,9 +67,20 @@ def download(line):
 
 
 def strip_(url):
-    if any(domain in url for domain in ["civitai.com", "huggingface.co"]):
+    if "civitai.com" in url:
+        if '?token=' in url:
+            url = url.split('?token=')[0]
+        if '?type=' in url:
+            url = url.replace('?type=', f'?token={toket}&type=')
+        else:
+            url = f"{url}?token={toket}"
+
+    elif "huggingface.co" in url:
+        if '/blob/' in url:
+            url = url.replace('/blob/', '/resolve/')
         if '?' in url:
             url = url.split('?')[0]
+
     return url
 
 
@@ -72,6 +88,7 @@ def get_fn(url):
     fn_fn = urlparse(url)
     if any(domain in fn_fn.netloc for domain in ["civitai.com", "drive.google.com"]):
         return None
+
     else:
         fn = Path(fn_fn.path).name
         return fn
@@ -86,9 +103,6 @@ def netorare(line):
     url = strip_(url)
     _dir = Path.cwd()
 
-    if 'huggingface.co' in url and '/blob/' in url:
-        url = url.replace('/blob/', '/resolve/')
-
     aria2c = (
         "aria2c --header='User-Agent: Mozilla/5.0' --allow-overwrite=true "
         "--console-log-level=error --stderr=true -c -x16 -s16 -k1M -j5"
@@ -100,12 +114,12 @@ def netorare(line):
             path.mkdir(parents=True, exist_ok=True)
             os.chdir(path)
             if chg:
-                fc = f"{aria2c} {url}{toket if 'civitai.com' in url else ''} -o {fn}"
+                fc = f"{aria2c} '{url}' -o '{fn}'"
                 ketsuno_ana(fc, fn)
             elif dg:
                 gdrown(url, path, fn)
             else:
-                fc = f"curl -#JL {url} -o {fn}"
+                fc = f"curl -#JL '{url}' -o '{fn}'"
                 ketsuno_ana(fc, fn)
             
         elif len(hitozuma) >= 2:
@@ -115,39 +129,39 @@ def netorare(line):
                 os.chdir(path)
                 if chg:
                     fn = get_fn(url)
-                    fc = f"{aria2c} {url}{toket if 'civitai.com' in url else ''}"
+                    fc = f"{aria2c} '{url}'"
                     if 'civitai.com' not in url:
-                        fc += f" -o {fn}"
+                        fc += f" -o '{fn}'"
                     ketsuno_ana(fc, fn)
                 elif dg:
                     gdrown(url, path)
                 else:
                     fn = Path(urlparse(url).path).name
-                    fc = f"curl -#OJL {url}"
+                    fc = f"curl -#OJL '{url}'"
                     ketsuno_ana(fc, fn)
             else:
                 fn = hitozuma[1]
                 if chg:
-                    fc = f"{aria2c} {url}{toket if 'civitai.com' in url else ''} -o {fn}"
+                    fc = f"{aria2c} '{url}' -o '{fn}'"
                     ketsuno_ana(fc, fn)
                 elif dg:
                     gdrown(url, None, fn)
                 else:
-                    fc = f"curl -#JL {url} -o {fn}"
+                    fc = f"curl -#JL '{url}' -o '{fn}'"
                     ketsuno_ana(fc, fn)
 
         else:
             if chg:
                 fn = get_fn(url)
-                fc = f"{aria2c} {url}{toket if 'civitai.com' in url else ''}"
+                fc = f"{aria2c} '{url}'"
                 if 'civitai.com' not in url:
-                    fc += f" -o {fn}"
+                    fc += f" -o '{fn}'"
                 ketsuno_ana(fc, fn)
             elif dg:
                 gdrown(url)
             else:
                 fn = Path(urlparse(url).path).name
-                fc = f"curl -#OJL {url}"
+                fc = f"curl -#OJL '{url}'"
                 ketsuno_ana(fc, fn)
     finally:
         os.chdir(_dir)
@@ -180,134 +194,136 @@ def gdrown(url, path=None, fn=None):
 
 
 def ariari(fc, fn):
-    qqqqq = subprocess.Popen(
-        shlex.split(fc),
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True
-    )
-
-    result = ""
-    br = False
-
-    code = []
-    err = []
-
-    MAGENTA = "\033[35m"
-    RED = "\033[31m"
-    CYAN = "\033[36m"
-    GREEN = "\033[38;5;35m"
-    YELLOW = "\033[33m"
-    BLUE = "\033[38;5;69m"
-    PURPLE = "\033[38;5;135m"
-    RESET = "\033[0m"
-
-    while True:
-        lines = qqqqq.stderr.readline()
-        if lines == '' and qqqqq.poll() is not None:
-            break
-
-        if lines:
-            result += lines
-            
-            for outputs in lines.splitlines():
-                if 'errorCode' in outputs:
-                    code.append(outputs)
-                if '|' in outputs and 'ERR' in outputs:
-                    outputs = re.sub(r'(\|\s*)(ERR)(\s*\|)', f'\\1{RED}\\2{RESET}\\3', outputs)
-                    err.append(outputs)
-                
-                if re.match(r'\[#\w{6}\s.*\]', outputs):
-                    outputs = re.sub(r'\[', MAGENTA + '【' + RESET, outputs)
-                    outputs = re.sub(r'\]', MAGENTA + '】' + RESET, outputs)
-                    outputs = re.sub(r'(#)(\w+)', f'\\1{GREEN}\\2{RESET}', outputs)
-                    outputs = re.sub(r'(\(\d+%\))', f'{CYAN}\\1{RESET}', outputs)
-                    outputs = re.sub(r'(CN:)(\d+)', f"\\1{BLUE}\\2{RESET}", outputs)
-                    outputs = re.sub(r'(DL:)(\d+\w+)', f"\\1{PURPLE}\\2{RESET}", outputs)
-                    outputs = re.sub(r'(ETA:)(\d+\w+)', f"\\1{YELLOW}\\2{RESET}", outputs)
-                    lines = outputs.splitlines()
-                    for line in lines:
-                        print(f"\r{' '*180}\r {line}", end="")
-                        sys.stdout.flush()
-                    br = True
-                    break
-        
-    error = code + err
-    for lines in error:
-        print(f"  {lines}")
-
-    if br:
-        print()
-
-    stripe = result.find("======+====+===========")
-    if stripe != -1:
-        for lines in result[stripe:].splitlines():
-            if '|' in lines and 'OK' in lines:
-                lines = re.sub(r'(\|\s*)(OK)(\s*\|)', f'\\1{GREEN}\\2{RESET}\\3', lines)
-                print(f"  {lines}")
-
-    qqqqq.wait()
-
-
-def curlly(fc, fn):  
-    zura = subprocess.Popen(
-        shlex.split(fc),
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True,
-        bufsize=1,
-        cwd=str(Path.cwd())
-    )
-
-    progress_pattern = re.compile(r'(\d+\.\d+)%')
-    oppai = ""
-
-    with tqdm(
-        total=100,
-        desc=f"{fn.ljust(58):>{58 + 2}}",
-        initial=0,
-        bar_format="{desc} 【{bar:20}】【{percentage:3.0f}%】",
-        ascii="▷▶",
-        file=sys.stdout
-    ) as pbar:
-
-        for line in iter(zura.stdout.readline, ''):
-            if not line.startswith('  % Total') and not line.startswith('  % '):
-                match = progress_pattern.search(line)
-                if match:
-                    progress = float(match.group(1))
-                    pbar.update(progress - pbar.n)
-                    pbar.refresh()
-
-            oppai += line
-
-        pbar.close()
-
-    zura.wait()
-
-    if zura.returncode != 0:
-        if "curl: (23)" in oppai:
-            print(
-                f"{'':>2}^ File already exists; download skipped. "
-                "Append a custom name after the URL or PATH to overwrite."
-            )
-        elif "curl: (3)" in oppai:
-            print("")
-        else:
-            print(f"{'':>2}^ Error: {oppai}")
-    else:
-        pass
-
-
-def ketsuno_ana(fc, fn):
     try:
-        if "aria2c" in fc:
-            ariari(fc, fn)
+        qqqqq = subprocess.Popen(
+            shlex.split(fc),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True
+        )
+
+        result = ""
+        br = False
+
+        code = []
+        err = []
+
+        MAGENTA = "\033[35m"
+        RED = "\033[31m"
+        CYAN = "\033[36m"
+        GREEN = "\033[38;5;35m"
+        YELLOW = "\033[33m"
+        BLUE = "\033[38;5;69m"
+        PURPLE = "\033[38;5;135m"
+        RESET = "\033[0m"
+
+        while True:
+            lines = qqqqq.stderr.readline()
+            if lines == '' and qqqqq.poll() is not None:
+                break
+
+            if lines:
+                result += lines
+
+                for outputs in lines.splitlines():
+                    if 'errorCode' in outputs or 'Exception' in outputs:
+                        code.append(outputs)
+                    if '|' in outputs and 'ERR' in outputs:
+                        outputs = re.sub(r'(\|\s*)(ERR)(\s*\|)', f'\\1{RED}\\2{RESET}\\3', outputs)
+                        err.append(outputs)
+
+                    if re.match(r'\[#\w{6}\s.*\]', outputs):
+                        outputs = re.sub(r'\[', MAGENTA + '【' + RESET, outputs)
+                        outputs = re.sub(r'\]', MAGENTA + '】' + RESET, outputs)
+                        outputs = re.sub(r'(#)(\w+)', f'\\1{GREEN}\\2{RESET}', outputs)
+                        outputs = re.sub(r'(\(\d+%\))', f'{CYAN}\\1{RESET}', outputs)
+                        outputs = re.sub(r'(CN:)(\d+)', f"\\1{BLUE}\\2{RESET}", outputs)
+                        outputs = re.sub(r'(DL:)(\d+\w+)', f"\\1{PURPLE}\\2{RESET}", outputs)
+                        outputs = re.sub(r'(ETA:)(\d+\w+)', f"\\1{YELLOW}\\2{RESET}", outputs)
+                        lines = outputs.splitlines()
+                        for line in lines:
+                            print(f"\r{' '*180}\r {line}", end="")
+                            sys.stdout.flush()
+                        br = True
+                        break
+
+        error = code + err
+        for lines in error:
+            print(f"  {lines}")
+
+        if br:
+            print()
+
+        stripe = result.find("======+====+===========")
+        if stripe != -1:
+            for lines in result[stripe:].splitlines():
+                if '|' in lines and 'OK' in lines:
+                    lines = re.sub(r'(\|\s*)(OK)(\s*\|)', f'\\1{GREEN}\\2{RESET}\\3', lines)
+                    print(f"  {lines}")
+
+        qqqqq.wait()
+
+    except KeyboardInterrupt:
+        print(f"\n{'':>2}^ Canceled")
+
+
+def curlly(fc, fn):
+    try:
+        zura = subprocess.Popen(
+            shlex.split(fc),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            bufsize=1,
+            cwd=str(Path.cwd())
+        )
+
+        progress_pattern = re.compile(r'(\d+\.\d+)%')
+        oppai = ""
+
+        with tqdm(
+            total=100,
+            desc=f"{fn.ljust(58):>{58 + 2}}",
+            initial=0,
+            bar_format="{desc} 【{bar:20}】【{percentage:3.0f}%】",
+            ascii="▷▶",
+            file=sys.stdout
+        ) as pbar:
+
+            for line in iter(zura.stdout.readline, ''):
+                if not line.startswith('  % Total') and not line.startswith('  % '):
+                    match = progress_pattern.search(line)
+                    if match:
+                        progress = float(match.group(1))
+                        pbar.update(progress - pbar.n)
+                        pbar.refresh()
+
+                oppai += line
+            pbar.close()
+        zura.wait()
+
+        if zura.returncode != 0:
+            if "curl: (23)" in oppai:
+                print(
+                    f"{'':>2}^ File already exists; download skipped. "
+                    "Append a custom name after the URL or PATH to overwrite."
+                )
+            elif "curl: (3)" in oppai:
+                print("")
+            else:
+                print(f"{'':>2}^ Error: {oppai}")
         else:
-            curlly(fc, fn)
+            pass
 
     except KeyboardInterrupt:
         print(f"{'':>2}^ Canceled")
+
+
+def ketsuno_ana(fc, fn):
+    if "aria2c" in fc:
+        ariari(fc, fn)
+    else:
+        curlly(fc, fn)
 
 
 @register_line_magic
@@ -359,7 +375,7 @@ def tempe(line):
         "/kaggle/temp/controlnet",
         "/kaggle/temp/output",
         "/kaggle/temp/svd",
-        "/tmp/z123"
+        "/kaggle/temp/z123"
     ]
 
     for path in tmp:

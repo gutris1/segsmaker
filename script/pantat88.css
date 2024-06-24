@@ -71,7 +71,14 @@
     background-position: 100% 200%;
     animation: slideAndBlurFromCenter 1s, BorderPulse 15s infinite;
 }
-    
+
+.del {
+  font-size: 24px;
+  margin-top: -20px;
+  margin-right: 0px;
+  margin-bottom: 0px;
+  margin-left: 0px;}
+
 .widget-container {
     margin-top: 0px;
     margin-right: 0px;
