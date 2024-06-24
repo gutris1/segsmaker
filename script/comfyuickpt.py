@@ -1,15 +1,9 @@
 from pathlib import Path
 import os
 
-webui = Path.home() / "ComfyUI"
-if webui.exists():
-    ckpt = webui / "models" / "checkpoints_symlink"
-    if not ckpt.exists():
-        src = webui / "models" / "checkpoints"
-        cmd = f"ln -vs {src} {ckpt}"
-        os.system(cmd)
-
-    else:
-        pass
-else:
-    pass
+comfyui = Path.home() / "ComfyUI"
+if comfyui.exists():
+    ckpt = comfyui / "models/checkpoints_symlink"
+    src = comfyui / "models/checkpoints"
+    os.system(f"unlink {ckpt}")
+    os.system(f"ln -vs {src} {ckpt}")
