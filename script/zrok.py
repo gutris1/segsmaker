@@ -2,6 +2,10 @@ import os, subprocess, sys, json, re
 from threading import Thread
 from pathlib import Path
 
+R = '\033[0m'
+O = '\033[38;5;208m'
+T = f'{O}▶{R} ZROK {O}:{R}'
+
 if 'LD_PRELOAD' not in os.environ:
     os.environ['LD_PRELOAD'] = '/home/studio-lab-user/.conda/envs/default/lib/libtcmalloc_minimal.so.4'
 
@@ -25,7 +29,7 @@ def zrok_enable(token):
     else:
         os.system(f'zrok enable {token}')
 
-def launch(zrok):
+def launch():
     with open('launch.txt', 'w') as log_file:
         webui = subprocess.Popen([
             '/tmp/venv/bin/python3',
@@ -34,17 +38,14 @@ def launch(zrok):
             stderr=sys.stdout,
             text=True)
 
-        zrok_process = subprocess.Popen([
+        zrok = subprocess.Popen([
             "zrok",
             "share",
             "public",
             "localhost:7860",
             "--headless"],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            text=True)
-
-        zrok.append(zrok_process)
+            stdout=open('zrok.txt', 'w'),
+            stderr=subprocess.STDOUT)
 
         local_url = False
         for line in webui.stdout:
@@ -56,25 +57,19 @@ def launch(zrok):
                     local_url = True
 
         webui.wait()
-        zrok[0].terminate()
+        zrok.terminate()
 
-def zrok_url(zrok):
-    zrok_io = re.compile(r'https?://[^\s]*\.zrok\.io')
-    zrok_url = None
-
-    while not zrok:
-        pass
-
-    for line in zrok[0].stdout:
-        urls = zrok_io.findall(line)
-        if urls:
-            zrok_url = urls[0]
-            break
-
+def zrok_url():
     while True:
         with open('launch.txt', 'r') as file:
             if any('Running on local URL' in line for line in file):
-                print(f'\n【ZROK】{zrok_url}')
+                break
+
+    with open('zrok.txt', 'r') as file:
+        for line in file:
+            if 'https:' in line and '.zrok.io' in line:
+                url = line[line.find('https://'):line.find('.zrok.io') + len('.zrok.io')]
+                print(f'\n{T} {url}')
                 return
 
 try:
@@ -84,9 +79,8 @@ try:
     token = sys.argv[1]
     zrok_enable(token)
 
-    zrok = []
-    app = Thread(target=launch, args=(zrok,))
-    url = Thread(target=zrok_url, args=(zrok,))
+    app = Thread(target=launch)
+    url = Thread(target=zrok_url)
 
     app.start()
     url.start()
