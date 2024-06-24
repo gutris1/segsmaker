@@ -1,25 +1,56 @@
-import os, sys, subprocess, time
+import subprocess, sys, os
 from threading import Thread
-from pathlib import Path
+
+R = '\033[0m'
+O = '\033[38;5;208m'
+T = f'{O}▶{R} PINGGY {O}:{R}'
 
 if 'LD_PRELOAD' not in os.environ:
     os.environ['LD_PRELOAD'] = '/home/studio-lab-user/.conda/envs/default/lib/libtcmalloc_minimal.so.4'
 
 def launch():
-    webui = subprocess.Popen(['/tmp/venv/bin/python3', 'launch.py'] + sys.argv[1:])
-    ssh = subprocess.Popen(['ssh', '-o', 'StrictHostKeyChecking=no', '-p', '80', '-R0:localhost:7860', 'a.pinggy.io'],
-                           stdout=open('log.txt', 'w'))
+    with open('launch.txt', 'w') as log_file:
+        webui = subprocess.Popen([
+            '/tmp/venv/bin/python3',
+            'launch.py'] + sys.argv[1:],
+            stdout=subprocess.PIPE,
+            stderr=sys.stdout,
+            text=True)
 
-    webui.wait()
-    ssh.terminate()
+        ssh = subprocess.Popen([
+            'ssh',
+            '-o',
+            'StrictHostKeyChecking=no',
+            '-p',
+            '80',
+            '-R0:localhost:7860',
+            'a.pinggy.io'],
+            stdout=open('pinggy.txt', 'w'),
+            stderr=sys.stdout)
+
+        local_url = False
+        for line in webui.stdout:
+            print(line, end='')
+            if not local_url:
+                log_file.write(line)
+                log_file.flush()
+                if 'Running on local URL' in line:
+                    local_url = True
+
+        webui.wait()
+        ssh.terminate()
 
 def pinggy():
-    time.sleep(2)
-    with open('log.txt', 'r') as file:
+    while True:
+        with open('launch.txt', 'r') as file:
+            if any('Running on local URL' in line for line in file):
+                break
+
+    with open('pinggy.txt', 'r') as file:
         for line in file:
             if 'http:' in line and '.pinggy.link' in line:
-                url = line[line.find('http:'):line.find('.pinggy.link') + len('.pinggy.link')]
-                print(f'\n【PINGGY】{url}\n')
+                url = line[line.find('http://'):line.find('.pinggy.link') + len('.pinggy.link')]
+                print(f'\n{T} {url}')
                 return
 
 app = Thread(target=launch)
