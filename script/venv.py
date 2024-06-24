@@ -6,8 +6,8 @@ import os
 
 url = 'https://huggingface.co/pantat88/back_up/resolve/main/venv.tar.lz4'
 fn = Path(url).name
-tmp_ = Path('/tmp')
-venv_ = tmp_ / "venv"
+tmp = Path('/tmp')
+vnv = tmp / "venv"
 home = Path.home()
 img = home / ".conda/loading.png"
 cwd = os.getcwd()
@@ -23,21 +23,20 @@ def check(folder):
         return 0
 
 def venv():
-    venv_.mkdir(parents=True, exist_ok=True)
-    if venv_.exists() and check(venv_) > 7 * 1024**3:
+    if vnv.exists() and check(vnv) > 7 * 1024**3:
         return
     else:
         clear_output(wait=True)
         display(Image(filename=str(img)))
 
         say('【{red} Installing VENV{d} 】{red}')
-        os.chdir(venv_)
+        os.chdir(tmp)
         download(url)
 
         get_ipython().system(f'pv {fn} | lz4 -d | tar xf -')
-        get_ipython().system(f'rm -rf {venv_ / "bin" / "pip*"}')
-        get_ipython().system(f'rm -rf {venv_ / "bin" / "python*"}')
-        os.system(f'python -m venv {venv_}')
+        get_ipython().system(f'rm -rf {vnv / "bin" / "pip*"}')
+        get_ipython().system(f'rm -rf {vnv / "bin" / "python*"}')
+        os.system(f'python -m venv {vnv}')
         get_ipython().system(f'rm -rf {fn}')
 
 tempe()
