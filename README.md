@@ -15,7 +15,7 @@ you can find me here https://discord.gg/k5BwmmvJJU
 ```python
 !rm -rf ~
 ```
-- All Notebooks before today's commit won't work anymore.<br />
+- Old Notebooks won't work anymore.<br />
 - PINGGY and ZROK URLs will be printed after the local URL.<br />
 
 ### 2024-05-29
