@@ -10,7 +10,8 @@ you can find me here https://discord.gg/k5BwmmvJJU
 
 # Changelog
 ### 2024-06-24
-- Improved Notebook. Please NUKE☢️ your current environment with command below, before using new Notebook with venv.
+- Improved Notebook.
+- Save all your things from there and Please NUKE☢️ your current environment with command below, before using new Notebook with venv.
 ```python
 !rm -rf ~
 ```
