@@ -4,6 +4,8 @@ from IPython import get_ipython
 from pathlib import Path
 from tqdm import tqdm
 import subprocess, zipfile, sys, os, json, psutil
+import ipywidgets as widgets
+from nenen88 import say
 
 
 home = Path.home()
@@ -82,52 +84,103 @@ def storage(line):
 
 
 @register_line_magic
-def delete(line):
-    display(Image(filename=str(img)))
-
-    if 'LD_PRELOAD' in os.environ:
-        del os.environ['LD_PRELOAD']
+def delete(line):    
+    main_output = widgets.Output()
     
-    folder_list = [
-        'tmp/*',
-        'tmp',
-        'asd',
-        'forge',
-        'ComfyUI',
-        '.cache/*',
-        '.config/*',
-        '.ssh',
-        '.zrok',
-        '.sagemaker',
-        '.nv',
-        '.conda',
-        '.ipython/profile_default/startup'
-    ]
-    
-    cmd_list = [
-        f"rm -rf {' '.join([str(home / folder) for folder in folder_list])}",
-    ]
+    ask = widgets.Label("Delete Everything?")
+    ask.add_class("del")
 
-    for deleting in cmd_list:
-        get_ipython().system(deleting)
+    yes = widgets.Button(description="Yes")
+    yes.add_class("save-button")
 
-    is_nb = False
-    try:
-        nb_find = f"find {home} -type d -name '.*' -prune -o -type f -name '*.ipynb' -print"
-        nb_files = subprocess.check_output(nb_find, shell=True, text=True, stderr=subprocess.DEVNULL).strip().split('\n')
-        
-        for nb_path in nb_files:
-            if nb_path:
-                nb_clear(nb_path)
-                is_nb = True
-                
-    except subprocess.CalledProcessError:
-        pass
+    no = widgets.Button(description="No")
+    no.add_class("save-button")
 
-    if is_nb:
-        clear_output(wait=True)
-        print("Now, Please Restart JupyterLab.")
+    button = widgets.HBox(
+        [yes, no], layout=widgets.Layout(
+            display='flex',
+            flex_flow='row',
+            align_items='center',
+            justify_content='space-around',
+            width='100%'))
 
+    boxs = widgets.VBox(
+        [ask, button], layout=widgets.Layout(
+            width='450px',
+            height='150px',
+            display='flex',
+            flex_flow='column',
+            align_items='center',
+            justify_content='space-around',
+            padding='20px'))
+    boxs.add_class("boxs")
+
+    def load_css():
+        css = home / ".conda/pantat88.css"
+        with open(css, "r") as file:
+            panel = file.read()
+
+        display(HTML(f"<style>{panel}</style>"))
+
+    def oh_no(b):
+        boxs.close()
+        main_output.clear_output()
+
+    def oh_yes(b):
+        with main_output:
+            boxs.close()
+            clear_output()
+
+            display(Image(filename=str(img)))
+
+            if 'LD_PRELOAD' in os.environ:
+                del os.environ['LD_PRELOAD']
+
+            folder_list = [
+                'tmp/*',
+                'tmp',
+                'asd',
+                'forge',
+                'ComfyUI',
+                '.cache/*',
+                '.config/*',
+                '.ssh',
+                '.zrok',
+                '.sagemaker',
+                '.nv',
+                '.conda',
+                '.ipython/profile_default/startup'
+            ]
+
+            cmd_list = [
+                f"rm -rf {' '.join([str(home / folder) for folder in folder_list])}",
+            ]
+
+            for deleting in cmd_list:
+                get_ipython().system(deleting)
+
+            is_nb = False
+            try:
+                nb_find = f"find {home} -type d -name '.*' -prune -o -type f -name '*.ipynb' -print"
+                nb_files = subprocess.check_output(nb_find, shell=True, text=True, stderr=subprocess.DEVNULL).strip().split('\n')
+
+                for nb_path in nb_files:
+                    if nb_path:
+                        nb_clear(nb_path)
+                        is_nb = True
+
+            except subprocess.CalledProcessError:
+                pass
+
+            if is_nb:
+                main_output.clear_output(wait=True)
+                say("Now, Please Restart JupyterLab")
+
+    no.on_click(oh_no)
+    yes.on_click(oh_yes)
+
+    load_css()
+    display(boxs, main_output)
 
 def nb_clear(nb_path):
     try:
