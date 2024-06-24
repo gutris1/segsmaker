@@ -1,4 +1,4 @@
-# Stable Diffusion Webui and ComfyUI notebook for Sagemaker Studio Lab | **[日本語で](README-JP.md)**
+# Stable Diffusion Webui, Forge and ComfyUI notebook<br />for Sagemaker Studio Lab
 [<img src="https://api.visitorbadge.io/api/visitors?path=https%3A%2F%2Fgithub.com%2Fpantat88%2Fsegsmaker&label=Visitors&countColor=%232ccce4&style=flat">](https://visitorbadge.io/status?path=https%3A%2F%2Fgithub.com%2Fpantat88%2Fsegsmaker)<br>[<img src="https://img.shields.io/badge/Support%20me%20on%20Ko--fi-F16061?logo=ko-fi&logoColor=white&style=flat">](https://ko-fi.com/gutris1)
 
 | SD | [![Open in Studio Lab](https://studiolab.sagemaker.aws/studiolab.svg)](https://studiolab.sagemaker.aws/import/github/gutris1/segsmaker/blob/main/Segsmaker.ipynb) |
@@ -9,6 +9,14 @@
 you can find me here https://discord.gg/k5BwmmvJJU
 
 # Changelog
+### 2024-06-24
+- Improved Notebook. Please NUKE☢️ your current environment with command below, before using new Notebook with venv.
+```python
+!rm -rf ~
+```
+- All Notebooks before today's commit won't work anymore.<br />
+- PINGGY and ZROK URLs will be printed after the local URL.<br />
+
 ### 2024-05-29
 - Fixed Conda Installation.
 
