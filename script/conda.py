@@ -84,7 +84,7 @@ def conda_install():
             ("conda install -yc conda-forge conda=23.11.0", "【 Installing Anaconda 】", "#42b02b"),
             ("conda install -yc conda-forge glib gperftools openssh pv", "【 Installing Conda Packages 】", "yellow"),
             ("conda install -yc conda-forge python=3.10.13", "【 Installing Python 3.10.13 】", "#F50707"),
-            ("pip install psutil aria2 gdown", "【 Installing Python Packages 】", "magenta"),
+            ("pip install psutil aria2 gdown pyngrok", "【 Installing Python Packages 】", "magenta"),
             ("conda clean -y --all", "【 Cleaning 】", "cyan")
         ]
 
