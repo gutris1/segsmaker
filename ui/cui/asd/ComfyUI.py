@@ -26,6 +26,7 @@ else:
     css = home / ".conda/setup.css"
     devnull = {"stdout": subprocess.DEVNULL, "stderr": subprocess.DEVNULL}
 
+    get_ipython().system("pip install -q pyngrok")
     get_ipython().system(f"curl -sLo {css} https://github.com/gutris1/segsmaker/raw/main/ui/sd/asd/setup.css")
 
     startup = home / ".ipython/profile_default/startup/comfyuickpt.py"
