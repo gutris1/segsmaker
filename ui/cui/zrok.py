@@ -2,6 +2,10 @@ import os, sys, json, re, subprocess, time
 from threading import Thread
 from pathlib import Path
 
+R = '\033[0m'
+O = '\033[38;5;208m'
+T = f'{O}▶{R} ZROK {O}:{R}'
+
 if 'LD_PRELOAD' not in os.environ:
     os.environ['LD_PRELOAD'] = '/home/studio-lab-user/.conda/envs/default/lib/libtcmalloc_minimal.so.4'
 
@@ -30,8 +34,15 @@ def zrok_enable(token):
 
 def launch(zrok):
     webui = subprocess.Popen(['/tmp/venv/bin/python3', 'main.py'] + sys.argv[2:])
-    zrok.append(subprocess.Popen(["zrok", "share", "public", "localhost:8188", "--headless"],
-                                 stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True))
+    zrok.append(subprocess.Popen([
+        "zrok",
+        "share",
+        "public",
+        "localhost:8188",
+        "--headless"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True))
 
     webui.wait()
     zrok[0].terminate()
@@ -42,7 +53,7 @@ def zrok_url(zrok):
     for line in zrok[0].stdout:
         urls = get_url.findall(line)
         for url in urls:
-            print(f"\n【ZROK】{url}\n")
+            print(f"{T} {url}\n")
             break
 
 try:
