@@ -32,15 +32,14 @@ save_button.add_class("save-button")
 input_box = widgets.Text(placeholder='enter your Civitai API KEY here')
 input_box.add_class("api-input")
 
-boxs = VBox([input_box, save_button],
-            layout=Layout(width='450px',
-                          height='150px',
-                          display='flex',
-                          flex_flow='column',
-                          align_items='center',
-                          justify_content='space-around',
-                          padding='20px'))
-boxs.add_class("boxs")
+input_widget = VBox([input_box, save_button], layout=Layout(width='450px',
+                                                            height='150px',
+                                                            display='flex',
+                                                            flex_flow='column',
+                                                            align_items='center',
+                                                            justify_content='space-around',
+                                                            padding='20px'))
+input_widget.add_class("boxs")
 
 Path(css).parent.mkdir(parents=True, exist_ok=True)
 Path(pantat).parent.mkdir(parents=True, exist_ok=True)
@@ -59,6 +58,34 @@ def zrok_install():
     get_ipython().system(f"tar -xzf {name} -C {zrok} --wildcards *zrok")
     get_ipython().system(f"rm -rf {home}/.cache/* {name}")
 
+def conda_install():
+    try:
+        display(Image(filename=str(img)))
+
+        conda_list = [
+            ("conda install -yc conda-forge conda=23.11.0", "【 Installing Anaconda 】", "#42b02b"),
+            ("conda install -yc conda-forge glib gperftools openssh pv", "【 Installing Conda Packages 】", "yellow"),
+            ("conda install -yc conda-forge python=3.10.13", "【 Installing Python 3.10.13 】", "#F50707"),
+            ("pip install psutil aria2 gdown", "【 Installing Python Packages 】", "magenta"),
+            ("conda clean -y --all", "【 Cleaning 】", "cyan")
+        ]
+
+        for cmd, txts, colors in conda_list:
+            display(HTML(f"<span style='color:{colors};'>{txts}</span>"))
+            subprocess.run(shlex.split(cmd), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+        get_ipython().system('rm -rf /home/studio-lab-user/.cache/*')
+        zrok_install()
+
+        clear_output()
+        display(HTML('<span style="color: cyan;">【 Done 】</span>'))
+
+        get_ipython().kernel.do_shutdown(True)
+
+    except KeyboardInterrupt:
+        clear_output()
+        display(HTML(f"<p>^Canceled</p>"))
+
 def load_css(css):
     with open(css, "r") as file:
         panel = file.read()
@@ -75,63 +102,34 @@ def key_inject(api_key):
         value = variable.replace("YOUR_CIVITAI_API_KEY", f"{api_key}")
         with open(line, "w") as file:
             file.write(value)
-            
-def conda_install():
-    try:
-        display(Image(filename=str(img)))
-
-        conda_list = [
-            ("conda install -yc conda-forge conda=23.11.0", "【 Installing Anaconda 】", "#42b02b"),
-            ("conda install -yc conda-forge glib gperftools openssh pv", "【 Installing Conda Packages 】", "yellow"),
-            ("conda install -yc conda-forge python=3.10.13", "【 Installing Python 3.10.13 】", "#F50707"),
-            ("pip install psutil aria2 gdown pyngrok", "【 Installing Python Packages 】", "magenta"),
-            ("conda clean -y --all", "【 Cleaning 】", "cyan")
-        ]
-
-        for cmd, txts, colors in conda_list:
-            with main_output:
-                display(HTML(f"<span style='color:{colors};'>{txts}</span>"))
-            subprocess.run(shlex.split(cmd), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-
-        get_ipython().system('rm -rf /home/studio-lab-user/.cache/*')
-        zrok_install()
-
-        clear_output()
-        display(HTML('<span style="color: cyan;">【 Done 】</span>'))
-
-        get_ipython().kernel.do_shutdown(True)
-
-    except KeyboardInterrupt:
-        clear_output()
-        display(HTML(f"<p>^Canceled</p>"))
 
 def key_widget():
     def column(b):
         api_key = input_box.value.strip()
 
-        if not api_key:
-            with main_output:
-                print("Please enter your CivitAI API KEY")
-                print("CivitAI APIキーのおっぱいを入力してください。")
-            return
+        with main_output:
+            if not api_key:
+                print("Please enter your CivitAI API KEY / CivitAI APIキーのおっぱいを入力してください。")
+                return
 
-        if len(api_key) < 32:
-            with main_output:
-                print("API key must be at least 32 characters long")
-                print("APIキーは少なくとも32オッパイの長さに達する必要があります。")
-            return
+            if len(api_key) < 32:
+                print("API key must be at least 32 characters long / APIキーは少なくとも32オッパイの長さに達する必要があります。")
+                return
 
-        key_value = {"api_key": api_key}
-        with open(key_file, "w") as file:
-            json.dump(key_value, file)
-            
+            key_value = {"api_key": api_key}
+            with open(key_file, "w") as file:
+                json.dump(key_value, file)
+
         key_inject(api_key)
-        widgets.Widget.close(boxs)
+
+        input_widget.close()
         main_output.clear_output()
-        conda_install()
-        
+
+        with main_output:
+            conda_install()
+
     save_button.on_click(column)
-    
+
 def key_check():
     if key_file.exists():
         with open(key_file, "r") as file:
@@ -143,7 +141,7 @@ def key_check():
         conda_install()
         
     else:
-        display(boxs, main_output)
+        display(input_widget, main_output)
         key_widget()
 
 load_css(css)
