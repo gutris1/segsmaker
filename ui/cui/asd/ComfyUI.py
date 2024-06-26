@@ -82,6 +82,8 @@ else:
             subprocess.run(shlex.split(lines), **devnull)
             
         scripts = [
+            f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn-xl.css {webui}/asd",
+            f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn-1_5.css {webui}/asd",
             f"https://github.com/gutris1/segsmaker/raw/main/script/zrok_reg.py {webui}/asd",
             f"https://github.com/gutris1/segsmaker/raw/main/script/venv.py {webui}"]
             
@@ -113,7 +115,6 @@ else:
         clone_comfyui(home, webui, devnull)
 
         extras = [
-            f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn-1_5.css {webui}/asd",
             f"https://huggingface.co/pantat88/ui/resolve/main/embeddings.zip {webui}/models",
             f"https://civitai.com/api/download/models/150491 {webui}/models/embeddings edgQuality.pt",
             f"https://huggingface.co/stabilityai/sd-vae-ft-mse-original/resolve/main/vae-ft-mse-840000-ema-pruned.safetensors {webui}/models/vae"]
@@ -132,7 +133,6 @@ else:
         clone_comfyui(home, webui, devnull)
 
         extras = [
-            f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn-xl.css {webui}/asd",
             f"https://civitai.com/api/download/models/182974 {webui}/models/embeddings",
             f"https://civitai.com/api/download/models/159385 {webui}/models/embeddings",
             f"https://civitai.com/api/download/models/159184 {webui}/models/embeddings",
