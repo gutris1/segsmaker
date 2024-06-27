@@ -65,14 +65,8 @@ else:
             f"ln -vs /tmp {home}/tmp",
             f"ln -vs /tmp/ckpt {webui}/models/checkpoints/tmp_ckpt",
             f"ln -vs /tmp/lora {webui}/models/loras/tmp_lora",
-            f"ln -vs /tmp/controlnet {webui}/models/controlnet"]
-
-    def comfy_ckpt():
-        src = webui / "models/checkpoints"
-        sym = webui / "models/checkpoints/checkpoints_symlink"
-
-        if not sym.is_symlink():
-            subprocess.run(['ln', '-vs', src, sym], check=True, **devnull)
+            f"ln -vs /tmp/controlnet {webui}/models/controlnet",
+            f"ln -vs {webui}/models/checkpoints {webui}/models/checkpoints_symlink"]
 
     def clone_comfyui(home, webui, devnull):
         time.sleep(1)
@@ -87,9 +81,7 @@ else:
         scripts = [
             f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/controlnet.py {webui}/asd",
             f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn-xl.css {webui}/asd",
-            f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn-xl.py {webui}/asd",
             f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn-1_5.css {webui}/asd",
-            f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn-1_5.py {webui}/asd",
             f"https://github.com/gutris1/segsmaker/raw/main/script/zrok_reg.py {webui}/asd",
             f"https://github.com/gutris1/segsmaker/raw/main/script/venv.py {webui}"]
             
@@ -104,8 +96,6 @@ else:
         line = scripts + upscalers
         for item in line:
             download(item)
-
-        comfy_ckpt()
 
     def install_custom_nodes(webui):
         say("<br><b>【{red} Installing Custom Nodes{d} 】{red}</b>")
