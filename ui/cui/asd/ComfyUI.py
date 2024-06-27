@@ -29,9 +29,6 @@ else:
     get_ipython().system("pip install -q pyngrok")
     get_ipython().system(f"curl -sLo {css} https://github.com/gutris1/segsmaker/raw/main/ui/sd/asd/setup.css")
 
-    startup = home / ".ipython/profile_default/startup/comfyuickpt.py"
-    get_ipython().system(f"curl -sLo {startup} https://github.com/gutris1/segsmaker/raw/main/script/comfyuickpt.py")
-
     loading = widgets.Output()
     button1 = widgets.Button(description='SD 1.5')
     button2 = widgets.Button(description='SDXL')
