@@ -65,8 +65,7 @@ else:
             f"ln -vs /tmp {home}/tmp",
             f"ln -vs /tmp/ckpt {webui}/models/checkpoints/tmp_ckpt",
             f"ln -vs /tmp/lora {webui}/models/loras/tmp_lora",
-            f"ln -vs /tmp/controlnet {webui}/models/controlnet",
-            f"ln -vs {webui}/models/checkpoints {webui}/models/checkpoints_symlink"]
+            f"ln -vs /tmp/controlnet {webui}/models/controlnet"]
 
     def clone_comfyui(home, webui, devnull):
         time.sleep(1)
