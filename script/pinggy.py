@@ -1,5 +1,5 @@
 import subprocess, sys, os
-from threading import Thread
+from threading import Thread, Event
 
 R = '\033[0m'
 O = '\033[38;5;208m'
@@ -7,6 +7,8 @@ T = f'{O}▶{R} PINGGY {O}:{R}'
 
 if 'LD_PRELOAD' not in os.environ:
     os.environ['LD_PRELOAD'] = '/home/studio-lab-user/.conda/envs/default/lib/libtcmalloc_minimal.so.4'
+
+event = Event()
 
 def launch():
     with open('launch.txt', 'w') as log_file:
@@ -41,17 +43,21 @@ def launch():
         ssh.terminate()
 
 def pinggy():
-    while True:
+    while not event.is_set():
         with open('launch.txt', 'r') as file:
             if any('Running on local URL' in line for line in file):
                 break
 
-    with open('pinggy.txt', 'r') as file:
-        for line in file:
-            if 'http:' in line and '.pinggy.link' in line:
-                url = line[line.find('http://'):line.find('.pinggy.link') + len('.pinggy.link')]
-                print(f'\n{T} {url}')
-                return
+    if event.is_set():
+        return
+
+    while not event.is_set():
+        with open('pinggy.txt', 'r') as file:
+            for line in file:
+                if 'http:' in line and '.pinggy.link' in line:
+                    url = line[line.find('http://'):line.find('.pinggy.link') + len('.pinggy.link')]
+                    print(f'\n{T} {url}')
+                    return
 
 app = Thread(target=launch)
 url = Thread(target=pinggy)
@@ -60,4 +66,5 @@ app.start()
 url.start()
 
 app.join()
+event.set()
 url.join()
