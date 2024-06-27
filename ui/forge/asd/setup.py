@@ -58,7 +58,8 @@ else:
 
     def req_list(home, webui):
         return [
-            f"rm -rf {home}/tmp/* {home}/tmp {webui}/models/Stable-diffusion/tmp_ckpt {webui}/models/Lora/tmp_lora {webui}/models/ControlNet",
+            f"rm -rf /tmp/venv /tmp/* {home}/tmp",
+            f"rm -rf {webui}/models/Stable-diffusion/tmp_ckpt {webui}/models/Lora/tmp_lora {webui}/models/ControlNet",
             f"rm -rf {webui}/models/svd {webui}/models/z123",
             f"mkdir -p {webui}/models/Lora",
             f"mkdir -p {webui}/models/ESRGAN",
