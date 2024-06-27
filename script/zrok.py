@@ -1,5 +1,5 @@
 import os, subprocess, sys, json, re
-from threading import Thread
+from threading import Thread, Event
 from pathlib import Path
 
 R = '\033[0m'
@@ -8,6 +8,8 @@ T = f'{O}▶{R} ZROK {O}:{R}'
 
 if 'LD_PRELOAD' not in os.environ:
     os.environ['LD_PRELOAD'] = '/home/studio-lab-user/.conda/envs/default/lib/libtcmalloc_minimal.so.4'
+
+event = Event()
 
 def zrok_enable(token):
     zrok = Path('/home/studio-lab-user/.zrok')
@@ -60,17 +62,21 @@ def launch():
         zrok.terminate()
 
 def zrok_url():
-    while True:
+    while not event.is_set():
         with open('launch.txt', 'r') as file:
             if any('Running on local URL' in line for line in file):
                 break
 
-    with open('zrok.txt', 'r') as file:
-        for line in file:
-            if 'https:' in line and '.zrok.io' in line:
-                url = line[line.find('https://'):line.find('.zrok.io') + len('.zrok.io')]
-                print(f'\n{T} {url}')
-                return
+    if event.is_set():
+        return
+
+    while not event.is_set():
+        with open('zrok.txt', 'r') as file:
+            for line in file:
+                if 'https:' in line and '.zrok.io' in line:
+                    url = line[line.find('https://'):line.find('.zrok.io') + len('.zrok.io')]
+                    print(f'\n{T} {url}')
+                    return
 
 try:
     if len(sys.argv) < 2:
@@ -86,6 +92,7 @@ try:
     url.start()
 
     app.join()
+    event.set()
     url.join()
 
 except KeyboardInterrupt:
