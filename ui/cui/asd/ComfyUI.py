@@ -59,13 +59,20 @@ else:
 
     def req_list(home, webui):
         return [
-            f"unlink {webui}/models/checkpoints_symlink",
-            f"rm -rf {home}/tmp/* {home}/tmp {webui}/models/checkpoints/tmp_ckpt",
+            f"rm -rf /tmp/venv /tmp/* {home}/tmp",
+            f"rm -rf {webui}/models/checkpoints/tmp_ckpt",
             f"rm -rf {webui}/models/loras/tmp_lora {webui}/models/controlnet",
             f"ln -vs /tmp {home}/tmp",
             f"ln -vs /tmp/ckpt {webui}/models/checkpoints/tmp_ckpt",
             f"ln -vs /tmp/lora {webui}/models/loras/tmp_lora",
             f"ln -vs /tmp/controlnet {webui}/models/controlnet"]
+
+    def comfy_ckpt():
+        src = webui / "models/checkpoints"
+        sym = webui / "models/checkpoints/checkpoints_symlink"
+
+        if not sym.is_symlink():
+            subprocess.run(['ln', '-vs', src, sym], check=True, **devnull)
 
     def clone_comfyui(home, webui, devnull):
         time.sleep(1)
@@ -78,8 +85,11 @@ else:
             subprocess.run(shlex.split(lines), **devnull)
             
         scripts = [
+            f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/controlnet.py {webui}/asd",
             f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn-xl.css {webui}/asd",
+            f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn-xl.py {webui}/asd",
             f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn-1_5.css {webui}/asd",
+            f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn-1_5.py {webui}/asd",
             f"https://github.com/gutris1/segsmaker/raw/main/script/zrok_reg.py {webui}/asd",
             f"https://github.com/gutris1/segsmaker/raw/main/script/venv.py {webui}"]
             
@@ -94,6 +104,8 @@ else:
         line = scripts + upscalers
         for item in line:
             download(item)
+
+        comfy_ckpt()
 
     def install_custom_nodes(webui):
         say("<br><b>【{red} Installing Custom Nodes{d} 】{red}</b>")
@@ -123,8 +135,6 @@ else:
 
         install_custom_nodes(webui)
 
-        os.rename(str(webui / "asd/cn-1_5.py"), str(webui / "asd/controlnet.py"))
-
     def sd_xl(home, webui, devnull):
         clone_comfyui(home, webui, devnull)
 
@@ -138,8 +148,6 @@ else:
             download(items)
 
         install_custom_nodes(webui)
-
-        os.rename(str(webui / "asd/cn-xl.py"), str(webui / "asd/controlnet.py"))
 
     def sd_install(selection):
         with loading:
