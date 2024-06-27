@@ -60,7 +60,8 @@ else:
 
     def req_list(home, webui):
         return [
-            f"rm -rf {home}/tmp/* {home}/tmp {webui}/models/Stable-diffusion/tmp_ckpt {webui}/models/Lora/tmp_lora {webui}/models/ControlNet",
+            f"rm -rf /tmp/venv /tmp/* {home}/tmp",
+            f"rm -rf {webui}/models/Stable-diffusion/tmp_ckpt {webui}/models/Lora/tmp_lora {webui}/models/ControlNet",
             f"mkdir -p {webui}/models/Lora",
             f"mkdir -p {webui}/models/ESRGAN",
             f"ln -vs /tmp {home}/tmp",
@@ -119,8 +120,6 @@ else:
         os.chdir(webui / "extensions")
         clone(str(webui / "asd/ext-1_5.txt"))
 
-        os.rename(str(webui / "asd/cn-1_5.py"), str(webui / "asd/controlnet.py"))
-
     def sd_xl(home, webui, devnull):
         sd_clone(home, webui, devnull)
 
@@ -136,8 +135,6 @@ else:
         say("<br><b>【{red} Installing Extensions{d} 】{red}</b>")
         os.chdir(webui / "extensions")
         clone(str(webui / "asd/ext-xl.txt"))
-
-        os.rename(str(webui / "asd/cn-xl.py"), str(webui / "asd/controlnet.py"))
 
     def sd_install(selection):
         with loading:
