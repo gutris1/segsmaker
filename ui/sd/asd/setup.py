@@ -60,7 +60,8 @@ else:
 
     def req_list(home, webui):
         return [
-            f"rm -rf {home}/tmp/* {home}/tmp {webui}/models/Stable-diffusion/tmp_ckpt {webui}/models/Lora/tmp_lora {webui}/models/ControlNet",
+            f"rm -rf /tmp/venv /tmp/* {home}/tmp",
+            f"rm -rf {webui}/models/Stable-diffusion/tmp_ckpt {webui}/models/Lora/tmp_lora {webui}/models/ControlNet",
             f"mkdir -p {webui}/models/Lora",
             f"mkdir -p {webui}/models/ESRGAN",
             f"ln -vs /tmp {home}/tmp",
@@ -79,6 +80,11 @@ else:
             subprocess.run(shlex.split(lines), **devnull)
             
         scripts = [
+            f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/controlnet.py {webui}/asd",
+            f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn-xl.css {webui}/asd",
+            f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn-xl.py {webui}/asd",
+            f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn-1_5.css {webui}/asd",
+            f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn-1_5.py {webui}/asd",
             f"https://github.com/gutris1/segsmaker/raw/main/script/zrok_reg.py {webui}/asd",
             f"https://github.com/gutris1/segsmaker/raw/main/script/zrok.py {webui}",
             f"https://github.com/gutris1/segsmaker/raw/main/script/pinggy.py {webui}",
@@ -101,8 +107,6 @@ else:
         sd_clone(home, webui, devnull)
 
         extras = [
-            f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn-1_5.css {webui}/asd",
-            f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn-1_5.py {webui}/asd",
             f"https://huggingface.co/pantat88/ui/resolve/main/embeddings.zip {webui}",
             f"https://civitai.com/api/download/models/150491 {webui}/embeddings edgQuality.pt",
             f"https://huggingface.co/stabilityai/sd-vae-ft-mse-original/resolve/main/vae-ft-mse-840000-ema-pruned.safetensors {webui}/models/VAE"]
@@ -116,14 +120,10 @@ else:
         os.chdir(webui / "extensions")
         clone(str(webui / "asd/ext-1_5.txt"))
 
-        os.rename(str(webui / "asd/cn-1_5.py"), str(webui / "asd/controlnet.py"))
-
     def sd_xl(home, webui, devnull):
         sd_clone(home, webui, devnull)
 
         extras = [
-            f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn-xl.css {webui}/asd",
-            f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn-xl.py {webui}/asd",
             f"https://civitai.com/api/download/models/182974 {webui}/embeddings",
             f"https://civitai.com/api/download/models/159385 {webui}/embeddings",
             f"https://civitai.com/api/download/models/159184 {webui}/embeddings",
@@ -135,8 +135,6 @@ else:
         say("<br><b>【{red} Installing Extensions{d} 】{red}</b>")
         os.chdir(webui / "extensions")
         clone(str(webui / "asd/ext-xl.txt"))
-
-        os.rename(str(webui / "asd/cn-xl.py"), str(webui / "asd/controlnet.py"))
 
     def sd_install(selection):
         with loading:

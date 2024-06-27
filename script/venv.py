@@ -26,11 +26,12 @@ def venv():
     if vnv.exists() and check(vnv) > 7 * 1024**3:
         return
     else:
+        os.chdir(tmp)
         clear_output(wait=True)
         display(Image(filename=str(img)))
 
         say('【{red} Installing VENV{d} 】{red}')
-        os.chdir(tmp)
+        get_ipython().system(f'rm -rf {vnv}')
         download(url)
 
         get_ipython().system(f'pv {fn} | lz4 -d | tar xf -')

@@ -8,6 +8,7 @@ if 'LD_PRELOAD' not in os.environ:
     os.environ['LD_PRELOAD'] = '/home/studio-lab-user/.conda/envs/default/lib/libtcmalloc_minimal.so.4'
 
 os.system("find /home/studio-lab-user/ComfyUI -type d -name .ipynb_checkpoints -exec rm -rf {} +")
+os.system("/tmp/venv/bin/python3 -m pip install -q --upgrade pip")
 os.system("/tmp/venv/bin/python3 -m pip install -q simpleeval")
 
 def ngrok_tunnel(port, queue, auth_token):
