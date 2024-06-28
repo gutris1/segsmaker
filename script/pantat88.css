@@ -60,7 +60,8 @@
     rgb(255, 75, 0),
     rgb(255, 50, 0),
     rgb(255, 25, 0),
-    rgb(255, 0, 0));}
+    rgb(255, 0, 0));
+}
 
 .boxs {
     border: 3px solid transparent;
@@ -130,7 +131,8 @@
     border-radius: 10px;
     border: 3px solid #2197f2;
     background: transparent;
-    transition: transform 0.5s ease;}
+    transition: transform 0.5s ease;
+}
 
 .save-button:hover {
     transform: scale(1.3);
@@ -140,7 +142,8 @@
     background-size: 800% 100%;
     cursor: pointer;
     background-image: var(--conda-bg);
-    animation: slideBackground 10s linear infinite, BorderPulse 7s infinite;}
+    animation: slideBackground 10s linear infinite, BorderPulse 7s infinite;
+}
 
 .gradient-conda {
   width: 200px;
@@ -151,11 +154,13 @@
   border-radius: 2px;
   border: 1px solid transparent;
   display: inline-block;
-  animation: slideBackground 10s linear infinite, BorderPulse 7s infinite;}
+  animation: slideBackground 10s linear infinite, BorderPulse 7s infinite;
+}
 
 @keyframes slideBackground {
   0% { background-position: 0% 50%; }
-  100% { background-position: -800% 50%; }}
+  100% { background-position: -800% 50%; }
+}
 
 @keyframes BorderPulse {
   0% {border-color: rgba(255, 0, 0, 1);}
@@ -218,7 +223,8 @@
   95.00% {border-color: rgba(255, 75, 0, 0.75);}
   96.67% {border-color: rgba(255, 50, 0, 0.5);}
   98.33% {border-color: rgba(255, 25, 0, 0.75);}
-  100% {border-color: rgba(255, 0, 0, 1);}}
+  100% {border-color: rgba(255, 0, 0, 1);}
+}
 
 @keyframes slideAndBlurFromCenter {
     from {
@@ -228,4 +234,71 @@
     to {
         transform: scale(1);
         opacity: 1;
-        filter: blur(0px);}}
+        filter: blur(0px);}
+}
+
+.input-widget {
+    border: 3px solid transparent;
+    border-radius: 10px;
+    margin: 0;
+    background-color: #202123;
+    animation: slideAndBlurFromCenter 1s, BorderPulse 15s infinite;
+}
+
+.current-key input[type="text"], .key-input input[type="text"] {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 15px;
+    height: 35px;
+    width: 100%;
+    color: white;
+    text-align: center;
+    border-radius: 8px;
+    position: absolute;
+    transform: scale(125%);
+    margin-right: 0px;
+    margin-bottom: 0px;
+    margin-left: 0px;
+}
+.current-key input[type="text"] {
+    border: 3px solid #2197f2;
+    margin-top: -30px;
+}
+
+.key-input input[type="text"] {
+    border: 3px solid #ab22fe;
+    margin-top: -20px;
+}
+
+.key-input input:focus {
+    height: 35px;
+    border: 3px solid transparent;
+    animation: BorderPulse 10s infinite;
+}
+
+.save, .cancel {
+    font-family: 'Times New Roman', serif;
+    text-align: center;
+    font-size: 25px;
+    margin-top: 0px;
+    margin-bottom: -20px;
+    margin-right: 0px;
+    margin-left: 0px;
+    width: 100px;
+    height: 40px;
+    color: white;
+    border-radius: 10px;
+    border: 3px solid #2197f2;
+    background: transparent;
+    transition: transform 0.5s ease;
+}
+
+.save:hover, .cancel:hover {
+    transform: scale(1.3);
+    color: black;
+    border-radius: 10px;
+    border: 3px solid transparent;
+    background-size: 800% 100%;
+    cursor: pointer;
+    background-image: var(--conda-bg);
+    animation: slideBackground 10s linear infinite, BorderPulse 7s infinite;
+}
