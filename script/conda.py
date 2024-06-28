@@ -1,4 +1,4 @@
-from ipywidgets import widgets, VBox, Layout
+from ipywidgets import widgets
 from IPython.display import display, HTML, clear_output, Image
 from IPython import get_ipython
 from pathlib import Path
@@ -13,6 +13,17 @@ key_path = home / ".your-civitai-api-key"
 key_file = key_path / "api_key.json"
 img = home / ".conda/loading.png"
 
+R = "\033[0m"
+T = f"▶{R}"
+BLUE = f"\033[38;5;33m{T}"
+CYAN = f"\033[36m{T}"
+PURPLE = f"\033[38;5;135m{T}"
+PINK = f"\033[38;5;201m{T}"
+RED = f"\033[31m{T}"
+GREEN = f"\033[38;5;35m{T}"
+
+Path(key_path).mkdir(parents=True, exist_ok=True)
+
 scripts = [
     f"curl -sLo {pantat} https://github.com/gutris1/segsmaker/raw/main/script/pantat88.py",
     f"curl -sLo {css} https://github.com/gutris1/segsmaker/raw/main/script/pantat88.css",
@@ -26,24 +37,23 @@ for items in scripts:
     subprocess.run(shlex.split(items), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 main_output = widgets.Output()
+
 save_button = widgets.Button(description="Save")
 save_button.add_class("save-button")
 
-input_box = widgets.Text(placeholder='enter your Civitai API KEY here')
+input_box = widgets.Text(placeholder='Enter Your Civitai API KEY Here')
 input_box.add_class("api-input")
 
-input_widget = VBox([input_box, save_button], layout=Layout(width='450px',
-                                                            height='150px',
-                                                            display='flex',
-                                                            flex_flow='column',
-                                                            align_items='center',
-                                                            justify_content='space-around',
-                                                            padding='20px'))
+input_widget = widgets.VBox([input_box, save_button],
+                            layout=widgets.Layout(
+                                width='450px',
+                                height='150px',
+                                display='flex',
+                                flex_flow='column',
+                                align_items='center',
+                                justify_content='space-around',
+                                padding='20px'))
 input_widget.add_class("boxs")
-
-Path(css).parent.mkdir(parents=True, exist_ok=True)
-Path(pantat).parent.mkdir(parents=True, exist_ok=True)
-Path(key_path).mkdir(parents=True, exist_ok=True)
 
 def zrok_install():
     zrok = home / ".zrok/bin"
@@ -63,28 +73,28 @@ def conda_install():
         display(Image(filename=str(img)))
 
         conda_list = [
-            ("conda install -yc conda-forge conda=23.11.0", "【 Installing Anaconda 】", "#42b02b"),
-            ("conda install -yc conda-forge glib gperftools openssh pv", "【 Installing Conda Packages 】", "yellow"),
-            ("conda install -yc conda-forge python=3.10.13", "【 Installing Python 3.10.13 】", "#F50707"),
-            ("pip install psutil aria2 gdown", "【 Installing Python Packages 】", "magenta"),
-            ("conda clean -y --all", "【 Cleaning 】", "cyan")
+            ("conda install -yc conda-forge conda=23.11.0", f"{BLUE} Installing Anaconda"),
+            ("conda install -yc conda-forge glib gperftools openssh pv", f"{CYAN} Installing Conda Packages"),
+            ("conda install -yc conda-forge python=3.10.13", f"{PURPLE} Installing Python 3.10.13"),
+            ("pip install psutil aria2 gdown", f"{PINK} Installing Python Packages"),
+            ("conda clean -y --all", f"{RED} Cleaning")
         ]
 
-        for cmd, txts, colors in conda_list:
-            display(HTML(f"<span style='color:{colors};'>{txts}</span>"))
+        for cmd, txts in conda_list:
+            print(f'{txts}')
             subprocess.run(shlex.split(cmd), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
         get_ipython().system('rm -rf /home/studio-lab-user/.cache/*')
         zrok_install()
 
         clear_output()
-        display(HTML('<span style="color: cyan;">【 Done 】</span>'))
+        print(f"{GREEN} Done")
 
         get_ipython().kernel.do_shutdown(True)
 
     except KeyboardInterrupt:
         clear_output()
-        display(HTML(f"<p>^Canceled</p>"))
+        print("^ Canceled")
 
 def load_css(css):
     with open(css, "r") as file:
@@ -139,7 +149,7 @@ def key_check():
         key_inject(api_key)
         display(main_output)
         conda_install()
-        
+
     else:
         display(input_widget, main_output)
         key_widget()
