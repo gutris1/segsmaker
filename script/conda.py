@@ -73,7 +73,7 @@ def conda_install():
         display(Image(filename=str(img)))
 
         conda_list = [
-            ("conda install -yc conda-forge conda=23.11.0", f"{BLUE} Installing Anaconda"),
+            ("conda install -yc conda-forge conda", f"{BLUE} Installing Anaconda"),
             ("conda install -yc conda-forge glib gperftools openssh pv", f"{CYAN} Installing Conda Packages"),
             ("conda install -yc conda-forge python=3.10.13", f"{PURPLE} Installing Python 3.10.13"),
             ("pip install psutil aria2 gdown", f"{PINK} Installing Python Packages"),
