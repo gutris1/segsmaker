@@ -3,13 +3,15 @@ from IPython.display import display, HTML, clear_output, Image
 from IPython import get_ipython
 from pathlib import Path
 from tqdm import tqdm
-import subprocess, zipfile, sys, os, json, psutil
+import subprocess, time, zipfile, sys, os, json, psutil
 import ipywidgets as widgets
 from nenen88 import say
 
 
 home = Path.home()
+css = home / ".conda/pantat88.css"
 img = home / ".conda/loading.png"
+startup = home / ".ipython/profile_default/startup"
 
 @register_line_magic
 def storage(line):
@@ -115,8 +117,7 @@ def delete(line):
             padding='20px'))
     boxs.add_class("boxs")
 
-    def load_css():
-        css = home / ".conda/pantat88.css"
+    def load_css(css):
         with open(css, "r") as file:
             panel = file.read()
 
@@ -179,7 +180,7 @@ def delete(line):
     no.on_click(oh_no)
     yes.on_click(oh_yes)
 
-    load_css()
+    load_css(css)
     display(boxs, main_output)
 
 def nb_clear(nb_path):
@@ -293,3 +294,131 @@ def zipping(line, cell):
 
     max_size_mb = 200
     zip_folder(input_path, output_path, max_size_mb)
+
+
+@register_line_magic
+def change_key(line):
+    nenen = startup / "nenen88.py"
+    pantat = startup / "pantat88.py"
+    key_path = home / ".your-civitai-api-key"
+    key_file = key_path / "api_key.json"
+
+    main_output = widgets.Output()
+    save_button = widgets.Button(description="Save")
+    save_button.add_class("save")
+
+    cancel_button = widgets.Button(description="Cancel")
+    cancel_button.add_class("cancel")
+
+    new_key = widgets.Text(placeholder='Enter Your New Civitai API KEY')
+    new_key.add_class("key-input")
+
+    current_key = widgets.Text(placeholder='', disabled=True)
+    current_key.add_class("current-key")
+
+    buttons = widgets.HBox([cancel_button, save_button],
+                           layout=widgets.Layout(
+                               width='400px',
+                               display='flex',
+                               flex_flow='row',
+                               align_items='center',
+                               justify_content='space-around',
+                               padding='0px'))
+
+    input_widget = widgets.VBox([current_key, new_key, buttons],
+                                layout=widgets.Layout(
+                                    width='400px',
+                                    height='200px',
+                                    display='flex',
+                                    flex_flow='column',
+                                    align_items='center',
+                                    justify_content='space-around',
+                                    padding='20px'))
+    input_widget.add_class("input-widget")
+
+    def load_css(css):
+        with open(css, "r") as file:
+            panel = file.read()
+
+        display(HTML(f"<style>{panel}</style>"))
+
+    def key_inject(api_key):
+        x = [
+            f"curl -sLo {pantat} https://github.com/gutris1/segsmaker/raw/main/script/pantat88.py",
+            f"curl -sLo {nenen} https://github.com/gutris1/segsmaker/raw/main/script/nenen88.py"
+        ]
+
+        for y in x:
+            get_ipython().system(y)
+
+        target = [pantat, nenen]
+
+        for line in target:
+            with open(line, "r") as file:
+                variable = file.read()
+
+            value = variable.replace("YOUR_CIVITAI_API_KEY", f"{api_key}")
+            with open(line, "w") as file:
+                file.write(value)
+
+    def key_widget(current_key_value=''):
+        current_key.value = current_key_value
+
+        def save_key(b):
+            api_key = new_key.value.strip()
+
+            with main_output:
+                if not api_key:
+                    print("Please enter your CivitAI API KEY / CivitAI APIキーのおっぱいを入力してください。")
+                    return
+
+                if len(api_key) < 32:
+                    print("API key must be at least 32 characters long / APIキーは少なくとも32オッパイの長さに達する必要があります。")
+                    return
+
+                key_value = {"api_key": api_key}
+                with open(key_file, "w") as file:
+                    json.dump(key_value, file)
+
+            with main_output:
+                input_widget.close()
+                main_output.clear_output(wait=True)
+                say("Saving...")
+                key_inject(api_key)
+
+                main_output.clear_output(wait=True)
+                get_ipython().kernel.do_shutdown(True)
+                time.sleep(2)
+                say("Kernel restarting...")
+
+                main_output.clear_output(wait=True)
+                time.sleep(3)
+                say("Done")
+
+        def cancel_key(b):
+            new_key.value = ''
+
+            with main_output:
+                input_widget.close()
+                main_output.clear_output(wait=True)
+                say("^ Canceled")
+
+        save_button.on_click(save_key)
+        cancel_button.on_click(cancel_key)
+
+    def key_check():
+        if key_path.exists():
+            if key_file.exists():
+                with open(key_file, "r") as file:
+                    value = json.load(file)
+
+                api_key = value.get("api_key", "")
+                key_widget(api_key)
+                display(input_widget, main_output)
+            else:
+                say("API Key File does not exist")
+        else:
+            say("API Key Path does not exist")
+
+    load_css(css)
+    key_check()
