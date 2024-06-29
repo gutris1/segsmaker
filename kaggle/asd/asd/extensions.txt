@@ -11,7 +11,7 @@ git clone --depth 1 https://github.com/thomasasfk/sd-webui-aspect-ratio-helper a
 git clone --depth 1 https://github.com/mcmonkeyprojects/sd-dynamic-thresholding 1dynamic-thresholding
 git clone --depth 1 https://github.com/Coyote-A/ultimate-upscale-for-automatic1111 ultimate-upscale
 git clone --depth 1 https://github.com/wcde/custom-hires-fix-for-automatic1111 2custom-hires-fix
-git clone --depth 1 https://github.com/gutris1/adetailer
+git clone --depth 1 https://github.com/Bing-su/adetailer
 git clone --depth 1 https://github.com/Mikubill/sd-webui-controlnet
 git clone --depth 1 https://github.com/IDEA-Research/DWPose
 git clone --depth 1 https://github.com/DEX-1101/sd-encrypt-image
