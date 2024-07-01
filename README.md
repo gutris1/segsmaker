@@ -93,6 +93,6 @@ Usage:
 <p align="center">
   <img src="https://github.com/gutris1/segsmaker/assets/132797949/4ecc8360-a3ba-4564-8acc-64638acb3e35", widht=1000px>
   <img src="https://github.com/gutris1/segsmaker/assets/132797949/e19cc982-67ea-447f-a505-4efc932c822a", widht=1000px>
-  <img src="https://github.com/gutris1/segsmaker/blob/devv/pre/fastpnginfo.png", widht=1000px>
-  <img src="https://github.com/gutris1/segsmaker/blob/devv/pre/cn.png", widht=1000px>
+  <img src="https://github.com/gutris1/segsmaker/blob/main/pre/fastpnginfo.png", widht=1000px>
+  <img src="https://github.com/gutris1/segsmaker/blob/main/pre/cn.png", widht=1000px>
 </p>
