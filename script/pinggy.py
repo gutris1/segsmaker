@@ -59,12 +59,16 @@ def pinggy():
                     print(f'\n{T} {url}')
                     return
 
-app = Thread(target=launch)
-url = Thread(target=pinggy)
+try:
+    app = Thread(target=launch)
+    url = Thread(target=pinggy)
 
-app.start()
-url.start()
+    app.start()
+    url.start()
 
-app.join()
-event.set()
-url.join()
+    app.join()
+    event.set()
+    url.join()
+
+except KeyboardInterrupt:
+    pass
