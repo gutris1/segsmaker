@@ -1,5 +1,5 @@
 from IPython.display import display, HTML, clear_output, Image
-from ipywidgets import widgets, Layout
+from ipywidgets import widgets
 from IPython import get_ipython
 from pathlib import Path
 import subprocess, time, os, shlex
@@ -48,11 +48,11 @@ else:
     button1 = widgets.Button(description='SD 1.5')
     button2 = widgets.Button(description='SDXL')
     install_button = widgets.Button(description='Install')
-
-    button_button = widgets.HBox([button1, button2], layout=Layout(justify_content='space-between'))
+    
     sd_setup = widgets.Output()
+    button_button = widgets.HBox([button1, button2], layout=widgets.Layout(justify_content='space-between'))
     panel = widgets.VBox([button_button, install_button],
-                         layout=Layout(
+                         layout=widgets.Layout(
                              width='400px',
                              height='150px',
                              display='flex',
@@ -64,6 +64,7 @@ else:
     button2.add_class("b2")
     install_button.add_class("out")
     panel.add_class("boxxx")
+
     selected = [None]
 
     def load_css(css):
@@ -71,6 +72,40 @@ else:
             ccs = file.read()
 
         display(HTML(f"<style>{ccs}</style>"))
+
+    def venv_install():
+        url = 'https://huggingface.co/pantat88/back_up/resolve/main/venv.tar.lz4'
+        fn = Path(url).name
+        tmp = Path('/tmp')
+        vnv = tmp / "venv"
+
+        def check(folder):
+            du = get_ipython().getoutput(f'du -s -b {folder}')
+            if du:
+                size = int(du[0].split()[0])
+                return size
+            else:
+                return 0
+
+        def venv():
+            if vnv.exists() and check(vnv) > 7 * 1024**3:
+                return
+            else:
+                os.chdir(tmp)
+                get_ipython().system(f'rm -rf {vnv}')
+
+                say("<br><b>【{red} Installing VENV{d} 】{red}</b>")
+                download(url)
+
+                get_ipython().system(f'pv {fn} | lz4 -d | tar xf -')
+                Path(fn).unlink()
+
+                get_ipython().system(f'rm -rf {vnv / "bin" / "pip*"}')
+                get_ipython().system(f'rm -rf {vnv / "bin" / "python*"}')
+                os.system(f'python -m venv {vnv}')
+
+        venv()
+        os.chdir(home)
 
     def req_list(home, webui):
         return [
@@ -92,7 +127,7 @@ else:
 
         for lines in req:
             subprocess.run(shlex.split(lines), **devnull)
-            
+
         scripts = [
             f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/controlnet.py {webui}/asd",
             f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn-xl.css {webui}/asd",
@@ -104,7 +139,7 @@ else:
             f"https://github.com/gutris1/segsmaker/raw/main/script/pinggy.py {webui}",
             f"https://github.com/gutris1/segsmaker/raw/main/script/ngrokk.py {webui}",
             f"https://github.com/gutris1/segsmaker/raw/main/script/venv.py {webui}"]
-            
+
         upscalers = [
             f"https://huggingface.co/pantat88/ui/resolve/main/4x-UltraSharp.pth {webui}/models/ESRGAN",
             f"https://huggingface.co/pantat88/ui/resolve/main/4x-AnimeSharp.pth {webui}/models/ESRGAN",
@@ -112,10 +147,12 @@ else:
             f"https://huggingface.co/pantat88/ui/resolve/main/4x_RealisticRescaler_100000_G.pth {webui}/models/ESRGAN",
             f"https://huggingface.co/pantat88/ui/resolve/main/8x_RealESRGAN.pth {webui}/models/ESRGAN",
             f"https://huggingface.co/pantat88/ui/resolve/main/4x_foolhardy_Remacri.pth {webui}/models/ESRGAN"]
-        
+
         line = scripts + upscalers
         for item in line:
             download(item)
+
+        tempe()
 
     def sd_1_5(home, webui, devnull):
         sd_clone(home, webui, devnull)
@@ -164,11 +201,12 @@ else:
                 sd_1_5(home, webui, devnull)
             else:
                 sd_xl(home, webui, devnull)
-                
+
+            venv_install()
+
             with loading:
-                loading.clear_output()
-                
-            say("<br><b>【{red} Done{d} 】{red}</b>")
+                loading.clear_output(wait=True)
+                say("<b>【{red} Done{d} 】{red}</b>")
 
     def button_panel(button):
         selected[0] = button.description
@@ -193,4 +231,3 @@ else:
 
     load_css(css)
     display(panel, sd_setup, loading)
-    tempe()
