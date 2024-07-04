@@ -1,5 +1,5 @@
 from IPython.display import display, HTML, clear_output, Image
-from ipywidgets import widgets, Layout
+from ipywidgets import widgets
 from IPython import get_ipython
 from pathlib import Path
 import subprocess, time, os, shlex
@@ -47,10 +47,10 @@ else:
     button2 = widgets.Button(description='SDXL')
     install_button = widgets.Button(description='Install')
 
-    button_button = widgets.HBox([button1, button2], layout=Layout(justify_content='space-between'))
     sd_setup = widgets.Output()
+    button_button = widgets.HBox([button1, button2], layout=widgets.Layout(justify_content='space-between'))
     panel = widgets.VBox([button_button, install_button],
-                         layout=Layout(
+                         layout=widgets.Layout(
                              width='400px',
                              height='150px',
                              display='flex',
@@ -62,6 +62,7 @@ else:
     button2.add_class("b2")
     install_button.add_class("out")
     panel.add_class("boxxx")
+
     selected = [None]
 
     def load_css(css):
@@ -70,9 +71,43 @@ else:
 
         display(HTML(f"<style>{ccs}</style>"))
 
+    def venv_install():
+        url = 'https://huggingface.co/pantat88/back_up/resolve/main/venv.tar.lz4'
+        fn = Path(url).name
+        tmp = Path('/tmp')
+        vnv = tmp / "venv"
+
+        def check(folder):
+            du = get_ipython().getoutput(f'du -s -b {folder}')
+            if du:
+                size = int(du[0].split()[0])
+                return size
+            else:
+                return 0
+
+        def venv():
+            if vnv.exists() and check(vnv) > 7 * 1024**3:
+                return
+            else:
+                os.chdir(tmp)
+                get_ipython().system(f'rm -rf {vnv}')
+
+                say("<br><b>【{red} Installing VENV{d} 】{red}</b>")
+                download(url)
+
+                get_ipython().system(f'pv {fn} | lz4 -d | tar xf -')
+                Path(fn).unlink()
+
+                get_ipython().system(f'rm -rf {vnv / "bin" / "pip*"}')
+                get_ipython().system(f'rm -rf {vnv / "bin" / "python*"}')
+                os.system(f'python -m venv {vnv}')
+
+        venv()
+        os.chdir(home)
+
     def req_list(home, webui):
         return [
-            f"rm -rf /tmp/venv /tmp/* {home}/tmp",
+            f"rm -rf /tmp/* {home}/tmp {home}/.cache/*",
             f"rm -rf {webui}/models/Stable-diffusion/tmp_ckpt {webui}/models/Lora/tmp_lora {webui}/models/ControlNet",
             f"rm -rf {webui}/models/svd {webui}/models/z123",
             f"mkdir -p {webui}/models/Lora",
@@ -117,6 +152,8 @@ else:
         line = scripts + upscalers
         for item in line:
             download(item)
+
+        tempe()
 
     def extensions(webui):
         say("<br><b>【{red} Installing Extensions{d} 】{red}</b>")
@@ -167,10 +204,11 @@ else:
             else:
                 sd_xl(home, webui, devnull)
                 
+            venv_install()
+
             with loading:
-                loading.clear_output()
-                
-            say("<br><b>【{red} Done{d} 】{red}</b>")
+                loading.clear_output(wait=True)
+                say("<b>【{red} Done{d} 】{red}</b>")
 
     def button_panel(button):
         selected[0] = button.description
@@ -195,4 +233,3 @@ else:
 
     load_css(css)
     display(panel, sd_setup, loading)
-    tempe()

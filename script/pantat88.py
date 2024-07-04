@@ -355,9 +355,9 @@ def clone(line):
                     output = output.strip()
 
                     if output.startswith("Cloning into"):
-                        name = output.replace("Cloning into", "")
-                        name = output.split("'")[1]
-                        print(f"{'':>2}{name} -> {url}")
+                        lines = output.split("'")[1]
+                        names = "/".join(lines.split("/")[-3:])
+                        print(f"{'':>2}{names} => {url}")
 
             proc.wait()
 
