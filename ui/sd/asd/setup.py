@@ -109,7 +109,7 @@ else:
 
     def req_list(home, webui):
         return [
-            f"rm -rf /tmp/venv /tmp/* {home}/tmp",
+            f"rm -rf /tmp/* {home}/tmp {home}/.cache/*",
             f"rm -rf {webui}/models/Stable-diffusion/tmp_ckpt {webui}/models/Lora/tmp_lora {webui}/models/ControlNet",
             f"mkdir -p {webui}/models/Lora",
             f"mkdir -p {webui}/models/ESRGAN",
