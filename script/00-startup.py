@@ -1,12 +1,18 @@
 import sys, os
 from pathlib import Path
+from IPython import get_ipython
 
-sys.path.append("/home/studio-lab-user/.ipython/profile_default/startup")
+home = Path.home()
+src = home / '.gutris1'
+mark = src / 'marking.py'
+zrok_bin = home / '.zrok/bin/zrok'
 
-zrok_bin = Path('/home/studio-lab-user/.zrok/bin/zrok')
+sys.path.append(str(home / '.ipython/profile_default/startup'))
+
 if zrok_bin.exists():
     if 'zrok' not in os.environ.get('PATH', '') or str(zrok_bin.parent) not in os.environ['PATH']:
-        os.system(f'chmod +x {zrok_bin}')
+        zrok_bin.chmod(0o755)
         os.environ['PATH'] += os.pathsep + str(zrok_bin.parent)
-else:
-    pass
+
+if mark.exists():
+    get_ipython().magic(f"run {mark}")
