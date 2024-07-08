@@ -3,7 +3,7 @@ from pathlib import Path
 
 home = Path.home()
 src = home / '.gutris1'
-mark = src / 'marking.json'
+marc = src / 'marking.json'
 
 def get_name(path):
     with open(path, 'r') as file:
@@ -11,8 +11,8 @@ def get_name(path):
 
         return value.get('ui', None)
 
-if src.exists() and mark.exists():
-    ui = get_name(mark)
+if marc.exists():
+    ui = get_name(marc)
 
     if ui == 'A1111':
         webui = home / 'asd'
