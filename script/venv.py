@@ -52,6 +52,7 @@ def venv():
         get_ipython().system(f'rm -rf {vnv / "bin" / "pip*"}')
         get_ipython().system(f'rm -rf {vnv / "bin" / "python*"}')
         os.system(f'python -m venv {vnv}')
+        os.system('/tmp/venv/bin/python3 -m pip install -q --upgrade pip')
 
 tempe()
 find()
