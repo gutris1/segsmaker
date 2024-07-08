@@ -9,6 +9,12 @@ T = f'{O}▶{R} ZROK {O}:{R}'
 if 'LD_PRELOAD' not in os.environ:
     os.environ['LD_PRELOAD'] = '/home/studio-lab-user/.conda/envs/default/lib/libtcmalloc_minimal.so.4'
 
+home = Path.home()
+depend = home / 'ComfyUI/custom_nodes/ComfyUI-Manager/scripts/colab-dependencies.py'
+encies = 'https://github.com/gutris1/segsmaker/raw/main/ui/cui/asd/colab-dependencies.py'
+os.system(f'curl -sLo {depend} {encies}')
+os.system(f'/tmp/venv/bin/python3 {depend}')
+
 def zrok_enable(token):
     zrok = Path('/home/studio-lab-user/.zrok')
     if not zrok.exists():
@@ -53,22 +59,23 @@ def zrok_url(zrok):
             print(f"{T} {url}\n")
             break
 
-try:
-    if len(sys.argv) < 2:
-        sys.exit(1)
+if __name__ == "__main__":
+    try:
+        if len(sys.argv) < 2:
+            sys.exit(1)
 
-    token = sys.argv[1]
-    zrok_enable(token)
+        token = sys.argv[1]
+        zrok_enable(token)
 
-    zrok = []
-    app = Thread(target=launch, args=(zrok,))
-    url = Thread(target=zrok_url, args=(zrok,))
+        zrok = []
+        app = Thread(target=launch, args=(zrok,))
+        url = Thread(target=zrok_url, args=(zrok,))
 
-    app.start()
-    url.start()
+        app.start()
+        url.start()
 
-    app.join()
-    url.join()
+        app.join()
+        url.join()
 
-except KeyboardInterrupt:
-    pass
+    except KeyboardInterrupt:
+        pass
