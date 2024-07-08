@@ -1,57 +1,73 @@
 from pathlib import Path
-from IPython.display import display, HTML
+from IPython.display import display, HTML, clear_output
 from IPython import get_ipython
-import ipywidgets as widgets
+from ipywidgets import widgets
+import os
 
 home = Path.home()
 src = home / '.gutris1'
-css = src / "xxx.css"
+css = src / 'xxx.css'
+mark = src / 'marking.py'
+img = src / 'loading.png'
 
+A1111 = src / 'A1111.py'
+Forge = src / 'Forge.py'
+ComfyUI = src / 'ComfyUI.py'
+
+os.chdir(home)
 src.mkdir(parents=True, exist_ok=True)
-get_ipython().system(f"curl -sLo {css} https://github.com/gutris1/segsmaker/raw/XYZ/script/xxx/xxx.css")
 
-def load_css(css_path):
-    with open(css_path, "r") as file:
-        css_content = file.read()
+x = [
+    f"curl -sLo {css} https://github.com/gutris1/segsmaker/raw/XYZ/script/xxx/xxx.css",
+    f"curl -sLo {img} https://github.com/gutris1/segsmaker/raw/XYZ/script/loading.png",
+    f"curl -sLo {mark} https://github.com/gutris1/segsmaker/raw/XYZ/script/xxx/marking.py",
+    f"curl -sLo {A1111} https://github.com/gutris1/segsmaker/raw/XYZ/script/xxx/A1111.py",
+    f"curl -sLo {Forge} https://github.com/gutris1/segsmaker/raw/XYZ/script/xxx/Forge.py",
+    f"curl -sLo {ComfyUI} https://github.com/gutris1/segsmaker/raw/XYZ/script/xxx/ComfyUI.py"]
+    
+for y in x:
+    get_ipython().system(y)
 
-    display(HTML(f"<style>{css_content}</style>"))
+def dupe_button(desc):
+    button = widgets.Button(description=desc)
+    button.add_class("buttons")
+    return button
 
 output = widgets.Output()
+buttons = [dupe_button(desc) for desc in ['A1111', 'Forge', 'ComfyUI']]
+selection_panel = widgets.HBox(buttons, layout=widgets.Layout(
+    width='500px',
+    height='100%',
+    display='flex',
+    flex_flow='row',
+    align_items='center',
+    justify_content='space-between',
+    padding='20px'))
 
-button1 = widgets.Button(description='A1111')
-button1.add_class("buttons")
-button2 = widgets.Button(description='Forge')
-button2.add_class("buttons")
-button3 = widgets.Button(description='ComfyUI')
-button3.add_class("buttons")
+selection_panel.add_class("main-panel")
 
-panel = widgets.HBox(
-    [button1, button2, button3],
-    layout=widgets.Layout(
-        width='500px',
-        height='100%',
-        display='flex',
-        flex_flow='row',
-        align_items='center',
-        justify_content='space-between',
-        padding='20px'))
+def load_css(css):
+    with css.open("r") as file:
+        data = file.read()
 
-panel.add_class("main-panel")
+    display(HTML(f"<style>{data}</style>"))
 
 def selection(b):
-    with output:
-        panel.close()
+    selection_panel.close()
+    clear_output()
 
+    with output:
         if b.description == 'A1111':
-            print('A')
+            get_ipython().magic(f'run {A1111}')
+
         elif b.description == 'Forge':
-            print('F')
+            get_ipython().magic(f'run {Forge}')
+
         elif b.description == 'ComfyUI':
-            print('C')
+            get_ipython().magic(f'run {ComfyUI}')
 
 load_css(css)
-display(output, panel)
+display(selection_panel, output)
 
-button1.on_click(selection)
-button2.on_click(selection)
-button3.on_click(selection)
+for button in buttons:
+    button.on_click(selection)
