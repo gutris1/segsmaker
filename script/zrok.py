@@ -78,6 +78,9 @@ def zrok_url():
                     print(f'\n{T} {url}')
                     return
 
+                elif 'ERROR' in line:
+                    print(line.strip())
+
 try:
     if len(sys.argv) < 2:
         sys.exit(1)
