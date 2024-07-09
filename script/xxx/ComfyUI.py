@@ -190,9 +190,31 @@ else:
 
     def marking(path, fn, ui):
         txt = path / fn
-        value = {'ui': ui}
+        values = {
+            'ui': ui,
+            'launch_args1': '',
+            'launch_args2': '',
+            'zrok_token': '',
+            'ngrok_token': '',
+            'tunnel': ''
+        }
+
+        if not txt.exists():
+            with open(txt, 'w') as file:
+                json.dump(values, file, indent=4)
+
+        with open(txt, 'r') as file:
+            data = json.load(file)
+
+        data.update({
+            'ui': ui,
+            'launch_args1': '',
+            'launch_args2': '',
+            'tunnel': ''
+        })
+
         with open(txt, 'w') as file:
-            json.dump(value, file, indent=4)
+            json.dump(data, file, indent=4)
 
     def sd_install(b):
         panel.close()
