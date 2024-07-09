@@ -1,9 +1,12 @@
-import json
+from IPython import get_ipython
 from pathlib import Path
+import json
 
 home = Path.home()
 src = home / '.gutris1'
 marc = src / 'marking.json'
+
+get_ipython().magic('reset -f')
 
 def get_name(path):
     with open(path, 'r') as file:
