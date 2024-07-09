@@ -11,6 +11,9 @@ home = Path.home()
 webui = home / "forge"
 img = home / ".conda/loading.png"
 
+tmp = Path('/tmp')
+vnv = tmp / "venv"
+
 os.chdir(home)
 
 if webui.exists():
@@ -71,11 +74,16 @@ else:
 
         display(HTML(f"<style>{ccs}</style>"))
 
+    def tmp_cleaning():
+        for item in tmp.iterdir():
+            if item.is_dir() and item != vnv:
+                shutil.rmtree(item)
+            elif item.is_file() and item != vnv:
+                item.unlink()
+
     def venv_install():
         url = 'https://huggingface.co/pantat88/back_up/resolve/main/venv.tar.lz4'
         fn = Path(url).name
-        tmp = Path('/tmp')
-        vnv = tmp / "venv"
 
         def check(folder):
             du = get_ipython().getoutput(f'du -s -b {folder}')
@@ -100,14 +108,15 @@ else:
 
                 get_ipython().system(f'rm -rf {vnv / "bin" / "pip*"}')
                 get_ipython().system(f'rm -rf {vnv / "bin" / "python*"}')
-                os.system(f'python -m venv {vnv}')
+                get_ipython().system(f'python -m venv {vnv}')
+                get_ipython().system('/tmp/venv/bin/python3 -m pip install -q --upgrade pip')
 
         venv()
         os.chdir(home)
 
     def req_list(home, webui):
         return [
-            f"rm -rf /tmp/* {home}/tmp {home}/.cache/*",
+            f"rm -rf {home}/tmp {home}/.cache/*",
             f"rm -rf {webui}/models/Stable-diffusion/tmp_ckpt {webui}/models/Lora/tmp_lora {webui}/models/ControlNet",
             f"rm -rf {webui}/models/svd {webui}/models/z123",
             f"mkdir -p {webui}/models/Lora",
@@ -122,6 +131,8 @@ else:
     def sd_clone(home, webui, devnull):
         time.sleep(1)
         pull(f"https://github.com/gutris1/segsmaker forge {webui}")
+
+        tmp_cleaning()
 
         os.chdir(webui)
         req = req_list(home, webui)
