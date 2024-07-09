@@ -18,12 +18,12 @@ os.chdir(home)
 src.mkdir(parents=True, exist_ok=True)
 
 x = [
-    f"curl -sLo {css} https://github.com/gutris1/segsmaker/raw/XYZ/script/xxx/xxx.css",
-    f"curl -sLo {img} https://github.com/gutris1/segsmaker/raw/XYZ/script/loading.png",
-    f"curl -sLo {mark} https://github.com/gutris1/segsmaker/raw/XYZ/script/xxx/marking.py",
-    f"curl -sLo {A1111} https://github.com/gutris1/segsmaker/raw/XYZ/script/xxx/A1111.py",
-    f"curl -sLo {Forge} https://github.com/gutris1/segsmaker/raw/XYZ/script/xxx/Forge.py",
-    f"curl -sLo {ComfyUI} https://github.com/gutris1/segsmaker/raw/XYZ/script/xxx/ComfyUI.py"]
+    f"curl -sLo {css} https://github.com/gutris1/segsmaker/raw/main/script/xxx/xxx.css",
+    f"curl -sLo {img} https://github.com/gutris1/segsmaker/raw/main/script/loading.png",
+    f"curl -sLo {mark} https://github.com/gutris1/segsmaker/raw/main/script/xxx/marking.py",
+    f"curl -sLo {A1111} https://github.com/gutris1/segsmaker/raw/main/script/xxx/A1111.py",
+    f"curl -sLo {Forge} https://github.com/gutris1/segsmaker/raw/main/script/xxx/Forge.py",
+    f"curl -sLo {ComfyUI} https://github.com/gutris1/segsmaker/raw/main/script/xxx/ComfyUI.py"]
     
 for y in x:
     get_ipython().system(y)
