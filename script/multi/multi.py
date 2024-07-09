@@ -6,7 +6,7 @@ import os
 
 home = Path.home()
 src = home / '.gutris1'
-css = src / 'xxx.css'
+css = src / 'multi.css'
 mark = src / 'marking.py'
 img = src / 'loading.png'
 
@@ -18,12 +18,12 @@ os.chdir(home)
 src.mkdir(parents=True, exist_ok=True)
 
 x = [
-    f"curl -sLo {css} https://github.com/gutris1/segsmaker/raw/main/script/xxx/xxx.css",
+    f"curl -sLo {css} https://github.com/gutris1/segsmaker/raw/main/script/multi/multi.css",
     f"curl -sLo {img} https://github.com/gutris1/segsmaker/raw/main/script/loading.png",
-    f"curl -sLo {mark} https://github.com/gutris1/segsmaker/raw/main/script/xxx/marking.py",
-    f"curl -sLo {A1111} https://github.com/gutris1/segsmaker/raw/main/script/xxx/A1111.py",
-    f"curl -sLo {Forge} https://github.com/gutris1/segsmaker/raw/main/script/xxx/Forge.py",
-    f"curl -sLo {ComfyUI} https://github.com/gutris1/segsmaker/raw/main/script/xxx/ComfyUI.py"]
+    f"curl -sLo {mark} https://github.com/gutris1/segsmaker/raw/main/script/multi/marking.py",
+    f"curl -sLo {A1111} https://github.com/gutris1/segsmaker/raw/main/script/multi/A1111.py",
+    f"curl -sLo {Forge} https://github.com/gutris1/segsmaker/raw/main/script/multi/Forge.py",
+    f"curl -sLo {ComfyUI} https://github.com/gutris1/segsmaker/raw/main/script/multi/ComfyUI.py"]
     
 for y in x:
     get_ipython().system(y)

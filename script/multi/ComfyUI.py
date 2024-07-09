@@ -9,10 +9,10 @@ repo = f"git clone -q https://github.com/comfyanonymous/ComfyUI"
 
 home = Path.home()
 src = home / '.gutris1'
-css = src / 'xxx.css'
+css = src / 'multi.css'
 img = src / 'loading.png'
 mark = src / 'marking.py'
-xxx = home / '.conda/xxx.py'
+multi = home / '.conda/multi.py'
 
 tmp = Path('/tmp')
 vnv = tmp / 'venv'
@@ -130,7 +130,9 @@ else:
             f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn-xl.css {webui}/asd",
             f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn-1_5.css {webui}/asd",
             f"https://github.com/gutris1/segsmaker/raw/main/script/zrok_reg.py {webui}/asd",
-            f"https://github.com/gutris1/segsmaker/raw/main/script/venv.py {webui}"]
+            f"https://github.com/gutris1/segsmaker/raw/main/script/venv.py {webui}",
+            f"https://github.com/gutris1/segsmaker/raw/main/ui/cui/apotek.py {webui}",
+            f"https://github.com/gutris1/segsmaker/raw/main/script/multi/segsmaker.py {webui}"]
             
         upscalers = [
             f"https://huggingface.co/pantat88/ui/resolve/main/4x-UltraSharp.pth {webui}/models/upscale_models",
@@ -247,7 +249,7 @@ else:
         clear_output()
 
         with sd_setup:
-            get_ipython().magic(f"run {xxx}")
+            get_ipython().magic(f"run {multi}")
 
     load_css(css)
     display(panel, sd_setup, loading)
