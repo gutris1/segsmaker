@@ -95,7 +95,8 @@ else:
 
                 get_ipython().system(f'rm -rf {vnv / "bin" / "pip*"}')
                 get_ipython().system(f'rm -rf {vnv / "bin" / "python*"}')
-                os.system(f'python -m venv {vnv}')
+                get_ipython().system(f'python -m venv {vnv}')
+                get_ipython().system('/tmp/venv/bin/python3 -m pip install -q --upgrade pip')
 
         venv()
         os.chdir(home)
