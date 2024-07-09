@@ -211,6 +211,7 @@ def zipping(line, cell):
 
     input_path = None
     output_path = None
+    custom_name = None
 
     for line in lines:
         soup = line.split('=')
@@ -219,11 +220,22 @@ def zipping(line, cell):
             arg_name = soup[0].strip()
             arg_value = soup[1].strip().strip("'")
 
-            if arg_name == 'input_folder':
+            if arg_value.startswith('$'):
+                var_name = arg_value[1:]
+                if var_name in globals():
+                    arg_value = str(globals()[var_name])
+                else:
+                    print(f"Error: '{var_name}' is not defined.")
+                    return
+
+            if arg_name == 'inputs':
                 input_path = arg_value
                 
-            elif arg_name == 'output_folder':
+            elif arg_name == 'outputs':
                 output_path = arg_value
+                
+            elif arg_name == 'name':
+                custom_name = arg_value
 
     if not os.path.exists(input_path):
         print(f"Error: '{input_path}' does not exist.")
@@ -232,7 +244,8 @@ def zipping(line, cell):
     def zip_folder(
         input_path,
         output_path,
-        max_size_mb=20):
+        max_size_mb=20,
+        custom_name=None):
         
         os.makedirs(
             output_path,
@@ -248,9 +261,15 @@ def zipping(line, cell):
 
         zip_number = 1
         current_zip_size = 0
-        current_zip_name = os.path.join(
-            output_path,
-            f"part_{zip_number}.zip")
+        
+        if custom_name:
+            current_zip_name = os.path.join(
+                output_path,
+                f"{custom_name}_{zip_number}.zip")
+        else:
+            current_zip_name = os.path.join(
+                output_path,
+                f"part_{zip_number}.zip")
 
         with tqdm(
             total=len(all_files),
@@ -272,9 +291,14 @@ def zipping(line, cell):
                         
                         zip_number += 1
                         
-                        current_zip_name = os.path.join(
-                            output_path,
-                            f"part_{zip_number}.zip")
+                        if custom_name:
+                            current_zip_name = os.path.join(
+                                output_path,
+                                f"{custom_name}_{zip_number}.zip")
+                        else:
+                            current_zip_name = os.path.join(
+                                output_path,
+                                f"part_{zip_number}.zip")
                         
                         current_zip = zipfile.ZipFile(
                             current_zip_name,
@@ -293,7 +317,7 @@ def zipping(line, cell):
                     pbar.update(1)
 
     max_size_mb = 200
-    zip_folder(input_path, output_path, max_size_mb)
+    zip_folder(input_path, output_path, max_size_mb, custom_name)
 
 
 @register_line_magic
