@@ -9,12 +9,6 @@ T = f'{O}▶{R} ZROK {O}:{R}'
 if 'LD_PRELOAD' not in os.environ:
     os.environ['LD_PRELOAD'] = '/home/studio-lab-user/.conda/envs/default/lib/libtcmalloc_minimal.so.4'
 
-home = Path.home()
-depend = home / 'ComfyUI/custom_nodes/ComfyUI-Manager/scripts/colab-dependencies.py'
-encies = 'https://github.com/gutris1/segsmaker/raw/main/ui/cui/asd/colab-dependencies.py'
-os.system(f'curl -sLo {depend} {encies}')
-os.system(f'/tmp/venv/bin/python3 {depend}')
-
 def zrok_enable(token):
     zrok = Path('/home/studio-lab-user/.zrok')
     if not zrok.exists():
@@ -53,11 +47,15 @@ def launch(zrok):
 def zrok_url(zrok):
     time.sleep(2)
     get_url = re.compile(r'https?://[^\s]*\.zrok\.io')
+    
     for line in zrok[0].stdout:
-        urls = get_url.findall(line)
-        for url in urls:
-            print(f"{T} {url}\n")
-            break
+        if 'ERROR' in line:
+            print(line)
+        else:
+            urls = get_url.findall(line)
+            for url in urls:
+                print(f"{T} {url}\n")
+                break
 
 if __name__ == "__main__":
     try:
