@@ -2,7 +2,7 @@ from IPython.display import display, HTML, clear_output, Image
 from ipywidgets import widgets
 from IPython import get_ipython
 from pathlib import Path
-import subprocess, time, os, shlex
+import subprocess, time, os, shlex, shutil
 from nenen88 import pull, say, download, clone, tempe
 
 repo = f"git clone -q https://github.com/comfyanonymous/ComfyUI"
@@ -10,6 +10,9 @@ repo = f"git clone -q https://github.com/comfyanonymous/ComfyUI"
 home = Path.home()
 webui = home / "ComfyUI"
 img = home / ".conda/loading.png"
+
+tmp = Path('/tmp')
+vnv = tmp / "venv"
 
 os.chdir(home)
 
@@ -58,11 +61,16 @@ else:
 
         display(HTML(f"<style>{ccs}</style>"))
 
+    def tmp_cleaning():
+        for item in tmp.iterdir():
+            if item.is_dir() and item != vnv:
+                shutil.rmtree(item)
+            elif item.is_file() and item != vnv:
+                item.unlink()
+
     def venv_install():
         url = 'https://huggingface.co/pantat88/back_up/resolve/main/venv.tar.lz4'
         fn = Path(url).name
-        tmp = Path('/tmp')
-        vnv = tmp / "venv"
 
         def check(folder):
             du = get_ipython().getoutput(f'du -s -b {folder}')
@@ -94,7 +102,7 @@ else:
 
     def req_list(home, webui):
         return [
-            f"rm -rf /tmp/* {home}/tmp {home}/.cache/*",
+            f"rm -rf {home}/tmp {home}/.cache/*",
             f"rm -rf {webui}/models/checkpoints/tmp_ckpt",
             f"rm -rf {webui}/models/loras/tmp_lora {webui}/models/controlnet",
             f"ln -vs /tmp {home}/tmp",
@@ -107,6 +115,8 @@ else:
         time.sleep(1)
         pull(f"https://github.com/gutris1/segsmaker cui {webui}")
 
+        tmp_cleaning()
+
         os.chdir(webui)
         req = req_list(home, webui)
 
@@ -114,6 +124,7 @@ else:
             subprocess.run(shlex.split(lines), **devnull)
             
         scripts = [
+            f"https://github.com/gutris1/segsmaker/raw/main/ui/cui/apotek.py {webui}",
             f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/controlnet.py {webui}/asd",
             f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn-xl.css {webui}/asd",
             f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn-1_5.css {webui}/asd",
