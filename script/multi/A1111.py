@@ -2,18 +2,23 @@ from IPython.display import display, HTML, clear_output, Image
 from ipywidgets import widgets
 from IPython import get_ipython
 from pathlib import Path
-import subprocess, time, os, shlex
+import subprocess, time, os, shlex, json, shutil
 from nenen88 import pull, say, download, clone, tempe
 
 version = "v1.9.4"
 repo = f"git clone -q -b {version} https://github.com/gutris1/asd"
 
 home = Path.home()
-webui = home / "asd"
-img = home / ".conda/loading.png"
+src = home / '.gutris1'
+css = src / 'multi.css'
+img = src / 'loading.png'
+mark = src / 'marking.py'
+multi = home / '.conda/multi.py'
 
 tmp = Path('/tmp')
-vnv = tmp / "venv"
+vnv = tmp / 'venv'
+
+webui = home / 'asd'
 
 os.chdir(home)
 
@@ -37,45 +42,41 @@ if webui.exists():
         f"https://github.com/gutris1/segsmaker/raw/main/script/zrok.py {webui}",
         f"https://github.com/gutris1/segsmaker/raw/main/script/pinggy.py {webui}",
         f"https://github.com/gutris1/segsmaker/raw/main/script/ngrokk.py {webui}",
-        f"https://github.com/gutris1/segsmaker/raw/main/script/venv.py {webui}"]
+        f"https://github.com/gutris1/segsmaker/raw/main/script/venv.py {webui}",
+        f"https://github.com/gutris1/segsmaker/raw/main/script/multi/segsmaker.py {webui}"]
 
     for y in x:
         download(y)
 
 else:
-    css = home / ".conda/setup.css"
     devnull = {"stdout": subprocess.DEVNULL, "stderr": subprocess.DEVNULL}
 
-    get_ipython().system(f"curl -sLo {css} https://github.com/gutris1/segsmaker/raw/main/ui/sd/asd/setup.css")
-
     loading = widgets.Output()
-    button1 = widgets.Button(description='SD 1.5')
-    button2 = widgets.Button(description='SDXL')
-    install_button = widgets.Button(description='Install')
-    
     sd_setup = widgets.Output()
-    button_button = widgets.HBox([button1, button2], layout=widgets.Layout(justify_content='space-between'))
-    panel = widgets.VBox([button_button, install_button],
-                         layout=widgets.Layout(
-                             width='400px',
-                             height='150px',
-                             display='flex',
-                             flex_flow='column',
-                             align_items='center',
-                             justify_content='space-between',
-                             padding='20px'))
-    button1.add_class("b1")
-    button2.add_class("b2")
-    install_button.add_class("out")
-    panel.add_class("boxxx")
 
-    selected = [None]
+    button1 = widgets.Button(description='SD 1.5')
+    button2 = widgets.Button(description='SD XL')
+    back_button = widgets.Button(description='⬅️')
+
+    panel = widgets.HBox([button1, back_button, button2], layout=widgets.Layout(
+        width='500px',
+        height='100%',
+        display='flex',
+        flex_flow='row',
+        align_items='center',
+        justify_content='space-between',
+        padding='20px'))
+
+    button1.add_class("buttons")
+    button2.add_class("buttons")
+    back_button.add_class("back-b")
+    panel.add_class("main-panel")
 
     def load_css(css):
         with css.open("r") as file:
-            ccs = file.read()
+            data = file.read()
 
-        display(HTML(f"<style>{ccs}</style>"))
+        display(HTML(f"<style>{data}</style>"))
 
     def tmp_cleaning():
         for item in tmp.iterdir():
@@ -111,8 +112,8 @@ else:
 
                 get_ipython().system(f'rm -rf {vnv / "bin" / "pip*"}')
                 get_ipython().system(f'rm -rf {vnv / "bin" / "python*"}')
-                get_ipython().system(f'python -m venv {vnv}')
-                get_ipython().system('/tmp/venv/bin/python3 -m pip install -q --upgrade pip')
+                os.system(f'python -m venv {vnv}')
+                os.system('/tmp/venv/bin/python3 -m pip install -q --upgrade pip')
 
         venv()
         os.chdir(home)
@@ -150,7 +151,8 @@ else:
             f"https://github.com/gutris1/segsmaker/raw/main/script/zrok.py {webui}",
             f"https://github.com/gutris1/segsmaker/raw/main/script/pinggy.py {webui}",
             f"https://github.com/gutris1/segsmaker/raw/main/script/ngrokk.py {webui}",
-            f"https://github.com/gutris1/segsmaker/raw/main/script/venv.py {webui}"]
+            f"https://github.com/gutris1/segsmaker/raw/main/script/venv.py {webui}",
+            f"https://github.com/gutris1/segsmaker/raw/main/script/multi/segsmaker.py {webui}"]
 
         upscalers = [
             f"https://huggingface.co/pantat88/ui/resolve/main/4x-UltraSharp.pth {webui}/models/ESRGAN",
@@ -199,47 +201,70 @@ else:
         os.chdir(webui / "extensions")
         clone(str(webui / "asd/ext-xl.txt"))
 
-    def sd_install(selection):
+    def marking(path, fn, ui):
+        txt = path / fn
+        values = {
+            'ui': ui,
+            'launch_args1': '',
+            'launch_args2': '',
+            'zrok_token': '',
+            'ngrok_token': '',
+            'tunnel': ''
+        }
+
+        if not txt.exists():
+            with open(txt, 'w') as file:
+                json.dump(values, file, indent=4)
+
+        with open(txt, 'r') as file:
+            data = json.load(file)
+
+        data.update({
+            'ui': ui,
+            'launch_args1': '',
+            'launch_args2': '',
+            'tunnel': ''
+        })
+
+        with open(txt, 'w') as file:
+            json.dump(data, file, indent=4)
+
+    def sd_install(b):
+        panel.close()
+        clear_output()
+
         with loading:
-            clear_output()
             display(Image(filename=str(img)))
 
         with sd_setup:
             sd_setup.clear_output()
             say("<b>【{red} Installing Stable Diffusion{d} 】{red}</b>")
             get_ipython().system(f"{repo}")
-
-            if selection == 'SD 1.5':
+            
+            if b.description == 'SD 1.5':
                 sd_1_5(home, webui, devnull)
-            else:
+            elif b.description == 'SD XL':
                 sd_xl(home, webui, devnull)
 
             venv_install()
+
+            marking(src, 'marking.json', 'A1111')
+            get_ipython().magic(f"run {mark}")
 
             with loading:
                 loading.clear_output(wait=True)
                 say("<b>【{red} Done{d} 】{red}</b>")
 
-    def button_panel(button):
-        selected[0] = button.description
+    def go_back(b):
+        panel.close()
+        clear_output()
 
-    def installing(button):
-        selection = selected[0]
-
-        if selection:
-            widgets.Widget.close(panel)
-            sd_setup.clear_output()
-            sd_install(selection)
-
-        else:
-            with sd_setup:
-                print("at least make a choice")
-                print("少なくとも選択してよ。")
-            return
-
-    button1.on_click(button_panel)
-    button2.on_click(button_panel)
-    install_button.on_click(installing)
+        with sd_setup:
+            get_ipython().magic(f"run {multi}")
 
     load_css(css)
     display(panel, sd_setup, loading)
+
+    button1.on_click(sd_install)
+    button2.on_click(sd_install)
+    back_button.on_click(go_back)

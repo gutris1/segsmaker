@@ -47,28 +47,33 @@ def launch(zrok):
 def zrok_url(zrok):
     time.sleep(2)
     get_url = re.compile(r'https?://[^\s]*\.zrok\.io')
+    
     for line in zrok[0].stdout:
-        urls = get_url.findall(line)
-        for url in urls:
-            print(f"{T} {url}\n")
-            break
+        if 'ERROR' in line:
+            print(line)
+        else:
+            urls = get_url.findall(line)
+            for url in urls:
+                print(f"{T} {url}\n")
+                break
 
-try:
-    if len(sys.argv) < 2:
-        sys.exit(1)
+if __name__ == "__main__":
+    try:
+        if len(sys.argv) < 2:
+            sys.exit(1)
 
-    token = sys.argv[1]
-    zrok_enable(token)
+        token = sys.argv[1]
+        zrok_enable(token)
 
-    zrok = []
-    app = Thread(target=launch, args=(zrok,))
-    url = Thread(target=zrok_url, args=(zrok,))
+        zrok = []
+        app = Thread(target=launch, args=(zrok,))
+        url = Thread(target=zrok_url, args=(zrok,))
 
-    app.start()
-    url.start()
+        app.start()
+        url.start()
 
-    app.join()
-    url.join()
+        app.join()
+        url.join()
 
-except KeyboardInterrupt:
-    pass
+    except KeyboardInterrupt:
+        pass

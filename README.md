@@ -13,6 +13,12 @@ you can find me here https://discord.gg/k5BwmmvJJU <br /><br />
 
 # Changelog
 
+### 2024-07-10
+
+- added multi Notebook Segsmaker_1+2<br /><br />
+  ![image](https://github.com/gutris1/segsmaker/assets/132797949/1a15250b-39ad-483c-9ad2-f92023c8a3c3)
+
+
 <details><summary>2024-06-24</summary><br>
 
 - Improved Notebook.

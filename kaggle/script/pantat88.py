@@ -328,41 +328,52 @@ def ketsuno_ana(fc, fn):
 
 @register_line_magic
 def clone(line):
-    path = Path(line.strip()).expanduser()
+    path = Path(line).expanduser()
 
-    if not path.exists():
-        print(f"Error: File not found - {path}")
-        return
+    if line.endswith('.txt') and path.is_file():
+        with open(path, 'r') as file:
+            lines = [line.strip() for line in file]
+    else:
+        lines = line if isinstance(line, list) else [line]
 
-    with open(path, 'r') as file:
-        for ext in map(str.strip, file):
-            cmd = shlex.split(ext)
+    cloning(lines)
 
-            url = None
-            for repo in cmd:
-                if re.match(r'https?://', repo):
-                    url = repo
-                    break
+def cloning(lines):
+    for line in lines:
+        line = line.strip()
+        if not line:
+            continue
 
-            proc = subprocess.Popen(
-                cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True
-            )
+        cmd = shlex.split(line)
+        url = None
+        for repo in cmd:
+            if re.match(r'https?://', repo):
+                url = repo
+                break
 
-            while True:
-                output = proc.stdout.readline()
+        proc = subprocess.Popen(
+            cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True
+        )
 
-                if not output and proc.poll() is not None:
-                    break
+        while True:
+            output = proc.stdout.readline()
+            if not output and proc.poll() is not None:
+                break
 
-                if output:
-                    output = output.strip()
+            if output:
+                output = output.strip()
+                if "fatal" in output:
+                    print(f"{'':>2}{output}")
 
-                    if output.startswith("Cloning into"):
-                        lines = output.split("'")[1]
-                        names = "/".join(lines.split("/")[-3:])
-                        print(f"{'':>2}{names} => {url}")
+                elif output.startswith("Cloning into"):
+                    lines = output.split("'")[1]
+                    names = "/".join(lines.split("/")[-3:])
+                    print(f"{'':>2}{names} => {url}")
 
-            proc.wait()
+        proc.wait()
 
 
 @register_line_magic

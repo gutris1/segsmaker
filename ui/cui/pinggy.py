@@ -33,11 +33,16 @@ def pinggy():
                 print(f'{T} {url}\n')
                 return
 
-app = Thread(target=launch)
-url = Thread(target=pinggy)
+if __name__ == "__main__":
+    try:
+        app = Thread(target=launch)
+        url = Thread(target=pinggy)
 
-app.start()
-url.start()
+        app.start()
+        url.start()
 
-app.join()
-url.join()
+        app.join()
+        url.join()
+
+    except KeyboardInterrupt:
+        pass
