@@ -11,10 +11,10 @@ webui = Path(__file__).parent.parent
 cn15 = webui / "asd/cn-1_5.py"
 cnxl = webui / "asd/cn-xl.py"
 
-button1 = widgets.Button(description='SD 1.5')
-button2 = widgets.Button(description='SDXL')
-
 output = Output()
+
+button1 = widgets.Button(description='SD 1.5')
+button2 = widgets.Button(description='SD XL')
 
 panel = widgets.HBox([button1, button2],
                      layout=Layout(
@@ -32,17 +32,19 @@ panel.add_class("boxs")
 
 def load_css(css):
     with open(css, "r") as file:
-        css_content = file.read()
-    display(HTML(f"<style>{css_content}</style>"))
+        content = file.read()
+
+    display(HTML(f"<style>{content}</style>"))
 
 def controlnet(b):
-    with output:
-        panel.close()
-        output.clear_output()
+    panel.close()
+    clear_output()
 
+    with output:
         if b.description == 'SD 1.5':
             get_ipython().magic(f"run {cn15}")
-        else:
+
+        elif b.description == 'SD XL':
             get_ipython().magic(f"run {cnxl}")
 
 load_css(css)

@@ -30,6 +30,19 @@ if webui.exists():
         get_ipython().system("git pull origin master")
         get_ipython().system("git fetch --tags")
 
+    x = [
+        f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/controlnet.py {webui}/asd",
+        f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn.css {webui}/asd",
+        f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn-xl.py {webui}/asd",
+        f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn-1_5.py {webui}/asd",
+        f"https://github.com/gutris1/segsmaker/raw/main/script/zrok_reg.py {webui}/asd",
+        f"https://github.com/gutris1/segsmaker/raw/main/script/venv.py {webui}",
+        f"https://github.com/gutris1/segsmaker/raw/main/ui/cui/apotek.py {webui}",
+        f"https://github.com/gutris1/segsmaker/raw/main/script/multi/segsmaker.py {webui}"]
+
+    for y in x:
+        download(y)
+
 else:
     devnull = {"stdout": subprocess.DEVNULL, "stderr": subprocess.DEVNULL}
 
@@ -127,11 +140,11 @@ else:
             
         scripts = [
             f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/controlnet.py {webui}/asd",
-            f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn-xl.css {webui}/asd",
-            f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn-1_5.css {webui}/asd",
+            f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn.css {webui}/asd",
+            f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn-xl.py {webui}/asd",
+            f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn-1_5.py {webui}/asd",
             f"https://github.com/gutris1/segsmaker/raw/main/script/zrok_reg.py {webui}/asd",
             f"https://github.com/gutris1/segsmaker/raw/main/script/venv.py {webui}",
-            f"https://github.com/gutris1/segsmaker/raw/main/ui/cui/apotek.py {webui}",
             f"https://github.com/gutris1/segsmaker/raw/main/script/multi/segsmaker.py {webui}"]
             
         upscalers = [

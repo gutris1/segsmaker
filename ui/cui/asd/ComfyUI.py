@@ -25,6 +25,17 @@ if webui.exists():
         get_ipython().system("git pull origin master")
         get_ipython().system("git fetch --tags")
 
+    x = [
+        f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/controlnet.py {webui}/asd",
+        f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn.css {webui}/asd",
+        f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn-xl.py {webui}/asd",
+        f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn-1_5.py {webui}/asd",
+        f"https://github.com/gutris1/segsmaker/raw/main/script/venv.py {webui}",
+        f"https://github.com/gutris1/segsmaker/raw/main/ui/cui/apotek.py {webui}"]
+
+    for y in x:
+        download(y)
+
 else:
     css = home / ".conda/setup.css"
     devnull = {"stdout": subprocess.DEVNULL, "stderr": subprocess.DEVNULL}
@@ -125,10 +136,10 @@ else:
             subprocess.run(shlex.split(lines), **devnull)
             
         scripts = [
-            f"https://github.com/gutris1/segsmaker/raw/main/ui/cui/apotek.py {webui}",
             f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/controlnet.py {webui}/asd",
-            f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn-xl.css {webui}/asd",
-            f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn-1_5.css {webui}/asd",
+            f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn.css {webui}/asd",
+            f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn-xl.py {webui}/asd",
+            f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn-1_5.py {webui}/asd",
             f"https://github.com/gutris1/segsmaker/raw/main/script/zrok_reg.py {webui}/asd",
             f"https://github.com/gutris1/segsmaker/raw/main/script/venv.py {webui}"]
             
@@ -150,7 +161,7 @@ else:
         say("<br><b>【{red} Installing Custom Nodes{d} 】{red}</b>")
         os.chdir(webui / "custom_nodes")
         clone(str(webui / "asd/custom_nodes.txt"))
-
+        print()
         custom_nodes_models = [
             f"https://github.com/sczhou/CodeFormer/releases/download/v0.1.0/codeformer.pth {webui}/models/facerestore_models",
             f"https://github.com/TencentARC/GFPGAN/releases/download/v1.3.4/GFPGANv1.4.pth {webui}/models/facerestore_models"]

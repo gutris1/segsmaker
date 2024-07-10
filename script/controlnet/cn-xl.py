@@ -1,19 +1,16 @@
 from IPython.display import display, HTML, clear_output, Image
-from nenen88 import download, say, tempe
-from ipywidgets import widgets, Layout
+from IPython import get_ipython
+from ipywidgets import widgets
 from pathlib import Path
-import os
+from nenen88 import download, say, tempe
 
-home = Path.home()
-conda = home / ".conda"
-img = conda / "loading.png"
+ui = Path(__file__).parent.parent
+css = ui / "asd/cn.css"
 
-webui = Path(__file__).parent.parent
-css = Path(__file__).parent / "cn-xl.css"
+tmplora = '/tmp/lora'
+cn = '/tmp/controlnet'
 
-with open(css, "r") as file:
-    css = file.read()
-display(HTML(f"<style>{css}</style>"))
+img = Path.home() / ".conda/loading.png"
     
 controlnet_list = {
     "Diffusers XL Canny Mid": [
@@ -50,7 +47,6 @@ controlnet_list = {
     "Kohya Controllite XL Scribble Anime": [
         "https://huggingface.co/lllyasviel/sd_control_collection/resolve/main/kohya_controllllite_xl_scribble_anime.safetensors \
         kohya_controllllite_xl_scribble_anime.safetensors"],
-
 
     "T2I Adapter XL Canny": [
         "https://huggingface.co/lllyasviel/sd_control_collection/resolve/main/t2i-adapter_xl_canny.safetensors \
@@ -95,89 +91,102 @@ controlnet_list = {
 
     "IP Adapter FaceID SDXL": [
         "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid_sdxl.bin ip-adapter-faceid_sdxl.bin",
-        f"https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid_sdxl_lora.safetensors {webui}/models/Lora/tmp_lora \
+        f"https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid_sdxl_lora.safetensors {tmplora} \
         ip-adapter-faceid_sdxl_lora.safetensors"],
     "IP Adapter FaceID Plusv2 SDXL": [
         "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-plusv2_sdxl.bin ip-adapter-faceid-plusv2_sdxl.bin",
-        f"https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-plusv2_sdxl_lora.safetensors {webui}/models/Lora/tmp_lora \
+        f"https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-plusv2_sdxl_lora.safetensors {tmplora} \
         ip-adapter-faceid-plusv2_sdxl_lora.safetensors"],
     
     "Instant ID": [
         "https://huggingface.co/InstantX/InstantID/resolve/main/ip-adapter.bin ip-adapter_instant_id_sdxl.bin",
-        "https://huggingface.co/InstantX/InstantID/resolve/main/ControlNetModel/diffusion_pytorch_model.safetensors control_instant_id_sdxl.safetensors"]
+        "https://huggingface.co/InstantX/InstantID/resolve/main/ControlNetModel/diffusion_pytorch_model.safetensors control_instant_id_sdxl.safetensors"],
+    
+    "Controlnet Union SDXL 1.0": [
+        "https://huggingface.co/xinsir/controlnet-union-sdxl-1.0/resolve/main/diffusion_pytorch_model.safetensors controlnet-union-sdxl-1.0.safetensors"]
 }
+
+download_output = widgets.Output()
+loading = widgets.Output()
 
 half_list = len(controlnet_list) // 2
 left_side = dict(list(controlnet_list.items())[:half_list])
 right_side = dict(list(controlnet_list.items())[half_list:])
 
-checkbox1 = widgets.VBox(
-    [widgets.Checkbox(value=False, description=name, style={'description_width': '0px'})
-     for name in left_side])
-checkbox1.add_class("checkbox-group1")
+checkbox1 = widgets.VBox([widgets.Checkbox(value=False, description=name, style={'description_width': '0px'})
+                          for name in left_side])
+checkbox2 = widgets.VBox([widgets.Checkbox(value=False, description=name, style={'description_width': '0px'})
+                          for name in right_side])
 
-checkbox2 = widgets.VBox(
-    [widgets.Checkbox(value=False, description=name, style={'description_width': '0px'})
-     for name in right_side])
-checkbox2.add_class("checkbox-group2")
+checkbox_layout = widgets.HBox([checkbox1, checkbox2],
+                               layout=widgets.Layout(align_items='flex-start'))
 
 download_button = widgets.Button(description="Download")
-download_button.add_class("download-button")
-download_output = widgets.Output()
-checkbox_layout = widgets.HBox([checkbox1, checkbox2], layout=widgets.Layout(align_items='flex-start'))
 
-loading = widgets.Output()
+select_all_button = widgets.Button(description="Select All")
+unselect_all_button = widgets.Button(description="Unselect All")
+bottom_box = widgets.Button(description="")
 
-def select_all_checkboxs(b):
+button_layout = widgets.HBox([select_all_button, unselect_all_button, download_button, bottom_box])
+
+controlnet_widget = widgets.Box(
+    [button_layout, checkbox_layout],
+    layout=widgets.Layout(
+        display='flex',
+        flex_flow='column',
+        width='640px',
+        height='500px',
+        padding='15px'))
+
+controlnet_widget.add_class("cn-xl")
+checkbox1.add_class("checkbox")
+checkbox2.add_class("checkbox")
+select_all_button.add_class("select-all-button-xl")
+unselect_all_button.add_class("unselect-all-button-xl")
+download_button.add_class("download-button-xl")
+bottom_box.add_class("bottom-box-xl")
+
+def load_css(css):
+    with open(css, "r") as file:
+        content = file.read()
+
+    display(HTML(f"<style>{content}</style>"))
+
+def select_all_checkboxes(b):
     for check in checkbox1.children + checkbox2.children:
         check.value = True
 
-def unselect_all_checkboxs(b):
+def unselect_all_checkboxes(b):
     for check in checkbox1.children + checkbox2.children:
         check.value = False
-        
-select_all_button = widgets.Button(description="Select All")
-select_all_button.add_class("select-all-button")
-select_all_button.on_click(select_all_checkboxs)
 
-unselect_all_button = widgets.Button(description="Unselect All")
-unselect_all_button.add_class("unselect-all-button")
-unselect_all_button.on_click(unselect_all_checkboxs)
+def downloading(b):
+    controlnet_widget.close()
+    clear_output(wait=True)
 
-bottom_box = widgets.Button(description="")
-bottom_box.add_class("border-style")
-
-button_layout = widgets.HBox([select_all_button, unselect_all_button, download_button, bottom_box])
-controlnet_widget = widgets.VBox([button_layout, checkbox_layout],
-                                 layout=Layout(
-                                     display='flex',
-                                     flex_flow='column',
-                                     width='630px',
-                                     height='480px',
-                                     padding='0px'))
-
-controlnet_widget.add_class("controlnet-xl")
-        
-def download_button_click(b):
     download_list = []
+
     for check, key in zip(checkbox1.children + checkbox2.children, list(controlnet_list.keys())):
         if check.value:
             download_list.extend(controlnet_list[key])
-
-    clear_output(wait=True)
-    widgets.Widget.close(controlnet_widget)
 
     with loading:
         display(Image(filename=str(img)))
         
     with download_output:
-        os.chdir(f"{webui}/models/ControlNet")
+        get_ipython().magic(f'cd -q {cn}')
+
         for url in download_list:
             download(url)
 
         loading.clear_output()
         say("【{red} Done{d} 】{red}")
-            
+        get_ipython().magic('cd -q ~')
+
 tempe()
+load_css(css)
 display(controlnet_widget, download_output, loading)
-download_button.on_click(download_button_click)
+
+select_all_button.on_click(select_all_checkboxes)
+unselect_all_button.on_click(unselect_all_checkboxes)
+download_button.on_click(downloading)

@@ -1,19 +1,16 @@
 from IPython.display import display, HTML, clear_output, Image
-from nenen88 import download, say, tempe
-from ipywidgets import widgets, Layout
+from IPython import get_ipython
+from ipywidgets import widgets
 from pathlib import Path
-import os
+from nenen88 import download, say, tempe
 
-home = Path.home()
-conda = home / ".conda"
-img = conda / "loading.png"
+ui = Path(__file__).parent.parent
+css = ui / "asd/cn.css"
 
-webui = Path(__file__).parent.parent
-css = Path(__file__).parent / "cn-1_5.css"
+tmplora = '/tmp/lora'
+cn = '/tmp/controlnet'
 
-with open(css, "r") as file:
-    css = file.read()
-display(HTML(f"<style>{css}</style>"))
+img = Path.home() / ".conda/loading.png"
     
 controlnet_list = {
     "Openpose": [
@@ -74,92 +71,101 @@ controlnet_list = {
 
     "IP Adapter FaceID 1.5": [
         "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid_sd15.bin",
-        f"https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid_sd15_lora.safetensors {webui}/models/Lora/tmp_lora \
+        f"https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid_sd15_lora.safetensors {tmplora} \
         ip-adapter-faceid_sd15_lora.safetensors"],
     "IP Adapter FaceID Plus 1.5": [
         "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-plus_sd15.bin ip-adapter-faceid-plus_sd15.bin",
-        f"https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-plus_sd15_lora.safetensors {webui}/models/Lora/tmp_lora \
+        f"https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-plus_sd15_lora.safetensors {tmplora} \
         ip-adapter-faceid-plus_sd15_lora.safetensors"],
     "IP Adapter FaceID PlusV2 1.5": [
         "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-plusv2_sd15.bin ip-adapter-faceid-plusv2_sd15.bin",
-        f"https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-plusv2_sd15_lora.safetensors {webui}/models/Lora/tmp_lora \
+        f"https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-plusv2_sd15_lora.safetensors {tmplora} \
         ip-adapter-faceid-plusv2_sd15_lora.safetensors"],
     "IP Adapter FaceID Portrait 1.5": [
         "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-portrait_sd15.bin"]
 }
 
+download_output = widgets.Output()
+loading = widgets.Output()
+
 half_list = len(controlnet_list) // 2
 left_side = dict(list(controlnet_list.items())[:half_list])
 right_side = dict(list(controlnet_list.items())[half_list:])
 
-checkbox1 = widgets.VBox(
-    [widgets.Checkbox(value=False, description=name, style={'description_width': '0px'})
-     for name in left_side])
-checkbox1.add_class("checkbox-group1")
+checkbox1 = widgets.VBox([widgets.Checkbox(value=False, description=name, style={'description_width': '0px'})
+                          for name in left_side])
+checkbox2 = widgets.VBox([widgets.Checkbox(value=False, description=name, style={'description_width': '0px'})
+                          for name in right_side])
 
-checkbox2 = widgets.VBox(
-    [widgets.Checkbox(value=False, description=name, style={'description_width': '0px'})
-     for name in right_side])
-checkbox2.add_class("checkbox-group2")
+checkbox_layout = widgets.HBox([checkbox1, checkbox2],
+                               layout=widgets.Layout(align_items='flex-start'))
 
 download_button = widgets.Button(description="Download")
-download_button.add_class("download-button")
-download_output = widgets.Output()
-checkbox_layout = widgets.HBox([checkbox1, checkbox2], layout=widgets.Layout(align_items='flex-start'))
 
-loading = widgets.Output()
+select_all_button = widgets.Button(description="Select All")
+unselect_all_button = widgets.Button(description="Unselect All")
+bottom_box = widgets.Button(description="")
 
-def select_all_checkboxs(b):
+button_layout = widgets.HBox([select_all_button, unselect_all_button, download_button, bottom_box])
+
+controlnet_widget = widgets.Box(
+    [button_layout, checkbox_layout],
+    layout=widgets.Layout(
+        display='flex',
+        flex_flow='column',
+        width='640px',
+        height='450px',
+        padding='15px'))
+
+controlnet_widget.add_class("cn-15")
+checkbox1.add_class("checkbox")
+checkbox2.add_class("checkbox")
+select_all_button.add_class("select-all-button-15")
+unselect_all_button.add_class("unselect-all-button-15")
+download_button.add_class("download-button-15")
+bottom_box.add_class("bottom-box-15")
+
+def load_css(css):
+    with open(css, "r") as file:
+        content = file.read()
+
+    display(HTML(f"<style>{content}</style>"))
+
+def select_all_checkboxes(b):
     for check in checkbox1.children + checkbox2.children:
         check.value = True
 
-def unselect_all_checkboxs(b):
+def unselect_all_checkboxes(b):
     for check in checkbox1.children + checkbox2.children:
         check.value = False
-        
-select_all_button = widgets.Button(description="Select All")
-select_all_button.add_class("select-all-button")
-select_all_button.on_click(select_all_checkboxs)
 
-unselect_all_button = widgets.Button(description="Unselect All")
-unselect_all_button.add_class("unselect-all-button")
-unselect_all_button.on_click(unselect_all_checkboxs)
+def downloading(b):
+    controlnet_widget.close()
+    clear_output(wait=True)
 
-bottom_box = widgets.Button(description="")
-bottom_box.add_class("border-style")
-
-button_layout = widgets.HBox([select_all_button, unselect_all_button, download_button, bottom_box])
-controlnet_widget = widgets.VBox([button_layout, checkbox_layout],
-                                 layout=Layout(
-                                     display='flex',
-                                     flex_flow='column',
-                                     width='630px',
-                                     height='455px',
-                                     align_items='center',
-                                     padding='10px'))
-
-controlnet_widget.add_class("controlnet-1-5")
-        
-def download_button_click(b):
     download_list = []
+
     for check, key in zip(checkbox1.children + checkbox2.children, list(controlnet_list.keys())):
         if check.value:
             download_list.extend(controlnet_list[key])
-
-    clear_output(wait=True)
-    widgets.Widget.close(controlnet_widget)
 
     with loading:
         display(Image(filename=str(img)))
         
     with download_output:
-        os.chdir(f"{webui}/models/ControlNet")
+        get_ipython().magic(f'cd -q {cn}')
+
         for url in download_list:
             download(url)
 
         loading.clear_output()
         say("【{red} Done{d} 】{red}")
-            
+        get_ipython().magic('cd -q ~')
+
 tempe()
+load_css(css)
 display(controlnet_widget, download_output, loading)
-download_button.on_click(download_button_click)
+
+select_all_button.on_click(select_all_checkboxes)
+unselect_all_button.on_click(unselect_all_checkboxes)
+download_button.on_click(downloading)
