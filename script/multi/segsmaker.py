@@ -151,29 +151,19 @@ def launching(b, skip_comfyui_check=False):
     with output:
         get_ipython().magic('run venv.py')
 
-        if ui == 'A1111' or ui == 'Forge':
-            if tunnel.value == 'Pinggy':
-                get_ipython().system(f'{py} pinggy.py {args}')
-
-            elif tunnel.value == 'ZROK':
-                get_ipython().system(f'{py} zrok.py {zrok_token.value} {args}')
-
-            elif tunnel.value == 'NGROK':
-                get_ipython().system(f'{py} ngrokk.py {ngrok_token.value} {args}')
-
-        elif ui == 'ComfyUI':
-            if not skip_comfyui_check:
+        if ui in ['A1111', 'Forge', 'ComfyUI']:
+            if ui == 'ComfyUI' and not skip_comfyui_check:
                 get_ipython().system(f'{py} apotek.py')
-            output.clear_output(wait=True)
+                output.clear_output(wait=True)
 
-            if tunnel.value == 'Pinggy':
-                get_ipython().system(f'{py} pinggy.py {args}')
+            launch = {
+                'Pinggy': f'{py} pinggy.py {args}',
+                'ZROK': f'{py} zrok.py {zrok_token.value} {args}',
+                'NGROK': f'{py} ngrokk.py {ngrok_token.value} {args}'
+            }.get(tunnel.value)
 
-            elif tunnel.value == 'ZROK':
-                get_ipython().system(f'{py} zrok.py {zrok_token.value} {args}')
-
-            elif tunnel.value == 'NGROK':
-                get_ipython().system(f'{py} ngrokk.py {ngrok_token.value} {args}')
+            if launch:
+                get_ipython().system(launch)
 
 def segsmaker():
     parser = argparse.ArgumentParser()
