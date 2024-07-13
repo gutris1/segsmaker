@@ -1,6 +1,7 @@
-from ipywidgets import widgets
 from IPython.display import display, HTML, clear_output, Image
 from IPython import get_ipython
+from ipywidgets import widgets
+from subprocess import DEVNULL
 from pathlib import Path
 import subprocess, json, shlex
 
@@ -73,19 +74,24 @@ def conda_install():
     try:
         display(Image(filename=str(img)))
 
-        conda_list = [
-            ("conda install -yc conda-forge conda", f"{BLUE} Installing Anaconda"),
-            ("conda install -yc conda-forge glib gperftools openssh pv", f"{CYAN} Installing Conda Packages"),
-            ("conda install -yc conda-forge python=3.10.13", f"{PURPLE} Installing Python 3.10.13"),
-            ("pip install psutil aria2 gdown", f"{PINK} Installing Python Packages"),
-            ("conda clean -y --all", f"{RED} Cleaning")
+        z = [
+            ('conda config --add channels conda-forge', None),
+            ('conda config --set channel_priority strict', None),
+            ('conda install -qy conda', f'{BLUE} Installing Anaconda'),
+            ('conda update -qy conda', None),
+            ('conda install -qy glib gperftools openssh pv', f'{CYAN} Installing Conda Packages'),
+            ('conda remove -qy python=3.9', f'{RED} Removing Python 3.9.19'),
+            ('conda install -qy python=3.10.13', f'{PINK} Installing Python 3.10.13'),
+            ('pip install psutil aria2 gdown', f'{PURPLE} Installing Python Packages'),
+            ('conda clean -qy --all', None),
+            (f'rm -rf {home}/.cache/* {home}/-3', None)
         ]
 
-        for cmd, txts in conda_list:
-            print(f'{txts}')
-            subprocess.run(shlex.split(cmd), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        for x, y in z:
+            if y is not None:
+                print(y)
+            get_ipython().system(f'{x} >{DEVNULL} 2>{DEVNULL}')
 
-        get_ipython().system('rm -rf /home/studio-lab-user/.cache/*')
         zrok_install()
 
         clear_output()
