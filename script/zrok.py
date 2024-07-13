@@ -62,8 +62,6 @@ def launch():
         zrok.terminate()
 
 def zrok_url():
-    error = False
-
     while not event.is_set():
         with open('launch.txt', 'r') as file:
             if any('Running on local URL' in line for line in file):
@@ -81,11 +79,8 @@ def zrok_url():
                     return
 
                 elif 'ERROR' in line:
-                    error = True
                     print(f"\n{line}")
                     return
-        if error:
-            break 
 
 try:
     if len(sys.argv) < 2:
