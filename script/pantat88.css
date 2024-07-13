@@ -74,11 +74,13 @@
 }
 
 .del {
-  font-size: 24px;
-  margin-top: -20px;
-  margin-right: 0px;
-  margin-bottom: 0px;
-  margin-left: 0px;}
+    color: white;
+    font-size: 24px;
+    margin-top: -20px;
+    margin-right: 0px;
+    margin-bottom: 0px;
+    margin-left: 0px;
+}
 
 .widget-container {
     margin-top: 0px;
@@ -103,6 +105,10 @@
     border: 3px solid #ab22fe;
     background-color: #212121;
     transform: scale(125%);
+}
+
+.api-input input[type="text"]::placeholder {
+    color: grey;
 }
 
 .api-input input:focus {
@@ -227,6 +233,70 @@
   100% {border-color: rgba(255, 0, 0, 1);}
 }
 
+@keyframes colorChange {
+    0% {color: rgba(255, 0, 0, 1);}
+    1.67% {color: rgba(255, 0, 25, 0.75);}
+    3.33% {color: rgba(255, 0, 50, 0.5);}
+    5.00% {color: rgba(255, 0, 75, 0.75);}
+    6.67% {color: rgba(255, 0, 100, 1);}
+    8.33% {color: rgba(255, 0, 125, 0.75);}
+    10.00% {color: rgba(255, 0, 150, 0.5);}
+    11.67% {color: rgba(255, 0, 175, 0.75);}
+    13.33% {color: rgba(255, 0, 200, 1);}
+    15.00% {color: rgba(255, 0, 225, 0.75);}
+    16.67% {color: rgba(255, 0, 255, 0.5);}
+    18.33% {color: rgba(225, 0, 255, 0.75);}
+    20.00% {color: rgba(200, 0, 255, 1);}
+    21.67% {color: rgba(175, 0, 255, 0.75);}
+    23.33% {color: rgba(150, 0, 255, 0.5);}
+    25.00% {color: rgba(125, 0, 255, 0.75);}
+    26.67% {color: rgba(100, 0, 255, 1);}
+    28.33% {color: rgba(75, 0, 255, 0.75);}
+    30.00% {color: rgba(50, 0, 255, 0.5);}
+    31.67% {color: rgba(25, 0, 255, 0.75);}
+    33.33% {color: rgba(0, 0, 255, 1);}
+    35.00% {color: rgba(0, 25, 255, 0.75);}
+    36.67% {color: rgba(0, 50, 255, 0.5);}
+    38.33% {color: rgba(0, 75, 255, 0.75);}
+    40.00% {color: rgba(0, 100, 255, 1);}
+    41.67% {color: rgba(0, 125, 255, 0.75);}
+    43.33% {color: rgba(0, 150, 255, 0.5);}
+    45.00% {color: rgba(0, 175, 255, 0.75);}
+    46.67% {color: rgba(0, 200, 255, 1);}
+    48.33% {color: rgba(0, 225, 255, 0.75);}
+    50.00% {color: rgba(0, 255, 255, 0.5);}
+    51.67% {color: rgba(0, 255, 225, 0.75);}
+    53.33% {color: rgba(0, 255, 200, 1);}
+    55.00% {color: rgba(0, 255, 175, 0.75);}
+    56.67% {color: rgba(0, 255, 150, 0.5);}
+    58.33% {color: rgba(0, 255, 125, 0.75);}
+    60.00% {color: rgba(0, 255, 100, 1);}
+    61.67% {color: rgba(0, 255, 75, 0.75);}
+    63.33% {color: rgba(0, 255, 50, 0.5);}
+    65.00% {color: rgba(0, 255, 25, 0.75);}
+    66.67% {color: rgba(0, 255, 0, 1);}
+    68.33% {color: rgba(25, 255, 0, 0.75);}
+    70.00% {color: rgba(50, 255, 0, 0.5);}
+    71.67% {color: rgba(75, 255, 0, 0.75);}
+    73.33% {color: rgba(100, 255, 0, 1);}
+    75.00% {color: rgba(125, 255, 0, 0.75);}
+    76.67% {color: rgba(150, 255, 0, 0.5);}
+    78.33% {color: rgba(175, 255, 0, 0.75);}
+    80.00% {color: rgba(200, 255, 0, 1);}
+    81.67% {color: rgba(225, 255, 0, 0.75);}
+    83.33% {color: rgba(255, 255, 0, 0.5);}
+    85.00% {color: rgba(255, 225, 0, 0.75);}
+    86.67% {color: rgba(255, 200, 0, 1);}
+    88.33% {color: rgba(255, 175, 0, 0.75);}
+    90.00% {color: rgba(255, 150, 0, 0.5);}
+    91.67% {color: rgba(255, 125, 0, 0.75);}
+    93.33% {color: rgba(255, 100, 0, 1);}
+    95.00% {color: rgba(255, 75, 0, 0.75);}
+    96.67% {color: rgba(255, 50, 0, 0.5);}
+    98.33% {color: rgba(255, 25, 0, 0.75);}
+    100% {color: rgba(255, 0, 0, 1);}
+}
+
 @keyframes slideAndBlurFromCenter {
     from {
         transform: scale(0.1);
@@ -259,8 +329,10 @@
     margin-right: 0px;
     margin-bottom: 0px;
     margin-left: 0px;
+    background: #212121;
 }
 .current-key input[type="text"] {
+    background: #212121;
     border: 3px solid #2197f2;
     margin-top: -30px;
 }
@@ -269,7 +341,9 @@
     border: 3px solid #ab22fe;
     margin-top: -20px;
 }
-
+.key-input input[type="text"]::placeholder {
+    color: grey;
+}
 .key-input input:focus {
     height: 35px;
     border: 3px solid transparent;
