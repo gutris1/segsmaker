@@ -5,6 +5,7 @@
 | :---------------------------------------- | :-----------------------------------------------------------------------------------------------------------------: |
 | SD Forge | [![Open in Studio Lab](https://studiolab.sagemaker.aws/studiolab.svg)](https://studiolab.sagemaker.aws/import/github/gutris1/segsmaker/blob/main/Segsmaker_Forge.ipynb) |
 | ComfyUI | [![Open in Studio Lab](https://studiolab.sagemaker.aws/studiolab.svg)](https://studiolab.sagemaker.aws/import/github/gutris1/segsmaker/blob/main/Segsmaker_ComfyUI.ipynb) |
+| all in one | [![Open in Studio Lab](https://studiolab.sagemaker.aws/studiolab.svg)](https://studiolab.sagemaker.aws/import/github.com/gutris1/segsmaker/blob/main/Segsmaker_1%2B2.ipynb) |
 <br />
 
 you can find me here https://discord.gg/k5BwmmvJJU <br /><br />
