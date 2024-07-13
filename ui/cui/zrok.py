@@ -49,13 +49,14 @@ def zrok_url(zrok):
     get_url = re.compile(r'https?://[^\s]*\.zrok\.io')
     
     for line in zrok[0].stdout:
+        urls = get_url.findall(line)
+        for url in urls:
+            print(f"{T} {url}\n")
+            break
+
         if 'ERROR' in line:
-            print(line)
-        else:
-            urls = get_url.findall(line)
-            for url in urls:
-                print(f"{T} {url}\n")
-                break
+            print(f"\n{line}")
+            return
 
 if __name__ == "__main__":
     try:
@@ -76,4 +77,4 @@ if __name__ == "__main__":
         url.join()
 
     except KeyboardInterrupt:
-        pass
+        print('\nZROK killed.\n')
