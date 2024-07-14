@@ -1,12 +1,11 @@
 from IPython.core.magic import register_line_magic, register_cell_magic
 from IPython.display import display, HTML, clear_output, Image
 from IPython import get_ipython
+import ipywidgets as widgets
 from pathlib import Path
 from tqdm import tqdm
-import subprocess, time, zipfile, sys, os, json, psutil
-import ipywidgets as widgets
 from nenen88 import say
-
+import subprocess, time, zipfile, sys, os, json, psutil
 
 home = Path.home()
 css = home / ".conda/pantat88.css"
@@ -83,7 +82,6 @@ def storage(line):
         for base_path, formatted_size in subdirectories:
             padding = " " * max(0, 9 - len(formatted_size))
             print(f"/{base_path:<30} {padding}{formatted_size}")
-
 
 @register_line_magic
 def delete(line):    
@@ -204,7 +202,6 @@ def nb_clear(nb_path):
     except:
         pass
 
-
 @register_cell_magic
 def zipping(line, cell):
     lines = cell.strip().split('\n')
@@ -318,7 +315,6 @@ def zipping(line, cell):
 
     max_size_mb = 200
     zip_folder(input_path, output_path, max_size_mb, custom_name)
-
 
 @register_line_magic
 def change_key(line):
@@ -446,3 +442,104 @@ def change_key(line):
 
     load_css(css)
     key_check()
+
+zrok_bin = home / '.zrok/bin'
+zrok_cmd = zrok_bin / 'zrok invite'
+zrok_txt = zrok_bin / 'zrok_log.txt'
+
+@register_line_magic
+def zrok_register(line):
+    zrok_output = widgets.Output()
+
+    register_button = widgets.Button(description="Register", layout=widgets.Layout(left= '-45%'))
+    register_button.add_class("zrok-btn")
+
+    exit_button = widgets.Button(description="Exit", layout=widgets.Layout(left= '45%'))
+    exit_button.add_class("zrok-btn")
+
+    email_input = widgets.Text(placeholder='Enter Your Valid Email Address', layout=widgets.Layout(width= '75%'))
+    email_input.add_class("email-input")
+
+    zrok_button = widgets.HBox([register_button, exit_button], layout=widgets.Layout(
+        display='flex',
+        flex_flow='row',
+        justify_content='space-between'))
+
+    zrok_widget = widgets.VBox([email_input, zrok_button], layout=widgets.Layout(
+        height='160px',
+        width= '550px',
+        display='flex',
+        flex_flow='column',
+        align_items='center',
+        justify_content='space-around',
+        padding='20px'))
+    zrok_widget.add_class("zrok-widget")
+
+    def zrok_install():    
+        if zrok_bin.exists():
+            return
+
+        zrok_bin.mkdir(parents=True, exist_ok=True)
+        zrok_url = "https://github.com/openziti/zrok/releases/download/v0.4.32/zrok_0.4.32_linux_amd64.tar.gz"
+        zrok_tar = zrok_bin / Path(zrok_url).name
+
+        get_ipython().system(f"curl -sLo {zrok_tar} {zrok_url}")
+        get_ipython().system(f"tar -xzf {zrok_tar} -C {zrok_bin} --wildcards *zrok")
+        get_ipython().system(f"rm -rf {home}/.cache/* {zrok_tar}")
+
+    def load_css(css):
+        with open(css, "r") as file:
+            zrok_panel = file.read()
+
+        display(HTML(f"<style>{zrok_panel}</style>"))
+
+    def register(b):
+        import pexpect
+
+        zrok_widget.close()
+        email = email_input.value
+
+        R = '\033[0m'
+        O = '\033[38;5;208m'
+        E = f'{O}{email}{R}'
+
+        with zrok_output:
+            if not email:
+                print('No email address entered.')
+                return
+
+            print('Submitting...')
+            clear_output(wait=True)
+
+            zrok_txt.touch()
+
+            child = pexpect.spawn('bash')
+            child.sendline(f'{zrok_cmd} | tee {zrok_txt}')
+            child.expect('enter and confirm your email address...')
+
+            for _ in range(2):
+                time.sleep(1)
+                child.sendline(email)
+                time.sleep(1)
+                child.send(chr(9))
+
+            child.sendline('\r\n')
+            time.sleep(2)
+            child.close()
+
+            print(f'Invitation sent to {E}\n'
+                  f'Be sure to check your SPAM folder if you do not receive the invitation email.')
+
+            zrok_txt.unlink()
+
+    def exit(b):
+        zrok_widget.close()
+
+    load_css(css)
+    display(zrok_widget, zrok_output)
+
+    register_button.on_click(register)
+    exit_button.on_click(exit)
+    
+    zrok_install()
+    get_ipython().system('pip install -q pexpect')
