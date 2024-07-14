@@ -1,15 +1,13 @@
 from IPython.display import display, HTML, clear_output
-from multiprocessing import Process
+from multiprocessing import Process, Condition, Value
 from IPython import get_ipython
 from ipywidgets import widgets
 from pathlib import Path
-import json, argparse, time
+import json, argparse
 
-home = Path.home()
-src = home / '.gutris1'
+src = Path.home() / '.gutris1'
 css = src / 'multi.css'
 mark = src / 'marking.json'
-text = Path('txt.txt')
 
 py = '/tmp/venv/bin/python3'
 
@@ -135,8 +133,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--skip-comfyui-check', action='store_true', help='Skip checking ComfyUI for custom node dependencies')
 args, unknown = parser.parse_known_args()
 
-def exiting(b):
-    main_panel.close()
+condition = Condition()
+is_ready = Value('b', False)
 
 def launching(ui, skip_comfyui_check=False):
     args = f'{launch_args1.value} {launch_args2.value}'
@@ -148,16 +146,24 @@ def launching(ui, skip_comfyui_check=False):
             get_ipython().system(f'{py} apotek.py')
             clear_output(wait=True)
 
-        launch = {
+        tunnels = {
             'Pinggy': f'{py} pinggy.py {args}',
             'ZROK': f'{py} zrok.py {zrok_token.value} {args}',
             'NGROK': f'{py} ngrokk.py {ngrok_token.value} {args}'
         }.get(tunnel.value)
 
         if launch:
-            get_ipython().system(launch)
+            get_ipython().system(tunnels)
 
-def if_launch(b):
+def preparing(condition, is_ready):
+    with condition:
+        while not is_ready.value:
+            condition.wait()
+
+    load_config()
+    launching(ui, skip_comfyui_check=args.skip_comfyui_check)
+
+def launch(b):
     global ui, zrok_token, ngrok_token, launch_args1, launch_args2, tunnel
     main_panel.close()
 
@@ -168,34 +174,27 @@ def if_launch(b):
         launch_args2.value,
         tunnel.value)
 
-    Path('txt.txt').write_text('this is txt')
+    with condition:
+        is_ready.value = True
+        condition.notify()
 
-def something():
-    global ui
-    while not text.exists():
-        time.sleep(2)
-
-    load_config()
-    launching(ui, skip_comfyui_check=args.skip_comfyui_check)
+def exit(b):
+    main_panel.close()
 
 def display_widgets():
-    if text.exists():
-        text.unlink()
-
     load_config()
     load_css(css)
     display(main_panel)
 
-    launch_button.on_click(if_launch)
-    exit_button.on_click(exiting)
+    launch_button.on_click(launch)
+    exit_button.on_click(exit)
 
 if __name__ == '__main__':
     try:
         display_widgets()
 
-        batu = Process(target=something)
-        batu.start()
+        p = Process(target=preparing, args=(condition, is_ready))
+        p.start()
 
     except KeyboardInterrupt:
-        text.unlink()
         pass
