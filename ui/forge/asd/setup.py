@@ -2,7 +2,7 @@ from IPython.display import display, HTML, clear_output, Image
 from ipywidgets import widgets
 from IPython import get_ipython
 from pathlib import Path
-import subprocess, time, os, shlex
+import subprocess, time, os, shlex, shutil
 from nenen88 import pull, say, download, clone, tempe
 
 repo = f"git clone -q https://github.com/lllyasviel/stable-diffusion-webui-forge forge"
