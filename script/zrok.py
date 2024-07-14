@@ -1,4 +1,4 @@
-import os, subprocess, sys, json, re
+import os, subprocess, sys, json
 from threading import Thread, Event
 from pathlib import Path
 

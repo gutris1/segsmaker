@@ -1,13 +1,15 @@
 from IPython.display import display, HTML, clear_output
+from multiprocessing import Process
 from IPython import get_ipython
 from ipywidgets import widgets
 from pathlib import Path
-import json, argparse
+import json, argparse, time
 
 home = Path.home()
 src = home / '.gutris1'
 css = src / 'multi.css'
 mark = src / 'marking.json'
+text = Path('txt.txt')
 
 py = '/tmp/venv/bin/python3'
 
@@ -73,8 +75,6 @@ def load_css(css):
 
     display(HTML(f"<style>{data}</style>"))
 
-output = widgets.Output()
-
 title = widgets.HTML()
 zrok_token = widgets.Text(placeholder='Your ZROK Token')
 ngrok_token = widgets.Text(placeholder='Your NGROK Token')
@@ -131,11 +131,34 @@ launch_button.add_class('buttons')
 exit_button.add_class('buttons')
 main_panel.add_class('main-panel')
 
+parser = argparse.ArgumentParser()
+parser.add_argument('--skip-comfyui-check', action='store_true', help='Skip checking ComfyUI for custom node dependencies')
+args, unknown = parser.parse_known_args()
+
 def exiting(b):
     main_panel.close()
 
-def launching(b, skip_comfyui_check=False):
-    global ui
+def launching(ui, skip_comfyui_check=False):
+    args = f'{launch_args1.value} {launch_args2.value}'
+
+    get_ipython().run_line_magic('run', 'venv.py')
+
+    if ui in ['A1111', 'Forge', 'ComfyUI']:
+        if ui == 'ComfyUI' and not skip_comfyui_check:
+            get_ipython().system(f'{py} apotek.py')
+            clear_output(wait=True)
+
+        launch = {
+            'Pinggy': f'{py} pinggy.py {args}',
+            'ZROK': f'{py} zrok.py {zrok_token.value} {args}',
+            'NGROK': f'{py} ngrokk.py {ngrok_token.value} {args}'
+        }.get(tunnel.value)
+
+        if launch:
+            get_ipython().system(launch)
+
+def if_launch(b):
+    global ui, zrok_token, ngrok_token, launch_args1, launch_args2, tunnel
     main_panel.close()
 
     save_config(
@@ -143,39 +166,36 @@ def launching(b, skip_comfyui_check=False):
         ngrok_token.value,
         launch_args1.value,
         launch_args2.value,
-        tunnel.value
-    )
+        tunnel.value)
 
-    args = f'{launch_args1.value} {launch_args2.value}'
+    Path('txt.txt').write_text('this is txt')
 
-    with output:
-        get_ipython().magic('run venv.py')
+def something():
+    global ui
+    while not text.exists():
+        time.sleep(2)
 
-        if ui in ['A1111', 'Forge', 'ComfyUI']:
-            if ui == 'ComfyUI' and not skip_comfyui_check:
-                get_ipython().system(f'{py} apotek.py')
-                output.clear_output(wait=True)
+    load_config()
+    launching(ui, skip_comfyui_check=args.skip_comfyui_check)
 
-            launch = {
-                'Pinggy': f'{py} pinggy.py {args}',
-                'ZROK': f'{py} zrok.py {zrok_token.value} {args}',
-                'NGROK': f'{py} ngrokk.py {ngrok_token.value} {args}'
-            }.get(tunnel.value)
-
-            if launch:
-                get_ipython().system(launch)
-
-def segsmaker():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--skip-comfyui-check', action='store_true', help='Skip checking ComfyUI for custom node dependencies')
-    args = parser.parse_args()
+def display_widgets():
+    if text.exists():
+        text.unlink()
 
     load_config()
     load_css(css)
-    display(main_panel, output)
+    display(main_panel)
 
-    launch_button.on_click(lambda b: launching(b, skip_comfyui_check=args.skip_comfyui_check))
+    launch_button.on_click(if_launch)
     exit_button.on_click(exiting)
 
 if __name__ == '__main__':
-    segsmaker()
+    try:
+        display_widgets()
+
+        batu = Process(target=something)
+        batu.start()
+
+    except KeyboardInterrupt:
+        text.unlink()
+        pass
