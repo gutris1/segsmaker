@@ -361,6 +361,13 @@
     transform: scale(125%);
 }
 
+.text-input input[type="text"]::placeholder,
+.args2 input[type="text"]::placeholder,
+.zrok input[type="text"]::placeholder,
+.ngrok input[type="text"]::placeholder {
+    color: grey;
+}
+
 .text-input input:focus, .args2 input:focus, .zrok input:focus, .ngrok input:focus {
     border: 1px solid transparent;
     animation: BorderPulse 10s infinite;

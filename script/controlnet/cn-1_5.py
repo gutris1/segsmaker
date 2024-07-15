@@ -92,19 +92,23 @@ half_list = len(controlnet_list) // 2
 left_side = dict(list(controlnet_list.items())[:half_list])
 right_side = dict(list(controlnet_list.items())[half_list:])
 
-checkbox1 = widgets.VBox([widgets.Checkbox(value=False, description=name, style={'description_width': '0px'})
-                          for name in left_side])
-checkbox2 = widgets.VBox([widgets.Checkbox(value=False, description=name, style={'description_width': '0px'})
-                          for name in right_side])
+checkbox1 = widgets.VBox(
+    [widgets.Checkbox(value=False, description=name, style={'description_width': '0px'}) for name in left_side],
+    layout=widgets.Layout(left='10px'))
 
-checkbox_layout = widgets.HBox([checkbox1, checkbox2],
-                               layout=widgets.Layout(align_items='flex-start'))
+checkbox2 = widgets.VBox(
+    [widgets.Checkbox(value=False, description=name, style={'description_width': '0px'}) for name in right_side],
+    layout=widgets.Layout(left='-60px'))
 
-download_button = widgets.Button(description="Download")
+checkbox_layout = widgets.HBox(
+    [checkbox1, checkbox2],
+    layout=widgets.Layout(align_items='flex-start'))
 
-select_all_button = widgets.Button(description="Select All")
-unselect_all_button = widgets.Button(description="Unselect All")
-bottom_box = widgets.Button(description="")
+download_button = widgets.Button(description="Download", layout=widgets.Layout(left='-115px'))
+
+select_all_button = widgets.Button(description="Select All", layout=widgets.Layout(left='-20px'))
+unselect_all_button = widgets.Button(description="Unselect All", layout=widgets.Layout(left='-60px'))
+bottom_box = widgets.Button(description="", disabled=True)
 
 button_layout = widgets.HBox([select_all_button, unselect_all_button, download_button, bottom_box])
 
@@ -113,7 +117,7 @@ controlnet_widget = widgets.Box(
     layout=widgets.Layout(
         display='flex',
         flex_flow='column',
-        width='640px',
+        width='550px',
         height='450px',
         padding='15px'))
 
@@ -153,14 +157,14 @@ def downloading(b):
         display(Image(filename=str(img)))
         
     with download_output:
-        get_ipython().magic(f'cd -q {cn}')
+        get_ipython().run_line_magic('cd', f'-q {cn}')
 
         for url in download_list:
             download(url)
 
         loading.clear_output()
         say("【{red} Done{d} 】{red}")
-        get_ipython().magic('cd -q ~')
+        get_ipython().run_line_magic('cd', '-q ~')
 
 tempe()
 load_css(css)

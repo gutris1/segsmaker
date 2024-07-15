@@ -125,7 +125,7 @@ download_button = widgets.Button(description="Download")
 
 select_all_button = widgets.Button(description="Select All")
 unselect_all_button = widgets.Button(description="Unselect All")
-bottom_box = widgets.Button(description="")
+bottom_box = widgets.Button(description="", disabled=True)
 
 button_layout = widgets.HBox([select_all_button, unselect_all_button, download_button, bottom_box])
 
@@ -174,14 +174,14 @@ def downloading(b):
         display(Image(filename=str(img)))
         
     with download_output:
-        get_ipython().magic(f'cd -q {cn}')
+        get_ipython().run_line_magic('cd', f'-q {cn}')
 
         for url in download_list:
             download(url)
 
         loading.clear_output()
         say("【{red} Done{d} 】{red}")
-        get_ipython().magic('cd -q ~')
+        get_ipython().run_line_magic('cd', '-q ~')
 
 tempe()
 load_css(css)
