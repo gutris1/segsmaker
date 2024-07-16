@@ -6,9 +6,13 @@ home = Path.home()
 src = home / '.gutris1'
 mark = src / 'marking.json'
 
+tmp = Path('/tmp')
+tmp_ckpt = tmp / 'ckpt'
+tmp_lora = tmp / 'lora'
+
 def del_var():
     variables = ['webui', 'models', 'webui_output', 'extensions', 'embeddings',
-                 'vae', 'ckpt', 'tmp_ckpt', 'lora', 'tmp_lora', 'forge_svd']
+                 'vae', 'ckpt', 'lora', 'tmp_ckpt', 'tmp_lora', 'forge_svd']
 
     for var in variables:
         if var in globals():
@@ -32,9 +36,7 @@ if mark.exists():
         embeddings = webui / 'embeddings'
         vae = models / 'VAE'
         ckpt = models / 'Stable-diffusion'
-        tmp_ckpt = models / 'Stable-diffusion/tmp_ckpt'
         lora = models / 'Lora'
-        tmp_lora = models / 'Lora/tmp_lora'
 
     elif ui == 'Forge':
         webui = home / 'forge'
@@ -44,10 +46,8 @@ if mark.exists():
         embeddings = webui / 'embeddings'
         vae = models / 'VAE'
         ckpt = models / 'Stable-diffusion'
-        tmp_ckpt = models / 'Stable-diffusion/tmp_ckpt'
         lora = models / 'Lora'
-        tmp_lora = models / 'Lora/tmp_lora'
-        forge_svd = models / 'svd'
+        forge_svd = tmp / 'svd'
 
     elif ui == 'ComfyUI':
         webui = home / 'ComfyUI'
@@ -57,9 +57,7 @@ if mark.exists():
         embeddings = models / 'embeddings'
         vae = models / 'vae'
         ckpt = models / 'checkpoints'
-        tmp_ckpt = models / 'checkpoints/tmp_ckpt'
         lora = models / 'loras'
-        tmp_lora = models / 'loras/tmp_lora'
 
     else:
         pass
