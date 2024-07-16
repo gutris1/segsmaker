@@ -32,10 +32,6 @@ if webui.exists():
 
     x = [
         f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/controlnet.py {webui}/asd",
-        f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn.css {webui}/asd",
-        f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn-xl.py {webui}/asd",
-        f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn-1_5.py {webui}/asd",
-        f"https://github.com/gutris1/segsmaker/raw/main/script/zrok_reg.py {webui}/asd",
         f"https://github.com/gutris1/segsmaker/raw/main/script/venv.py {webui}",
         f"https://github.com/gutris1/segsmaker/raw/main/ui/cui/apotek.py {webui}",
         f"https://github.com/gutris1/segsmaker/raw/main/script/multi/segsmaker.py {webui}"]
@@ -140,10 +136,6 @@ else:
             
         scripts = [
             f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/controlnet.py {webui}/asd",
-            f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn.css {webui}/asd",
-            f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn-xl.py {webui}/asd",
-            f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn-1_5.py {webui}/asd",
-            f"https://github.com/gutris1/segsmaker/raw/main/script/zrok_reg.py {webui}/asd",
             f"https://github.com/gutris1/segsmaker/raw/main/script/venv.py {webui}",
             f"https://github.com/gutris1/segsmaker/raw/main/script/multi/segsmaker.py {webui}"]
             

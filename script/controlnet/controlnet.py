@@ -3,13 +3,17 @@ from ipywidgets import widgets, Layout, Output
 from pathlib import Path
 from IPython import get_ipython
 
-home = Path.home()
-img = home / ".conda/loading.png"
-css = home / ".conda/pantat88.css"
+img = Path.home() / ".conda/loading.png"
+css = Path.home() / ".conda/pantat88.css"
 webui = Path(__file__).parent.parent
 
 cn15 = webui / "asd/cn-1_5.py"
 cnxl = webui / "asd/cn-xl.py"
+
+x = [
+    f"curl -sLo {cn15} https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn-1_5.py",
+    f"curl -sLo {cnxl} https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn-xl.py",
+    f"curl -sLo {webui}/asd/cn.css https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn.css"]
 
 output = Output()
 
@@ -42,12 +46,15 @@ def controlnet(b):
 
     with output:
         if b.description == 'SD 1.5':
-            get_ipython().magic(f"run {cn15}")
+            get_ipython().run_line_magic('run', f'{cn15}')
 
         elif b.description == 'SD XL':
-            get_ipython().magic(f"run {cnxl}")
+            get_ipython().run_line_magic('run', f'{cnxl}')
 
 load_css(css)
 display(panel, output)
 button1.on_click(controlnet)
 button2.on_click(controlnet)
+
+for y in x:
+    get_ipython().system(y)

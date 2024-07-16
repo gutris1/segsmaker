@@ -72,7 +72,7 @@
     background-size: 110% 110%;
     background-position: 50% 80%;
     overflow: visible;
-    animation: slide-blur-above1 1s, BorderPulse 15s infinite;
+    animation: slide-blur-above-xl 1s, BorderPulse 15s infinite;
 }
 
 .cn-15 {
@@ -84,7 +84,7 @@
     background-size: 110% 110%;
     background-position: 50% 80%;
     overflow: visible;
-    animation: slide-blur-above2 1s, BorderPulse 15s infinite;
+    animation: slide-blur-above-15 1s, BorderPulse 15s infinite;
 }
 
 .widget-container {
@@ -142,7 +142,7 @@
 }
 
 .download-button-xl, .select-all-button-xl, .unselect-all-button-xl {
-    margin-top: 420px;
+    bottom: -480px;
     font-family: 'Times New Roman', serif;
     text-align: center;
     height: 40px;
@@ -194,7 +194,7 @@
 }
 
 .bottom-box-xl {
-    bottom: -470px;
+    bottom: -490px;
     left: 47.5%;
     width: 600px;
 }
@@ -294,19 +294,19 @@
     color: #212121;
 }
 
-@keyframes slide-blur-above1 {
+@keyframes slide-blur-above-xl {
     from {
         height: 0px;
         opacity: 0;
         filter: blur(100px);
     }
     to {
-        height: 500px;
+        height: 520px;
         opacity: 1;
         filter: blur(0px);}
 }
 
-@keyframes slide-blur-above2 {
+@keyframes slide-blur-above-15 {
     from {
         height: 0px;
         opacity: 0;

@@ -103,7 +103,9 @@ controlnet_list = {
         "https://huggingface.co/InstantX/InstantID/resolve/main/ControlNetModel/diffusion_pytorch_model.safetensors control_instant_id_sdxl.safetensors"],
     
     "Controlnet Union SDXL 1.0": [
-        "https://huggingface.co/xinsir/controlnet-union-sdxl-1.0/resolve/main/diffusion_pytorch_model.safetensors controlnet-union-sdxl-1.0.safetensors"]
+        "https://huggingface.co/xinsir/controlnet-union-sdxl-1.0/resolve/main/diffusion_pytorch_model.safetensors controlnet-union-sdxl-1.0.safetensors"],
+    "Controlnet Union SDXL Pro Max": [
+        "https://huggingface.co/xinsir/controlnet-union-sdxl-1.0/resolve/main/diffusion_pytorch_model_promax.safetensors controlnet-union-sdxl-promax.safetensors"]
 }
 
 download_output = widgets.Output()
@@ -118,24 +120,24 @@ checkbox1 = widgets.VBox([widgets.Checkbox(value=False, description=name, style=
 checkbox2 = widgets.VBox([widgets.Checkbox(value=False, description=name, style={'description_width': '0px'})
                           for name in right_side])
 
-checkbox_layout = widgets.HBox([checkbox1, checkbox2],
-                               layout=widgets.Layout(align_items='flex-start'))
+checkbox_layout = widgets.HBox([checkbox1, checkbox2], layout=widgets.Layout(align_items='flex-start'))
 
 download_button = widgets.Button(description="Download")
-
 select_all_button = widgets.Button(description="Select All")
 unselect_all_button = widgets.Button(description="Unselect All")
 bottom_box = widgets.Button(description="", disabled=True)
 
-button_layout = widgets.HBox([select_all_button, unselect_all_button, download_button, bottom_box])
+button_layout = widgets.HBox(
+    [select_all_button, unselect_all_button, download_button, bottom_box],
+    layout=widgets.Layout(align_items='flex-end'))
 
-controlnet_widget = widgets.Box(
-    [button_layout, checkbox_layout],
+controlnet_widget = widgets.VBox(
+    [checkbox_layout, button_layout],
     layout=widgets.Layout(
         display='flex',
         flex_flow='column',
         width='640px',
-        height='500px',
+        height='520px',
         padding='15px'))
 
 controlnet_widget.add_class("cn-xl")
