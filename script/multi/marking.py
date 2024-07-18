@@ -7,8 +7,6 @@ src = home / '.gutris1'
 mark = src / 'marking.json'
 
 tmp = Path('/tmp')
-tmp_ckpt = tmp / 'ckpt'
-tmp_lora = tmp / 'lora'
 
 def del_var():
     variables = ['webui', 'models', 'webui_output', 'extensions', 'embeddings',
@@ -37,6 +35,8 @@ if mark.exists():
         vae = models / 'VAE'
         ckpt = models / 'Stable-diffusion'
         lora = models / 'Lora'
+        tmp_ckpt = tmp / 'ckpt'
+        tmp_lora = tmp / 'lora'
 
     elif ui == 'Forge':
         webui = home / 'forge'
@@ -48,6 +48,8 @@ if mark.exists():
         ckpt = models / 'Stable-diffusion'
         lora = models / 'Lora'
         forge_svd = tmp / 'svd'
+        tmp_ckpt = tmp / 'ckpt'
+        tmp_lora = tmp / 'lora'
 
     elif ui == 'ComfyUI':
         webui = home / 'ComfyUI'
@@ -58,6 +60,8 @@ if mark.exists():
         vae = models / 'vae'
         ckpt = models / 'checkpoints'
         lora = models / 'loras'
+        tmp_ckpt = tmp / 'ckpt'
+        tmp_lora = tmp / 'lora'
 
     else:
         pass
