@@ -1,16 +1,27 @@
-from IPython import get_ipython
 from pathlib import Path
+from nenen88 import tempe
 import json
 
 home = Path.home()
-src = home / '.gutris1'
-mark = src / 'marking.json'
-
+gutris1 = home / '.gutris1'
+marked = gutris1 / 'marking.json'
 tmp = Path('/tmp')
 
-def del_var():
-    variables = ['webui', 'models', 'webui_output', 'extensions', 'embeddings',
-                 'vae', 'ckpt', 'lora', 'tmp_ckpt', 'tmp_lora', 'forge_svd']
+def purge():
+    variables = [
+        'webui',
+        'models',
+        'webui_output',
+        'extensions',
+        'embeddings',
+        'vae',
+        'ckpt',
+        'lora',
+        'tmp_ckpt',
+        'tmp_lora',
+        'forge_svd',
+        'controlnet_models'
+    ]
 
     for var in variables:
         if var in globals():
@@ -21,47 +32,34 @@ def get_name(path):
         value = json.load(file)
         return value.get('ui', None)
 
-if mark.exists():
-    del_var()
+def set_paths(ui):
+    webui_paths = {
+        'A1111': ('asd', 'extensions', 'embeddings', 'VAE', 'Stable-diffusion', 'Lora'),
+        'Forge': ('forge', 'extensions', 'embeddings', 'VAE', 'Stable-diffusion', 'Lora'),
+        'ComfyUI': ('ComfyUI', 'custom_nodes', 'models/embeddings', 'vae', 'checkpoints', 'loras')
+    }
+
+    if ui in webui_paths:
+        webui_name, ext, emb, v, c, l = webui_paths[ui]
+        webui = home / webui_name
+        models = webui / 'models'
+        webui_output = webui / 'outputs' if ui == 'A1111' else webui / 'output'
+        extensions = webui / ext
+        embeddings = models / emb if ui != 'ComfyUI' else webui / emb
+        vae = models / v
+        ckpt = models / c
+        lora = models / l
+        return webui, models, webui_output, extensions, embeddings, vae, ckpt, lora
+
+if marked.exists():
+    purge()
+
+    ui = get_name(marked)
+    webui, models, webui_output, extensions, embeddings, vae, ckpt, lora = set_paths(ui)
     
-    ui = get_name(mark)
-
-    if ui == 'A1111':
-        webui = home / 'asd'
-        models = webui / 'models'
-        webui_output = webui / 'outputs'
-        extensions = webui / 'extensions'
-        embeddings = webui / 'embeddings'
-        vae = models / 'VAE'
-        ckpt = models / 'Stable-diffusion'
-        lora = models / 'Lora'
-        tmp_ckpt = tmp / 'ckpt'
-        tmp_lora = tmp / 'lora'
-
-    elif ui == 'Forge':
-        webui = home / 'forge'
-        models = webui / 'models'
-        webui_output = webui / 'output'
-        extensions = webui / 'extensions'
-        embeddings = webui / 'embeddings'
-        vae = models / 'VAE'
-        ckpt = models / 'Stable-diffusion'
-        lora = models / 'Lora'
-        forge_svd = tmp / 'svd'
-        tmp_ckpt = tmp / 'ckpt'
-        tmp_lora = tmp / 'lora'
-
-    elif ui == 'ComfyUI':
-        webui = home / 'ComfyUI'
-        models = webui / 'models'
-        webui_output = webui / 'output'
-        extensions = webui / 'custom_nodes'
-        embeddings = models / 'embeddings'
-        vae = models / 'vae'
-        ckpt = models / 'checkpoints'
-        lora = models / 'loras'
-        tmp_ckpt = tmp / 'ckpt'
-        tmp_lora = tmp / 'lora'
-
-    else:
-        pass
+    delete_install = f"rm -rf {webui} {home / 'tmp'} {home / '.cache/*'}"
+    controlnet_models = webui / 'asd/controlnet.py'
+    forge_svd = tmp / 'svd' if ui == 'Forge' else None
+    tmp_ckpt = tmp / 'ckpt'
+    tmp_lora = tmp / 'lora'
+    tempe()
