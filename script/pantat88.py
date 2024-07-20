@@ -4,7 +4,7 @@ from urllib.parse import urlparse
 from IPython import get_ipython
 from pathlib import Path
 from tqdm import tqdm
-import subprocess, zipfile, sys, os, re, shlex
+import subprocess, zipfile, sys, os, re, shlex, requests
 
 
 @register_line_magic
@@ -71,6 +71,18 @@ def strip_(url):
             url = url.replace('?type=', f'?token={toket}&type=')
         else:
             url = f"{url}?token={toket}"
+
+        if "civitai.com/models/" in url:
+            if '?modelVersionId=' in url:
+                version_id = url.split('?modelVersionId=')[1]
+                response = requests.get(f"https://civitai.com/api/v1/model-versions/{version_id}")
+            else:
+                model_id = url.split('/models/')[1].split('/')[0]
+                response = requests.get(f"https://civitai.com/api/v1/models/{model_id}")
+
+            data = response.json()
+            download_url = data["downloadUrl"] if "downloadUrl" in data else data["modelVersions"][0]["downloadUrl"]
+            return f"{download_url}?token={toket}"
 
     elif "huggingface.co" in url:
         if '/blob/' in url:
