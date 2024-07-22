@@ -336,7 +336,7 @@ def change_key(line):
     current_key = widgets.Text(placeholder='', disabled=True)
     current_key.add_class("current-key")
 
-    buttons = widgets.HBox([cancel_button, save_button],
+    buttons = widgets.HBox([save_button, cancel_button],
                            layout=widgets.Layout(
                                width='400px',
                                display='flex',
