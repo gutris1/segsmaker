@@ -6,7 +6,7 @@ from pathlib import Path
 import json, argparse
 
 src = Path.home() / '.gutris1'
-css = src / 'multi.css'
+css_multi = src / 'multi.css'
 mark = src / 'marking.json'
 
 py = '/tmp/venv/bin/python3'
@@ -67,8 +67,8 @@ def save_config(zrok_token, ngrok_token, args1, args2, tunnel):
     with mark.open('w') as file:
         json.dump(config, file, indent=4)
 
-def load_css(css):
-    with css.open("r") as file:
+def load_css(css_multi):
+    with open(css_multi, "r") as file:
         data = file.read()
 
     display(HTML(f"<style>{data}</style>"))
@@ -127,7 +127,7 @@ launch_args1.add_class('text-input')
 launch_args2.add_class('args2')
 launch_button.add_class('buttons')
 exit_button.add_class('buttons')
-main_panel.add_class('main-panel')
+main_panel.add_class('multi-panel')
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--skip-comfyui-check', action='store_true', help='Skip checking ComfyUI for custom node dependencies')
@@ -183,7 +183,7 @@ def exit(b):
 
 def display_widgets():
     load_config()
-    load_css(css)
+    load_css(css_multi)
     display(main_panel)
 
     launch_button.on_click(launch)
