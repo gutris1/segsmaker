@@ -120,7 +120,7 @@ main_panel = widgets.Box([top, token_box, button_box], layout=widgets.Layout(
     padding='20px'))
 
 title.add_class('title')
-tunnel.add_class('checkbox-wrapper-14')
+tunnel.add_class('tunnel')
 zrok_token.add_class('zrok')
 ngrok_token.add_class('ngrok')
 launch_args1.add_class('text-input')
