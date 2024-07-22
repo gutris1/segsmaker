@@ -1,7 +1,6 @@
 from IPython.display import display, HTML, clear_output, Image
 from IPython import get_ipython
 from ipywidgets import widgets
-from subprocess import DEVNULL
 from pathlib import Path
 import subprocess, json, shlex
 
@@ -77,20 +76,26 @@ def conda_install():
         z = [
             ('conda config --add channels conda-forge', None),
             ('conda config --set channel_priority strict', None),
+
             ('conda install -qy conda', f'{BLUE} Installing Anaconda'),
             ('conda update -qy conda', None),
+
             ('conda install -qy glib gperftools openssh pv', f'{CYAN} Installing Conda Packages'),
-            ('conda remove -qy python=3.9', f'{RED} Removing Python 3.9.19'),
+
+            ('conda remove -qy python=3.9', f'{PURPLE} Removing Python 3.9.19'),
             ('conda install -qy python=3.10.13', f'{PINK} Installing Python 3.10.13'),
-            ('pip install psutil aria2 gdown', f'{PURPLE} Installing Python Packages'),
+
+            ('pip install psutil aria2 gdown', f'{RED} Installing Python Packages'),
+            ('conda install -qy jupyterlab', None),
+
             ('conda clean -qy --all', None),
-            (f'rm -rf {home}/.cache/* {home}/-3', None)
+            (f'rm -rf {home}/.cache/*', None)
         ]
 
         for x, y in z:
             if y is not None:
                 print(y)
-            get_ipython().system(f'{x} >{DEVNULL} 2>{DEVNULL}')
+            subprocess.run(shlex.split(x), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
         zrok_install()
 
@@ -121,7 +126,7 @@ def key_inject(api_key):
             file.write(value)
 
 def key_widget():
-    def column(b):
+    def key_input(b):
         api_key = input_box.value.strip()
 
         with main_output:
@@ -145,7 +150,7 @@ def key_widget():
         with main_output:
             conda_install()
 
-    save_button.on_click(column)
+    save_button.on_click(key_input)
 
 def key_check():
     if key_file.exists():
