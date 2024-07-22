@@ -1,12 +1,12 @@
-from pathlib import Path
 from IPython.display import display, HTML, clear_output
 from IPython import get_ipython
 from ipywidgets import widgets
+from pathlib import Path
 import os
 
 home = Path.home()
 src = home / '.gutris1'
-css = src / 'multi.css'
+css_multi = src / 'multi.css'
 mark = src / 'marking.py'
 img = src / 'loading.png'
 
@@ -28,46 +28,42 @@ x = [
 for y in x:
     get_ipython().system(y)
 
-def dupe_button(desc):
-    button = widgets.Button(description=desc)
-    button.add_class("buttons")
-    return button
-
-output = widgets.Output()
-buttons = [dupe_button(desc) for desc in ['A1111', 'Forge', 'ComfyUI']]
-selection_panel = widgets.HBox(buttons, layout=widgets.Layout(
-    width='500px',
-    height='100%',
-    display='flex',
-    flex_flow='row',
-    align_items='center',
-    justify_content='space-between',
-    padding='20px'))
-
-selection_panel.add_class("main-panel")
-
-def load_css(css):
-    with css.open("r") as file:
+def load_css(css_multi):
+    with open(css_multi, "r") as file:
         data = file.read()
 
     display(HTML(f"<style>{data}</style>"))
 
-def selection(b):
-    selection_panel.close()
+def selection(btn):
+    multi_panel.close()
     clear_output()
 
     with output:
-        if b.description == 'A1111':
-            get_ipython().magic(f'run {A1111}')
+        if btn == 'A1111':
+            get_ipython().run_line_magic('run', f'{A1111}')
 
-        elif b.description == 'Forge':
-            get_ipython().magic(f'run {Forge}')
+        elif btn == 'Forge':
+            get_ipython().run_line_magic('run', f'{Forge}')
 
-        elif b.description == 'ComfyUI':
-            get_ipython().magic(f'run {ComfyUI}')
+        elif btn == 'ComfyUI':
+            get_ipython().run_line_magic('run', f'{ComfyUI}')
 
-load_css(css)
-display(selection_panel, output)
+options = ['A1111', 'Forge', 'ComfyUI']
+buttons = []
 
-for button in buttons:
-    button.on_click(selection)
+for btn in options:
+    button = widgets.Button(description='')
+    button.add_class(btn.lower())
+    button.on_click(lambda x, btn=btn: selection(btn))
+    buttons.append(button)
+
+output = widgets.Output()
+
+multi_panel = widgets.HBox(
+    buttons, layout=widgets.Layout(
+        width='600px',
+        height='380px'))
+multi_panel.add_class('multi-panel')
+
+load_css(css_multi)
+display(multi_panel, output)
