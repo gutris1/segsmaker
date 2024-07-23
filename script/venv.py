@@ -36,7 +36,7 @@ def removing(directory, req_space):
         if freed_space >= req_space:
             break
 
-        print(f'Removing {file_path.name} from {file_path.parent}')
+        print(f'Removing {file_path}')
         get_ipython().system(f'rm -rf {file_path}')
         freed_space += size
 
@@ -64,7 +64,7 @@ def venv_install():
         req_space = need_space - free_space
 
         if req_space > 0:
-            print(f'Need space: {req_space / 1024**3:.1f} GB')
+            print(f'Need space {req_space / 1024**3:.1f} GB for venv')
             ckpt_tmp, lora_tmp, cn_tmp = tmp / 'ckpt', tmp / 'lora', tmp / 'controlnet'
 
             req_space -= removing(ckpt_tmp, req_space)
@@ -74,10 +74,10 @@ def venv_install():
                 req_space -= removing(cn_tmp, req_space)
 
         os.chdir(tmp)
-        say('【{red} Downloading VENV{d} 】{red}')
+        say('<br>【{red} Downloading VENV{d} 】{red}')
         download(url)
-        print()
-        say('【{red} Installing VENV{d} 】{red}')
+
+        say('<br>【{red} Installing VENV{d} 】{red}')
         get_ipython().system(f'pv {fn} | lz4 -d | tar xf -')
         Path(fn).unlink()
 
