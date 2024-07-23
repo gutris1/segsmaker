@@ -71,6 +71,67 @@
     animation: slideAndBlurFromCenter 1s;
 }
 
+.btn-cn-15, .btn-cn-xl {
+    --z: 100px;
+    --g: 50px;
+    height: 99%;
+    -webkit-mask: var(--mask);
+    mask: var(--mask);
+    cursor: pointer;
+    border: 3px solid white;
+    filter: brightness(50%);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 7px;
+    position: relative;
+    overflow: hidden;
+    --mask: linear-gradient(to left, transparent, #000 1px);
+    width: 70%;
+    transition: 0.4s ease;
+}
+
+.btn-cn-15 {
+    background-image: url('https://i.imgur.com/qIYOTBp.jpg');
+}
+.btn-cn-xl {
+    background-image: url('https://i.imgur.com/95Afkbg.jpg');
+}
+
+.btn-cn-15::after, .btn-cn-xl::after {
+    font-family: 'Times New Roman', serif;
+    text-align: center;
+    position: absolute;
+    bottom: 5px;
+    left: -10px;
+    color: white;
+    font-size: 40px;
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 10px;
+    display: block;
+    text-shadow: 
+        1px 1px 0 black,  
+        -1px -1px 0 black,  
+        1px -1px 0 black,  
+        -1px 1px 0 black;
+    border-radius: 1px;
+    width: 100%;
+}
+
+.btn-cn-15::after {
+    content: 'SD 1.5';
+}
+.btn-cn-xl::after {
+    content: 'SD XL';
+}
+
+.btn-cn-15:hover, .btn-cn-xl:hover {
+    filter: brightness(100%);
+    width: 100%;
+    border: 3px solid transparent;
+    animation: BorderPulse 15s infinite;
+}
+
 .cn-xl {
     border: 3px solid transparent;
     border-radius: 15px;
