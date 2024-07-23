@@ -208,8 +208,6 @@
 .button-15, .button-xl, .button-back {
     --z: 100px;
     --g: 50px;
-
-    width: 70%;
     height: 99%;
     -webkit-mask: var(--mask);
     mask: var(--mask);
@@ -218,10 +216,17 @@
     filter: brightness(50%);
     background-size: cover;
     background-position: center;
-    border-radius: 6px;
-    transition: filter 0.3s, width 0.5s;
+    background-repeat: no-repeat;
+    border-radius: 7px;
     position: relative;
     overflow: hidden;
+    --mask: linear-gradient(to left, transparent, #000 1px);
+}
+
+.a1111, .forge, .comfyui,
+.button-15, .button-xl {
+    width: 70%;
+    transition: 0.4s ease;
 }
 
 .a1111::after, .forge::after, .comfyui::after,
@@ -247,38 +252,25 @@
 
 .a1111 {
     background-image: url('https://i.imgur.com/qIYOTBp.jpg');
-    --mask: 
-        linear-gradient(to left, transparent, #000 1px);
 }
 .forge {
     background-image: url('https://i.imgur.com/95Afkbg.jpg');
-    --mask: 
-        linear-gradient(to left, transparent, #000 1px);
 }
 .comfyui {
     background-image: url('https://raw.githubusercontent.com/comfyanonymous/ComfyUI/master/comfyui_screenshot.png');
-    --mask: 
-        linear-gradient(to left, transparent, #000 1px);
 }
 
 .button-15 {
-    background-image: url('https://i.imgur.com/y7D7hpi.jpg');
-    --mask: 
-        linear-gradient(to left, transparent, #000 1px);
+    background-image: url('https://i.imgur.com/Y9bRZcC.jpg');
 }
 .button-xl {
-    background-image: url('https://i.imgur.com/cJVzYde.jpg');
-    --mask: 
-        linear-gradient(to left, transparent, #000 1px);
+    background-image: url('https://i.imgur.com/aqxYp65.jpg');
 }
 .button-back {
     background-image: url('https://icons.veryicon.com/png/System/Longhorn%20R2/Back%20Button.png');
-    --mask: linear-gradient(to left, transparent, #000 1px);
-    border: 2px solid transparent;
+    border: 1px solid transparent;
     background-color: transparent;
     background-size: 80%;
-    background-repeat: no-repeat;
-    background-position: center;
     cursor: pointer;
     outline: none;
 }
@@ -303,7 +295,9 @@
 .a1111:hover, .forge:hover, .comfyui:hover,
 .button-15:hover, .button-xl:hover {
     filter: brightness(100%);
-    width: 120%;
+    width: 100%;
+    border: 3px solid transparent;
+    animation: BorderPulse 15s infinite;
 }
 
 .button-back:active,
@@ -312,12 +306,23 @@
     background-color: transparent;
     border-color: transparent;
 }
+.button-back {
+    width: 50%;
+}
 .button-back:hover {
     filter: brightness(100%);
-    width: 70%;
+    width: 50%;
 }
 
 .multi-panel {
+    border: 3px solid transparent;
+    border-radius: 10px;
+    margin: 0;
+    background-color: transparent;
+    animation: slideAndBlurFromCenter 1s;
+}
+
+.launch-panel {
     border: 3px solid transparent;
     border-radius: 10px;
     margin: 0;
