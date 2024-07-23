@@ -28,7 +28,7 @@ x = [
 for y in x:
     get_ipython().system(y)
 
-def load_css(css_multi):
+def load_css():
     with open(css_multi, "r") as file:
         data = file.read()
 
@@ -62,8 +62,8 @@ output = widgets.Output()
 multi_panel = widgets.HBox(
     buttons, layout=widgets.Layout(
         width='600px',
-        height='380px'))
+        height='400px'))
 multi_panel.add_class('multi-panel')
 
-load_css(css_multi)
+load_css()
 display(multi_panel, output)
