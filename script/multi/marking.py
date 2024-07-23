@@ -47,17 +47,19 @@ def get_webui_paths():
 
 @register_line_magic
 def clear_output_images(line):
+    ui = get_name(marked)
     _, webui_output = get_webui_paths()
     get_ipython().system(f"rm -rf {webui_output}/* {home / '.cache/*'}")
     get_ipython().run_line_magic('cd', '-q ~')
-    print('output cleared.')
+    print(f'{ui} outputs cleared.')
 
 @register_line_magic
 def uninstall_webui(line):
+    ui = get_name(marked)
     webui, _ = get_webui_paths()
     get_ipython().system(f"rm -rf {webui} {home / 'tmp'} {home / '.cache/*'}")
     get_ipython().run_line_magic('cd', '-q ~')
-    print('webui uninstalled.')
+    print(f'{ui} uninstalled.')
 
 def set_paths(ui):
     webui_paths = {
