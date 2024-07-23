@@ -4,57 +4,52 @@ from pathlib import Path
 from IPython import get_ipython
 
 img = Path.home() / ".conda/loading.png"
-css = Path.home() / ".conda/pantat88.css"
-webui = Path(__file__).parent.parent
+src_cn = Path(__file__).parent
+css_cn = src_cn / "cn.css"
 
-cn15 = webui / "asd/cn-1_5.py"
-cnxl = webui / "asd/cn-xl.py"
+cn15 = src_cn / "cn-15.py"
+cnxl = src_cn / "cn-xl.py"
 
 x = [
-    f"curl -sLo {cn15} https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn-1_5.py",
+    f"curl -sLo {cn15} https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn-15.py",
     f"curl -sLo {cnxl} https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn-xl.py",
-    f"curl -sLo {webui}/asd/cn.css https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn.css"]
+    f"curl -sLo {css_cn} https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn.css"]
+for y in x:
+    get_ipython().system(y)
 
-output = Output()
+def load_css():
+    with open(css_cn, "r") as file:
+        cn = file.read()
 
-button1 = widgets.Button(description='SD 1.5')
-button2 = widgets.Button(description='SD XL')
+    display(HTML(f"<style>{cn}</style>"))
 
-panel = widgets.HBox([button1, button2],
-                     layout=Layout(
-                         width='300px',
-                         height='100px',
-                         display='flex',
-                         flex_flow='row',
-                         align_items='center',
-                         justify_content='space-between',
-                         padding='20px'))
-
-button1.add_class("save-button")
-button2.add_class("save-button")
-panel.add_class("boxs")
-
-def load_css(css):
-    with open(css, "r") as file:
-        content = file.read()
-
-    display(HTML(f"<style>{content}</style>"))
-
-def controlnet(b):
-    panel.close()
+def controlnet(btn):
+    cn_panel.close()
     clear_output()
 
     with output:
-        if b.description == 'SD 1.5':
+        if btn == 'btn-cn-15':
             get_ipython().run_line_magic('run', f'{cn15}')
 
-        elif b.description == 'SD XL':
+        elif btn == 'btn-cn-xl':
             get_ipython().run_line_magic('run', f'{cnxl}')
 
-load_css(css)
-display(panel, output)
-button1.on_click(controlnet)
-button2.on_click(controlnet)
+options = ['btn-cn-15', 'btn-cn-xl']
+buttons = []
 
-for y in x:
-    get_ipython().system(y)
+for btn in options:
+    button = widgets.Button(description='')
+    button.add_class(btn.lower())
+    button.on_click(lambda x, btn=btn: controlnet(btn))
+    buttons.append(button)
+
+output = widgets.Output()
+
+cn_panel = widgets.HBox(
+    buttons, layout=widgets.Layout(
+        width='600px',
+        height='400px'))
+cn_panel.add_class('cn-panel')
+
+load_css()
+display(cn_panel, output)
