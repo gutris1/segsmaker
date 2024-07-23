@@ -63,6 +63,14 @@
     rgb(255, 0, 0));
 }
 
+.cn-panel {
+    border: 3px solid transparent;
+    border-radius: 10px;
+    margin: 0;
+    background-color: transparent;
+    animation: slideAndBlurFromCenter 1s;
+}
+
 .cn-xl {
     border: 3px solid transparent;
     border-radius: 15px;
