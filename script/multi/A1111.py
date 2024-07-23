@@ -113,7 +113,7 @@ def sd_clone():
 
     tempe()
 
-def sd_1_5():
+def sd_15():
     sd_clone()
 
     extras = [
@@ -186,7 +186,7 @@ def sd_install(b):
         get_ipython().system(f"{repo}")
 
         if b == 'button-15':
-            sd_1_5()
+            sd_15()
         elif b == 'button-xl':
             sd_xl()
 
@@ -224,7 +224,7 @@ for btn in options:
 panel = widgets.HBox(
     buttons, layout=widgets.Layout(
         width='600px',
-        height='380px'))
+        height='400px'))
 
 panel.add_class("multi-panel")
 
@@ -232,7 +232,7 @@ if webui.exists():
     git_dir = webui / '.git'
     if git_dir.exists():
         os.chdir(webui)
-        commit_hash = os.popen('git rev-parse HEAD').read().strip()
+        commit_hash = subprocess.check_output(['git', 'rev-parse', 'HEAD']).strip().decode('utf-8')
 
         if commit_hash != version:
             get_ipython().system(f"git pull origin {version}")
