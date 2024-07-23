@@ -188,11 +188,11 @@ def sd_install(b):
         elif b == 'button-xl':
             sd_xl()
 
-        venv_install()
-        os.chdir(home)
-
         marking(src, 'marking.json', 'Forge')
         get_ipython().run_line_magic('run', f'{mark}')
+
+        venv_install()
+        os.chdir(home)
 
         with loading:
             loading.clear_output(wait=True)
