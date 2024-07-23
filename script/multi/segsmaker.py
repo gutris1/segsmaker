@@ -67,7 +67,7 @@ def save_config(zrok_token, ngrok_token, args1, args2, tunnel):
     with mark.open('w') as file:
         json.dump(config, file, indent=4)
 
-def load_css(css_multi):
+def load_css():
     with open(css_multi, "r") as file:
         data = file.read()
 
@@ -111,7 +111,7 @@ token_box = widgets.VBox([zrok_token, ngrok_token, args_box], layout=widgets.Lay
     justify_content='space-between',
     padding='0px'))
 
-main_panel = widgets.Box([top, token_box, button_box], layout=widgets.Layout(
+launch_panel = widgets.Box([top, token_box, button_box], layout=widgets.Layout(
     width='700px',
     height='350px',
     display='flex',
@@ -127,7 +127,7 @@ launch_args1.add_class('text-input')
 launch_args2.add_class('args2')
 launch_button.add_class('buttons')
 exit_button.add_class('buttons')
-main_panel.add_class('multi-panel')
+launch_panel.add_class('launch-panel')
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--skip-comfyui-check', action='store_true', help='Skip checking ComfyUI for custom node dependencies')
@@ -165,7 +165,7 @@ def preparing(condition, is_ready):
 
 def launch(b):
     global ui, zrok_token, ngrok_token, launch_args1, launch_args2, tunnel
-    main_panel.close()
+    launch_panel.close()
 
     save_config(
         zrok_token.value,
@@ -179,12 +179,12 @@ def launch(b):
         condition.notify()
 
 def exit(b):
-    main_panel.close()
+    launch_panel.close()
 
 def display_widgets():
     load_config()
-    load_css(css_multi)
-    display(main_panel)
+    load_css()
+    display(launch_panel)
 
     launch_button.on_click(launch)
     exit_button.on_click(exit)
