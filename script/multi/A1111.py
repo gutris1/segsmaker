@@ -3,7 +3,6 @@ from ipywidgets import widgets
 from IPython import get_ipython
 from pathlib import Path
 import subprocess, time, os, shlex, json, shutil
-
 from nenen88 import pull, say, download, clone, tempe
 
 version = "v1.9.4"
@@ -23,7 +22,7 @@ webui = home / 'asd'
 
 os.chdir(home)
 
-def load_css(css_multi):
+def load_css():
     with open(css_multi, "r") as file:
         data = file.read()
 
@@ -69,7 +68,7 @@ def venv_install():
     venv()
     os.chdir(home)
 
-def req_list(home, webui):
+def req_list():
     return [
         f"rm -rf {home}/tmp {home}/.cache/*",
         f"rm -rf {webui}/models/Stable-diffusion/tmp_ckpt {webui}/models/Lora/tmp_lora {webui}/models/ControlNet",
@@ -80,14 +79,14 @@ def req_list(home, webui):
         f"ln -vs /tmp/lora {webui}/models/Lora/tmp_lora",
         f"ln -vs /tmp/controlnet {webui}/models/ControlNet"]
 
-def sd_clone(home, webui):
+def sd_clone():
     time.sleep(1)
     pull(f"https://github.com/gutris1/segsmaker sd {webui}")
 
     tmp_cleaning()
 
     os.chdir(webui)
-    req = req_list(home, webui)
+    req = req_list()
 
     for lines in req:
         subprocess.run(shlex.split(lines), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
@@ -114,8 +113,8 @@ def sd_clone(home, webui):
 
     tempe()
 
-def sd_1_5(home, webui):
-    sd_clone(home, webui)
+def sd_1_5():
+    sd_clone()
 
     extras = [
         f"https://huggingface.co/pantat88/ui/resolve/main/embeddings.zip {webui}",
@@ -131,8 +130,8 @@ def sd_1_5(home, webui):
     os.chdir(webui / "extensions")
     clone(str(webui / "asd/ext-1_5.txt"))
 
-def sd_xl(home, webui):
-    sd_clone(home, webui)
+def sd_xl():
+    sd_clone()
 
     extras = [
         f"https://civitai.com/api/download/models/182974 {webui}/embeddings",
@@ -187,9 +186,9 @@ def sd_install(b):
         get_ipython().system(f"{repo}")
 
         if b == 'button-15':
-            sd_1_5(home, webui)
+            sd_1_5()
         elif b == 'button-xl':
-            sd_xl(home, webui)
+            sd_xl()
 
         venv_install()
 
@@ -251,5 +250,5 @@ if webui.exists():
         download(y)
 
 else:
-    load_css(css_multi)
+    load_css()
     display(panel, sd_setup, loading)
