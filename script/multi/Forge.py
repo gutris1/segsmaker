@@ -38,34 +38,29 @@ def venv_install():
     url = 'https://huggingface.co/pantat88/back_up/resolve/main/venv.tar.lz4'
     fn = Path(url).name
 
-    def check(folder):
+    def check_venv(folder):
         du = get_ipython().getoutput(f'du -s -b {folder}')
-        if du:
-            size = int(du[0].split()[0])
-            return size
-        else:
-            return 0
+        return int(du[0].split()[0]) if du else 0
 
-    def venv():
-        if vnv.exists() and check(vnv) > 7 * 1024**3:
-            return
-        else:
-            os.chdir(tmp)
+    while True:
+        if vnv.exists():
+            size = check_venv(vnv)
+            if size > 7 * 1024**3:
+                return
             get_ipython().system(f'rm -rf {vnv}')
 
-            say("<br><b>【{red} Installing VENV{d} 】{red}</b>")
-            download(url)
+        os.chdir(tmp)
 
-            get_ipython().system(f'pv {fn} | lz4 -d | tar xf -')
-            Path(fn).unlink()
+        say("<br><b>【{red} Installing VENV{d} 】{red}</b>")
+        download(url)
 
-            get_ipython().system(f'rm -rf {vnv / "bin" / "pip*"}')
-            get_ipython().system(f'rm -rf {vnv / "bin" / "python*"}')
-            get_ipython().system(f'python -m venv {vnv}')
-            get_ipython().system('/tmp/venv/bin/python3 -m pip install -q --upgrade pip')
+        get_ipython().system(f'pv {fn} | lz4 -d | tar xf -')
+        Path(fn).unlink()
 
-    venv()
-    os.chdir(home)
+        get_ipython().system(f'rm -rf {vnv / "bin" / "pip*"}')
+        get_ipython().system(f'rm -rf {vnv / "bin" / "python*"}')
+        get_ipython().system(f'python -m venv {vnv}')
+        get_ipython().system(f'{vnv / "bin" / "python"} -m pip install -q --upgrade pip')
 
 def req_list():
     return [
@@ -194,6 +189,7 @@ def sd_install(b):
             sd_xl()
 
         venv_install()
+        os.chdir(home)
 
         marking(src, 'marking.json', 'Forge')
         get_ipython().run_line_magic('run', f'{mark}')
