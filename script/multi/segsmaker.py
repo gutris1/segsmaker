@@ -44,11 +44,11 @@ def load_config():
         tunnel.value = 'Pinggy'
 
     if ui == 'A1111':
-        title.value = '<h1>A1111</h1>'
+        title.value = '<div class="title"><h1>A1111</h1></div>'
     elif ui == 'Forge':
-        title.value = '<h1>Forge</h1>'
+        title.value = '<div class="title"><h1>Forge</h1></div>'
     elif ui == 'ComfyUI':
-        title.value = '<h1>ComfyUI</h1>'
+        title.value = '<div class="title"><h1>ComfyUI</h1></div>'
 
 def save_config(zrok_token, ngrok_token, args1, args2, tunnel):
     config = {}
@@ -119,7 +119,6 @@ launch_panel = widgets.Box([top, token_box, button_box], layout=widgets.Layout(
     justify_content='space-between',
     padding='20px'))
 
-title.add_class('title')
 tunnel.add_class('tunnel')
 zrok_token.add_class('zrok')
 ngrok_token.add_class('ngrok')
