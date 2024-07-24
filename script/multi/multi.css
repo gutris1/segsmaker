@@ -1,5 +1,5 @@
 :root {
-  --conda-bg: linear-gradient(to right,
+  --bg-gradient-rgb: linear-gradient(to right,
     rgb(255, 0, 0), rgb(255, 0, 25), rgb(255, 0, 50), rgb(255, 0, 75),
     rgb(255, 0, 100), rgb(255, 0, 125), rgb(255, 0, 150), rgb(255, 0, 175),
     rgb(255, 0, 200), rgb(255, 0, 225), rgb(255, 0, 255), rgb(225, 0, 255),
@@ -160,7 +160,7 @@
     margin: 0;
     position: relative;
     color: transparent;
-    background-image: var(--conda-bg);
+    background-image: var(--bg-gradient-rgb);
     background-size: 800% 500%;
     background-clip: text;
     -webkit-background-clip: text;
@@ -202,7 +202,7 @@
     border: 3px solid transparent;
     background-size: 800% 100%;
     cursor: pointer;
-    background-image: var(--conda-bg);
+    background-image: var(--bg-gradient-rgb);
     animation: slideBackground 10s linear infinite, BorderPulse 7s infinite;
 }
 
@@ -302,7 +302,7 @@
     width: 200px;
     height: 5px;
     font-size: 0px;
-    background-image: var(--conda-bg);
+    background-image: var(--bg-gradient-rgb);
     background-size: 800% 500%;
     border-radius: 2px;
     border: 1px solid transparent;
