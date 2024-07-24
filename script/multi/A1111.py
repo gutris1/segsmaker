@@ -123,7 +123,7 @@ def sd_15():
 
     say("<br><b>【{red} Installing Extensions{d} 】{red}</b>")
     os.chdir(webui / "extensions")
-    clone(str(webui / "asd/ext-1_5.txt"))
+    clone(str(webui / "asd/ext-15.txt"))
 
 def sd_xl():
     sd_clone()
@@ -180,12 +180,13 @@ def sd_install(b):
         say("<b>【{red} Installing Stable Diffusion{d} 】{red}</b>")
         get_ipython().system(f"{repo}")
 
+        marking(src, 'marking.json', 'A1111')
+
         if b == 'button-15':
             sd_15()
         elif b == 'button-xl':
             sd_xl()
 
-        marking(src, 'marking.json', 'A1111')
         get_ipython().run_line_magic('run', f'{mark}')
 
         venv_install()
@@ -220,7 +221,7 @@ for btn in options:
 panel = widgets.HBox(
     buttons, layout=widgets.Layout(
         width='600px',
-        height='400px'))
+        height='405px'))
 
 panel.add_class("multi-panel")
 

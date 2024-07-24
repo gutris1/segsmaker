@@ -5,7 +5,7 @@ import subprocess, os, shlex
 from nenen88 import tempe, say, download
 
 home = Path.home()
-img = home / ".conda/loading.png"
+img = home / ".gutris1/loading.png"
 tmp = Path('/tmp')
 vnv = tmp / "venv"
 

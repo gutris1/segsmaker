@@ -14,20 +14,6 @@ A1111 = src / 'A1111.py'
 Forge = src / 'Forge.py'
 ComfyUI = src / 'ComfyUI.py'
 
-os.chdir(home)
-src.mkdir(parents=True, exist_ok=True)
-
-x = [
-    f"curl -sLo {css} https://github.com/gutris1/segsmaker/raw/main/script/multi/multi.css",
-    f"curl -sLo {img} https://github.com/gutris1/segsmaker/raw/main/script/loading.png",
-    f"curl -sLo {mark} https://github.com/gutris1/segsmaker/raw/main/script/multi/marking.py",
-    f"curl -sLo {A1111} https://github.com/gutris1/segsmaker/raw/main/script/multi/A1111.py",
-    f"curl -sLo {Forge} https://github.com/gutris1/segsmaker/raw/main/script/multi/Forge.py",
-    f"curl -sLo {ComfyUI} https://github.com/gutris1/segsmaker/raw/main/script/multi/ComfyUI.py"]
-    
-for y in x:
-    get_ipython().system(y)
-
 def load_css():
     with open(css_multi, "r") as file:
         data = file.read()
@@ -36,15 +22,12 @@ def load_css():
 
 def selection(btn):
     multi_panel.close()
-    clear_output()
 
     with output:
         if btn == 'A1111':
             get_ipython().run_line_magic('run', f'{A1111}')
-
         elif btn == 'Forge':
             get_ipython().run_line_magic('run', f'{Forge}')
-
         elif btn == 'ComfyUI':
             get_ipython().run_line_magic('run', f'{ComfyUI}')
 
@@ -62,8 +45,26 @@ output = widgets.Output()
 multi_panel = widgets.HBox(
     buttons, layout=widgets.Layout(
         width='600px',
-        height='400px'))
+        height='405px'))
 multi_panel.add_class('multi-panel')
 
-load_css()
-display(multi_panel, output)
+def multi_widgets():
+    if not src.exists():
+        src.mkdir(parents=True, exist_ok=True)
+
+    x = [
+        f"curl -sLo {css_multi} https://github.com/gutris1/segsmaker/raw/main/script/multi/multi.css",
+        f"curl -sLo {img} https://github.com/gutris1/segsmaker/raw/main/script/loading.png",
+        f"curl -sLo {mark} https://github.com/gutris1/segsmaker/raw/main/script/multi/marking.py",
+        f"curl -sLo {A1111} https://github.com/gutris1/segsmaker/raw/main/script/multi/A1111.py",
+        f"curl -sLo {Forge} https://github.com/gutris1/segsmaker/raw/main/script/multi/Forge.py",
+        f"curl -sLo {ComfyUI} https://github.com/gutris1/segsmaker/raw/main/script/multi/ComfyUI.py"]
+
+    for y in x:
+        get_ipython().system(y)
+
+    load_css()
+    display(multi_panel, output)
+    os.chdir(home)
+
+multi_widgets()

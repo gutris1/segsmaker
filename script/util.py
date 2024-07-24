@@ -8,8 +8,9 @@ from nenen88 import say
 import subprocess, time, zipfile, sys, os, json, psutil
 
 home = Path.home()
-css = home / ".conda/pantat88.css"
-img = home / ".conda/loading.png"
+src_src = home / '.gutris1'
+css = src_src / "pantat88.css"
+img = src_src / "loading.png"
 startup = home / ".ipython/profile_default/startup"
 
 @register_line_magic
@@ -84,7 +85,7 @@ def storage(line):
             print(f"/{base_path:<30} {padding}{formatted_size}")
 
 @register_line_magic
-def delete(line):    
+def delete_everything(line):    
     main_output = widgets.Output()
     
     ask = widgets.Label("Delete Everything?")
@@ -212,7 +213,7 @@ def zipping(line, cell):
 
     for line in lines:
         soup = line.split('=')
-        
+
         if len(soup) == 2:
             arg_name = soup[0].strip()
             arg_value = soup[1].strip().strip("'")
@@ -226,47 +227,40 @@ def zipping(line, cell):
                     return
 
             if arg_name == 'inputs':
-                input_path = arg_value
-                
+                input_path = Path(arg_value)
+
             elif arg_name == 'outputs':
-                output_path = arg_value
-                
+                output_path = Path(arg_value)
+
             elif arg_name == 'name':
                 custom_name = arg_value
 
-    if not os.path.exists(input_path):
+    if not input_path.exists():
         print(f"Error: '{input_path}' does not exist.")
         return
+
+    if not output_path.exists():
+        output_path.mkdir(parents=True, exist_ok=True)
 
     def zip_folder(
         input_path,
         output_path,
         max_size_mb=20,
         custom_name=None):
-        
-        os.makedirs(
-            output_path,
-            exist_ok=True)
-        
+
         all_files = []
-        
-        for root, dirs, files in os.walk(input_path):
-            
-            for file in files:
-                file_path = os.path.join(root, file)
+
+        for file_path in input_path.rglob('*'):
+            if file_path.is_file():
                 all_files.append(file_path)
 
         zip_number = 1
         current_zip_size = 0
-        
+
         if custom_name:
-            current_zip_name = os.path.join(
-                output_path,
-                f"{custom_name}_{zip_number}.zip")
+            current_zip_name = output_path / f"{custom_name}_{zip_number}.zip"
         else:
-            current_zip_name = os.path.join(
-                output_path,
-                f"part_{zip_number}.zip")
+            current_zip_name = output_path / f"part_{zip_number}.zip"
 
         with tqdm(
             total=len(all_files),
@@ -274,42 +268,36 @@ def zipping(line, cell):
             bar_format='{desc}[{bar:26}] [{n_fmt}/{total_fmt}]',
             ascii="▷▶",
             file=sys.stdout) as pbar:
-            
+
             with zipfile.ZipFile(
                 current_zip_name,
                 'w',
                 compression=zipfile.ZIP_DEFLATED) as current_zip:
-                
+
                 for file_path in all_files:
-                    file_size = os.path.getsize(file_path)
+                    file_size = file_path.stat().st_size
 
                     if current_zip_size + file_size > max_size_mb * 1024 * 1024:
                         current_zip.close()
-                        
+
                         zip_number += 1
-                        
+
                         if custom_name:
-                            current_zip_name = os.path.join(
-                                output_path,
-                                f"{custom_name}_{zip_number}.zip")
+                            current_zip_name = output_path / f"{custom_name}_{zip_number}.zip"
                         else:
-                            current_zip_name = os.path.join(
-                                output_path,
-                                f"part_{zip_number}.zip")
-                        
+                            current_zip_name = output_path / f"part_{zip_number}.zip"
+
                         current_zip = zipfile.ZipFile(
                             current_zip_name,
                             'w',
                             compression=zipfile.ZIP_DEFLATED)
-                        
+
                         current_zip_size = 0
 
                     current_zip.write(
                         file_path,
-                        os.path.relpath(
-                            file_path,
-                            input_path))
-                    
+                        file_path.relative_to(input_path))
+
                     current_zip_size += file_size
                     pbar.update(1)
 
@@ -320,8 +308,7 @@ def zipping(line, cell):
 def change_key(line):
     nenen = startup / "nenen88.py"
     pantat = startup / "pantat88.py"
-    key_path = home / ".your-civitai-api-key"
-    key_file = key_path / "api_key.json"
+    key_file = src_src / "api-key.json"
 
     main_output = widgets.Output()
     save_button = widgets.Button(description="Save")
@@ -396,9 +383,9 @@ def change_key(line):
                     print("API key must be at least 32 characters long / APIキーは少なくとも32オッパイの長さに達する必要があります。")
                     return
 
-                key_value = {"api_key": api_key}
+                key_value = {"civitai-api-key": api_key}
                 with open(key_file, "w") as file:
-                    json.dump(key_value, file)
+                    json.dump(key_value, file, indent=4)
 
             with main_output:
                 input_widget.close()
@@ -427,18 +414,15 @@ def change_key(line):
         cancel_button.on_click(cancel_key)
 
     def key_check():
-        if key_path.exists():
-            if key_file.exists():
-                with open(key_file, "r") as file:
-                    value = json.load(file)
+        if key_file.exists():
+            with open(key_file, "r") as file:
+                value = json.load(file)
 
-                api_key = value.get("api_key", "")
-                key_widget(api_key)
-                display(input_widget, main_output)
-            else:
-                say("API Key File does not exist")
+            api_key = value.get("civitai-api-key", "")
+            key_widget(api_key)
+            display(input_widget, main_output)
         else:
-            say("API Key Path does not exist")
+            say("API Key File does not exist")
 
     load_css(css)
     key_check()

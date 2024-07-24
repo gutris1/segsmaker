@@ -1,5 +1,5 @@
 :root {
-  --bg-gradient-rgb: linear-gradient(to right,
+  --multi-gradient-bg: linear-gradient(to right,
     rgb(255, 0, 0), rgb(255, 0, 25), rgb(255, 0, 50), rgb(255, 0, 75),
     rgb(255, 0, 100), rgb(255, 0, 125), rgb(255, 0, 150), rgb(255, 0, 175),
     rgb(255, 0, 200), rgb(255, 0, 225), rgb(255, 0, 255), rgb(225, 0, 255),
@@ -18,27 +18,37 @@
     rgb(255, 0, 0));
 }
 
+.multi-panel {
+    border: 0px solid transparent;
+    border-radius: 3px;
+    margin: 0;
+    background-color: transparent;
+    animation: blurBlur 1s;
+}
+
 .a1111, .forge, .comfyui,
 .button-15, .button-xl, .button-back {
-    height: 99%;
+    height: 400px;
     cursor: pointer;
-    border: 4px solid white;
-    filter: brightness(50%);
+    border-width: 0px;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    border-radius: 7px;
+    border-radius: 3px;
     position: relative;
+    overflow: hidden;
     -webkit-mask: linear-gradient(to left, transparent, #000 1px);
 }
 
-.button-15, .button-xl {
-    filter: blur(3px);
+.a1111, .forge, .comfyui {
+    width: 70%;
+    filter: brightness(50%);
+    transition: 0.4s ease;
 }
 
-.a1111, .forge, .comfyui,
 .button-15, .button-xl {
     width: 70%;
+    filter: brightness(50%) blur(3px);
     transition: 0.4s ease;
 }
 
@@ -104,8 +114,7 @@
 .button-15:hover, .button-xl:hover {
     filter: brightness(100%);
     width: 100%;
-    border: 4px solid transparent;
-    animation: BorderPulse 15s infinite;
+    border-width: 0px;
 }
 
 .button-back:active,
@@ -116,31 +125,10 @@
 }
 .button-back {
     width: 50%;
+    filter: brightness(50%);
 }
 .button-back:hover {
     filter: brightness(100%);
-    width: 50%;
-}
-
-.multi-panel {
-    border: 3px solid transparent;
-    border-radius: 10px;
-    margin: 0;
-    background-color: transparent;
-    animation: blurBlur 1s;
-}
-
-@keyframes blurBlur {
-    from {
-        transform: scale(1);
-        opacity: 0;
-        filter: blur(100px);
-    }
-    to {
-        transform: scale(1);
-        opacity: 1;
-        filter: blur(0px);
-    }
 }
 
 .launch-panel {
@@ -160,7 +148,7 @@
     margin: 0;
     position: relative;
     color: transparent;
-    background-image: var(--bg-gradient-rgb);
+    background-image: var(--multi-gradient-bg);
     background-size: 800% 500%;
     background-clip: text;
     -webkit-background-clip: text;
@@ -202,7 +190,7 @@
     border: 3px solid transparent;
     background-size: 800% 100%;
     cursor: pointer;
-    background-image: var(--bg-gradient-rgb);
+    background-image: var(--multi-gradient-bg);
     animation: slideBackground 10s linear infinite, BorderPulse 7s infinite;
 }
 
@@ -302,12 +290,25 @@
     width: 200px;
     height: 5px;
     font-size: 0px;
-    background-image: var(--bg-gradient-rgb);
+    background-image: var(--multi-gradient-bg);
     background-size: 800% 500%;
     border-radius: 2px;
     border: 1px solid transparent;
     display: inline-block;
     animation: slideBackground 10s linear infinite, BorderPulse 7s infinite;
+}
+
+@keyframes blurBlur {
+    from {
+        transform: scale(1);
+        opacity: 0;
+        filter: blur(100px);
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+        filter: blur(0px);
+    }
 }
 
 @keyframes slideBackground {

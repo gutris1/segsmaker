@@ -1,21 +1,13 @@
 from IPython.display import display, HTML, clear_output
-from ipywidgets import widgets, Layout, Output
-from pathlib import Path
 from IPython import get_ipython
+from ipywidgets import widgets
+from pathlib import Path
 
-img = Path.home() / ".conda/loading.png"
 src_cn = Path(__file__).parent
 css_cn = src_cn / "cn.css"
-
 cn15 = src_cn / "cn-15.py"
 cnxl = src_cn / "cn-xl.py"
-
-x = [
-    f"curl -sLo {cn15} https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn-15.py",
-    f"curl -sLo {cnxl} https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn-xl.py",
-    f"curl -sLo {css_cn} https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn.css"]
-for y in x:
-    get_ipython().system(y)
+img = Path.home() / ".gutris1/loading.png"
 
 def load_css():
     with open(css_cn, "r") as file:
@@ -30,7 +22,6 @@ def controlnet(btn):
     with output:
         if btn == 'btn-cn-15':
             get_ipython().run_line_magic('run', f'{cn15}')
-
         elif btn == 'btn-cn-xl':
             get_ipython().run_line_magic('run', f'{cnxl}')
 
@@ -47,9 +38,19 @@ output = widgets.Output()
 
 cn_panel = widgets.HBox(
     buttons, layout=widgets.Layout(
-        width='600px',
-        height='400px'))
+        width='460px',
+        height='405px'))
 cn_panel.add_class('cn-panel')
 
-load_css()
-display(cn_panel, output)
+def controlnet_widgets():
+    x = [
+        f"curl -sLo {cn15} https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn-15.py",
+        f"curl -sLo {cnxl} https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn-xl.py",
+        f"curl -sLo {css_cn} https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn.css"]
+    for y in x:
+        get_ipython().system(y)
+
+    load_css()
+    display(cn_panel, output)
+
+controlnet_widgets()

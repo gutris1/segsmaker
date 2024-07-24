@@ -185,12 +185,13 @@ def sd_install(b):
         say("<b>【{red} Installing ComfyUI{d} 】{red}</b>")
         get_ipython().system(f"{repo}")
 
+        marking(src, 'marking.json', 'ComfyUI')
+
         if b == 'button-15':
             sd_15()
         elif b == 'button-xl':
             sd_xl()
 
-        marking(src, 'marking.json', 'ComfyUI')
         get_ipython().run_line_magic('run', f'{mark}')
 
         venv_install()
@@ -225,7 +226,7 @@ for btn in options:
 panel = widgets.HBox(
     buttons, layout=widgets.Layout(
         width='600px',
-        height='400px'))
+        height='405px'))
 
 panel.add_class("multi-panel")
 

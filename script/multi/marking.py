@@ -9,7 +9,7 @@ marked = gutris1 / 'marking.json'
 tmp = Path('/tmp')
 
 def purge():
-    variables = [
+    var_list = [
         'webui',
         'models',
         'webui_output',
@@ -24,7 +24,7 @@ def purge():
         'controlnet_models'
     ]
 
-    for var in variables:
+    for var in var_list:
         if var in globals():
             del globals()[var]
 

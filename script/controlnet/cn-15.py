@@ -4,13 +4,11 @@ from ipywidgets import widgets
 from pathlib import Path
 from nenen88 import download, say, tempe
 
-ui = Path(__file__).parent.parent
-css = ui / "asd/cn.css"
-
+src_cn = Path(__file__).parent
+css_cn = src_cn / "cn.css"
 tmplora = '/tmp/lora'
-cn = '/tmp/controlnet'
-
-img = Path.home() / ".conda/loading.png"
+tmpcn = '/tmp/controlnet'
+img = Path.home() / ".gutris1/loading.png"
     
 controlnet_list = {
     "Openpose": [
@@ -129,8 +127,8 @@ unselect_all_button.add_class("unselect-all-button-15")
 download_button.add_class("download-button-15")
 bottom_box.add_class("bottom-box-15")
 
-def load_css(css):
-    with open(css, "r") as file:
+def load_css():
+    with open(css_cn, "r") as file:
         content = file.read()
 
     display(HTML(f"<style>{content}</style>"))
@@ -157,7 +155,7 @@ def downloading(b):
         display(Image(filename=str(img)))
         
     with download_output:
-        get_ipython().run_line_magic('cd', f'-q {cn}')
+        get_ipython().run_line_magic('cd', f'-q {tmpcn}')
 
         for url in download_list:
             download(url)
@@ -167,7 +165,7 @@ def downloading(b):
         get_ipython().run_line_magic('cd', '-q ~')
 
 tempe()
-load_css(css)
+load_css()
 display(controlnet_widget, download_output, loading)
 
 select_all_button.on_click(select_all_checkboxes)
