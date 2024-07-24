@@ -50,7 +50,7 @@ def download(line):
     args = line.split()
 
     if not args:
-        print("  Missing URL")
+        print("  missing URL, downloading nothing")
         return
 
     url = args[0]

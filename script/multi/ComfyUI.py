@@ -9,10 +9,10 @@ repo = f"git clone -q https://github.com/comfyanonymous/ComfyUI"
 
 home = Path.home()
 src = home / '.gutris1'
-css_multi = src / 'multi.css'
+css_setup = src / 'setup.css'
 img = src / 'loading.png'
 mark = src / 'marking.py'
-multi = home / '.conda/multi.py'
+setup = home / '.conda/setup.py'
 
 tmp = Path('/tmp')
 vnv = tmp / 'venv'
@@ -22,7 +22,7 @@ webui = home / "ComfyUI"
 os.chdir(home)
 
 def load_css():
-    with open(css_multi, "r") as file:
+    with open(css_setup, "r") as file:
         data = file.read()
 
     display(HTML(f"<style>{data}</style>"))
@@ -121,7 +121,6 @@ def sd_15():
 
     extras = [
         f"https://huggingface.co/pantat88/ui/resolve/main/embeddings.zip {webui}/models",
-        f"https://civitai.com/api/download/models/150491 {webui}/models/embeddings edgQuality.pt",
         f"https://huggingface.co/stabilityai/sd-vae-ft-mse-original/resolve/main/vae-ft-mse-840000-ema-pruned.safetensors {webui}/models/vae"]
 
     for items in extras:
@@ -206,7 +205,7 @@ def go_back(b):
     clear_output()
 
     with sd_setup:
-        get_ipython().run_line_magic('run', f'{multi}')
+        get_ipython().run_line_magic('run', f'{setup}')
 
 loading = widgets.Output()
 sd_setup = widgets.Output()

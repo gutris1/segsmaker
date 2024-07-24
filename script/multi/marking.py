@@ -4,8 +4,8 @@ from nenen88 import tempe
 import json
 
 home = Path.home()
-gutris1 = home / '.gutris1'
-marked = gutris1 / 'marking.json'
+src = home / '.gutris1'
+marked = src / 'marking.json'
 tmp = Path('/tmp')
 
 def purge():
