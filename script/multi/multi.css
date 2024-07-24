@@ -1,226 +1,39 @@
 :root {
   --conda-bg: linear-gradient(to right,
-    rgb(255, 0, 0),
-    rgb(255, 0, 25),
-    rgb(255, 0, 50),
-    rgb(255, 0, 75),
-    rgb(255, 0, 100),
-    rgb(255, 0, 125),
-    rgb(255, 0, 150),
-    rgb(255, 0, 175),
-    rgb(255, 0, 200),
-    rgb(255, 0, 225),
-    rgb(255, 0, 255),
-    rgb(225, 0, 255),
-    rgb(200, 0, 255),
-    rgb(175, 0, 255),
-    rgb(150, 0, 255),
-    rgb(125, 0, 255),
-    rgb(100, 0, 255),
-    rgb(75, 0, 255),
-    rgb(50, 0, 255),
-    rgb(25, 0, 255),
-    rgb(0, 0, 255),
-    rgb(0, 25, 255),
-    rgb(0, 50, 255),
-    rgb(0, 75, 255),
-    rgb(0, 100, 255),
-    rgb(0, 125, 255),
-    rgb(0, 150, 255),
-    rgb(0, 175, 255),
-    rgb(0, 200, 255),
-    rgb(0, 225, 255),
-    rgb(0, 255, 255),
-    rgb(0, 255, 225),
-    rgb(0, 255, 200),
-    rgb(0, 255, 175),
-    rgb(0, 255, 150),
-    rgb(0, 255, 125),
-    rgb(0, 255, 100),
-    rgb(0, 255, 75),
-    rgb(0, 255, 50),
-    rgb(0, 255, 25),
-    rgb(0, 255, 0),
-    rgb(25, 255, 0),
-    rgb(50, 255, 0),
-    rgb(75, 255, 0),
-    rgb(100, 255, 0),
-    rgb(125, 255, 0),
-    rgb(150, 255, 0),
-    rgb(175, 255, 0),
-    rgb(200, 255, 0),
-    rgb(225, 255, 0),
-    rgb(255, 255, 0),      
-    rgb(255, 225, 0),
-    rgb(255, 200, 0),
-    rgb(255, 175, 0),
-    rgb(255, 150, 0),
-    rgb(255, 125, 0),
-    rgb(255, 100, 0),
-    rgb(255, 75, 0),
-    rgb(255, 50, 0),
-    rgb(255, 25, 0),
+    rgb(255, 0, 0), rgb(255, 0, 25), rgb(255, 0, 50), rgb(255, 0, 75),
+    rgb(255, 0, 100), rgb(255, 0, 125), rgb(255, 0, 150), rgb(255, 0, 175),
+    rgb(255, 0, 200), rgb(255, 0, 225), rgb(255, 0, 255), rgb(225, 0, 255),
+    rgb(200, 0, 255), rgb(175, 0, 255), rgb(150, 0, 255), rgb(125, 0, 255),
+    rgb(100, 0, 255), rgb(75, 0, 255), rgb(50, 0, 255), rgb(25, 0, 255),
+    rgb(0, 0, 255), rgb(0, 25, 255), rgb(0, 50, 255), rgb(0, 75, 255),
+    rgb(0, 100, 255), rgb(0, 125, 255), rgb(0, 150, 255), rgb(0, 175, 255),
+    rgb(0, 200, 255), rgb(0, 225, 255), rgb(0, 255, 255), rgb(0, 255, 225),
+    rgb(0, 255, 200), rgb(0, 255, 175), rgb(0, 255, 150), rgb(0, 255, 125),
+    rgb(0, 255, 100), rgb(0, 255, 75), rgb(0, 255, 50), rgb(0, 255, 25),
+    rgb(0, 255, 0), rgb(25, 255, 0), rgb(50, 255, 0), rgb(75, 255, 0),
+    rgb(100, 255, 0), rgb(125, 255, 0), rgb(150, 255, 0), rgb(175, 255, 0),
+    rgb(200, 255, 0), rgb(225, 255, 0), rgb(255, 255, 0), rgb(255, 225, 0),
+    rgb(255, 200, 0), rgb(255, 175, 0), rgb(255, 150, 0), rgb(255, 125, 0),
+    rgb(255, 100, 0), rgb(255, 75, 0), rgb(255, 50, 0), rgb(255, 25, 0),
     rgb(255, 0, 0));
-}
-
-@supports (-webkit-appearance: none) or (-moz-appearance: none) {
-  .tunnel input[type=radio] {
-    --active: #275EFE;
-    --active-inner: #fff;
-    --focus: 2px rgba(39, 94, 254, .3);
-    --border: transparent;
-    --border-hover: #275EFE;
-    --background: #fff;
-    --disabled: #F6F8FF;
-    --disabled-inner: #E1E6F9;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    height: 30px;
-    width: auto;
-    right: 20px;
-    top: -5px;
-    outline: none;
-    display: inline-block;
-    vertical-align: top;
-    position: relative;
-    margin: 0px;
-    cursor: pointer;
-    border: 2px solid #ab22fe;
-    background-image: var(--b, var(--background));
-    transition: background 0.3s, border-color 0.3s, box-shadow 0.2s;
-  }
-  .tunnel input[type=radio]:after {
-    content: "";
-    display: block;
-    left: 0;
-    top: 0;
-    transition: transform var(--d-t, 0.3s) var(--d-t-e, ease), opacity var(--d-o, 0.2s);
-  }
-  .tunnel input[type=radio]:checked {
-    background-color: #212121;
-    --b: var(--active);
-    --bc: var(--active);
-    --d-o: .3s;
-    --d-t: .6s;
-    --d-t-e: cubic-bezier(.2, .85, .32, 1.2);
-  }
-  .tunnel input[type=radio]:disabled {
-    --b: var(--disabled);
-    cursor: not-allowed;
-    opacity: 0.9;
-  }
-  .tunnel input[type=radio]:disabled:checked {
-    --b: var(--disabled-inner);
-    --bc: var(--border);
-  }
-  .tunnel input[type=radio]:disabled + label {
-    cursor: not-allowed;
-  }
-  .tunnel input[type=radio]:hover:not(:checked):not(:disabled) {
-    --bc: var(--border-hover);
-  }
-  .tunnel input[type=radio]:focus {
-    box-shadow: 0 0 0 var(--focus);
-  }
-  .tunnel input[type=radio]:not(.switch) {
-    width: 30px;
-  }
-  .tunnel input[type=radio]:not(.switch):after {
-    opacity: var(--o, 0);
-  }
-  .tunnel input[type=radio]:not(.switch):checked {
-    --o: 1;
-  }
-  .tunnel input[type=radio] + label {
-    display: inline-block;
-    vertical-align: middle;
-    margin-left: 0px;
-    margin-top: 50px;
-    font-size: 0px;
-  }
-
-  .tunnel input[type=radio]:not(.switch) {
-    border-radius: 50%;
-  }
-  .tunnel input[type=radio]:not(.switch):after {
-    content: "\2716";
-    width: 0px;
-    height: 0px;
-    border: 0px solid var(--active-inner);
-    border-top: 0;
-    border-left: 0;
-    left: 2px;
-    top: 2px;
-    font-size: 25px;
-    position: relative;
-  }
-  .tunnel input[type=radio]:not(.switch):checked {
-    --r: 43deg;
-    border: 3px solid transparent;
-    animation: colorChange 15s linear infinite alternate, BorderPulse 15s infinite;
-  }
-  .tunnel input[type=radio].switch {
-    width: 38px;
-    border-radius: 100%;
-  }
-  .tunnel input[type=radio].switch:after {
-    left: 0px;
-    top: 0px;
-    border-radius: 50%;
-    width: 17px;
-    height: 17px;
-    background: var(--ab, var(--border));
-    transform: translateX(var(--x, 0));
-  }
-  .tunnel input[type=radio].switch:checked {
-    --ab: var(--active-inner);
-    --x: 17px;
-  }
-  .tunnel input[type=radio].switch:disabled:not(:checked):after {
-    opacity: 0.6;
-  }
-}
-
-.tunnel label {
-    font-size: 15px;
-    margin-top: 0px;
-    margin-right: 0px;
-    margin-left: 30px;
-    margin-bottom: 20px;
-    font-family: 'Roboto Mono', monospace;
-    height: auto;
-    width: auto;
-    color: white;
-    border-radius: 0px;
-    border: 0px solid #ab22fe;
-    background-color: transparent;
-}
-
-.tunnel * {
-    box-sizing: inherit;
-}
-.tunnel *:before,
-.tunnel *:after {
-    box-sizing: inherit;
 }
 
 .a1111, .forge, .comfyui,
 .button-15, .button-xl, .button-back {
-    --z: 100px;
-    --g: 50px;
     height: 99%;
-    -webkit-mask: var(--mask);
-    mask: var(--mask);
     cursor: pointer;
-    border: 3px solid white;
+    border: 4px solid white;
     filter: brightness(50%);
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     border-radius: 7px;
     position: relative;
-    overflow: hidden;
-    --mask: linear-gradient(to left, transparent, #000 1px);
+    -webkit-mask: linear-gradient(to left, transparent, #000 1px);
+}
+
+.button-15, .button-xl {
+    filter: blur(3px);
 }
 
 .a1111, .forge, .comfyui,
@@ -241,11 +54,6 @@
     background-color: rgba(0, 0, 0, 0.7);
     padding: 10px;
     display: block;
-    text-shadow: 
-        1px 1px 0 black,  
-        -1px -1px 0 black,  
-        1px -1px 0 black,  
-        -1px 1px 0 black;
     border-radius: 1px;
     width: 100%;
 }
@@ -296,7 +104,7 @@
 .button-15:hover, .button-xl:hover {
     filter: brightness(100%);
     width: 100%;
-    border: 3px solid transparent;
+    border: 4px solid transparent;
     animation: BorderPulse 15s infinite;
 }
 
@@ -319,7 +127,20 @@
     border-radius: 10px;
     margin: 0;
     background-color: transparent;
-    animation: slideAndBlurFromCenter 1s;
+    animation: blurBlur 1s;
+}
+
+@keyframes blurBlur {
+    from {
+        transform: scale(1);
+        opacity: 0;
+        filter: blur(100px);
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+        filter: blur(0px);
+    }
 }
 
 .launch-panel {
@@ -334,18 +155,18 @@
 
 .title {
     font-family: 'Times New Roman', serif;
-    margin-top: 0px;
-    margin-right: 0px;
-    margin-bottom: 0px;
-    margin-left: 0px;
     font-size: 25px;
-    border: 0px solid transparent;
-    border-radius: 0px;
+    top: -30px;
     margin: 0;
     position: relative;
-    top: -30px;
-    background-color: transparent;
-    animation: colorChange 15s linear infinite alternate;
+    color: transparent;
+    background-image: var(--conda-bg);
+    background-size: 800% 500%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+    animation: slideBackground 20s linear infinite;
 }
 
 .widget-container {
@@ -631,4 +452,145 @@
     96.67% {color: rgba(255, 50, 0, 0.5);}
     98.33% {color: rgba(255, 25, 0, 0.75);}
     100% {color: rgba(255, 0, 0, 1);}
+}
+
+@supports (-webkit-appearance: none) or (-moz-appearance: none) {
+  .tunnel input[type=radio] {
+    --active: #275EFE;
+    --active-inner: #fff;
+    --focus: 2px rgba(39, 94, 254, .3);
+    --border: transparent;
+    --border-hover: #275EFE;
+    --background: #fff;
+    --disabled: #F6F8FF;
+    --disabled-inner: #E1E6F9;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    height: 30px;
+    width: auto;
+    right: 20px;
+    top: -5px;
+    outline: none;
+    display: inline-block;
+    vertical-align: top;
+    position: relative;
+    margin: 0px;
+    cursor: pointer;
+    border: 2px solid #ab22fe;
+    background-image: var(--b, var(--background));
+    transition: background 0.3s, border-color 0.3s, box-shadow 0.2s;
+  }
+  .tunnel input[type=radio]:after {
+    content: "";
+    display: block;
+    left: 0;
+    top: 0;
+    transition: transform var(--d-t, 0.3s) var(--d-t-e, ease), opacity var(--d-o, 0.2s);
+  }
+  .tunnel input[type=radio]:checked {
+    background-color: #212121;
+    --b: var(--active);
+    --bc: var(--active);
+    --d-o: .3s;
+    --d-t: .6s;
+    --d-t-e: cubic-bezier(.2, .85, .32, 1.2);
+  }
+  .tunnel input[type=radio]:disabled {
+    --b: var(--disabled);
+    cursor: not-allowed;
+    opacity: 0.9;
+  }
+  .tunnel input[type=radio]:disabled:checked {
+    --b: var(--disabled-inner);
+    --bc: var(--border);
+  }
+  .tunnel input[type=radio]:disabled + label {
+    cursor: not-allowed;
+  }
+  .tunnel input[type=radio]:hover:not(:checked):not(:disabled) {
+    --bc: var(--border-hover);
+  }
+  .tunnel input[type=radio]:focus {
+    box-shadow: 0 0 0 var(--focus);
+  }
+  .tunnel input[type=radio]:not(.switch) {
+    width: 30px;
+  }
+  .tunnel input[type=radio]:not(.switch):after {
+    opacity: var(--o, 0);
+  }
+  .tunnel input[type=radio]:not(.switch):checked {
+    --o: 1;
+  }
+  .tunnel input[type=radio] + label {
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 0px;
+    margin-top: 50px;
+    font-size: 0px;
+  }
+
+  .tunnel input[type=radio]:not(.switch) {
+    border-radius: 50%;
+  }
+  .tunnel input[type=radio]:not(.switch):after {
+    content: "\2716";
+    width: 0px;
+    height: 0px;
+    border: 0px solid var(--active-inner);
+    border-top: 0;
+    border-left: 0;
+    left: 2px;
+    top: 2px;
+    font-size: 25px;
+    position: relative;
+  }
+  .tunnel input[type=radio]:not(.switch):checked {
+    --r: 43deg;
+    border: 3px solid transparent;
+    animation: colorChange 15s linear infinite alternate, BorderPulse 15s infinite;
+  }
+  .tunnel input[type=radio].switch {
+    width: 38px;
+    border-radius: 100%;
+  }
+  .tunnel input[type=radio].switch:after {
+    left: 0px;
+    top: 0px;
+    border-radius: 50%;
+    width: 17px;
+    height: 17px;
+    background: var(--ab, var(--border));
+    transform: translateX(var(--x, 0));
+  }
+  .tunnel input[type=radio].switch:checked {
+    --ab: var(--active-inner);
+    --x: 17px;
+  }
+  .tunnel input[type=radio].switch:disabled:not(:checked):after {
+    opacity: 0.6;
+  }
+}
+
+.tunnel label {
+    font-size: 15px;
+    margin-top: 0px;
+    margin-right: 0px;
+    margin-left: 30px;
+    margin-bottom: 20px;
+    font-family: 'Roboto Mono', monospace;
+    height: auto;
+    width: auto;
+    color: white;
+    border-radius: 0px;
+    border: 0px solid #ab22fe;
+    background-color: transparent;
+}
+
+.tunnel * {
+    box-sizing: inherit;
+}
+.tunnel *:before,
+.tunnel *:after {
+    box-sizing: inherit;
 }
