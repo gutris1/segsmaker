@@ -1,101 +1,53 @@
 :root {
   --cn-gradient-bg: linear-gradient(to right,
-    rgb(255, 0, 0),
-    rgb(255, 0, 25),
-    rgb(255, 0, 50),
-    rgb(255, 0, 75),
-    rgb(255, 0, 100),
-    rgb(255, 0, 125),
-    rgb(255, 0, 150),
-    rgb(255, 0, 175),
-    rgb(255, 0, 200),
-    rgb(255, 0, 225),
-    rgb(255, 0, 255),
-    rgb(225, 0, 255),
-    rgb(200, 0, 255),
-    rgb(175, 0, 255),
-    rgb(150, 0, 255),
-    rgb(125, 0, 255),
-    rgb(100, 0, 255),
-    rgb(75, 0, 255),
-    rgb(50, 0, 255),
-    rgb(25, 0, 255),
-    rgb(0, 0, 255),
-    rgb(0, 25, 255),
-    rgb(0, 50, 255),
-    rgb(0, 75, 255),
-    rgb(0, 100, 255),
-    rgb(0, 125, 255),
-    rgb(0, 150, 255),
-    rgb(0, 175, 255),
-    rgb(0, 200, 255),
-    rgb(0, 225, 255),
-    rgb(0, 255, 255),
-    rgb(0, 255, 225),
-    rgb(0, 255, 200),
-    rgb(0, 255, 175),
-    rgb(0, 255, 150),
-    rgb(0, 255, 125),
-    rgb(0, 255, 100),
-    rgb(0, 255, 75),
-    rgb(0, 255, 50),
-    rgb(0, 255, 25),
-    rgb(0, 255, 0),
-    rgb(25, 255, 0),
-    rgb(50, 255, 0),
-    rgb(75, 255, 0),
-    rgb(100, 255, 0),
-    rgb(125, 255, 0),
-    rgb(150, 255, 0),
-    rgb(175, 255, 0),
-    rgb(200, 255, 0),
-    rgb(225, 255, 0),
-    rgb(255, 255, 0),      
-    rgb(255, 225, 0),
-    rgb(255, 200, 0),
-    rgb(255, 175, 0),
-    rgb(255, 150, 0),
-    rgb(255, 125, 0),
-    rgb(255, 100, 0),
-    rgb(255, 75, 0),
-    rgb(255, 50, 0),
-    rgb(255, 25, 0),
+    rgb(255, 0, 0), rgb(255, 0, 25), rgb(255, 0, 50), rgb(255, 0, 75),
+    rgb(255, 0, 100), rgb(255, 0, 125), rgb(255, 0, 150), rgb(255, 0, 175),
+    rgb(255, 0, 200), rgb(255, 0, 225), rgb(255, 0, 255), rgb(225, 0, 255),
+    rgb(200, 0, 255), rgb(175, 0, 255), rgb(150, 0, 255), rgb(125, 0, 255),
+    rgb(100, 0, 255), rgb(75, 0, 255), rgb(50, 0, 255), rgb(25, 0, 255),
+    rgb(0, 0, 255), rgb(0, 25, 255), rgb(0, 50, 255), rgb(0, 75, 255),
+    rgb(0, 100, 255), rgb(0, 125, 255), rgb(0, 150, 255), rgb(0, 175, 255),
+    rgb(0, 200, 255), rgb(0, 225, 255), rgb(0, 255, 255), rgb(0, 255, 225),
+    rgb(0, 255, 200), rgb(0, 255, 175), rgb(0, 255, 150), rgb(0, 255, 125),
+    rgb(0, 255, 100), rgb(0, 255, 75), rgb(0, 255, 50), rgb(0, 255, 25),
+    rgb(0, 255, 0), rgb(25, 255, 0), rgb(50, 255, 0), rgb(75, 255, 0),
+    rgb(100, 255, 0), rgb(125, 255, 0), rgb(150, 255, 0), rgb(175, 255, 0),
+    rgb(200, 255, 0), rgb(225, 255, 0), rgb(255, 255, 0), rgb(255, 225, 0),
+    rgb(255, 200, 0), rgb(255, 175, 0), rgb(255, 150, 0), rgb(255, 125, 0),
+    rgb(255, 100, 0), rgb(255, 75, 0), rgb(255, 50, 0), rgb(255, 25, 0),
     rgb(255, 0, 0));
 }
 
 .cn-panel {
-    border: 3px solid transparent;
-    border-radius: 10px;
+    border: 0px solid transparent;
+    border-radius: 3px;
     margin: 0;
     background-color: transparent;
-    animation: slideAndBlurFromCenter 1s;
+    animation: blurBlur 1s;
 }
 
 .btn-cn-15, .btn-cn-xl {
-    --z: 100px;
-    --g: 50px;
-    height: 99%;
-    -webkit-mask: var(--mask);
-    mask: var(--mask);
+    height: 400px;
     cursor: pointer;
-    border: 3px solid white;
-    filter: brightness(50%);
+    border-width: 0px;
+    filter: brightness(50%) blur(3px);
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    border-radius: 7px;
+    border-radius: 3px;
     position: relative;
     overflow: hidden;
-    --mask: linear-gradient(to left, transparent, #000 1px);
+    -webkit-mask: linear-gradient(to left, transparent, #000 1px);
     width: 70%;
     transition: 0.4s ease;
 }
 
 .btn-cn-15 {
-    background-image: url('https://i.imgur.com/qIYOTBp.jpg');
+    background-image: url('https://i.imgur.com/4Yira84.jpg');
 }
+
 .btn-cn-xl {
-    background-image: url('https://i.imgur.com/95Afkbg.jpg');
+    background-image: url('https://i.imgur.com/zCtlR53.jpg');
 }
 
 .btn-cn-15::after, .btn-cn-xl::after {
@@ -109,12 +61,7 @@
     background-color: rgba(0, 0, 0, 0.7);
     padding: 10px;
     display: block;
-    text-shadow: 
-        1px 1px 0 black,  
-        -1px -1px 0 black,  
-        1px -1px 0 black,  
-        -1px 1px 0 black;
-    border-radius: 1px;
+    border-radius: 0px;
     width: 100%;
 }
 
@@ -128,8 +75,7 @@
 .btn-cn-15:hover, .btn-cn-xl:hover {
     filter: brightness(100%);
     width: 100%;
-    border: 3px solid transparent;
-    animation: BorderPulse 15s infinite;
+    border-width: 0px;
 }
 
 .cn-xl {
@@ -390,6 +336,19 @@
 @keyframes slideBackground {
     0% { background-position: 0% 50%; }
     100% { background-position: -800% 50%; }
+}
+
+@keyframes blurBlur {
+    from {
+        transform: scale(1);
+        opacity: 0;
+        filter: blur(100px);
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+        filter: blur(0px);
+    }
 }
 
 @keyframes BorderPulse {
