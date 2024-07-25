@@ -138,7 +138,24 @@
     background: url('https://wallpapercave.com/dwp1x/wp5126154.jpg');
     background-size: 100% 100%;
     background-position: 100% 200%;
-    animation: slideAndBlurFromCenter 1s, BorderPulse 15s infinite;
+    animation: slide-panel 1s, BorderPulse 15s infinite;
+}
+
+@keyframes slide-panel {
+    from {
+        transform: scale(0);
+        opacity: 0;
+        filter: blur(30px);
+        width: 450px;
+        height: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+        filter: blur(0px);
+        width: 700px;
+        height: 350px;
+    }
 }
 
 .title {
