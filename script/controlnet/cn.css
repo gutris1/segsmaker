@@ -103,18 +103,17 @@
 }
 
 .widget-container {
-    position: relative;
-    width: 630px;
-    height: 0px;
     margin-top: 0px;
     margin-right: 0px;
     margin-bottom: 0px;
     margin-left: 0px;
     overflow: visible;
+    position: relative;
 }
 
 .download-button-15, .select-all-button-15, .unselect-all-button-15 {
-    margin-top: 370px;
+    margin-top: 0px;
+    top: 415px;
     font-family: 'Times New Roman', serif;
     text-align: center;
     height: 40px;
@@ -124,8 +123,9 @@
     border-radius: 4px;
     background-position: left bottom;
     transition: all 0.5s ease-out;
-    transform: scale(0.8);
+    transform: scale(0.9);
     vertical-align: middle;
+    font-size: 20px;
     z-index: 1;
 }
 
@@ -133,31 +133,25 @@
     left: -40px;
     margin-right: 0px;
     margin-bottom: 0px;
-    margin-left: 100px;
-    font-size: 22px;
-    width: 300px;
-    font-weight: bold;
+    margin-left: 0px;
 }
 
 .select-all-button-15, .select-all-button-xl {
     margin-right: 0px;
     margin-bottom: 0px;
-    margin-left: 20px;
-    font-size: 21px;
-    width: 300px;
+    margin-left: 0px;
 }
 
 .unselect-all-button-15, .unselect-all-button-xl {
     left: -40px;
     margin-right: 0px;
     margin-bottom: 0px;
-    margin-left: 30px;
-    font-size: 21px;
-    width: 300px;
+    margin-left: 0px;
 }
 
 .download-button-xl, .select-all-button-xl, .unselect-all-button-xl {
-    bottom: -480px;
+    margin-top: 0px;
+    top: 505px;
     font-family: 'Times New Roman', serif;
     text-align: center;
     height: 40px;
@@ -167,8 +161,9 @@
     border-radius: 4px;
     background-position: left bottom;
     transition: all 0.5s ease-out;
-    transform: scale(0.8);
+    transform: scale(0.9);
     vertical-align: middle;
+    font-size: 20px;
     z-index: 1;
 }
 
@@ -185,7 +180,7 @@
     cursor: pointer;
     transition: none;
     vertical-align: middle;
-    transform: scale(0.9);
+    transform: scale(1.1);
     animation: slideBackground 10s linear infinite, BorderPulse 7s infinite;
     transition: all 0.3s ease-out;
 }
@@ -203,14 +198,14 @@
 }
 
 .bottom-box-15 {
-    bottom: -420px;
-    left: 40.5%;
+    bottom: -425px;
+    left: 49.5%;
     width: 530px;
 }
 
 .bottom-box-xl {
-    bottom: -490px;
-    left: 47.5%;
+    bottom: -515px;
+    left: 49.5%;
     width: 600px;
 }
 
@@ -316,7 +311,7 @@
         filter: blur(30px);
     }
     to {
-        height: 520px;
+        height: 580px;
         opacity: 1;
         filter: blur(0px);}
 }
@@ -328,7 +323,7 @@
         filter: blur(30px);
     }
     to {
-        height: 450px;
+        height: 490px;
         opacity: 1;
         filter: blur(0px);}
 }
