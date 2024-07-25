@@ -11,9 +11,9 @@ you can find me here https://discord.gg/k5BwmmvJJU <br /><br />
 
 # Changelog
 
-### 2024-07-24
+### 2024-07-25
 
-- notebooks combined.
+- Notebooks combined.
 
 <details><summary>2024-07-10</summary><br>
 
