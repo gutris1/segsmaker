@@ -1,18 +1,17 @@
 from IPython.display import display, HTML, clear_output, Image
 from IPython import get_ipython
 from ipywidgets import widgets
-from subprocess import DEVNULL
 from pathlib import Path
 import subprocess, json, shlex
 
 home = Path.home()
-css = home / ".conda/pantat88.css"
+src = home / ".gutris1"
+css = src / "pantat88.css"
 startup = home / ".ipython/profile_default/startup"
 nenen = startup / "nenen88.py"
 pantat = startup / "pantat88.py"
-key_path = home / ".your-civitai-api-key"
-key_file = key_path / "api_key.json"
-img = home / ".conda/loading.png"
+key_file = src / "api-key.json"
+img = src / "loading.png"
 
 R = "\033[0m"
 T = f"▶{R}"
@@ -23,7 +22,7 @@ PINK = f"\033[38;5;201m{T}"
 RED = f"\033[31m{T}"
 GREEN = f"\033[38;5;35m{T}"
 
-Path(key_path).mkdir(parents=True, exist_ok=True)
+Path(src).mkdir(parents=True, exist_ok=True)
 
 scripts = [
     f"curl -sLo {pantat} https://github.com/gutris1/segsmaker/raw/main/script/pantat88.py",
@@ -31,7 +30,6 @@ scripts = [
     f"curl -sLo {nenen} https://github.com/gutris1/segsmaker/raw/main/script/nenen88.py",
     f"curl -sLo {startup}/00-startup.py https://github.com/gutris1/segsmaker/raw/main/script/00-startup.py",
     f"curl -sLo {startup}/util.py https://github.com/gutris1/segsmaker/raw/main/script/util.py",
-    f"curl -sLo {startup}/py.py https://github.com/gutris1/segsmaker/raw/main/script/py.py",
     f"curl -sLo {img} https://github.com/gutris1/segsmaker/raw/main/script/loading.png"
 ]
 
@@ -43,18 +41,18 @@ main_output = widgets.Output()
 save_button = widgets.Button(description="Save")
 save_button.add_class("save-button")
 
-input_box = widgets.Text(placeholder='Enter Your Civitai API KEY Here')
-input_box.add_class("api-input")
+civitai_key_box = widgets.Text(placeholder='Enter Your Civitai API KEY Here', layout=widgets.Layout(width='350px'))
+civitai_key_box.add_class("api-input")
 
-input_widget = widgets.VBox([input_box, save_button],
-                            layout=widgets.Layout(
-                                width='450px',
-                                height='150px',
-                                display='flex',
-                                flex_flow='column',
-                                align_items='center',
-                                justify_content='space-around',
-                                padding='20px'))
+input_widget = widgets.Box(
+    [civitai_key_box, save_button], layout=widgets.Layout(
+        width='500px',
+        height='150px',
+        display='flex',
+        flex_flow='column',
+        align_items='center',
+        justify_content='space-around',
+        padding='10px'))
 input_widget.add_class("boxs")
 
 def zrok_install():
@@ -74,23 +72,28 @@ def conda_install():
     try:
         display(Image(filename=str(img)))
 
-        z = [
+        cmd_list = [
             ('conda config --add channels conda-forge', None),
             ('conda config --set channel_priority strict', None),
+
             ('conda install -qy conda', f'{BLUE} Installing Anaconda'),
             ('conda update -qy conda', None),
+
             ('conda install -qy glib gperftools openssh pv', f'{CYAN} Installing Conda Packages'),
-            ('conda remove -qy python=3.9', f'{RED} Removing Python 3.9.19'),
+
+            ('conda remove -qy python=3.9', f'{PURPLE} Removing Python 3.9.19'),
             ('conda install -qy python=3.10.13', f'{PINK} Installing Python 3.10.13'),
-            ('pip install psutil aria2 gdown', f'{PURPLE} Installing Python Packages'),
+
+            ('pip install psutil aria2 gdown', f'{RED} Installing Python Packages'),
+
             ('conda clean -qy --all', None),
-            (f'rm -rf {home}/.cache/* {home}/-3', None)
+            (f'rm -rf {home}/.cache/*', None)
         ]
 
-        for x, y in z:
-            if y is not None:
-                print(y)
-            get_ipython().system(f'{x} >{DEVNULL} 2>{DEVNULL}')
+        for cmd, msg in cmd_list:
+            if msg is not None:
+                print(msg)
+            subprocess.run(shlex.split(cmd), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
         zrok_install()
 
@@ -103,7 +106,7 @@ def conda_install():
         clear_output()
         print("^ Canceled")
 
-def load_css(css):
+def load_css():
     with open(css, "r") as file:
         panel = file.read()
         
@@ -121,8 +124,8 @@ def key_inject(api_key):
             file.write(value)
 
 def key_widget():
-    def column(b):
-        api_key = input_box.value.strip()
+    def key_input(b):
+        api_key = civitai_key_box.value.strip()
 
         with main_output:
             if not api_key:
@@ -133,9 +136,9 @@ def key_widget():
                 print("API key must be at least 32 characters long / APIキーは少なくとも32オッパイの長さに達する必要があります。")
                 return
 
-            key_value = {"api_key": api_key}
+            key_value = {"civitai-api-key": api_key}
             with open(key_file, "w") as file:
-                json.dump(key_value, file)
+                json.dump(key_value, file, indent=4)
 
         key_inject(api_key)
 
@@ -145,14 +148,14 @@ def key_widget():
         with main_output:
             conda_install()
 
-    save_button.on_click(column)
+    save_button.on_click(key_input)
 
 def key_check():
     if key_file.exists():
         with open(key_file, "r") as file:
             value = json.load(file)
 
-        api_key = value.get("api_key", "")
+        api_key = value.get("civitai-api-key", "")
         key_inject(api_key)
         display(main_output)
         conda_install()
@@ -161,5 +164,5 @@ def key_check():
         display(input_widget, main_output)
         key_widget()
 
-load_css(css)
+load_css()
 key_check()

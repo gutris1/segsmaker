@@ -50,7 +50,7 @@ def download(line):
     args = line.split()
 
     if not args:
-        print("  Missing URL")
+        print("  missing URL, downloading nothing")
         return
 
     url = args[0]
@@ -299,8 +299,8 @@ def curlly(fc, fn):
             file=sys.stdout
         ) as pbar:
 
-            for line in iter(zura.stdout.readline, ''):
-                if not line.startswith('  % Total') and not line.startswith('  % '):
+            for line in iter(zura.stderr.readline, ''):
+                if line.strip():
                     match = progress_pattern.search(line)
                     if match:
                         progress = float(match.group(1))
@@ -308,6 +308,7 @@ def curlly(fc, fn):
                         pbar.refresh()
 
                 oppai += line
+
             pbar.close()
         zura.wait()
 

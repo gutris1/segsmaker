@@ -1,11 +1,8 @@
 # Stable Diffusion Webui, Forge and ComfyUI notebook<br />for SageMaker Studio Lab
 [<img src="https://api.visitorbadge.io/api/visitors?path=https%3A%2F%2Fgithub.com%2Fpantat88%2Fsegsmaker&label=Visitors&countColor=%232ccce4&style=flat">](https://visitorbadge.io/status?path=https%3A%2F%2Fgithub.com%2Fpantat88%2Fsegsmaker)<br>[<img src="https://img.shields.io/badge/Support%20me%20on%20Ko--fi-F16061?logo=ko-fi&logoColor=white&style=flat">](https://ko-fi.com/gutris1)
 
-| SD | [![Open in Studio Lab](https://studiolab.sagemaker.aws/studiolab.svg)](https://studiolab.sagemaker.aws/import/github/gutris1/segsmaker/blob/main/Segsmaker.ipynb) |
+| Segsmaker.ipynb | [![Open in Studio Lab](https://studiolab.sagemaker.aws/studiolab.svg)](https://studiolab.sagemaker.aws/import/github/gutris1/segsmaker/blob/main/Segsmaker.ipynb) |
 | :---------------------------------------- | :-----------------------------------------------------------------------------------------------------------------: |
-| SD Forge | [![Open in Studio Lab](https://studiolab.sagemaker.aws/studiolab.svg)](https://studiolab.sagemaker.aws/import/github/gutris1/segsmaker/blob/main/Segsmaker_Forge.ipynb) |
-| ComfyUI | [![Open in Studio Lab](https://studiolab.sagemaker.aws/studiolab.svg)](https://studiolab.sagemaker.aws/import/github/gutris1/segsmaker/blob/main/Segsmaker_ComfyUI.ipynb) |
-| all in one | [![Open in Studio Lab](https://studiolab.sagemaker.aws/studiolab.svg)](https://studiolab.sagemaker.aws/import/github.com/gutris1/segsmaker/blob/main/Segsmaker_1%2B2.ipynb) |
 <br />
 
 you can find me here https://discord.gg/k5BwmmvJJU <br /><br />
@@ -14,11 +11,15 @@ you can find me here https://discord.gg/k5BwmmvJJU <br /><br />
 
 # Changelog
 
-### 2024-07-10
+### 2024-07-25
+
+- Notebooks combined.
+
+<details><summary>2024-07-10</summary><br>
 
 - added multi Notebook Segsmaker_1+2<br /><br />
-  ![image](https://github.com/gutris1/segsmaker/assets/132797949/1a15250b-39ad-483c-9ad2-f92023c8a3c3)
-
+![image](https://github.com/gutris1/segsmaker/assets/132797949/1a15250b-39ad-483c-9ad2-f92023c8a3c3)
+</details>
 
 <details><summary>2024-06-24</summary><br>
 

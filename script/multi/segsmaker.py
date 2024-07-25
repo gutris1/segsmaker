@@ -6,7 +6,7 @@ from pathlib import Path
 import json, argparse
 
 src = Path.home() / '.gutris1'
-css = src / 'multi.css'
+css_setup = src / 'setup.css'
 mark = src / 'marking.json'
 
 py = '/tmp/venv/bin/python3'
@@ -44,11 +44,11 @@ def load_config():
         tunnel.value = 'Pinggy'
 
     if ui == 'A1111':
-        title.value = '<h1>A1111</h1>'
+        title.value = '<div class="title"><h1>A1111</h1></div>'
     elif ui == 'Forge':
-        title.value = '<h1>Forge</h1>'
+        title.value = '<div class="title"><h1>Forge</h1></div>'
     elif ui == 'ComfyUI':
-        title.value = '<h1>ComfyUI</h1>'
+        title.value = '<div class="title"><h1>ComfyUI</h1></div>'
 
 def save_config(zrok_token, ngrok_token, args1, args2, tunnel):
     config = {}
@@ -67,8 +67,8 @@ def save_config(zrok_token, ngrok_token, args1, args2, tunnel):
     with mark.open('w') as file:
         json.dump(config, file, indent=4)
 
-def load_css(css):
-    with css.open("r") as file:
+def load_css():
+    with open(css_setup, "r") as file:
         data = file.read()
 
     display(HTML(f"<style>{data}</style>"))
@@ -111,7 +111,7 @@ token_box = widgets.VBox([zrok_token, ngrok_token, args_box], layout=widgets.Lay
     justify_content='space-between',
     padding='0px'))
 
-main_panel = widgets.Box([top, token_box, button_box], layout=widgets.Layout(
+launch_panel = widgets.Box([top, token_box, button_box], layout=widgets.Layout(
     width='700px',
     height='350px',
     display='flex',
@@ -119,18 +119,17 @@ main_panel = widgets.Box([top, token_box, button_box], layout=widgets.Layout(
     justify_content='space-between',
     padding='20px'))
 
-title.add_class('title')
-tunnel.add_class('checkbox-wrapper-14')
+tunnel.add_class('tunnel')
 zrok_token.add_class('zrok')
 ngrok_token.add_class('ngrok')
 launch_args1.add_class('text-input')
 launch_args2.add_class('args2')
 launch_button.add_class('buttons')
 exit_button.add_class('buttons')
-main_panel.add_class('main-panel')
+launch_panel.add_class('launch-panel')
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--skip-comfyui-check', action='store_true', help='Skip checking ComfyUI for custom node dependencies')
+parser.add_argument('--skip-comfyui-check', action='store_true', help='Skip checking custom node dependencies for ComfyUI')
 args, unknown = parser.parse_known_args()
 
 condition = Condition()
@@ -165,7 +164,7 @@ def preparing(condition, is_ready):
 
 def launch(b):
     global ui, zrok_token, ngrok_token, launch_args1, launch_args2, tunnel
-    main_panel.close()
+    launch_panel.close()
 
     save_config(
         zrok_token.value,
@@ -179,12 +178,12 @@ def launch(b):
         condition.notify()
 
 def exit(b):
-    main_panel.close()
+    launch_panel.close()
 
 def display_widgets():
     load_config()
-    load_css(css)
-    display(main_panel)
+    load_css()
+    display(launch_panel)
 
     launch_button.on_click(launch)
     exit_button.on_click(exit)

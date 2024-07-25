@@ -4,13 +4,11 @@ from ipywidgets import widgets
 from pathlib import Path
 from nenen88 import download, say, tempe
 
-ui = Path(__file__).parent.parent
-css = ui / "asd/cn.css"
-
+src_cn = Path(__file__).parent
+css_cn = src_cn / "cn.css"
 tmplora = '/tmp/lora'
-cn = '/tmp/controlnet'
-
-img = Path.home() / ".conda/loading.png"
+tmpcn = '/tmp/controlnet'
+img = Path.home() / ".gutris1/loading.png"
     
 controlnet_list = {
     "Openpose": [
@@ -102,12 +100,12 @@ checkbox2 = widgets.VBox(
 
 checkbox_layout = widgets.HBox(
     [checkbox1, checkbox2],
-    layout=widgets.Layout(align_items='flex-start'))
+    layout=widgets.Layout(top='-40px', align_items='flex-start'))
 
-download_button = widgets.Button(description="Download", layout=widgets.Layout(left='-115px'))
+download_button = widgets.Button(description="Download", layout=widgets.Layout(width='130px', left='110px'))
 
-select_all_button = widgets.Button(description="Select All", layout=widgets.Layout(left='-20px'))
-unselect_all_button = widgets.Button(description="Unselect All", layout=widgets.Layout(left='-60px'))
+select_all_button = widgets.Button(description="Select All", layout=widgets.Layout(width='130px', left='15px'))
+unselect_all_button = widgets.Button(description="Unselect All", layout=widgets.Layout(width='130px', left='20px'))
 bottom_box = widgets.Button(description="", disabled=True)
 
 button_layout = widgets.HBox([select_all_button, unselect_all_button, download_button, bottom_box])
@@ -118,7 +116,7 @@ controlnet_widget = widgets.Box(
         display='flex',
         flex_flow='column',
         width='550px',
-        height='450px',
+        height='490px',
         padding='15px'))
 
 controlnet_widget.add_class("cn-15")
@@ -129,8 +127,8 @@ unselect_all_button.add_class("unselect-all-button-15")
 download_button.add_class("download-button-15")
 bottom_box.add_class("bottom-box-15")
 
-def load_css(css):
-    with open(css, "r") as file:
+def load_css():
+    with open(css_cn, "r") as file:
         content = file.read()
 
     display(HTML(f"<style>{content}</style>"))
@@ -157,7 +155,7 @@ def downloading(b):
         display(Image(filename=str(img)))
         
     with download_output:
-        get_ipython().run_line_magic('cd', f'-q {cn}')
+        get_ipython().run_line_magic('cd', f'-q {tmpcn}')
 
         for url in download_list:
             download(url)
@@ -167,7 +165,7 @@ def downloading(b):
         get_ipython().run_line_magic('cd', '-q ~')
 
 tempe()
-load_css(css)
+load_css()
 display(controlnet_widget, download_output, loading)
 
 select_all_button.on_click(select_all_checkboxes)

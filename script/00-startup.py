@@ -17,5 +17,3 @@ if zrok_bin.exists():
 
 if marking.exists():
     get_ipython().run_line_magic('run', f'{marking}')
-
-get_ipython().run_line_magic('run', '~/.ipython/profile_default/startup/py.py')

@@ -1,1 +1,0 @@
-py = '/tmp/venv/bin/python3'
