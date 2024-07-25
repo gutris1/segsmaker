@@ -23,7 +23,19 @@
     border-radius: 3px;
     margin: 0;
     background-color: transparent;
-    animation: blurBlur 1s;
+    animation: slide-blur-panel 1s;
+}
+
+@keyframes slide-blur-panel {
+    from {
+        height: 0px;
+        opacity: 0;
+        filter: blur(30px);
+    }
+    to {
+        height: 405px;
+        opacity: 1;
+        filter: blur(0px);}
 }
 
 .btn-cn-15, .btn-cn-xl {
