@@ -100,12 +100,12 @@ checkbox2 = widgets.VBox(
 
 checkbox_layout = widgets.HBox(
     [checkbox1, checkbox2],
-    layout=widgets.Layout(align_items='flex-start'))
+    layout=widgets.Layout(top='-40px', align_items='flex-start'))
 
-download_button = widgets.Button(description="Download", layout=widgets.Layout(left='-115px'))
+download_button = widgets.Button(description="Download", layout=widgets.Layout(width='130px', left='110px'))
 
-select_all_button = widgets.Button(description="Select All", layout=widgets.Layout(left='-20px'))
-unselect_all_button = widgets.Button(description="Unselect All", layout=widgets.Layout(left='-60px'))
+select_all_button = widgets.Button(description="Select All", layout=widgets.Layout(width='130px', left='15px'))
+unselect_all_button = widgets.Button(description="Unselect All", layout=widgets.Layout(width='130px', left='20px'))
 bottom_box = widgets.Button(description="", disabled=True)
 
 button_layout = widgets.HBox([select_all_button, unselect_all_button, download_button, bottom_box])
@@ -116,7 +116,7 @@ controlnet_widget = widgets.Box(
         display='flex',
         flex_flow='column',
         width='550px',
-        height='450px',
+        height='490px',
         padding='15px'))
 
 controlnet_widget.add_class("cn-15")
