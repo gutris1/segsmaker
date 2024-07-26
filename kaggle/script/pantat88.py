@@ -4,7 +4,7 @@ from urllib.parse import urlparse
 from IPython import get_ipython
 from pathlib import Path
 from tqdm import tqdm
-import subprocess, zipfile, sys, os, re, shlex
+import subprocess, zipfile, sys, os, re, shlex, requests
 
 xxx = "/kaggle/working"
 zzz = "/kaggle/working/asd"
