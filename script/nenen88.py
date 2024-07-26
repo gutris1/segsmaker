@@ -3,7 +3,7 @@ from urllib.parse import urlparse
 from IPython import get_ipython
 from pathlib import Path
 from tqdm import tqdm
-import subprocess, zipfile, shlex, sys, os, re
+import subprocess, zipfile, shlex, sys, os, re, requests
 
 
 def say(line):
