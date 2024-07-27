@@ -17,9 +17,7 @@ setup = home / '.conda/setup.py'
 tmp = Path('/tmp')
 vnv = tmp / 'venv'
 
-webui = home / "ComfyUI"
-Forge = home / 'forge'
-A1111 = home / 'asd'
+sd = home / "ComfyUI"
 
 os.chdir(home)
 
@@ -67,38 +65,38 @@ def venv_install():
 def req_list():
     return [
         f"rm -rf {home}/tmp {home}/.cache/*",
-        f"rm -rf {webui}/models/checkpoints/tmp_ckpt",
-        f"rm -rf {webui}/models/loras/tmp_lora {webui}/models/controlnet",
+        f"rm -rf {sd}/models/checkpoints/tmp_ckpt",
+        f"rm -rf {sd}/models/loras/tmp_lora {sd}/models/controlnet",
         f"ln -vs /tmp {home}/tmp",
-        f"ln -vs /tmp/ckpt {webui}/models/checkpoints/tmp_ckpt",
-        f"ln -vs /tmp/lora {webui}/models/loras/tmp_lora",
-        f"ln -vs /tmp/controlnet {webui}/models/controlnet",
-        f"ln -vs {webui}/models/checkpoints {webui}/models/checkpoints_symlink"]
+        f"ln -vs /tmp/ckpt {sd}/models/checkpoints/tmp_ckpt",
+        f"ln -vs /tmp/lora {sd}/models/loras/tmp_lora",
+        f"ln -vs /tmp/controlnet {sd}/models/controlnet",
+        f"ln -vs {sd}/models/checkpoints {sd}/models/checkpoints_symlink"]
 
 def clone_comfyui():
     time.sleep(1)
-    pull(f"https://github.com/gutris1/segsmaker cui {webui}")
+    pull(f"https://github.com/gutris1/segsmaker cui {sd}")
 
     tmp_cleaning()
 
-    os.chdir(webui)
+    os.chdir(sd)
     req = req_list()
 
     for lines in req:
         subprocess.run(shlex.split(lines), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     scripts = [
-        f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/controlnet.py {webui}/asd",
-        f"https://github.com/gutris1/segsmaker/raw/main/script/venv.py {webui}",
-        f"https://github.com/gutris1/segsmaker/raw/main/script/multi/segsmaker.py {webui}"]
+        f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/controlnet.py {sd}/asd",
+        f"https://github.com/gutris1/segsmaker/raw/main/script/venv.py {sd}",
+        f"https://github.com/gutris1/segsmaker/raw/main/script/multi/segsmaker.py {sd}"]
 
     upscalers = [
-        f"https://huggingface.co/pantat88/ui/resolve/main/4x-UltraSharp.pth {webui}/models/upscale_models",
-        f"https://huggingface.co/pantat88/ui/resolve/main/4x-AnimeSharp.pth {webui}/models/upscale_models",
-        f"https://huggingface.co/pantat88/ui/resolve/main/4x_NMKD-Superscale-SP_178000_G.pth {webui}/models/upscale_models",
-        f"https://huggingface.co/pantat88/ui/resolve/main/4x_RealisticRescaler_100000_G.pth {webui}/models/upscale_models",
-        f"https://huggingface.co/pantat88/ui/resolve/main/8x_RealESRGAN.pth {webui}/models/upscale_models",
-        f"https://huggingface.co/pantat88/ui/resolve/main/4x_foolhardy_Remacri.pth {webui}/models/upscale_models"]
+        f"https://huggingface.co/pantat88/ui/resolve/main/4x-UltraSharp.pth {sd}/models/upscale_models",
+        f"https://huggingface.co/pantat88/ui/resolve/main/4x-AnimeSharp.pth {sd}/models/upscale_models",
+        f"https://huggingface.co/pantat88/ui/resolve/main/4x_NMKD-Superscale-SP_178000_G.pth {sd}/models/upscale_models",
+        f"https://huggingface.co/pantat88/ui/resolve/main/4x_RealisticRescaler_100000_G.pth {sd}/models/upscale_models",
+        f"https://huggingface.co/pantat88/ui/resolve/main/8x_RealESRGAN.pth {sd}/models/upscale_models",
+        f"https://huggingface.co/pantat88/ui/resolve/main/4x_foolhardy_Remacri.pth {sd}/models/upscale_models"]
 
     line = scripts + upscalers
     for item in line:
@@ -108,12 +106,12 @@ def clone_comfyui():
 
 def install_custom_nodes():
     say("<br><b>【{red} Installing Custom Nodes{d} 】{red}</b>")
-    os.chdir(webui / "custom_nodes")
-    clone(str(webui / "asd/custom_nodes.txt"))
+    os.chdir(sd / "custom_nodes")
+    clone(str(sd / "asd/custom_nodes.txt"))
     print()
     custom_nodes_models = [
-        f"https://github.com/sczhou/CodeFormer/releases/download/v0.1.0/codeformer.pth {webui}/models/facerestore_models",
-        f"https://github.com/TencentARC/GFPGAN/releases/download/v1.3.4/GFPGANv1.4.pth {webui}/models/facerestore_models"]
+        f"https://github.com/sczhou/CodeFormer/releases/download/v0.1.0/codeformer.pth {sd}/models/facerestore_models",
+        f"https://github.com/TencentARC/GFPGAN/releases/download/v1.3.4/GFPGANv1.4.pth {sd}/models/facerestore_models"]
 
     for item in custom_nodes_models:
         download(item)
@@ -122,14 +120,14 @@ def sd_15():
     clone_comfyui()
 
     extras = [
-        f"https://huggingface.co/pantat88/ui/resolve/main/embeddings.zip {webui}/models",
-        f"https://huggingface.co/stabilityai/sd-vae-ft-mse-original/resolve/main/vae-ft-mse-840000-ema-pruned.safetensors {webui}/models/vae"]
+        f"https://huggingface.co/pantat88/ui/resolve/main/embeddings.zip {sd}/models",
+        f"https://huggingface.co/stabilityai/sd-vae-ft-mse-original/resolve/main/vae-ft-mse-840000-ema-pruned.safetensors {sd}/models/vae"]
 
     for items in extras:
         download(items)
 
-    get_ipython().system(f"unzip -qo {webui}/models/embeddings.zip -d {webui}/models/embeddings")
-    get_ipython().system(f"rm {webui}/models/embeddings.zip")
+    get_ipython().system(f"unzip -qo {sd}/models/embeddings.zip -d {sd}/models/embeddings")
+    get_ipython().system(f"rm {sd}/models/embeddings.zip")
 
     install_custom_nodes()
 
@@ -137,10 +135,10 @@ def sd_xl():
     clone_comfyui()
 
     extras = [
-        f"https://civitai.com/api/download/models/182974 {webui}/models/embeddings",
-        f"https://civitai.com/api/download/models/159385 {webui}/models/embeddings",
-        f"https://civitai.com/api/download/models/159184 {webui}/models/embeddings",
-        f"https://civitai.com/api/download/models/264491 {webui}/models/vae XL_VAE_F1.safetensors"]
+        f"https://civitai.com/api/download/models/182974 {sd}/models/embeddings",
+        f"https://civitai.com/api/download/models/159385 {sd}/models/embeddings",
+        f"https://civitai.com/api/download/models/159184 {sd}/models/embeddings",
+        f"https://civitai.com/api/download/models/264491 {sd}/models/vae XL_VAE_F1.safetensors"]
 
     for items in extras:
         download(items)
@@ -232,31 +230,32 @@ panel = widgets.HBox(
 panel.add_class("multi-panel")
 
 def webui_widgets():
-    if webui.exists():
-        git_dir = webui / '.git'
+    if sd.exists():
+        git_dir = sd / '.git'
         if git_dir.exists():
-            os.chdir(webui)
+            os.chdir(sd)
             commit_hash = os.popen('git rev-parse HEAD').read().strip()
 
             get_ipython().system("git pull origin master")
             get_ipython().system("git fetch --tags")
 
         x = [
-            f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/controlnet.py {webui}/asd",
-            f"https://github.com/gutris1/segsmaker/raw/main/script/venv.py {webui}",
-            f"https://github.com/gutris1/segsmaker/raw/main/ui/cui/apotek.py {webui}",
-            f"https://github.com/gutris1/segsmaker/raw/main/ui/cui/ngrokk.py {webui}",
-            f"https://github.com/gutris1/segsmaker/raw/main/ui/cui/pinggy.py {webui}",
-            f"https://github.com/gutris1/segsmaker/raw/main/ui/cui/zrok.py {webui}",
-            f"https://github.com/gutris1/segsmaker/raw/main/script/multi/segsmaker.py {webui}"
+            f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/controlnet.py {sd}/asd",
+            f"https://github.com/gutris1/segsmaker/raw/main/script/venv.py {sd}",
+            f"https://github.com/gutris1/segsmaker/raw/main/ui/cui/apotek.py {sd}",
+            f"https://github.com/gutris1/segsmaker/raw/main/ui/cui/ngrokk.py {sd}",
+            f"https://github.com/gutris1/segsmaker/raw/main/ui/cui/pinggy.py {sd}",
+            f"https://github.com/gutris1/segsmaker/raw/main/ui/cui/zrok.py {sd}",
+            f"https://github.com/gutris1/segsmaker/raw/main/script/multi/segsmaker.py {sd}"
         ]
 
         for y in x:
             download(y)
 
     else:
-        if Forge.exists() or A1111.exists():
-            print('Forge is installed, Uninstall first.' if Forge.exists() else 'A1111 is installed, Uninstall first.')
+        if any([(home / 'forge').exists(), (home / 'asd').exists()]):
+            print('Forge is installed, Uninstall first.' if (home / 'forge').exists() else 'A1111 is installed, Uninstall first.')
+            get_ipython().run_line_magic('run', f'{mark}')
             return
 
         load_css()
