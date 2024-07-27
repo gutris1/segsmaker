@@ -19,6 +19,8 @@ tmp = Path('/tmp')
 vnv = tmp / 'venv'
 
 webui = home / 'asd'
+Forge = home / 'forge'
+ComfyUI = home / 'ComfyUI'
 
 os.chdir(home)
 
@@ -224,27 +226,35 @@ panel = widgets.HBox(
 
 panel.add_class("multi-panel")
 
-if webui.exists():
-    git_dir = webui / '.git'
-    if git_dir.exists():
-        os.chdir(webui)
-        commit_hash = subprocess.check_output(['git', 'rev-parse', 'HEAD']).strip().decode('utf-8')
+def webui_widgets():
+    if webui.exists():
+        git_dir = webui / '.git'
+        if git_dir.exists():
+            os.chdir(webui)
+            commit_hash = subprocess.check_output(['git', 'rev-parse', 'HEAD']).strip().decode('utf-8')
 
-        if commit_hash != version:
-            get_ipython().system(f"git pull origin {version}")
-            get_ipython().system("git fetch --tags")
+            if commit_hash != version:
+                get_ipython().system(f"git pull origin {version}")
+                get_ipython().system("git fetch --tags")
 
-    x = [
-        f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/controlnet.py {webui}/asd",
-        f"https://github.com/gutris1/segsmaker/raw/main/script/zrok.py {webui}",
-        f"https://github.com/gutris1/segsmaker/raw/main/script/pinggy.py {webui}",
-        f"https://github.com/gutris1/segsmaker/raw/main/script/ngrokk.py {webui}",
-        f"https://github.com/gutris1/segsmaker/raw/main/script/venv.py {webui}",
-        f"https://github.com/gutris1/segsmaker/raw/main/script/multi/segsmaker.py {webui}"]
+        x = [
+            f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/controlnet.py {webui}/asd",
+            f"https://github.com/gutris1/segsmaker/raw/main/script/zrok.py {webui}",
+            f"https://github.com/gutris1/segsmaker/raw/main/script/pinggy.py {webui}",
+            f"https://github.com/gutris1/segsmaker/raw/main/script/ngrokk.py {webui}",
+            f"https://github.com/gutris1/segsmaker/raw/main/script/venv.py {webui}",
+            f"https://github.com/gutris1/segsmaker/raw/main/script/multi/segsmaker.py {webui}"
+        ]
 
-    for y in x:
-        download(y)
+        for y in x:
+            download(y)
 
-else:
-    load_css()
-    display(panel, sd_setup, loading)
+    else:
+        if Forge.exists() or ComfyUI.exists():
+            print('Forge is installed, Uninstall first.' if Forge.exists() else 'ComfyUI is installed, Uninstall first.')
+            return
+
+        load_css()
+        display(panel, sd_setup, loading)
+
+webui_widgets()
