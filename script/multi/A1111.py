@@ -19,8 +19,6 @@ tmp = Path('/tmp')
 vnv = tmp / 'venv'
 
 sd = home / 'asd'
-F = home / 'forge'
-C = home / 'ComfyUI'
 
 os.chdir(home)
 
@@ -250,8 +248,8 @@ def webui_widgets():
             download(y)
 
     else:
-        if F.exists() or C.exists():
-            print('Forge is installed, Uninstall first.' if F.exists() else 'ComfyUI is installed, Uninstall first.')
+        if any([(home / 'forge').exists(), (home / 'ComfyUI').exists()]):
+            print('Forge is installed, Uninstall first.' if (home / 'forge').exists() else 'ComfyUI is installed, Uninstall first.')
             get_ipython().run_line_magic('run', f'{mark}')
             return
 
