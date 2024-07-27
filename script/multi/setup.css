@@ -104,7 +104,7 @@
     content: 'A1111';
 }
 .forge::after {
-    content: 'Forge';
+    content: 'reForge';
 }
 .comfyui::after {
     content: 'ComfyUI';
