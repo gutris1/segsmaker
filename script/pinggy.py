@@ -1,5 +1,6 @@
-import subprocess, sys, os
+import subprocess, sys, os, time
 from threading import Thread, Event
+from pathlib import Path
 
 R = '\033[0m'
 O = '\033[38;5;208m'
@@ -60,6 +61,12 @@ def pinggy():
                     return
 
 try:
+    cwd = Path.cwd()
+    timer = cwd / "asd" / "pinggytimer.txt"
+    end_time = int(time.time()) + 3600
+
+    os.system(f"echo -n {end_time} > {timer}")
+
     app = Thread(target=launch)
     url = Thread(target=pinggy)
 
@@ -69,6 +76,5 @@ try:
     app.join()
     event.set()
     url.join()
-
 except KeyboardInterrupt:
     pass
