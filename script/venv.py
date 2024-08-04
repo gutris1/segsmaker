@@ -46,8 +46,12 @@ def trashing():
     dirs = ["asd", "forge", "ComfyUI"]
     for name in dirs:
         path = home / name
-        cmd = f"find {path} -type d -name .ipynb_checkpoints -exec rm -rf {{}} +"
-        subprocess.run(shlex.split(cmd), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        if path.is_dir():
+            for subdir in path.rglob('*'):
+                if subdir.is_dir():
+                    actual_path = subdir.resolve()
+                    cmd = f"find {actual_path} -type d -name .ipynb_checkpoints -exec rm -rf {{}} +"
+                    subprocess.run(shlex.split(cmd), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 def venv_install():
     while True:
