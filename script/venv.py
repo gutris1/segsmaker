@@ -43,15 +43,12 @@ def removing(directory, req_space):
     return freed_space
 
 def trashing():
-    dirs = ["asd", "forge", "ComfyUI"]
-    for name in dirs:
-        path = home / name
-        if path.is_dir():
-            for subdir in path.rglob('*'):
-                if subdir.is_dir():
-                    actual_path = subdir.resolve()
-                    cmd = f"find {actual_path} -type d -name .ipynb_checkpoints -exec rm -rf {{}} +"
-                    subprocess.run(shlex.split(cmd), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    dirs1 = ["asd", "forge", "ComfyUI"]
+    dirs2 = ["ckpt", "lora", "controlnet", "svd", "z123"]
+    paths = [home / name for name in dirs1] + [tmp / name for name in dirs2]
+    for path in paths:
+        cmd = f"find {path} -type d -name .ipynb_checkpoints -exec rm -rf {{}} +"
+        subprocess.run(shlex.split(cmd), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 def venv_install():
     while True:
@@ -94,5 +91,5 @@ print('checking venv...')
 tempe()
 trashing()
 venv_install()
-clear_output()
+clear_output(wait=True)
 os.chdir(cwd)
