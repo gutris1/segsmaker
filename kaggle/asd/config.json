@@ -129,7 +129,7 @@
     "save_init_img": false,
     "temp_dir": "",
     "clean_temp_dir_at_start": false,
-    "save_incomplete_images": false,
+    "save_incomplete_images": true,
     "notification_audio": true,
     "notification_volume": 100,
     "save_to_dirs": true,
