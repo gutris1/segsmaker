@@ -130,6 +130,7 @@ launch_panel.add_class('launch-panel')
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--skip-comfyui-check', action='store_true', help='Skip checking custom node dependencies for ComfyUI')
+parser.add_argument('--skip-widget', action='store_true', help='Skip displaying the widget')
 args, unknown = parser.parse_known_args()
 
 condition = Condition()
@@ -145,16 +146,16 @@ def launching(ui, skip_comfyui_check=False):
             get_ipython().system(f'{py} apotek.py')
             clear_output(wait=True)
 
-        tunnels = {
+        tunnel_list = {
             'Pinggy': f'{py} pinggy.py {args}',
             'ZROK': f'{py} zrok.py {zrok_token.value} {args}',
             'NGROK': f'{py} ngrokk.py {ngrok_token.value} {args}'
         }.get(tunnel.value)
 
-        if launch:
-            get_ipython().system(tunnels)
+        if tunnel_list:
+            get_ipython().system(tunnel_list)
 
-def preparing(condition, is_ready):
+def waiting(condition, is_ready):
     with condition:
         while not is_ready.value:
             condition.wait()
@@ -190,10 +191,14 @@ def display_widgets():
 
 if __name__ == '__main__':
     try:
-        display_widgets()
+        if args.skip_widget:
+            load_config()
+            launching(ui, skip_comfyui_check=args.skip_comfyui_check)
 
-        p = Process(target=preparing, args=(condition, is_ready))
-        p.start()
+        else:
+            display_widgets()
+            p = Process(target=waiting, args=(condition, is_ready))
+            p.start()
 
     except KeyboardInterrupt:
         pass
