@@ -65,7 +65,7 @@ class Tunnel:
         port: int,
         check_local_port: bool = True,
         debug: bool = False,
-        timeout: int = 60,
+        timeout: int = 40,
         propagate: bool = False,
         log_handlers: List[logging.Handler] = None,
         log_dir: StrOrPath = None,
@@ -118,7 +118,7 @@ class Tunnel:
         tunnel_list: List[TunnelDict],
         check_local_port: bool = True,
         debug: bool = False,
-        timeout: int = 60,
+        timeout: int = 40,
         propagate: bool = False,
         log_handlers: List[logging.Handler] = None,
         log_dir: StrOrPath = None,
@@ -300,6 +300,7 @@ class Tunnel:
             raise ValueError("No tunnels added")
 
         log = self.logger
+        self.tunnel_names = []
 
         # Add print job
         print_job = Thread(target=self._print)
@@ -310,6 +311,7 @@ class Tunnel:
         for tunnel in self.tunnel_list:
             cmd = tunnel["command"]
             name = tunnel.get("name")
+            self.tunnel_names.append(name)
             tunnel_thread = Thread(
                 target=self._run,
                 args=(cmd.format(port=self.port),),
@@ -355,7 +357,7 @@ class Tunnel:
 
     @staticmethod
     def wait_for_condition(
-        condition: Callable[[], bool], *, interval: int = 1, timeout: int = 10
+        condition: Callable[[], bool], *, interval: int = 1, timeout: int = 1
     ) -> bool:
         """
         Wait for the condition to be true until the specified timeout.
@@ -454,10 +456,6 @@ class Tunnel:
 
         try:
             if self.check_local_port:
-                # Wait until the port is available or stop_event is set
-                log.debug(
-                    f"Wait until port: {self.port} online before running the command for {name}"
-                )
                 self.wait_for_condition(
                     lambda: self.is_port_in_use(self.port) or self.stop_event.is_set(),
                     interval=1,
@@ -502,15 +500,20 @@ class Tunnel:
         """
         log = self.logger
 
-        # Wait until all URLs are available or stop_event is set
         if not self.wait_for_condition(
             lambda: len(self.urls) == len(self.tunnel_list) or self.stop_event.is_set(),
             interval=1,
             timeout=self.timeout,
         ):
-            log.warning("Timeout while getting tunnel URLs, print available URLs")
+            for name in self.tunnel_names:
+                log_path = Path(self.log_dir, f"tunnel_{name}.log")
+                if name == "ZROK":
+                    with open(log_path, "r") as L:
+                        linez = L.read()
+                        if "unable to create share" in linez:
+                            log.info(f"\n{linez.strip()}\n")
+            log.warning("Tunnel Timeout.")
 
-        # Print URLs
         if not self.stop_event.is_set():
             with self.urls_lock:
                 for url, note, name in self.urls:
@@ -518,6 +521,7 @@ class Tunnel:
                     ORG = '\033[38;5;208m'
                     TNL = f'{ORG}▶{RST} {name} {ORG}:{RST}'
                     log.info(f"\n{TNL} {url}{(' ' + note) if note else ''}\n")
+                    
                 if self.callback:
                     try:
                         self.callback(self.urls)
