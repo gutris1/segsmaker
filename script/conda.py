@@ -30,7 +30,8 @@ scripts = [
     f"curl -sLo {nenen} https://github.com/gutris1/segsmaker/raw/main/script/nenen88.py",
     f"curl -sLo {startup}/00-startup.py https://github.com/gutris1/segsmaker/raw/main/script/00-startup.py",
     f"curl -sLo {startup}/util.py https://github.com/gutris1/segsmaker/raw/main/script/util.py",
-    f"curl -sLo {img} https://github.com/gutris1/segsmaker/raw/main/script/loading.png"
+    f"curl -sLo {img} https://github.com/gutris1/segsmaker/raw/main/script/loading.png",
+    f"curl -sLo {startup}/cupang.py https://github.com/gutris1/segsmaker/raw/main/script/cupang.py"
 ]
 
 for items in scripts:
