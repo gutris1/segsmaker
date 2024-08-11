@@ -266,7 +266,8 @@ class Tunnel:
             raise RuntimeError("Tunnel is not running")
 
         log = self.logger
-        log.info("Tunnel Killed")
+        tunnel_names = ', '.join(tunnel["name"] for tunnel in self.tunnel_list)
+        log.info(f"{tunnel_names} Killed.")
         self.stop_event.set()
 
         for process in self.processes:
@@ -299,7 +300,6 @@ class Tunnel:
             raise ValueError("No tunnels added")
 
         log = self.logger
-        log.info("Tunnel Started")
 
         # Add print job
         print_job = Thread(target=self._print)
