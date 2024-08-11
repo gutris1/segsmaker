@@ -1,15 +1,5 @@
-import os, subprocess, sys, json
-from threading import Thread, Event
+import os, sys, json
 from pathlib import Path
-
-R = '\033[0m'
-O = '\033[38;5;208m'
-T = f'{O}▶{R} ZROK {O}:{R}'
-
-if 'LD_PRELOAD' not in os.environ:
-    os.environ['LD_PRELOAD'] = '/home/studio-lab-user/.conda/envs/default/lib/libtcmalloc_minimal.so.4'
-
-event = Event()
 
 def zrok_enable(token):
     zrok = Path('/home/studio-lab-user/.zrok')
@@ -31,73 +21,16 @@ def zrok_enable(token):
     else:
         os.system(f'zrok enable {token}')
 
-def launch():
-    with open('launch.txt', 'w') as log_file:
-        webui = subprocess.Popen([
-            '/tmp/venv/bin/python3',
-            'launch.py'] + sys.argv[2:],
-            stdout=subprocess.PIPE,
-            stderr=sys.stdout,
-            text=True)
+def zrok():
+    if 'LD_PRELOAD' not in os.environ:
+        os.environ['LD_PRELOAD'] = '/home/studio-lab-user/.conda/envs/default/lib/libtcmalloc_minimal.so.4'
 
-        zrok = subprocess.Popen([
-            "zrok",
-            "share",
-            "public",
-            "localhost:7860",
-            "--headless"],
-            stdout=open('zrok.txt', 'w'),
-            stderr=subprocess.STDOUT)
+    os.system(f"/tmp/venv/bin/python3 launch.py {' '.join(sys.argv[2:])}")
 
-        local_url = False
-        for line in webui.stdout:
-            print(line, end='')
-            if not local_url:
-                log_file.write(line)
-                log_file.flush()
-                if 'Running on local URL' in line:
-                    local_url = True
-
-        webui.wait()
-        zrok.terminate()
-
-def zrok_url():
-    while not event.is_set():
-        with open('launch.txt', 'r') as file:
-            if any('Running on local URL' in line for line in file):
-                break
-
-    if event.is_set():
-        return
-
-    while not event.is_set():
-        with open('zrok.txt', 'r') as file:
-            for line in file:
-                if 'https:' in line and '.zrok.io' in line:
-                    url = line[line.find('https://'):line.find('.zrok.io') + len('.zrok.io')]
-                    print(f'\n{T} {url}')
-                    return
-
-                elif 'ERROR' in line:
-                    print(f"\n{line}")
-                    return
-
-try:
+if __name__ == "__main__":
     if len(sys.argv) < 2:
         sys.exit(1)
 
     token = sys.argv[1]
     zrok_enable(token)
-
-    app = Thread(target=launch)
-    url = Thread(target=zrok_url)
-
-    app.start()
-    url.start()
-
-    app.join()
-    event.set()
-    url.join()
-
-except KeyboardInterrupt:
-    print('\nZROK killed.\n')
+    zrok()
