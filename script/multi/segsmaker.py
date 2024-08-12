@@ -136,6 +136,28 @@ args, unknown = parser.parse_known_args()
 condition = Condition()
 is_ready = Value('b', False)
 
+def zrok_enable():
+    zrok_path = Path('/home/studio-lab-user/.zrok')
+    if not zrok_path.exists():
+        print("ZROK is not installed.")
+        return
+
+    env = zrok_path / 'environment.json'
+    if env.exists():
+        with open(env, 'r') as f:
+            current_value = json.load(f)
+            current_token = current_value.get('zrok_token')
+
+        if current_token == zrok_token.value:
+            pass
+        else:
+            get_ipython().system('zrok disable')
+            get_ipython().system(f'zrok enable {zrok_token.value}')
+            print()
+    else:
+        get_ipython().system(f'zrok enable {zrok_token.value}')
+        print()
+
 def from_cupang():
     try:
         from cupang import Tunnel as Alice_Zuberg
@@ -159,7 +181,7 @@ def launching(ui, skip_comfyui_check=False):
 
         tunnel_list = {
             'Pinggy': f'{py} pinggy.py {args}',
-            'ZROK': f'{py} zrok.py {zrok_token.value} {args}',
+            'ZROK': f'{py} zrok.py {args}',
             'NGROK': f'{py} ngrokk.py {ngrok_token.value} {args}'
         }
 
@@ -184,11 +206,15 @@ def launching(ui, skip_comfyui_check=False):
                 get_ipython().system(cmd)
 
             else:
+                if tunnel.value == 'ZROK':
+                    zrok_enable()
+
                 from cupang import Tunnel as Alice_Zuberg
                 
                 Alice_Synthesis_Thirty = Alice_Zuberg(port)
                 Alice_Synthesis_Thirty.logger.setLevel(logging.DEBUG)
                 Alice_Synthesis_Thirty.add_tunnel(command=configs['command'], name=configs['name'], pattern=configs['pattern'])
+                Alice_Synthesis_Thirty.check_local_port=False
 
                 with Alice_Synthesis_Thirty:
                     get_ipython().system(cmd)
@@ -232,11 +258,9 @@ if __name__ == '__main__':
         if args.skip_widget:
             load_config()
             launching(ui, skip_comfyui_check=args.skip_comfyui_check)
-
         else:
             display_widgets()
             p = Process(target=waiting, args=(condition, is_ready))
             p.start()
-
     except KeyboardInterrupt:
         pass
