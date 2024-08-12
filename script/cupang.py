@@ -65,7 +65,7 @@ class Tunnel:
         port: int,
         check_local_port: bool = True,
         debug: bool = False,
-        timeout: int = 40,
+        timeout: int = 60,
         propagate: bool = False,
         log_handlers: List[logging.Handler] = None,
         log_dir: StrOrPath = None,
@@ -118,7 +118,7 @@ class Tunnel:
         tunnel_list: List[TunnelDict],
         check_local_port: bool = True,
         debug: bool = False,
-        timeout: int = 40,
+        timeout: int = 60,
         propagate: bool = False,
         log_handlers: List[logging.Handler] = None,
         log_dir: StrOrPath = None,
@@ -357,7 +357,7 @@ class Tunnel:
 
     @staticmethod
     def wait_for_condition(
-        condition: Callable[[], bool], *, interval: int = 1, timeout: int = 1
+        condition: Callable[[], bool], *, interval: int = 1, timeout: int = 60
     ) -> bool:
         """
         Wait for the condition to be true until the specified timeout.
@@ -445,6 +445,8 @@ class Tunnel:
             name (str): Name of the tunnel.
         """
         log_path = Path(self.log_dir, f"tunnel_{name}.log")
+        if log_path.exists():
+            log_path.unlink()
         log_path.write_text("")  # Clear the log
 
         # setup command logger
@@ -493,41 +495,33 @@ class Tunnel:
         finally:
             for handler in log.handlers:
                 handler.close()
-        
+
+    def _print_urls(self) -> None:
+        with self.urls_lock:
+            for url, note, name in self.urls:                        
+                RST = '\033[0m'
+                ORG = '\033[38;5;208m'
+                TNL = f'{ORG}▶{RST} {name} {ORG}:{RST}'
+                print(f"\n{TNL} {url}{(' ' + note) if note else ''}")
+        self.printed.set()
+
     def _print(self) -> None:
-        """
-        Print the tunnel URLs.
-        """
-        log = self.logger
+        tunnel_names = ', '.join(tunnel["name"] for tunnel in self.tunnel_list)
+        segs = Path('segsmaker.log')
+        localhost = False
 
-        if not self.wait_for_condition(
-            lambda: len(self.urls) == len(self.tunnel_list) or self.stop_event.is_set(),
-            interval=1,
-            timeout=self.timeout,
-        ):
-            for name in self.tunnel_names:
-                log_path = Path(self.log_dir, f"tunnel_{name}.log")
-                if name == "ZROK":
-                    with open(log_path, "r") as L:
-                        linez = L.read()
-                        if "unable to create share" in linez:
-                            log.info(f"\n{linez.strip()}\n")
-            log.warning("Tunnel Timeout.")
-
-        if not self.stop_event.is_set():
-            with self.urls_lock:
-                for url, note, name in self.urls:
-                    RST = '\033[0m'
-                    ORG = '\033[38;5;208m'
-                    TNL = f'{ORG}▶{RST} {name} {ORG}:{RST}'
-                    log.info(f"\n{TNL} {url}{(' ' + note) if note else ''}\n")
-                    
-                if self.callback:
-                    try:
-                        self.callback(self.urls)
-                    except Exception:
-                        log.error(
-                            "An error occurred while invoking URLs callback",
-                            exc_info=True,
-                        )
-            self.printed.set()
+        while not localhost:
+            time.sleep(0.2)
+            if segs.exists():
+                with open(segs, 'r') as x:
+                    for y in x:
+                        if 'Running on local URL' in y:
+                            localhost = True
+                            break
+        if localhost:
+            if tunnel_names == 'ZROK':
+                g = Path(f'tunnel_{tunnel_names}.log')
+                l = g.read_text()
+                if "ERROR" in l:
+                    print(f"\n{l.strip()}")
+            self._print_urls()
