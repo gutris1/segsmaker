@@ -3,11 +3,11 @@ from pathlib import Path
 
 def logging_launch():
     log_file = Path('segsmaker.log')
-    log_file.write_text('A1111 or Forge\n')
     logging.basicConfig(
         filename=log_file,
         level=logging.INFO,
-        format="{message}", style="{"
+        format="{message}", style="{",
+        filemode='a'
     )
     return logging.getLogger()
 
