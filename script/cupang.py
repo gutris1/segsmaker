@@ -502,25 +502,29 @@ class Tunnel:
                 RST = '\033[0m'
                 ORG = '\033[38;5;208m'
                 TNL = f'{ORG}▶{RST} {name} {ORG}:{RST}'
-                print(f"\n{TNL} {url}{(' ' + note) if note else ''}")
+                print(f"\n{TNL} {url}")
         self.printed.set()
 
     def _print(self) -> None:
-        tunnel_names = ', '.join(tunnel["name"] for tunnel in self.tunnel_list)
-        segs = Path('segsmaker.log')
-        localhost = False
+        D = ', '.join(tunnel["name"] for tunnel in self.tunnel_list)
+        O = Path('segsmaker.log')
+        L = False
 
-        while not localhost:
+        while not L:
             time.sleep(0.2)
-            if segs.exists():
-                with open(segs, 'r') as x:
-                    for y in x:
-                        if 'Running on local URL' in y:
-                            localhost = True
-                            break
-        if localhost:
-            if tunnel_names == 'ZROK':
-                g = Path(f'tunnel_{tunnel_names}.log')
+            with open(O, 'r') as y:
+                x = y.readlines()
+                if any('comfyui' in z for z in x):
+                    if any('Torch version:' in z for z in x):
+                        L = True
+                        break
+                if any('A1111/Forge' in z for z in x):
+                    if any('Running on local URL' in z for z in x):
+                        L = True
+                        break 
+        if L:
+            if D == 'ZROK':
+                g = Path(f'tunnel_{D}.log')
                 l = g.read_text()
                 if "ERROR" in l:
                     print(f"\n{l.strip()}")
