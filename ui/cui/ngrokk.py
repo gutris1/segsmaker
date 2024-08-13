@@ -4,9 +4,6 @@ from pyngrok import ngrok
 from pathlib import Path
 import sys, os
 
-if 'LD_PRELOAD' not in os.environ:
-    os.environ['LD_PRELOAD'] = '/home/studio-lab-user/.conda/envs/default/lib/libtcmalloc_minimal.so.4'
-
 def ngrok_tunnel(port, queue, auth_token):
     ngrok.set_auth_token(auth_token)
     url = ngrok.connect(port)
@@ -16,6 +13,9 @@ if __name__ == "__main__":
     try:
         if len(sys.argv) < 3:
             sys.exit(1)
+
+        if 'LD_PRELOAD' not in os.environ:
+            os.environ['LD_PRELOAD'] = '/home/studio-lab-user/.conda/envs/default/lib/libtcmalloc_minimal.so.4'
 
         token = sys.argv[1]
         args = sys.argv[2:]
@@ -27,6 +27,5 @@ if __name__ == "__main__":
         print(ngrok_queue.get())
 
         os.system(f"/tmp/venv/bin/python3 main.py {' '.join(args)}")
-
     except KeyboardInterrupt:
         pass
