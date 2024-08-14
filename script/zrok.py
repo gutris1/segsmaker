@@ -1,103 +1,39 @@
-import os, subprocess, sys, json
-from threading import Thread, Event
+import subprocess, sys, os, logging
 from pathlib import Path
 
-R = '\033[0m'
-O = '\033[38;5;208m'
-T = f'{O}▶{R} ZROK {O}:{R}'
+def logging_launch():
+    log_file = Path('segsmaker.log')
+    logging.basicConfig(
+        filename=log_file,
+        level=logging.INFO,
+        format="{message}", style="{",
+        filemode='a'
+    )
+    return logging.getLogger()
 
-if 'LD_PRELOAD' not in os.environ:
-    os.environ['LD_PRELOAD'] = '/home/studio-lab-user/.conda/envs/default/lib/libtcmalloc_minimal.so.4'
+def launch(logger):
+    if 'LD_PRELOAD' not in os.environ:
+        os.environ['LD_PRELOAD'] = '/home/studio-lab-user/.conda/envs/default/lib/libtcmalloc_minimal.so.4'
 
-event = Event()
+    webui = subprocess.Popen(['/tmp/venv/bin/python3', 'launch.py'] + sys.argv[1:],
+                             stdout=subprocess.PIPE, stderr=sys.stdout, text=True)
 
-def zrok_enable(token):
-    zrok = Path('/home/studio-lab-user/.zrok')
-    if not zrok.exists():
-        print("ZROK is not installed.")
-        return
+    local_url = False
+    for line in webui.stdout:
+        print(line, end='')
+        logger.info(line.strip())
+        if not local_url:
+            if 'Running on local URL' in line:
+                local_url = True
+                for handler in logger.handlers[:]:
+                    handler.flush()
+                    handler.close()
+                    logger.removeHandler(handler)
+    webui.wait()
 
-    env = zrok / 'environment.json'
-    if env.exists():
-        with open(env, 'r') as f:
-            value = json.load(f)
-            zrok_token = value.get('zrok_token')
-
-        if zrok_token == token:
-            pass
-        else:
-            os.system('zrok disable')
-            os.system(f'zrok enable {token}')
-    else:
-        os.system(f'zrok enable {token}')
-
-def launch():
-    with open('launch.txt', 'w') as log_file:
-        webui = subprocess.Popen([
-            '/tmp/venv/bin/python3',
-            'launch.py'] + sys.argv[2:],
-            stdout=subprocess.PIPE,
-            stderr=sys.stdout,
-            text=True)
-
-        zrok = subprocess.Popen([
-            "zrok",
-            "share",
-            "public",
-            "localhost:7860",
-            "--headless"],
-            stdout=open('zrok.txt', 'w'),
-            stderr=subprocess.STDOUT)
-
-        local_url = False
-        for line in webui.stdout:
-            print(line, end='')
-            if not local_url:
-                log_file.write(line)
-                log_file.flush()
-                if 'Running on local URL' in line:
-                    local_url = True
-
-        webui.wait()
-        zrok.terminate()
-
-def zrok_url():
-    while not event.is_set():
-        with open('launch.txt', 'r') as file:
-            if any('Running on local URL' in line for line in file):
-                break
-
-    if event.is_set():
-        return
-
-    while not event.is_set():
-        with open('zrok.txt', 'r') as file:
-            for line in file:
-                if 'https:' in line and '.zrok.io' in line:
-                    url = line[line.find('https://'):line.find('.zrok.io') + len('.zrok.io')]
-                    print(f'\n{T} {url}')
-                    return
-
-                elif 'ERROR' in line:
-                    print(f"\n{line}")
-                    return
-
-try:
-    if len(sys.argv) < 2:
-        sys.exit(1)
-
-    token = sys.argv[1]
-    zrok_enable(token)
-
-    app = Thread(target=launch)
-    url = Thread(target=zrok_url)
-
-    app.start()
-    url.start()
-
-    app.join()
-    event.set()
-    url.join()
-
-except KeyboardInterrupt:
-    print('\nZROK killed.\n')
+if __name__ == '__main__':
+    logger = logging_launch()
+    try:
+        launch(logger)
+    except KeyboardInterrupt:
+        pass

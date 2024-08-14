@@ -300,6 +300,7 @@ class Tunnel:
             raise ValueError("No tunnels added")
 
         log = self.logger
+        self.tunnel_names = []
 
         # Add print job
         print_job = Thread(target=self._print)
@@ -310,6 +311,7 @@ class Tunnel:
         for tunnel in self.tunnel_list:
             cmd = tunnel["command"]
             name = tunnel.get("name")
+            self.tunnel_names.append(name)
             tunnel_thread = Thread(
                 target=self._run,
                 args=(cmd.format(port=self.port),),
@@ -355,7 +357,7 @@ class Tunnel:
 
     @staticmethod
     def wait_for_condition(
-        condition: Callable[[], bool], *, interval: int = 1, timeout: int = 10
+        condition: Callable[[], bool], *, interval: int = 1, timeout: int = 60
     ) -> bool:
         """
         Wait for the condition to be true until the specified timeout.
@@ -443,6 +445,8 @@ class Tunnel:
             name (str): Name of the tunnel.
         """
         log_path = Path(self.log_dir, f"tunnel_{name}.log")
+        if log_path.exists():
+            log_path.unlink()
         log_path.write_text("")  # Clear the log
 
         # setup command logger
@@ -454,10 +458,6 @@ class Tunnel:
 
         try:
             if self.check_local_port:
-                # Wait until the port is available or stop_event is set
-                log.debug(
-                    f"Wait until port: {self.port} online before running the command for {name}"
-                )
                 self.wait_for_condition(
                     lambda: self.is_port_in_use(self.port) or self.stop_event.is_set(),
                     interval=1,
@@ -495,35 +495,37 @@ class Tunnel:
         finally:
             for handler in log.handlers:
                 handler.close()
-        
+
+    def _print_urls(self) -> None:
+        with self.urls_lock:
+            for url, note, name in self.urls:                        
+                RST = '\033[0m'
+                ORG = '\033[38;5;208m'
+                TNL = f'{ORG}▶{RST} {name} {ORG}:{RST}'
+                print(f"\n{TNL} {url}")
+        self.printed.set()
+
     def _print(self) -> None:
-        """
-        Print the tunnel URLs.
-        """
-        log = self.logger
+        D = ', '.join(tunnel["name"] for tunnel in self.tunnel_list)
+        O = Path('segsmaker.log')
+        L = False
 
-        # Wait until all URLs are available or stop_event is set
-        if not self.wait_for_condition(
-            lambda: len(self.urls) == len(self.tunnel_list) or self.stop_event.is_set(),
-            interval=1,
-            timeout=self.timeout,
-        ):
-            log.warning("Timeout while getting tunnel URLs, print available URLs")
-
-        # Print URLs
-        if not self.stop_event.is_set():
-            with self.urls_lock:
-                for url, note, name in self.urls:
-                    RST = '\033[0m'
-                    ORG = '\033[38;5;208m'
-                    TNL = f'{ORG}▶{RST} {name} {ORG}:{RST}'
-                    log.info(f"\n{TNL} {url}{(' ' + note) if note else ''}\n")
-                if self.callback:
-                    try:
-                        self.callback(self.urls)
-                    except Exception:
-                        log.error(
-                            "An error occurred while invoking URLs callback",
-                            exc_info=True,
-                        )
-            self.printed.set()
+        while not L:
+            time.sleep(0.2)
+            with open(O, 'r') as y:
+                x = y.readlines()
+                if any('comfyui' in z for z in x):
+                    if any('Torch version:' in z for z in x):
+                        L = True
+                        break
+                if any('A1111/Forge' in z for z in x):
+                    if any('Running on local URL' in z for z in x):
+                        L = True
+                        break 
+        if L:
+            if D == 'ZROK':
+                g = Path(f'tunnel_{D}.log')
+                l = g.read_text()
+                if "ERROR" in l:
+                    print(f"\n{l.strip()}")
+            self._print_urls()

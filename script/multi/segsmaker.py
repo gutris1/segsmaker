@@ -3,7 +3,7 @@ from multiprocessing import Process, Condition, Value
 from IPython import get_ipython
 from ipywidgets import widgets
 from pathlib import Path
-import json, argparse
+import json, argparse, sys, logging
 
 src = Path.home() / '.gutris1'
 css_setup = src / 'setup.css'
@@ -24,7 +24,7 @@ def get_args(ui):
 def load_config():
     global ui
     config = json.load(mark.open('r')) if mark.exists() else {}
-    
+
     ui = config.get('ui', None)
     zrok_token.value = config.get('zrok_token', '')
     ngrok_token.value = config.get('ngrok_token', '')
@@ -136,9 +136,41 @@ args, unknown = parser.parse_known_args()
 condition = Condition()
 is_ready = Value('b', False)
 
-def launching(ui, skip_comfyui_check=False):
-    args = f'{launch_args1.value} {launch_args2.value}'
+def zrok_enable():
+    zrok_path = Path('/home/studio-lab-user/.zrok')
+    if not zrok_path.exists():
+        print("ZROK is not installed.")
+        return
 
+    env = zrok_path / 'environment.json'
+    if env.exists():
+        with open(env, 'r') as f:
+            current_value = json.load(f)
+            current_token = current_value.get('zrok_token')
+
+        if current_token == zrok_token.value:
+            pass
+        else:
+            get_ipython().system('zrok disable')
+            get_ipython().system(f'zrok enable {zrok_token.value}')
+            print()
+    else:
+        get_ipython().system(f'zrok enable {zrok_token.value}')
+        print()
+
+def import_cupang():
+    try:
+        from cupang import Tunnel as Alice_Zuberg
+    except ImportError:
+        strup = Path.home() / '.ipython/profile_default/startup'
+        dl = f'curl -sLo {strup}/cupang.py https://github.com/gutris1/segsmaker/raw/main/script/cupang.py'
+        get_ipython().system(dl)
+        sys.path.append(str(strup))
+
+def launching(ui, skip_comfyui_check=False):
+    import_cupang()
+
+    args = f'{launch_args1.value} {launch_args2.value}'
     get_ipython().run_line_magic('run', 'venv.py')
 
     if ui in ['A1111', 'Forge', 'ComfyUI']:
@@ -146,14 +178,55 @@ def launching(ui, skip_comfyui_check=False):
             get_ipython().system(f'{py} apotek.py')
             clear_output(wait=True)
 
+        log_file = Path('segsmaker.log')
+        log_file.write_text('comfyui\n') if ui == 'ComfyUI' else log_file.write_text('A1111/Forge\n')
+        logging.basicConfig(
+            filename=log_file,
+            level=logging.INFO,
+            format="{message}", style="{"
+        )
+
+        port = 8188 if ui == 'ComfyUI' else 7860
+
         tunnel_list = {
             'Pinggy': f'{py} pinggy.py {args}',
-            'ZROK': f'{py} zrok.py {zrok_token.value} {args}',
+            'ZROK': f'{py} zrok.py {args}',
             'NGROK': f'{py} ngrokk.py {ngrok_token.value} {args}'
-        }.get(tunnel.value)
+        }
 
-        if tunnel_list:
-            get_ipython().system(tunnel_list)
+        config_list = {
+            'Pinggy': {
+                'command': f"ssh -o StrictHostKeyChecking=no -p 80 -R0:localhost:{port} a.pinggy.io",
+                'name': "PINGGY",
+                'pattern': r"https://[\w-]+\.a\.free\.pinggy\.link"
+            },
+            'ZROK': {
+                'command': f"zrok share public localhost:{port} --headless",
+                'name': "ZROK",
+                'pattern': r"https://[\w-]+\.share\.zrok\.io"
+            }
+        }
+
+        cmd = tunnel_list.get(tunnel.value)
+        configs = config_list.get(tunnel.value)
+
+        if cmd:
+            if tunnel.value == 'NGROK':
+                get_ipython().system(cmd)
+
+            else:
+                from cupang import Tunnel as Alice_Zuberg
+
+                if tunnel.value == 'ZROK':
+                    zrok_enable()
+
+                Alice_Synthesis_Thirty = Alice_Zuberg(port)
+                Alice_Synthesis_Thirty.logger.setLevel(logging.DEBUG)
+                Alice_Synthesis_Thirty.add_tunnel(command=configs['command'], name=configs['name'], pattern=configs['pattern'])
+                Alice_Synthesis_Thirty.check_local_port=False
+
+                with Alice_Synthesis_Thirty:
+                    get_ipython().system(cmd)
 
 def waiting(condition, is_ready):
     with condition:
@@ -194,11 +267,9 @@ if __name__ == '__main__':
         if args.skip_widget:
             load_config()
             launching(ui, skip_comfyui_check=args.skip_comfyui_check)
-
         else:
             display_widgets()
             p = Process(target=waiting, args=(condition, is_ready))
             p.start()
-
     except KeyboardInterrupt:
         pass
