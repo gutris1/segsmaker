@@ -24,7 +24,7 @@ def get_args(ui):
 def load_config():
     global ui
     config = json.load(mark.open('r')) if mark.exists() else {}
-    
+
     ui = config.get('ui', None)
     zrok_token.value = config.get('zrok_token', '')
     ngrok_token.value = config.get('ngrok_token', '')
@@ -158,7 +158,7 @@ def zrok_enable():
         get_ipython().system(f'zrok enable {zrok_token.value}')
         print()
 
-def from_cupang():
+def import_cupang():
     try:
         from cupang import Tunnel as Alice_Zuberg
     except ImportError:
@@ -168,7 +168,8 @@ def from_cupang():
         sys.path.append(str(strup))
 
 def launching(ui, skip_comfyui_check=False):
-    from_cupang()
+    import_cupang()
+
     args = f'{launch_args1.value} {launch_args2.value}'
     get_ipython().run_line_magic('run', 'venv.py')
 
@@ -176,6 +177,14 @@ def launching(ui, skip_comfyui_check=False):
         if ui == 'ComfyUI' and not skip_comfyui_check:
             get_ipython().system(f'{py} apotek.py')
             clear_output(wait=True)
+
+        log_file = Path('segsmaker.log')
+        log_file.write_text('comfyui\n') if ui == 'ComfyUI' else log_file.write_text('A1111/Forge\n')
+        logging.basicConfig(
+            filename=log_file,
+            level=logging.INFO,
+            format="{message}", style="{"
+        )
 
         port = 8188 if ui == 'ComfyUI' else 7860
 
@@ -206,11 +215,11 @@ def launching(ui, skip_comfyui_check=False):
                 get_ipython().system(cmd)
 
             else:
+                from cupang import Tunnel as Alice_Zuberg
+
                 if tunnel.value == 'ZROK':
                     zrok_enable()
 
-                from cupang import Tunnel as Alice_Zuberg
-                
                 Alice_Synthesis_Thirty = Alice_Zuberg(port)
                 Alice_Synthesis_Thirty.logger.setLevel(logging.DEBUG)
                 Alice_Synthesis_Thirty.add_tunnel(command=configs['command'], name=configs['name'], pattern=configs['pattern'])
