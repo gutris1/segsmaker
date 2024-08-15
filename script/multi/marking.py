@@ -1,4 +1,5 @@
 from IPython.core.magic import register_line_magic
+from IPython import get_ipython
 from pathlib import Path
 from nenen88 import tempe
 import json
@@ -60,6 +61,7 @@ def uninstall_webui(line):
     get_ipython().system(f"rm -rf {webui} {home / 'tmp'} {home / '.cache/*'}")
     get_ipython().run_line_magic('cd', '-q ~')
     print(f'{ui} uninstalled.')
+    get_ipython().kernel.do_shutdown(True)
 
 def set_paths(ui):
     webui_paths = {
