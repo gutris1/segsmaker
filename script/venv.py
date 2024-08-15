@@ -9,7 +9,7 @@ img = home / ".gutris1/loading.png"
 tmp = Path('/tmp')
 vnv = tmp / "venv"
 
-url = 'https://huggingface.co/pantat88/back_up/resolve/main/venv.tar.lz4'
+url = 'https://huggingface.co/pantat88/back_up/resolve/main/venv_torch231.tar.lz4'
 fn = Path(url).name
 
 need_space = 13 * 1024**3
