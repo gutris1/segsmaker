@@ -16,7 +16,7 @@ def get_args(ui):
         return '--xformers --enable-insecure-extension-access --disable-console-progressbars --theme dark'
 
     elif ui == 'Forge':
-        return '--xformers --cuda-stream --pin-shared-memory --enable-insecure-extension-access --disable-console-progressbars --theme dark'
+        return '--disable-xformers --opt-sdp-attention --cuda-stream --pin-shared-memory --enable-insecure-extension-access --disable-console-progressbars --theme dark'
 
     elif ui == 'ComfyUI':
         return '--dont-print-server --preview-method auto --use-pytorch-cross-attention'
