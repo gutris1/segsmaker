@@ -5,7 +5,7 @@ from pathlib import Path
 import subprocess, time, os, shlex, json, shutil
 from nenen88 import pull, say, download, clone, tempe
 
-repo = f"git clone -q https://github.com/Panchovix/stable-diffusion-webui-reForge forge"
+repo = f"git clone -q https://github.com/lllyasviel/stable-diffusion-webui-forge forge"
 
 home = Path.home()
 src = home / '.gutris1'
