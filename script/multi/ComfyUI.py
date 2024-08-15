@@ -35,7 +35,7 @@ def tmp_cleaning():
             item.unlink()
 
 def venv_install():
-    url = 'https://huggingface.co/pantat88/back_up/resolve/main/venv.tar.lz4'
+    url = 'https://huggingface.co/pantat88/back_up/resolve/main/venv_torch231.tar.lz4'
     fn = Path(url).name
 
     def check_venv(folder):
@@ -59,7 +59,7 @@ def venv_install():
 
         get_ipython().system(f'rm -rf {vnv / "bin" / "pip*"}')
         get_ipython().system(f'rm -rf {vnv / "bin" / "python*"}')
-        get_ipython().system(f'python -m venv {vnv}')
+        get_ipython().system(f'python3 -m venv {vnv}')
         get_ipython().system(f'{vnv / "bin" / "python"} -m pip install -q --upgrade pip')
 
 def req_list():
