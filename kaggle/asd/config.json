@@ -287,7 +287,7 @@
     "hires_fix_show_prompts": true,
     "txt2img_settings_accordion": false,
     "img2img_settings_accordion": false,
-    "interrupt_after_current": true,
+    "interrupt_after_current": false,
     "localization": "None",
     "ui_reorder_list": [],
     "gradio_themes_cache": true,
@@ -395,5 +395,28 @@
     "deepbooru_escape": true,
     "deepbooru_filter_tags": "",
     "sd_vae": "vae-ft-mse-840000-ema-pruned.safetensors",
-    "CLIP_stop_at_last_layers": 2
+    "CLIP_stop_at_last_layers": 2,
+    "ad_only_selected_scripts": true,
+    "ad_same_seed_for_each_tab": false,
+    "model_toolkit_fix_clip": false,
+    "model_toolkit_autoprune": false,
+    "encrypt_image_is_enable": "Yes",
+    "save_write_log_csv": true,
+    "lora_bundled_ti_to_infotext": true,
+    "s_min_uncond_all": false,
+    "skip_early_cond": 0,
+    "beta_dist_alpha": 0.6,
+    "beta_dist_beta": 0.6,
+    "sdxl_clip_l_skip": false,
+    "sd3_enable_t5": false,
+    "prevent_screen_sleep_during_generation": true,
+    "prioritized_callbacks_script_after_extra_networks_activate": [],
+    "profiling_enable": false,
+    "profiling_activities": [
+        "CPU"
+    ],
+    "profiling_record_shapes": true,
+    "profiling_profile_memory": true,
+    "profiling_with_stack": true,
+    "profiling_filename": "trace.json"
 }
