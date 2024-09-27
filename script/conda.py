@@ -74,19 +74,10 @@ def conda_install():
         display(Image(filename=str(img)))
 
         cmd_list = [
-            ('conda config --add channels conda-forge', None),
-            ('conda config --set channel_priority strict', None),
-
-            ('conda install -qy conda', f'{BLUE} Installing Anaconda'),
-            ('conda update -qy conda', None),
-
-            ('conda install -qy glib gperftools openssh pv', f'{CYAN} Installing Conda Packages'),
-
-            ('conda remove -qy python=3.9', f'{PURPLE} Removing Python 3.9.19'),
-            ('conda install -qy python=3.10.13', f'{PINK} Installing Python 3.10.13'),
-
-            ('pip install psutil aria2 gdown', f'{RED} Installing Python Packages'),
-
+            ('conda install --repodata-fn repodata.json -qy conda=24.7.1', f'{BLUE} Installing Anaconda'),
+            ('conda install --repodata-fn repodata.json -qy python=3.10', f'{CYAN} Installing Python 3.10'),
+            ('conda install -qyc conda-forge glib gperftools openssh pv', f'{PURPLE} Installing Conda Packages'),
+            ('pip install -q psutil aria2 gdown', f'{PINK} Installing Python Packages'),
             ('conda clean -qy --all', None),
             (f'rm -rf {home}/.cache/*', None)
         ]
