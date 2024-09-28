@@ -74,6 +74,7 @@ def conda_install():
         display(Image(filename=str(img)))
 
         cmd_list = [
+            (f'rm -rf {home}/.condarc', None),
             ('conda install --repodata-fn repodata.json -qy conda=24.7.1', f'{BLUE} Installing Anaconda'),
             ('conda install --repodata-fn repodata.json -qy python=3.10', f'{CYAN} Installing Python 3.10'),
             ('conda install -qyc conda-forge glib gperftools openssh pv', f'{PURPLE} Installing Conda Packages'),
