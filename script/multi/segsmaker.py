@@ -20,6 +20,9 @@ def get_args(ui):
 
     elif ui == 'ComfyUI':
         return '--dont-print-server --preview-method auto --use-pytorch-cross-attention'
+    
+    elif ui == 'FaceFusion':
+        return ''
 
 def load_config():
     global ui
@@ -49,6 +52,8 @@ def load_config():
         title.value = '<div class="title"><h1>Forge</h1></div>'
     elif ui == 'ComfyUI':
         title.value = '<div class="title"><h1>ComfyUI</h1></div>'
+    elif ui == 'FaceFusion':
+        title.value = '<div class="title"><h1>Face Fusion</h1></div>'
 
 def save_config(zrok_token, ngrok_token, args1, args2, tunnel):
     config = {}
@@ -187,6 +192,57 @@ def launching(ui, skip_comfyui_check=False):
         )
 
         port = 8188 if ui == 'ComfyUI' else 7860
+
+        tunnel_list = {
+            'Pinggy': f'{py} pinggy.py {args}',
+            'ZROK': f'{py} zrok.py {args}',
+            'NGROK': f'{py} ngrokk.py {ngrok_token.value} {args}'
+        }
+
+        config_list = {
+            'Pinggy': {
+                'command': f"ssh -o StrictHostKeyChecking=no -p 80 -R0:localhost:{port} a.pinggy.io",
+                'name': "PINGGY",
+                'pattern': r"https://[\w-]+\.a\.free\.pinggy\.link"
+            },
+            'ZROK': {
+                'command': f"zrok share public localhost:{port} --headless",
+                'name': "ZROK",
+                'pattern': r"https://[\w-]+\.share\.zrok\.io"
+            }
+        }
+
+        cmd = tunnel_list.get(tunnel.value)
+        configs = config_list.get(tunnel.value)
+
+        if cmd:
+            if tunnel.value == 'NGROK':
+                get_ipython().system(cmd)
+
+            else:
+                from cupang import Tunnel as Alice_Zuberg
+
+                if tunnel.value == 'ZROK':
+                    zrok_enable()
+
+                Alice_Synthesis_Thirty = Alice_Zuberg(port)
+                Alice_Synthesis_Thirty.logger.setLevel(logging.DEBUG)
+                Alice_Synthesis_Thirty.add_tunnel(command=configs['command'], name=configs['name'], pattern=configs['pattern'])
+                Alice_Synthesis_Thirty.check_local_port=False
+
+                with Alice_Synthesis_Thirty:
+                    get_ipython().system(cmd)
+
+    elif ui == 'FaceFusion':
+        log_file = Path('segsmaker.log')
+        log_file.write_text('A1111/Forge\n')
+        logging.basicConfig(
+            filename=log_file,
+            level=logging.INFO,
+            format="{message}", style="{"
+        )
+
+        port = 7860
 
         tunnel_list = {
             'Pinggy': f'{py} pinggy.py {args}',
