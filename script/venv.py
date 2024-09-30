@@ -8,7 +8,7 @@ HOME = Path.home()
 IMG = HOME / ".gutris1/loading.png"
 tmp = Path('/tmp')
 vnv = tmp / "venv"
-cwd = Path(os.getcwd())
+cwd = Path.cwd()
 
 if cwd == HOME / 'facefusion':
     url = 'https://huggingface.co/pantat88/back_up/resolve/main/venv-fusion.tar.lz4'
