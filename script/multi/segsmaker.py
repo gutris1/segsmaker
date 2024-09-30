@@ -1,13 +1,14 @@
-from IPython.display import display, HTML, clear_output
+from IPython.display import display, HTML, clear_output, Image
 from multiprocessing import Process, Condition, Value
 from IPython import get_ipython
 from ipywidgets import widgets
 from pathlib import Path
 import json, argparse, sys, logging
 
-src = Path.home() / '.gutris1'
-css_setup = src / 'setup.css'
-mark = src / 'marking.json'
+SRC = Path.home() / '.gutris1'
+CSS = SRC / 'setup.css'
+MARK = SRC / 'marking.json'
+IMG = SRC / "loading.png"
 
 py = '/tmp/venv/bin/python3'
 
@@ -26,7 +27,7 @@ def get_args(ui):
 
 def load_config():
     global ui
-    config = json.load(mark.open('r')) if mark.exists() else {}
+    config = json.load(MARK.open('r')) if MARK.exists() else {}
 
     ui = config.get('ui', None)
     zrok_token.value = config.get('zrok_token', '')
@@ -57,8 +58,8 @@ def load_config():
 
 def save_config(zrok_token, ngrok_token, args1, args2, tunnel):
     config = {}
-    if mark.exists():
-        with mark.open('r') as file:
+    if MARK.exists():
+        with MARK.open('r') as file:
             config = json.load(file)
 
     config.update({
@@ -69,11 +70,11 @@ def save_config(zrok_token, ngrok_token, args1, args2, tunnel):
         "tunnel": tunnel
     })
 
-    with mark.open('w') as file:
+    with MARK.open('w') as file:
         json.dump(config, file, indent=4)
 
 def load_css():
-    with open(css_setup, "r") as file:
+    with open(CSS, "r") as file:
         data = file.read()
 
     display(HTML(f"<style>{data}</style>"))
@@ -174,115 +175,85 @@ def import_cupang():
 
 def launching(ui, skip_comfyui_check=False):
     import_cupang()
-
     args = f'{launch_args1.value} {launch_args2.value}'
     get_ipython().run_line_magic('run', 'venv.py')
 
+    log_file = Path('segsmaker.log')
+    logging.basicConfig(
+        filename=log_file,
+        level=logging.INFO,
+        format="{message}", style="{"
+    )
+
     if ui in ['A1111', 'Forge', 'ComfyUI']:
+        log_msg = 'comfyui' if ui == 'ComfyUI' else 'A1111/Forge'
+        log_file.write_text(log_msg + '\n')
+        port = 8188 if ui == 'ComfyUI' else 7860
+        
         if ui == 'ComfyUI' and not skip_comfyui_check:
             get_ipython().system(f'{py} apotek.py')
             clear_output(wait=True)
 
-        log_file = Path('segsmaker.log')
-        log_file.write_text('comfyui\n') if ui == 'ComfyUI' else log_file.write_text('A1111/Forge\n')
-        logging.basicConfig(
-            filename=log_file,
-            level=logging.INFO,
-            format="{message}", style="{"
-        )
-
-        port = 8188 if ui == 'ComfyUI' else 7860
-
-        tunnel_list = {
-            'Pinggy': f'{py} pinggy.py {args}',
-            'ZROK': f'{py} zrok.py {args}',
-            'NGROK': f'{py} ngrokk.py {ngrok_token.value} {args}'
-        }
-
-        config_list = {
-            'Pinggy': {
-                'command': f"ssh -o StrictHostKeyChecking=no -p 80 -R0:localhost:{port} a.pinggy.io",
-                'name': "PINGGY",
-                'pattern': r"https://[\w-]+\.a\.free\.pinggy\.link"
-            },
-            'ZROK': {
-                'command': f"zrok share public localhost:{port} --headless",
-                'name': "ZROK",
-                'pattern': r"https://[\w-]+\.share\.zrok\.io"
-            }
-        }
-
-        cmd = tunnel_list.get(tunnel.value)
-        configs = config_list.get(tunnel.value)
-
-        if cmd:
-            if tunnel.value == 'NGROK':
-                get_ipython().system(cmd)
-
-            else:
-                from cupang import Tunnel as Alice_Zuberg
-
-                if tunnel.value == 'ZROK':
-                    zrok_enable()
-
-                Alice_Synthesis_Thirty = Alice_Zuberg(port)
-                Alice_Synthesis_Thirty.logger.setLevel(logging.DEBUG)
-                Alice_Synthesis_Thirty.add_tunnel(command=configs['command'], name=configs['name'], pattern=configs['pattern'])
-                Alice_Synthesis_Thirty.check_local_port=False
-
-                with Alice_Synthesis_Thirty:
-                    get_ipython().system(cmd)
+        tunnel_list, cmd = tunnel_cmd(tunnel.value, port, args, FF=False)
 
     elif ui == 'FaceFusion':
-        log_file = Path('segsmaker.log')
         log_file.write_text('A1111/Forge\n')
-        logging.basicConfig(
-            filename=log_file,
-            level=logging.INFO,
-            format="{message}", style="{"
-        )
-
         port = 7860
+        tunnel_list, cmd = tunnel_cmd(tunnel.value, port, args, FF=True)
 
+    if cmd:        
+        if tunnel.value == 'NGROK':
+            get_ipython().system(cmd)
+        else:
+            configs = tunnel_configs(tunnel.value, port)
+            run_tunnel(cmd, configs, port)
+
+def tunnel_cmd(tunnel_value, port, args, FF):
+    if FF:
+        display(Image(filename=str(IMG)))
+        tunnel_list = {
+            'Pinggy': f'{py} launch.py',
+            'ZROK': f'{py} launch.py',
+            'NGROK': f'{py} launch.py {ngrok_token.value}'
+        }
+    else:
         tunnel_list = {
             'Pinggy': f'{py} pinggy.py {args}',
             'ZROK': f'{py} zrok.py {args}',
             'NGROK': f'{py} ngrokk.py {ngrok_token.value} {args}'
         }
 
-        config_list = {
-            'Pinggy': {
-                'command': f"ssh -o StrictHostKeyChecking=no -p 80 -R0:localhost:{port} a.pinggy.io",
-                'name': "PINGGY",
-                'pattern': r"https://[\w-]+\.a\.free\.pinggy\.link"
-            },
-            'ZROK': {
-                'command': f"zrok share public localhost:{port} --headless",
-                'name': "ZROK",
-                'pattern': r"https://[\w-]+\.share\.zrok\.io"
-            }
+    return tunnel_list.get(tunnel_value), tunnel_list.get(tunnel_value)
+
+def tunnel_configs(tunnel_value, port):
+    config_list = {
+        'Pinggy': {
+            'command': f"ssh -o StrictHostKeyChecking=no -p 80 -R0:localhost:{port} a.pinggy.io",
+            'name': "PINGGY",
+            'pattern': r"https://[\w-]+\.a\.free\.pinggy\.link"
+        },
+        'ZROK': {
+            'command': f"zrok share public localhost:{port} --headless",
+            'name': "ZROK",
+            'pattern': r"https://[\w-]+\.share\.zrok\.io"
         }
+    }
 
-        cmd = tunnel_list.get(tunnel.value)
-        configs = config_list.get(tunnel.value)
+    return config_list.get(tunnel_value)
 
-        if cmd:
-            if tunnel.value == 'NGROK':
-                get_ipython().system(cmd)
+def run_tunnel(cmd, configs, port):
+    from cupang import Tunnel as Alice_Zuberg
 
-            else:
-                from cupang import Tunnel as Alice_Zuberg
+    if tunnel.value == 'ZROK':
+        zrok_enable()
 
-                if tunnel.value == 'ZROK':
-                    zrok_enable()
+    Alice_Synthesis_Thirty = Alice_Zuberg(port)
+    Alice_Synthesis_Thirty.logger.setLevel(logging.DEBUG)
+    Alice_Synthesis_Thirty.add_tunnel(command=configs['command'], name=configs['name'], pattern=configs['pattern'])
+    Alice_Synthesis_Thirty.check_local_port = False
 
-                Alice_Synthesis_Thirty = Alice_Zuberg(port)
-                Alice_Synthesis_Thirty.logger.setLevel(logging.DEBUG)
-                Alice_Synthesis_Thirty.add_tunnel(command=configs['command'], name=configs['name'], pattern=configs['pattern'])
-                Alice_Synthesis_Thirty.check_local_port=False
-
-                with Alice_Synthesis_Thirty:
-                    get_ipython().system(cmd)
+    with Alice_Synthesis_Thirty:
+        get_ipython().system(cmd)
 
 def waiting(condition, is_ready):
     with condition:
