@@ -13,6 +13,7 @@ img = src / 'loading.png'
 A1111 = src / 'A1111.py'
 Forge = src / 'Forge.py'
 ComfyUI = src / 'ComfyUI.py'
+Fusion = src / 'Fusion.py'
 
 def load_css():
     with open(css_setup, "r") as file:
@@ -30,8 +31,10 @@ def selection(btn):
             get_ipython().run_line_magic('run', f'{Forge}')
         elif btn == 'ComfyUI':
             get_ipython().run_line_magic('run', f'{ComfyUI}')
+        elif btn == 'Fusion':
+            get_ipython().run_line_magic('run', f'{Fusion}')
 
-options = ['A1111', 'Forge', 'ComfyUI']
+options = ['A1111', 'Forge', 'ComfyUI', 'Fusion']
 buttons = []
 
 for btn in options:
@@ -58,7 +61,9 @@ def multi_widgets():
         f"curl -sLo {mark} https://github.com/gutris1/segsmaker/raw/main/script/multi/marking.py",
         f"curl -sLo {A1111} https://github.com/gutris1/segsmaker/raw/main/script/multi/A1111.py",
         f"curl -sLo {Forge} https://github.com/gutris1/segsmaker/raw/main/script/multi/Forge.py",
-        f"curl -sLo {ComfyUI} https://github.com/gutris1/segsmaker/raw/main/script/multi/ComfyUI.py"]
+        f"curl -sLo {ComfyUI} https://github.com/gutris1/segsmaker/raw/main/script/multi/ComfyUI.py",
+        f"curl -sLo {Fusion} https://github.com/gutris1/segsmaker/raw/main/script/multi/Fusion.py"
+    ]
 
     for y in x:
         get_ipython().system(y)
