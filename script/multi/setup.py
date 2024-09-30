@@ -4,19 +4,19 @@ from ipywidgets import widgets
 from pathlib import Path
 import os
 
-home = Path.home()
-src = home / '.gutris1'
-css_setup = src / 'setup.css'
-mark = src / 'marking.py'
-img = src / 'loading.png'
+HOME = Path.home()
+SRC = HOME / '.gutris1'
+CSS = SRC / 'setup.css'
+MARK = SRC / 'marking.py'
+IMG = SRC / 'loading.png'
 
-A1111 = src / 'A1111.py'
-Forge = src / 'Forge.py'
-ComfyUI = src / 'ComfyUI.py'
-Fusion = src / 'Fusion.py'
+A1111 = SRC / 'A1111.py'
+Forge = SRC / 'Forge.py'
+ComfyUI = SRC / 'ComfyUI.py'
+Fusion = SRC / 'Fusion.py'
 
 def load_css():
-    with open(css_setup, "r") as file:
+    with open(CSS, "r") as file:
         data = file.read()
 
     display(HTML(f"<style>{data}</style>"))
@@ -47,18 +47,18 @@ output = widgets.Output()
 
 multi_panel = widgets.HBox(
     buttons, layout=widgets.Layout(
-        width='600px',
+        width='800px',
         height='405px'))
 multi_panel.add_class('multi-panel')
 
 def multi_widgets():
-    if not src.exists():
-        src.mkdir(parents=True, exist_ok=True)
+    if not SRC.exists():
+        SRC.mkdir(parents=True, exist_ok=True)
 
     x = [
-        f"curl -sLo {css_setup} https://github.com/gutris1/segsmaker/raw/main/script/multi/setup.css",
-        f"curl -sLo {img} https://github.com/gutris1/segsmaker/raw/main/script/loading.png",
-        f"curl -sLo {mark} https://github.com/gutris1/segsmaker/raw/main/script/multi/marking.py",
+        f"curl -sLo {CSS} https://github.com/gutris1/segsmaker/raw/main/script/multi/setup.css",
+        f"curl -sLo {IMG} https://github.com/gutris1/segsmaker/raw/main/script/loading.png",
+        f"curl -sLo {MARK} https://github.com/gutris1/segsmaker/raw/main/script/multi/marking.py",
         f"curl -sLo {A1111} https://github.com/gutris1/segsmaker/raw/main/script/multi/A1111.py",
         f"curl -sLo {Forge} https://github.com/gutris1/segsmaker/raw/main/script/multi/Forge.py",
         f"curl -sLo {ComfyUI} https://github.com/gutris1/segsmaker/raw/main/script/multi/ComfyUI.py",
@@ -70,6 +70,6 @@ def multi_widgets():
 
     load_css()
     display(multi_panel, output)
-    os.chdir(home)
+    os.chdir(HOME)
 
 multi_widgets()
