@@ -60,7 +60,7 @@ def venv_install():
         get_ipython().system(f'rm -rf {vnv / "bin" / "pip*"}')
         get_ipython().system(f'rm -rf {vnv / "bin" / "python*"}')
         get_ipython().system(f'python3 -m venv {vnv}')
-        get_ipython().system(f'{vnv / "bin" / "python"} -m pip install -q --upgrade pip')
+        get_ipython().system(f'{vnv / "bin" / "python3"} -m pip install -q --upgrade --force-reinstall pip')
 
 def req_list():
     return [
