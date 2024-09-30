@@ -22,11 +22,17 @@ WEBUI = HOME / 'facefusion'
 os.chdir(HOME)
 
 def check_ffmpeg():
-    try:
-        subprocess.run(['ffmpeg', '-version'], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    except subprocess.CalledProcessError:
-        print('\ninstalling ffmpeg...')
-        get_ipython().system('conda install -qyc conda-forge ffmpeg')
+    installed = get_ipython().getoutput('conda list ffmpeg')
+    if not any('ffmpeg' in line for line in installed):
+        cmd_list = [
+            ('conda install -qyc conda-forge ffmpeg', '\ninstalling ffmpeg...'),
+            ('conda clean -qy --all', None)
+        ]
+
+        for cmd, msg in cmd_list:
+            if msg is not None:
+                print(msg)
+            subprocess.run(shlex.split(cmd), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 def tmp_cleaning():
     for item in tmp.iterdir():
@@ -63,15 +69,23 @@ def venv_install():
         get_ipython().system(f'python3 -m venv {vnv}')
         get_ipython().system(f'{vnv / "bin" / "python3"} -m pip install -q --upgrade --force-reinstall pip')
 
+def req_list():
+    return [
+        f"rm -rf {home}/tmp {home}/.cache/*",
+        f"ln -vs /tmp {home}/tmp"]
+
 def scr_clone():
     time.sleep(1)
     tmp_cleaning()
     os.chdir(WEBUI)
 
+    req = req_list()
+    for lines in req:
+        subprocess.run(shlex.split(lines), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
     scripts = [
-        #f"https://github.com/gutris1/segsmaker/raw/main/ui/ff/zrok.py {WEBUI}",
-        #f"https://github.com/gutris1/segsmaker/raw/main/ui/ff/pinggy.py {WEBUI}",
-        #f"https://github.com/gutris1/segsmaker/raw/main/ui/ff/ngrokk.py {WEBUI}",
+        f"https://github.com/gutris1/segsmaker/raw/main/ui/ff/launch.py {WEBUI}",
+        f"https://github.com/gutris1/segsmaker/raw/main/script/venv.py {WEBUI}",
         f"https://github.com/gutris1/segsmaker/raw/main/script/multi/segsmaker.py {WEBUI}"]
 
     for items in scripts:
@@ -131,6 +145,13 @@ def webui_install():
 loading = widgets.Output()
 sd_setup = widgets.Output()
 
+def check_webui(ui_name, path, mark):
+    if path.exists():
+        print(f'{ui_name} is installed, Uninstall first.')
+        get_ipython().run_line_magic('run', f'{mark}')
+        return True
+    return False
+
 def webui_widgets():
     if WEBUI.exists():
         git_dir = WEBUI / '.git'
@@ -142,9 +163,8 @@ def webui_widgets():
             get_ipython().system("git fetch --tags")
 
         x = [
-            #f"https://github.com/gutris1/segsmaker/raw/main/ui/ff/zrok.py {WEBUI}",
-            #f"https://github.com/gutris1/segsmaker/raw/main/ui/ff/pinggy.py {WEBUI}",
-            #f"https://github.com/gutris1/segsmaker/raw/main/ui/ff/ngrokk.py {WEBUI}",
+            f"https://github.com/gutris1/segsmaker/raw/main/ui/ff/launch.py {WEBUI}",
+            f"https://github.com/gutris1/segsmaker/raw/main/script/venv.py {WEBUI}",
             f"https://github.com/gutris1/segsmaker/raw/main/script/multi/segsmaker.py {WEBUI}"
         ]
         
@@ -155,17 +175,14 @@ def webui_widgets():
         venv_install()
 
     else:
-        if (HOME / 'asd').exists():
-            print('A1111 is installed, Uninstall first.')
-        elif (HOME / 'forge').exists():
-            print('Forge is installed, Uninstall first.')
-        elif (HOME / 'ComfyUI').exists():
-            print('ComfyUI is installed, Uninstall first.')
+        if check_webui('A1111', HOME / 'asd', MARK):
+            return
+        elif check_webui('Forge', HOME / 'forge', MARK):
+            return
+        elif check_webui('ComfyUI', HOME / 'ComfyUI', MARK):
+            return
 
-        get_ipython().run_line_magic('run', f'{MARK}')
-        return
-
-    display(sd_setup, loading)
-    webui_install()
+        display(sd_setup, loading)
+        webui_install()
 
 webui_widgets()
