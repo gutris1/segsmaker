@@ -6,3 +6,4 @@ git clone --depth 1 https://github.com/IDEA-Research/DWPose
 git clone --depth 1 https://github.com/lllyasviel/sd-forge-layerdiffuse
 git clone --depth 1 https://github.com/BlafKing/sd-civitai-browser-plus
 git clone --depth 1 https://github.com/gutris1/timer_timer
+git clone --depth 1 https://github.com/gutris1/sd-hub
