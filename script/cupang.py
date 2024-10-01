@@ -1,5 +1,4 @@
 import sys
-
 if sys.version_info < (3, 8):
     raise RuntimeError(f"Minimum python version is 3.8, you have {sys.version}")
 

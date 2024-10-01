@@ -5,8 +5,7 @@ from pathlib import Path
 import subprocess, time, os, shlex, json, shutil
 from nenen88 import pull, say, download, clone, tempe
 
-version = "v1.10.1"
-repo = f"git clone -q -b {version} https://github.com/gutris1/A1111"
+repo = f"git clone -q https://github.com/Panchovix/stable-diffusion-webui-reForge ReForge"
 
 HOME = Path.home()
 SRC = HOME / '.gutris1'
@@ -17,7 +16,7 @@ STP = HOME / '.conda/setup.py'
 
 tmp = Path('/tmp')
 vnv = tmp / 'venv'
-WEBUI = HOME / 'A1111'
+WEBUI = HOME / 'ReForge'
 
 os.chdir(HOME)
 
@@ -66,16 +65,19 @@ def req_list():
     return [
         f"rm -rf {HOME}/tmp {HOME}/.cache/*",
         f"rm -rf {WEBUI}/models/Stable-diffusion/tmp_ckpt {WEBUI}/models/Lora/tmp_lora {WEBUI}/models/ControlNet",
+        f"rm -rf {WEBUI}/models/svd {WEBUI}/models/z123",
         f"mkdir -p {WEBUI}/models/Lora",
         f"mkdir -p {WEBUI}/models/ESRGAN",
         f"ln -vs /tmp {HOME}/tmp",
         f"ln -vs /tmp/ckpt {WEBUI}/models/Stable-diffusion/tmp_ckpt",
         f"ln -vs /tmp/lora {WEBUI}/models/Lora/tmp_lora",
-        f"ln -vs /tmp/controlnet {WEBUI}/models/ControlNet"]
+        f"ln -vs /tmp/controlnet {WEBUI}/models/ControlNet",
+        f"ln -vs /tmp/z123 {WEBUI}/models/z123",
+        f"ln -vs /tmp/svd {WEBUI}/models/svd"]
 
 def webui_req():
     time.sleep(1)
-    pull(f"https://github.com/gutris1/segsmaker sd {WEBUI}")
+    pull(f"https://github.com/gutris1/segsmaker reforge {WEBUI}")
 
     tmp_cleaning()
 
@@ -175,10 +177,10 @@ def webui_install(b):
         display(Image(filename=str(IMG)))
 
     with webui_setup:
-        say("<b>【{red} Installing Stable Diffusion{d} 】{red}</b>")
+        say("<b>【{red} Installing ReForge{d} 】{red}</b>")
         get_ipython().system(f"{repo}")
 
-        marking(SRC, 'marking.json', 'A1111')
+        marking(SRC, 'marking.json', 'ReForge')
 
         if b == 'button-15':
             sd_15()
@@ -237,9 +239,8 @@ def webui_widgets():
             os.chdir(WEBUI)
             commit_hash = subprocess.check_output(['git', 'rev-parse', 'HEAD']).strip().decode('utf-8')
 
-            if commit_hash != version:
-                get_ipython().system(f"git pull origin {version}")
-                get_ipython().system("git fetch --tags")
+            get_ipython().system("git pull origin main")
+            get_ipython().system("git fetch --tags")
 
         x = [
             f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/controlnet.py {WEBUI}/asd",
@@ -255,9 +256,9 @@ def webui_widgets():
 
     else:
         webui_list = [
+            ('A1111', HOME / 'A1111'),
             ('Forge', HOME / 'Forge'),
             ('ComfyUI', HOME / 'ComfyUI'),
-            ('ReForge', HOME / 'ReForge'),
             ('FaceFusion', HOME / 'FaceFusion')
         ]
         

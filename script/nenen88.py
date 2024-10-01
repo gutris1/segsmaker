@@ -5,7 +5,6 @@ from pathlib import Path
 from tqdm import tqdm
 import subprocess, zipfile, shlex, sys, os, re, requests
 
-
 def say(line):
     args = re.findall(r'\{[^\{\}]+\}|[^\s\{\}]+', line)
     output = []

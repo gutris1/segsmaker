@@ -4,16 +4,20 @@ from pathlib import Path
 import subprocess, os, shlex
 from nenen88 import tempe, say, download
 
-home = Path.home()
-img = home / ".gutris1/loading.png"
+HOME = Path.home()
+IMG = HOME / ".gutris1/loading.png"
 tmp = Path('/tmp')
 vnv = tmp / "venv"
+cwd = Path.cwd()
 
-url = 'https://huggingface.co/pantat88/back_up/resolve/main/venv_torch231.tar.lz4'
+if cwd == HOME / 'FaceFusion':
+    url = 'https://huggingface.co/pantat88/back_up/resolve/main/venv-fusion.tar.lz4'
+    need_space = 12 * 1024**3
+else:
+    url = 'https://huggingface.co/pantat88/back_up/resolve/main/venv_torch231.tar.lz4'
+    need_space = 13 * 1024**3
+
 fn = Path(url).name
-
-need_space = 13 * 1024**3
-cwd = os.getcwd()
 
 def check_venv(folder):
     du = get_ipython().getoutput(f'du -s -b {folder}')
@@ -43,9 +47,9 @@ def removing(directory, req_space):
     return freed_space
 
 def trashing():
-    dirs1 = ["asd", "forge", "ComfyUI"]
+    dirs1 = ["A1111", "Forge", "ComfyUI", "ReForge", "FaceFusion"]
     dirs2 = ["ckpt", "lora", "controlnet", "svd", "z123"]
-    paths = [home / name for name in dirs1] + [tmp / name for name in dirs2]
+    paths = [HOME / name for name in dirs1] + [tmp / name for name in dirs2]
     for path in paths:
         cmd = f"find {path} -type d -name .ipynb_checkpoints -exec rm -rf {{}} +"
         subprocess.run(shlex.split(cmd), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
@@ -54,12 +58,17 @@ def venv_install():
     while True:
         if vnv.exists():
             size = check_venv(vnv)
-            if size > 7 * 1024**3:
-                return
-            get_ipython().system(f'rm -rf {vnv}')
+            if cwd == HOME / 'FaceFusion':
+                if size < 7 * 1024**3:
+                    return
+            else:
+                if size > 7 * 1024**3:
+                    return
+
+            get_ipython().system(f'rm -rf {vnv}/* {vnv}')
 
         clear_output(wait=True)
-        display(Image(filename=str(img)))
+        display(Image(filename=str(IMG)))
 
         free_space = check_tmp(tmp)
         req_space = need_space - free_space
