@@ -47,7 +47,7 @@ def removing(directory, req_space):
     return freed_space
 
 def trashing():
-    dirs1 = ["asd", "forge", "ComfyUI", "facefusion"]
+    dirs1 = ["asd", "forge", "ComfyUI", "reforge", "facefusion"]
     dirs2 = ["ckpt", "lora", "controlnet", "svd", "z123"]
     paths = [HOME / name for name in dirs1] + [tmp / name for name in dirs2]
     for path in paths:
