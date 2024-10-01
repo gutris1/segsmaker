@@ -7,6 +7,7 @@ from tqdm import tqdm
 from nenen88 import say
 import subprocess, time, zipfile, sys, os, json, psutil
 
+
 home = Path.home()
 src_src = home / '.gutris1'
 css = src_src / "pantat88.css"
