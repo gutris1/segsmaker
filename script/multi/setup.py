@@ -13,7 +13,7 @@ IMG = SRC / 'loading.png'
 A1111 = SRC / 'A1111.py'
 Forge = SRC / 'Forge.py'
 ComfyUI = SRC / 'ComfyUI.py'
-reForge = SRC / 'reForge.py'
+ReForge = SRC / 'ReForge.py'
 FaceFusion = SRC / 'FaceFusion.py'
 
 def load_css():
@@ -32,12 +32,12 @@ def selection(btn):
             get_ipython().run_line_magic('run', f'{Forge}')
         elif btn == 'ComfyUI':
             get_ipython().run_line_magic('run', f'{ComfyUI}')
-        elif btn == 'reForge':
-            get_ipython().run_line_magic('run', f'{reForge}')
+        elif btn == 'ReForge':
+            get_ipython().run_line_magic('run', f'{ReForge}')
         elif btn == 'FaceFusion':
             get_ipython().run_line_magic('run', f'{FaceFusion}')
 
-options = ['A1111', 'Forge', 'ComfyUI', 'reForge', 'FaceFusion']
+options = ['A1111', 'Forge', 'ComfyUI', 'ReForge', 'FaceFusion']
 buttons = []
 
 for btn in options:
@@ -65,7 +65,7 @@ def multi_widgets():
         f"curl -sLo {A1111} https://github.com/gutris1/segsmaker/raw/main/script/multi/A1111.py",
         f"curl -sLo {Forge} https://github.com/gutris1/segsmaker/raw/main/script/multi/Forge.py",
         f"curl -sLo {ComfyUI} https://github.com/gutris1/segsmaker/raw/main/script/multi/ComfyUI.py",
-        f"curl -sLo {reForge} https://github.com/gutris1/segsmaker/raw/main/script/multi/reForge.py",
+        f"curl -sLo {ReForge} https://github.com/gutris1/segsmaker/raw/main/script/multi/ReForge.py",
         f"curl -sLo {FaceFusion} https://github.com/gutris1/segsmaker/raw/main/script/multi/FaceFusion.py"
     ]
 
