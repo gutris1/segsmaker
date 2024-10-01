@@ -6,7 +6,7 @@ import subprocess, time, os, shlex, json, shutil
 from nenen88 import pull, say, download, clone, tempe
 
 version = "v1.10.1"
-repo = f"git clone -q -b {version} https://github.com/gutris1/asd"
+repo = f"git clone -q -b {version} https://github.com/gutris1/A1111"
 
 HOME = Path.home()
 SRC = HOME / '.gutris1'
@@ -17,7 +17,7 @@ STP = HOME / '.conda/setup.py'
 
 tmp = Path('/tmp')
 vnv = tmp / 'venv'
-WEBUI = HOME / 'asd'
+WEBUI = HOME / 'A1111'
 
 os.chdir(HOME)
 
@@ -255,10 +255,10 @@ def webui_widgets():
 
     else:
         webui_list = [
-            ('Forge', HOME / 'forge'),
+            ('Forge', HOME / 'Forge'),
             ('ComfyUI', HOME / 'ComfyUI'),
-            ('reForge', HOME / 'reforge'),
-            ('FaceFusion', HOME / 'facefusion')
+            ('ReForge', HOME / 'ReForge'),
+            ('FaceFusion', HOME / 'FaceFusion')
         ]
         
         for ui_name, path in webui_list:
