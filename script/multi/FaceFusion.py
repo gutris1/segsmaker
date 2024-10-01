@@ -1,9 +1,9 @@
-from IPython.display import display, HTML, clear_output, Image
+from IPython.display import display, clear_output, Image
 from ipywidgets import widgets
 from IPython import get_ipython
 from pathlib import Path
 import subprocess, time, os, shlex, json, shutil
-from nenen88 import pull, say, download, clone, tempe
+from nenen88 import say, download, tempe
 
 repo = f"git clone https://github.com/enricogolfieri/facefusion-open facefusion"
 
@@ -12,11 +12,9 @@ SRC = HOME / '.gutris1'
 CSS = SRC / 'setup.css'
 IMG = SRC / 'loading.png'
 MARK = SRC / 'marking.py'
-setup = HOME / '.conda/setup.py'
 
 tmp = Path('/tmp')
 vnv = tmp / 'venv'
-
 WEBUI = HOME / 'facefusion'
 
 os.chdir(HOME)
@@ -71,10 +69,10 @@ def venv_install():
 
 def req_list():
     return [
-        f"rm -rf {home}/tmp {home}/.cache/*",
-        f"ln -vs /tmp {home}/tmp"]
+        f"rm -rf {HOME}/tmp {HOME}/.cache/*",
+        f"ln -vs /tmp {HOME}/tmp"]
 
-def scr_clone():
+def webui_req():
     time.sleep(1)
     tmp_cleaning()
     os.chdir(WEBUI)
@@ -125,14 +123,14 @@ def webui_install():
     with loading:
         display(Image(filename=str(IMG)))
 
-    with sd_setup:
+    with webui_setup:
         say("<b>【{red} Installing Face Fusion{d} 】{red}</b>")
         get_ipython().system(f"{repo}")
 
         check_ffmpeg()
 
         marking(SRC, 'marking.json', 'FaceFusion')
-        scr_clone()
+        webui_req()
         get_ipython().run_line_magic('run', f'{MARK}')
 
         venv_install()
@@ -143,7 +141,7 @@ def webui_install():
             say("<b>【{red} Done{d} 】{red}</b>")
 
 loading = widgets.Output()
-sd_setup = widgets.Output()
+webui_setup = widgets.Output()
 
 def check_webui(ui_name, path, mark):
     if path.exists():
@@ -182,7 +180,8 @@ def webui_widgets():
         elif check_webui('ComfyUI', HOME / 'ComfyUI', MARK):
             return
 
-        display(sd_setup, loading)
+        display(webui_setup, loading)
         webui_install()
 
+clear_output()
 webui_widgets()
