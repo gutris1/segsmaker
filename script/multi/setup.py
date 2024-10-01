@@ -1,4 +1,4 @@
-from IPython.display import display, HTML
+from IPython.display import display, HTML, clear_output
 from IPython import get_ipython
 from ipywidgets import widgets
 from pathlib import Path
@@ -13,6 +13,7 @@ IMG = SRC / 'loading.png'
 A1111 = SRC / 'A1111.py'
 Forge = SRC / 'Forge.py'
 ComfyUI = SRC / 'ComfyUI.py'
+reForge = SRC / 'reForge.py'
 FaceFusion = SRC / 'FaceFusion.py'
 
 def load_css():
@@ -31,10 +32,12 @@ def selection(btn):
             get_ipython().run_line_magic('run', f'{Forge}')
         elif btn == 'ComfyUI':
             get_ipython().run_line_magic('run', f'{ComfyUI}')
+        elif btn == 'reForge':
+            get_ipython().run_line_magic('run', f'{reForge}')
         elif btn == 'FaceFusion':
             get_ipython().run_line_magic('run', f'{FaceFusion}')
 
-options = ['A1111', 'Forge', 'ComfyUI', 'FaceFusion']
+options = ['A1111', 'Forge', 'ComfyUI', 'reForge', 'FaceFusion']
 buttons = []
 
 for btn in options:
@@ -47,7 +50,7 @@ output = widgets.Output()
 
 multi_panel = widgets.HBox(
     buttons, layout=widgets.Layout(
-        width='620px',
+        width='780px',
         height='300px'))
 multi_panel.add_class('multi-panel')
 
@@ -62,6 +65,7 @@ def multi_widgets():
         f"curl -sLo {A1111} https://github.com/gutris1/segsmaker/raw/main/script/multi/A1111.py",
         f"curl -sLo {Forge} https://github.com/gutris1/segsmaker/raw/main/script/multi/Forge.py",
         f"curl -sLo {ComfyUI} https://github.com/gutris1/segsmaker/raw/main/script/multi/ComfyUI.py",
+        f"curl -sLo {reForge} https://github.com/gutris1/segsmaker/raw/main/script/multi/reForge.py",
         f"curl -sLo {FaceFusion} https://github.com/gutris1/segsmaker/raw/main/script/multi/FaceFusion.py"
     ]
 
