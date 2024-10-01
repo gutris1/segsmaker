@@ -173,12 +173,16 @@ def webui_widgets():
         venv_install()
 
     else:
-        if check_webui('A1111', HOME / 'asd', MARK):
-            return
-        elif check_webui('Forge', HOME / 'forge', MARK):
-            return
-        elif check_webui('ComfyUI', HOME / 'ComfyUI', MARK):
-            return
+        webui_list = [
+            ('A1111', HOME / 'asd'),
+            ('Forge', HOME / 'forge'),
+            ('ComfyUI', HOME / 'ComfyUI'),
+            ('reForge', HOME / 'reforge')
+        ]
+        
+        for ui_name, path in webui_list:
+            if check_webui(ui_name, path, MARK):
+                return
 
         display(webui_setup, loading)
         webui_install()
