@@ -77,7 +77,7 @@
     font-size: 35px;
 }
 .reforge::after {
-    content: 'reForge';
+    content: 'ReForge';
     font-size: 35px;
 }
 .facefusion::after {
