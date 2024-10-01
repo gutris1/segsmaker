@@ -12,9 +12,6 @@ def logging_launch():
     return logging.getLogger()
 
 def launch(logger):
-    if 'LD_PRELOAD' not in os.environ:
-        os.environ['LD_PRELOAD'] = '/home/studio-lab-user/.conda/envs/default/lib/libtcmalloc_minimal.so.4'
-
     webui = subprocess.Popen(['/tmp/venv/bin/python3', 'launch.py'] + sys.argv[1:],
                              stdout=subprocess.PIPE, stderr=sys.stdout, text=True)
 
@@ -32,6 +29,9 @@ def launch(logger):
     webui.wait()
 
 if __name__ == '__main__':
+    if 'LD_PRELOAD' not in os.environ:
+        os.environ['LD_PRELOAD'] = '/home/studio-lab-user/.conda/envs/default/lib/libtcmalloc_minimal.so.4'
+
     logger = logging_launch()
     try:
         launch(logger)
