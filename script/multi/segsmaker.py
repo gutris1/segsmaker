@@ -13,17 +13,39 @@ IMG = SRC / "loading.png"
 py = '/tmp/venv/bin/python3'
 
 def get_args(ui):
-    if ui == 'A1111':
-        return '--xformers --enable-insecure-extension-access --disable-console-progressbars --theme dark'
+    args_line = {
+        'A1111': (
+            '--xformers '
+            '--enable-insecure-extension-access '
+            '--disable-console-progressbars '
+            '--theme dark'
+        ),
+        'Forge': (
+            '--disable-xformers '
+            '--opt-sdp-attention '
+            '--cuda-stream '
+            '--pin-shared-memory '
+            '--enable-insecure-extension-access '
+            '--disable-console-progressbars '
+            '--theme dark'
+        ),
+        'ComfyUI': (
+            '--dont-print-server '
+            '--preview-method auto '
+            '--use-pytorch-cross-attention'
+        ),
+        'reForge': (
+            '--xformers '
+            '--cuda-stream '
+            '--pin-shared-memory '
+            '--enable-insecure-extension-access '
+            '--disable-console-progressbars '
+            '--theme dark'
+        ),
+        'FaceFusion': ''
+    }
 
-    elif ui == 'Forge':
-        return '--disable-xformers --opt-sdp-attention --cuda-stream --pin-shared-memory --enable-insecure-extension-access --disable-console-progressbars --theme dark'
-
-    elif ui == 'ComfyUI':
-        return '--dont-print-server --preview-method auto --use-pytorch-cross-attention'
-    
-    elif ui == 'FaceFusion':
-        return ''
+    return args_line.get(ui, '')
 
 def load_config():
     global ui
@@ -53,6 +75,8 @@ def load_config():
         title.value = '<div class="title"><h1>Forge</h1></div>'
     elif ui == 'ComfyUI':
         title.value = '<div class="title"><h1>ComfyUI</h1></div>'
+    elif ui == 'reForge':
+        title.value = '<div class="title"><h1>reForge</h1></div>'
     elif ui == 'FaceFusion':
         title.value = '<div class="title"><h1>Face Fusion</h1></div>'
 
@@ -185,7 +209,7 @@ def launching(ui, skip_comfyui_check=False):
         format="{message}", style="{"
     )
 
-    if ui in ['A1111', 'Forge', 'ComfyUI']:
+    if ui in ['A1111', 'Forge', 'ComfyUI', 'reForge']:
         log_msg = 'comfyui' if ui == 'ComfyUI' else 'A1111/Forge'
         log_file.write_text(log_msg + '\n')
         port = 8188 if ui == 'ComfyUI' else 7860
