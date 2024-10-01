@@ -5,7 +5,7 @@ from pathlib import Path
 import subprocess, time, os, shlex, json, shutil
 from nenen88 import say, download, tempe
 
-repo = f"git clone https://github.com/enricogolfieri/facefusion-open facefusion"
+repo = f"git clone https://github.com/enricogolfieri/facefusion-open FaceFusion"
 
 HOME = Path.home()
 SRC = HOME / '.gutris1'
@@ -15,7 +15,7 @@ MARK = SRC / 'marking.py'
 
 tmp = Path('/tmp')
 vnv = tmp / 'venv'
-WEBUI = HOME / 'facefusion'
+WEBUI = HOME / 'FaceFusion'
 
 os.chdir(HOME)
 
@@ -174,10 +174,10 @@ def webui_widgets():
 
     else:
         webui_list = [
-            ('A1111', HOME / 'asd'),
-            ('Forge', HOME / 'forge'),
+            ('A1111', HOME / 'A1111'),
+            ('Forge', HOME / 'Forge'),
             ('ComfyUI', HOME / 'ComfyUI'),
-            ('reForge', HOME / 'reforge')
+            ('ReForge', HOME / 'ReForge')
         ]
         
         for ui_name, path in webui_list:
