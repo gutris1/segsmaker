@@ -34,7 +34,7 @@ def get_args(ui):
             '--preview-method auto '
             '--use-pytorch-cross-attention'
         ),
-        'reForge': (
+        'ReForge': (
             '--xformers '
             '--cuda-stream '
             '--pin-shared-memory '
@@ -75,8 +75,8 @@ def load_config():
         title.value = '<div class="title"><h1>Forge</h1></div>'
     elif ui == 'ComfyUI':
         title.value = '<div class="title"><h1>ComfyUI</h1></div>'
-    elif ui == 'reForge':
-        title.value = '<div class="title"><h1>reForge</h1></div>'
+    elif ui == 'ReForge':
+        title.value = '<div class="title"><h1>ReForge</h1></div>'
     elif ui == 'FaceFusion':
         title.value = '<div class="title"><h1>Face Fusion</h1></div>'
 
@@ -209,7 +209,7 @@ def launching(ui, skip_comfyui_check=False):
         format="{message}", style="{"
     )
 
-    if ui in ['A1111', 'Forge', 'ComfyUI', 'reForge']:
+    if ui in ['A1111', 'Forge', 'ComfyUI', 'ReForge']:
         log_msg = 'comfyui' if ui == 'ComfyUI' else 'A1111/Forge'
         log_file.write_text(log_msg + '\n')
         port = 8188 if ui == 'ComfyUI' else 7860
