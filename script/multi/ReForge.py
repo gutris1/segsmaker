@@ -256,10 +256,10 @@ def webui_widgets():
 
     else:
         webui_list = [
-            ('A1111', HOME / 'asd'),
-            ('Forge', HOME / 'forge'),
+            ('A1111', HOME / 'A1111'),
+            ('Forge', HOME / 'Forge'),
             ('ComfyUI', HOME / 'ComfyUI'),
-            ('FaceFusion', HOME / 'facefusion')
+            ('FaceFusion', HOME / 'FaceFusion')
         ]
         
         for ui_name, path in webui_list:
