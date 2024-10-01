@@ -26,7 +26,7 @@
     animation: blurBlur 1s;
 }
 
-.a1111, .forge, .comfyui, .facefusion,
+.a1111, .forge, .comfyui, .reforge, .facefusion,
 .button-15, .button-xl, .button-back {
     height: 300px;
     cursor: pointer;
@@ -39,7 +39,7 @@
     overflow: hidden;
     -webkit-mask: linear-gradient(to left, transparent, #000 1px);
 }
-.a1111, .forge, .comfyui, .facefusion {
+.a1111, .forge, .comfyui, .reforge, .facefusion {
     width: 70%;
     filter: brightness(50%);
     transition: 0.4s ease;
@@ -50,7 +50,7 @@
     transition: 0.4s ease;
 }
 
-.a1111::after, .forge::after, .comfyui::after, .facefusion::after,
+.a1111::after, .forge::after, .comfyui::after, .reforge::after, .facefusion::after,
 .button-15::after, .button-xl::after {
     font-family: 'Times New Roman', serif;
     text-align: center;
@@ -76,6 +76,10 @@
     content: 'ComfyUI';
     font-size: 35px;
 }
+.reforge::after {
+    content: 'reForge';
+    font-size: 35px;
+}
 .facefusion::after {
     content: 'Face Fusion';
     font-size: 30px;
@@ -99,6 +103,9 @@
 .comfyui {
     background-image: url('https://raw.githubusercontent.com/comfyanonymous/ComfyUI/master/comfyui_screenshot.png');
 }
+.reforge {
+    background-image: url('https://i.imgur.com/95Afkbg.jpg');
+}
 .facefusion {
     background-image: url('https://i.imgur.com/yaikjH2.png');
 }
@@ -119,7 +126,7 @@
     outline: none;
 }
 
-.a1111:hover, .forge:hover, .comfyui:hover, .facefusion:hover,
+.a1111:hover, .forge:hover, .comfyui:hover, .reforge:hover, .facefusion:hover,
 .button-15:hover, .button-xl:hover {
     filter: brightness(100%);
     width: 100%;
