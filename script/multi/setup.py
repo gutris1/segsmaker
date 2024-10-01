@@ -1,4 +1,4 @@
-from IPython.display import display, HTML, clear_output
+from IPython.display import display, HTML
 from IPython import get_ipython
 from ipywidgets import widgets
 from pathlib import Path
@@ -13,7 +13,7 @@ IMG = SRC / 'loading.png'
 A1111 = SRC / 'A1111.py'
 Forge = SRC / 'Forge.py'
 ComfyUI = SRC / 'ComfyUI.py'
-FaceFusion = SRC / 'Fusion.py'
+FaceFusion = SRC / 'FaceFusion.py'
 
 def load_css():
     with open(CSS, "r") as file:
@@ -56,13 +56,13 @@ def multi_widgets():
         SRC.mkdir(parents=True, exist_ok=True)
 
     x = [
-        f"curl -sLo {CSS} https://github.com/gutris1/segsmaker/raw/main/script/multi/setup.css",
         f"curl -sLo {IMG} https://github.com/gutris1/segsmaker/raw/main/script/loading.png",
+        f"curl -sLo {CSS} https://github.com/gutris1/segsmaker/raw/main/script/multi/setup.css",
         f"curl -sLo {MARK} https://github.com/gutris1/segsmaker/raw/main/script/multi/marking.py",
         f"curl -sLo {A1111} https://github.com/gutris1/segsmaker/raw/main/script/multi/A1111.py",
         f"curl -sLo {Forge} https://github.com/gutris1/segsmaker/raw/main/script/multi/Forge.py",
         f"curl -sLo {ComfyUI} https://github.com/gutris1/segsmaker/raw/main/script/multi/ComfyUI.py",
-        f"curl -sLo {FaceFusion} https://github.com/gutris1/segsmaker/raw/main/script/multi/Fusion.py"
+        f"curl -sLo {FaceFusion} https://github.com/gutris1/segsmaker/raw/main/script/multi/FaceFusion.py"
     ]
 
     for y in x:
