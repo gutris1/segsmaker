@@ -10,7 +10,7 @@ tmp = Path('/tmp')
 vnv = tmp / "venv"
 cwd = Path.cwd()
 
-if cwd == HOME / 'facefusion':
+if cwd == HOME / 'FaceFusion':
     url = 'https://huggingface.co/pantat88/back_up/resolve/main/venv-fusion.tar.lz4'
     need_space = 12 * 1024**3
 else:
@@ -47,7 +47,7 @@ def removing(directory, req_space):
     return freed_space
 
 def trashing():
-    dirs1 = ["asd", "forge", "ComfyUI", "reforge", "facefusion"]
+    dirs1 = ["A1111", "Forge", "ComfyUI", "ReForge", "FaceFusion"]
     dirs2 = ["ckpt", "lora", "controlnet", "svd", "z123"]
     paths = [HOME / name for name in dirs1] + [tmp / name for name in dirs2]
     for path in paths:
@@ -58,7 +58,7 @@ def venv_install():
     while True:
         if vnv.exists():
             size = check_venv(vnv)
-            if cwd == HOME / 'facefusion':
+            if cwd == HOME / 'FaceFusion':
                 if size < 7 * 1024**3:
                     return
             else:
