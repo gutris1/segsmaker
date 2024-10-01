@@ -5,7 +5,7 @@ from pathlib import Path
 import subprocess, time, os, shlex, json, shutil
 from nenen88 import pull, say, download, clone, tempe
 
-repo = f"git clone -q https://github.com/Panchovix/stable-diffusion-webui-reForge reforge"
+repo = f"git clone -q https://github.com/Panchovix/stable-diffusion-webui-reForge ReForge"
 
 HOME = Path.home()
 SRC = HOME / '.gutris1'
@@ -16,7 +16,7 @@ STP = HOME / '.conda/setup.py'
 
 tmp = Path('/tmp')
 vnv = tmp / 'venv'
-WEBUI = HOME / 'reforge'
+WEBUI = HOME / 'ReForge'
 
 os.chdir(HOME)
 
@@ -177,10 +177,10 @@ def webui_install(b):
         display(Image(filename=str(IMG)))
 
     with webui_setup:
-        say("<b>【{red} Installing reForge{d} 】{red}</b>")
+        say("<b>【{red} Installing ReForge{d} 】{red}</b>")
         get_ipython().system(f"{repo}")
 
-        marking(SRC, 'marking.json', 'reForge')
+        marking(SRC, 'marking.json', 'ReForge')
 
         if b == 'button-15':
             sd_15()
