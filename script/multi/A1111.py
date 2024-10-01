@@ -8,22 +8,21 @@ from nenen88 import pull, say, download, clone, tempe
 version = "v1.10.1"
 repo = f"git clone -q -b {version} https://github.com/gutris1/asd"
 
-home = Path.home()
-src = home / '.gutris1'
-css_setup = src / 'setup.css'
-img = src / 'loading.png'
-mark = src / 'marking.py'
-setup = home / '.conda/setup.py'
+HOME = Path.home()
+SRC = HOME / '.gutris1'
+CSS = SRC / 'setup.css'
+IMG = SRC / 'loading.png'
+MARK = SRC / 'marking.py'
+STP = HOME / '.conda/setup.py'
 
 tmp = Path('/tmp')
 vnv = tmp / 'venv'
+WEBUI = HOME / 'asd'
 
-sd = home / 'asd'
-
-os.chdir(home)
+os.chdir(HOME)
 
 def load_css():
-    with open(css_setup, "r") as file:
+    with open(CSS, "r") as file:
         data = file.read()
 
     display(HTML(f"<style>{data}</style>"))
@@ -65,42 +64,42 @@ def venv_install():
 
 def req_list():
     return [
-        f"rm -rf {home}/tmp {home}/.cache/*",
-        f"rm -rf {sd}/models/Stable-diffusion/tmp_ckpt {sd}/models/Lora/tmp_lora {sd}/models/ControlNet",
-        f"mkdir -p {sd}/models/Lora",
-        f"mkdir -p {sd}/models/ESRGAN",
-        f"ln -vs /tmp {home}/tmp",
-        f"ln -vs /tmp/ckpt {sd}/models/Stable-diffusion/tmp_ckpt",
-        f"ln -vs /tmp/lora {sd}/models/Lora/tmp_lora",
-        f"ln -vs /tmp/controlnet {sd}/models/ControlNet"]
+        f"rm -rf {HOME}/tmp {HOME}/.cache/*",
+        f"rm -rf {WEBUI}/models/Stable-diffusion/tmp_ckpt {WEBUI}/models/Lora/tmp_lora {WEBUI}/models/ControlNet",
+        f"mkdir -p {WEBUI}/models/Lora",
+        f"mkdir -p {WEBUI}/models/ESRGAN",
+        f"ln -vs /tmp {HOME}/tmp",
+        f"ln -vs /tmp/ckpt {WEBUI}/models/Stable-diffusion/tmp_ckpt",
+        f"ln -vs /tmp/lora {WEBUI}/models/Lora/tmp_lora",
+        f"ln -vs /tmp/controlnet {WEBUI}/models/ControlNet"]
 
-def sd_clone():
+def webui_req():
     time.sleep(1)
-    pull(f"https://github.com/gutris1/segsmaker sd {sd}")
+    pull(f"https://github.com/gutris1/segsmaker sd {WEBUI}")
 
     tmp_cleaning()
 
-    os.chdir(sd)
+    os.chdir(WEBUI)
     req = req_list()
 
     for lines in req:
         subprocess.run(shlex.split(lines), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     scripts = [
-        f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/controlnet.py {sd}/asd",
-        f"https://github.com/gutris1/segsmaker/raw/main/script/zrok.py {sd}",
-        f"https://github.com/gutris1/segsmaker/raw/main/script/pinggy.py {sd}",
-        f"https://github.com/gutris1/segsmaker/raw/main/script/ngrokk.py {sd}",
-        f"https://github.com/gutris1/segsmaker/raw/main/script/venv.py {sd}",
-        f"https://github.com/gutris1/segsmaker/raw/main/script/multi/segsmaker.py {sd}"]
+        f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/controlnet.py {WEBUI}/asd",
+        f"https://github.com/gutris1/segsmaker/raw/main/script/zrok.py {WEBUI}",
+        f"https://github.com/gutris1/segsmaker/raw/main/script/pinggy.py {WEBUI}",
+        f"https://github.com/gutris1/segsmaker/raw/main/script/ngrokk.py {WEBUI}",
+        f"https://github.com/gutris1/segsmaker/raw/main/script/venv.py {WEBUI}",
+        f"https://github.com/gutris1/segsmaker/raw/main/script/multi/segsmaker.py {WEBUI}"]
 
     upscalers = [
-        f"https://huggingface.co/pantat88/ui/resolve/main/4x-UltraSharp.pth {sd}/models/ESRGAN",
-        f"https://huggingface.co/pantat88/ui/resolve/main/4x-AnimeSharp.pth {sd}/models/ESRGAN",
-        f"https://huggingface.co/pantat88/ui/resolve/main/4x_NMKD-Superscale-SP_178000_G.pth {sd}/models/ESRGAN",
-        f"https://huggingface.co/pantat88/ui/resolve/main/4x_RealisticRescaler_100000_G.pth {sd}/models/ESRGAN",
-        f"https://huggingface.co/pantat88/ui/resolve/main/8x_RealESRGAN.pth {sd}/models/ESRGAN",
-        f"https://huggingface.co/pantat88/ui/resolve/main/4x_foolhardy_Remacri.pth {sd}/models/ESRGAN"]
+        f"https://huggingface.co/pantat88/ui/resolve/main/4x-UltraSharp.pth {WEBUI}/models/ESRGAN",
+        f"https://huggingface.co/pantat88/ui/resolve/main/4x-AnimeSharp.pth {WEBUI}/models/ESRGAN",
+        f"https://huggingface.co/pantat88/ui/resolve/main/4x_NMKD-Superscale-SP_178000_G.pth {WEBUI}/models/ESRGAN",
+        f"https://huggingface.co/pantat88/ui/resolve/main/4x_RealisticRescaler_100000_G.pth {WEBUI}/models/ESRGAN",
+        f"https://huggingface.co/pantat88/ui/resolve/main/8x_RealESRGAN.pth {WEBUI}/models/ESRGAN",
+        f"https://huggingface.co/pantat88/ui/resolve/main/4x_foolhardy_Remacri.pth {WEBUI}/models/ESRGAN"]
 
     line = scripts + upscalers
     for item in line:
@@ -109,36 +108,36 @@ def sd_clone():
     tempe()
 
 def sd_15():
-    sd_clone()
+    webui_req()
 
     extras = [
-        f"https://huggingface.co/pantat88/ui/resolve/main/embeddings.zip {sd}",
-        f"https://huggingface.co/stabilityai/sd-vae-ft-mse-original/resolve/main/vae-ft-mse-840000-ema-pruned.safetensors {sd}/models/VAE"]
+        f"https://huggingface.co/pantat88/ui/resolve/main/embeddings.zip {WEBUI}",
+        f"https://huggingface.co/stabilityai/sd-vae-ft-mse-original/resolve/main/vae-ft-mse-840000-ema-pruned.safetensors {WEBUI}/models/VAE"]
 
     for items in extras:
         download(items)
 
-    get_ipython().system(f"unzip -qo {sd}/embeddings.zip -d {sd}/embeddings && rm {sd}/embeddings.zip")
+    get_ipython().system(f"unzip -qo {WEBUI}/embeddings.zip -d {WEBUI}/embeddings && rm {WEBUI}/embeddings.zip")
 
     say("<br><b>【{red} Installing Extensions{d} 】{red}</b>")
-    os.chdir(sd / "extensions")
-    clone(str(sd / "asd/ext-15.txt"))
+    os.chdir(WEBUI / "extensions")
+    clone(str(WEBUI / "asd/ext-15.txt"))
 
 def sd_xl():
-    sd_clone()
+    webui_req()
 
     extras = [
-        f"https://civitai.com/api/download/models/182974 {sd}/embeddings",
-        f"https://civitai.com/api/download/models/159385 {sd}/embeddings",
-        f"https://civitai.com/api/download/models/159184 {sd}/embeddings",
-        f"https://civitai.com/api/download/models/264491 {sd}/models/VAE XL_VAE_F1.safetensors"]
+        f"https://civitai.com/api/download/models/182974 {WEBUI}/embeddings",
+        f"https://civitai.com/api/download/models/159385 {WEBUI}/embeddings",
+        f"https://civitai.com/api/download/models/159184 {WEBUI}/embeddings",
+        f"https://civitai.com/api/download/models/264491 {WEBUI}/models/VAE XL_VAE_F1.safetensors"]
 
     for items in extras:
         download(items)
 
     say("<br><b>【{red} Installing Extensions{d} 】{red}</b>")
-    os.chdir(sd / "extensions")
-    clone(str(sd / "asd/ext-xl.txt"))
+    os.chdir(WEBUI / "extensions")
+    clone(str(WEBUI / "asd/ext-xl.txt"))
 
 def marking(path, fn, ui):
     txt = path / fn
@@ -168,28 +167,28 @@ def marking(path, fn, ui):
     with open(txt, 'w') as file:
         json.dump(data, file, indent=4)
 
-def sd_install(b):
+def webui_install(b):
     panel.close()
     clear_output()
 
     with loading:
-        display(Image(filename=str(img)))
+        display(Image(filename=str(IMG)))
 
-    with sd_setup:
+    with webui_setup:
         say("<b>【{red} Installing Stable Diffusion{d} 】{red}</b>")
         get_ipython().system(f"{repo}")
 
-        marking(src, 'marking.json', 'A1111')
+        marking(SRC, 'marking.json', 'A1111')
 
         if b == 'button-15':
             sd_15()
         elif b == 'button-xl':
             sd_xl()
 
-        get_ipython().run_line_magic('run', f'{mark}')
+        get_ipython().run_line_magic('run', f'{MARK}')
 
         venv_install()
-        os.chdir(home)
+        os.chdir(HOME)
 
         with loading:
             loading.clear_output(wait=True)
@@ -199,11 +198,11 @@ def go_back(b):
     panel.close()
     clear_output()
 
-    with sd_setup:
-        get_ipython().run_line_magic('run', f'{setup}')
+    with webui_setup:
+        get_ipython().run_line_magic('run', f'{STP}')
 
 loading = widgets.Output()
-sd_setup = widgets.Output()
+webui_setup = widgets.Output()
 
 options = ['button-15', 'button-back', 'button-xl']
 buttons = []
@@ -214,21 +213,28 @@ for btn in options:
     if btn == 'button-back':
         button.on_click(lambda x: go_back(btn))
     else:
-        button.on_click(lambda x, btn=btn: sd_install(btn))
+        button.on_click(lambda x, btn=btn: webui_install(btn))
     buttons.append(button)
 
 panel = widgets.HBox(
     buttons, layout=widgets.Layout(
-        width='600px',
-        height='405px'))
+        width='450px',
+        height='300px'))
 
 panel.add_class("multi-panel")
 
+def check_webui(ui_name, path, mark):
+    if path.exists():
+        print(f'{ui_name} is installed, Uninstall first.')
+        get_ipython().run_line_magic('run', f'{mark}')
+        return True
+    return False
+
 def webui_widgets():
-    if sd.exists():
-        git_dir = sd / '.git'
+    if WEBUI.exists():
+        git_dir = WEBUI / '.git'
         if git_dir.exists():
-            os.chdir(sd)
+            os.chdir(WEBUI)
             commit_hash = subprocess.check_output(['git', 'rev-parse', 'HEAD']).strip().decode('utf-8')
 
             if commit_hash != version:
@@ -236,24 +242,26 @@ def webui_widgets():
                 get_ipython().system("git fetch --tags")
 
         x = [
-            f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/controlnet.py {sd}/asd",
-            f"https://github.com/gutris1/segsmaker/raw/main/script/zrok.py {sd}",
-            f"https://github.com/gutris1/segsmaker/raw/main/script/pinggy.py {sd}",
-            f"https://github.com/gutris1/segsmaker/raw/main/script/ngrokk.py {sd}",
-            f"https://github.com/gutris1/segsmaker/raw/main/script/venv.py {sd}",
-            f"https://github.com/gutris1/segsmaker/raw/main/script/multi/segsmaker.py {sd}"
+            f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/controlnet.py {WEBUI}/asd",
+            f"https://github.com/gutris1/segsmaker/raw/main/script/zrok.py {WEBUI}",
+            f"https://github.com/gutris1/segsmaker/raw/main/script/pinggy.py {WEBUI}",
+            f"https://github.com/gutris1/segsmaker/raw/main/script/ngrokk.py {WEBUI}",
+            f"https://github.com/gutris1/segsmaker/raw/main/script/venv.py {WEBUI}",
+            f"https://github.com/gutris1/segsmaker/raw/main/script/multi/segsmaker.py {WEBUI}"
         ]
 
         for y in x:
             download(y)
 
     else:
-        if any([(home / 'forge').exists(), (home / 'ComfyUI').exists()]):
-            print('Forge is installed, Uninstall first.' if (home / 'forge').exists() else 'ComfyUI is installed, Uninstall first.')
-            get_ipython().run_line_magic('run', f'{mark}')
+        if check_webui('FaceFusion', HOME / 'facefusion', MARK):
+            return
+        elif check_webui('Forge', HOME / 'forge', MARK):
+            return
+        elif check_webui('ComfyUI', HOME / 'ComfyUI', MARK):
             return
 
         load_css()
-        display(panel, sd_setup, loading)
+        display(panel, webui_setup, loading)
 
 webui_widgets()
