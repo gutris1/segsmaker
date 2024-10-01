@@ -254,12 +254,16 @@ def webui_widgets():
             download(y)
 
     else:
-        if check_webui('FaceFusion', HOME / 'facefusion', MARK):
-            return
-        elif check_webui('Forge', HOME / 'forge', MARK):
-            return
-        elif check_webui('ComfyUI', HOME / 'ComfyUI', MARK):
-            return
+        webui_list = [
+            ('Forge', HOME / 'forge'),
+            ('ComfyUI', HOME / 'ComfyUI'),
+            ('reForge', HOME / 'reforge'),
+            ('FaceFusion', HOME / 'facefusion')
+        ]
+        
+        for ui_name, path in webui_list:
+            if check_webui(ui_name, path, MARK):
+                return
 
         load_css()
         display(panel, webui_setup, loading)
