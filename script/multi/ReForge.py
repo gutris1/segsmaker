@@ -46,7 +46,7 @@ def venv_install():
             size = check_venv(vnv)
             if size > 7 * 1024**3:
                 return
-            get_ipython().system(f'rm -rf {vnv}')
+            get_ipython().system(f'rm -rf {vnv}/* {vnv}')
 
         os.chdir(tmp)
 
