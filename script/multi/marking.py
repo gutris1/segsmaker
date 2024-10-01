@@ -40,6 +40,7 @@ def get_webui_paths():
         'A1111': 'asd',
         'Forge': 'forge',
         'ComfyUI': 'ComfyUI',
+        'reForge': 'reforge',
         'FaceFusion': 'facefusion'
     }
 
@@ -47,7 +48,7 @@ def get_webui_paths():
 
     if ui == 'A1111':
         webui_output = webui / 'outputs'
-    elif ui in ('ComfyUI', 'Forge'):
+    elif ui in ('ComfyUI', 'Forge', 'reForge'):
         webui_output = webui / 'output'
     elif ui == 'FaceFusion':
         webui_output = None
@@ -78,6 +79,7 @@ def set_paths(ui):
         'A1111': ('asd', 'extensions', 'embeddings', 'VAE', 'Stable-diffusion', 'Lora'),
         'Forge': ('forge', 'extensions', 'embeddings', 'VAE', 'Stable-diffusion', 'Lora'),
         'ComfyUI': ('ComfyUI', 'custom_nodes', 'embeddings', 'vae', 'checkpoints', 'loras'),
+        'reForge': ('reforge', 'extensions', 'embeddings', 'VAE', 'Stable-diffusion', 'Lora'),
         'FaceFusion': ('facefusion', None, None, None, None, None)
     }
 
@@ -85,7 +87,7 @@ def set_paths(ui):
         webui_name, ext, emb, v, c, l = webui_paths[ui]
         webui = HOME / webui_name if webui_name else None
         models = webui / 'models' if webui else None
-        webui_output = webui / 'outputs' if ui == 'A1111' else webui / 'output' if ui in ('ComfyUI', 'Forge') else None
+        webui_output = webui / 'outputs' if ui == 'A1111' else webui / 'output' if ui in ('ComfyUI', 'Forge', 'reForge') else None
         extensions = webui / ext if ext else None
         embeddings = models / emb if models and emb else None
         vae = models / v if models and v else None
@@ -100,7 +102,7 @@ if marked.exists():
     webui, models, webui_output, extensions, embeddings, vae, ckpt, lora = set_paths(ui)
 
     controlnet_models = (webui / 'asd' / 'controlnet.py') if (webui / 'asd').exists() else None
-    forge_svd = tmp / 'svd' if ui == 'Forge' else None
+    forge_svd = tmp / 'svd' if ui in ['Forge', 'reForge'] else None
     tmp_ckpt = tmp / 'ckpt'
     tmp_lora = tmp / 'lora'
     tempe()
