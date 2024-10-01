@@ -5,7 +5,7 @@ from pathlib import Path
 import subprocess, time, os, shlex, json, shutil
 from nenen88 import pull, say, download, clone, tempe
 
-repo = f"git clone -q https://github.com/lllyasviel/stable-diffusion-webui-forge forge"
+repo = f"git clone -q https://github.com/lllyasviel/stable-diffusion-webui-forge Forge"
 
 HOME = Path.home()
 SRC = HOME / '.gutris1'
@@ -16,7 +16,7 @@ STP = HOME / '.conda/setup.py'
 
 tmp = Path('/tmp')
 vnv = tmp / 'venv'
-WEBUI = HOME / 'forge'
+WEBUI = HOME / 'Forge'
 
 os.chdir(HOME)
 
@@ -257,10 +257,10 @@ def webui_widgets():
 
     else:
         webui_list = [
-            ('A1111', HOME / 'asd'),
+            ('A1111', HOME / 'A1111'),
             ('ComfyUI', HOME / 'ComfyUI'),
-            ('reForge', HOME / 'reforge'),
-            ('FaceFusion', HOME / 'facefusion')
+            ('ReForge', HOME / 'ReForge'),
+            ('FaceFusion', HOME / 'FaceFusion')
         ]
         
         for ui_name, path in webui_list:
