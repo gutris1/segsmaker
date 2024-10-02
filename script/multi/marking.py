@@ -46,9 +46,9 @@ def get_webui_paths():
 
     webui = HOME / webui_paths[ui]
 
-    if ui == 'A1111':
+    if ui in ('A1111', 'ReForge'):
         webui_output = webui / 'outputs'
-    elif ui in ('ComfyUI', 'Forge', 'ReForge'):
+    elif ui in ('ComfyUI', 'Forge'):
         webui_output = webui / 'output'
     elif ui == 'FaceFusion':
         webui_output = None
@@ -87,12 +87,21 @@ def set_paths(ui):
         webui_name, ext, emb, v, c, l = webui_paths[ui]
         webui = HOME / webui_name if webui_name else None
         models = webui / 'models' if webui else None
-        webui_output = webui / 'outputs' if ui == 'A1111' else webui / 'output' if ui in ('ComfyUI', 'Forge', 'ReForge') else None
+        webui_output = (
+            webui / 'outputs' if ui in ('A1111', 'ReForge')
+            else webui / 'output' if ui in ('ComfyUI', 'Forge')
+            else None
+        )
         extensions = webui / ext if ext else None
-        embeddings = models / emb if ui == 'ComfyUI' else webui / emb if ui in ('A1111', 'Forge', 'ReForge') else None
+        embeddings = (
+            models / emb if ui == 'ComfyUI'
+            else webui / emb if ui in ('A1111', 'Forge', 'ReForge')
+            else None
+        )
         vae = models / v if models and v else None
         ckpt = models / c if models and c else None
         lora = models / l if models and l else None
+        
         return webui, models, webui_output, extensions, embeddings, vae, ckpt, lora
 
 if marked.exists():
