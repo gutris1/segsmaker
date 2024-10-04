@@ -7,17 +7,43 @@ from nenen88 import tempe, say, download
 HOME = Path.home()
 IMG = HOME / ".gutris1/loading.png"
 tmp = Path('/tmp')
-vnv = tmp / "venv"
 cwd = Path.cwd()
+
+vnv_FF = tmp / "venv-facefusion"
+vnv_SDT = tmp / "venv-sd-trainer"
+vnv_D = tmp / "venv"
 
 if cwd == HOME / 'FaceFusion':
     url = 'https://huggingface.co/pantat88/back_up/resolve/main/venv-fusion.tar.lz4'
     need_space = 12 * 1024**3
+    vnv = vnv_FF
+elif cwd == HOME / 'SDTrainer':
+    url = 'https://huggingface.co/pantat88/back_up/resolve/main/venv-sd-trainer.tar.lz4'
+    need_space = 14 * 1024**3
+    vnv = vnv_SDT
 else:
     url = 'https://huggingface.co/pantat88/back_up/resolve/main/venv_torch231.tar.lz4'
     need_space = 13 * 1024**3
+    vnv = vnv_D
 
 fn = Path(url).name
+
+def unused_venv():
+    if cwd == HOME / 'FaceFusion':
+        if vnv_SDT.exists():
+            get_ipython().system(f'rm -rf {vnv_SDT}/* {vnv_SDT}')
+        if vnv_D.exists():
+            get_ipython().system(f'rm -rf {vnv_D}/* {vnv_D}')
+    elif cwd == HOME / 'SDTrainer':
+        if vnv_FF.exists():
+            get_ipython().system(f'rm -rf {vnv_FF}/* {vnv_FF}')
+        if vnv_D.exists():
+            get_ipython().system(f'rm -rf {vnv_D}/* {vnv_D}')
+    else:
+        if vnv_FF.exists():
+            get_ipython().system(f'rm -rf {vnv_FF}/* {vnv_FF}')
+        if vnv_SDT.exists():
+            get_ipython().system(f'rm -rf {vnv_SDT}/* {vnv_SDT}')
 
 def check_venv(folder):
     du = get_ipython().getoutput(f'du -s -b {folder}')
@@ -47,7 +73,7 @@ def removing(directory, req_space):
     return freed_space
 
 def trashing():
-    dirs1 = ["A1111", "Forge", "ComfyUI", "ReForge", "FaceFusion"]
+    dirs1 = ["A1111", "Forge", "ComfyUI", "ReForge", "FaceFusion", "SDTrainer"]
     dirs2 = ["ckpt", "lora", "controlnet", "svd", "z123"]
     paths = [HOME / name for name in dirs1] + [tmp / name for name in dirs2]
     for path in paths:
@@ -58,12 +84,10 @@ def venv_install():
     while True:
         if vnv.exists():
             size = check_venv(vnv)
-            if cwd == HOME / 'FaceFusion':
-                if size < 7 * 1024**3:
-                    return
-            else:
-                if size > 7 * 1024**3:
-                    return
+            if cwd == HOME / 'FaceFusion' and size < 7 * 1024**3:
+                return
+            elif size > 7 * 1024**3:
+                return
 
             get_ipython().system(f'rm -rf {vnv}/* {vnv}')
 
@@ -75,13 +99,11 @@ def venv_install():
 
         if req_space > 0:
             print(f'Need space {req_space / 1024**3:.1f} GB for venv')
-            ckpt_tmp, lora_tmp, cn_tmp = tmp / 'ckpt', tmp / 'lora', tmp / 'controlnet'
-
-            req_space -= removing(ckpt_tmp, req_space)
+            req_space -= removing(tmp / 'ckpt', req_space)
             if req_space > 0:
-                req_space -= removing(lora_tmp, req_space)
+                req_space -= removing(tmp / 'lora', req_space)
             if req_space > 0:
-                req_space -= removing(cn_tmp, req_space)
+                req_space -= removing(tmp / 'controlnet', req_space)
 
         os.chdir(tmp)
         say('<br>【{red} Downloading VENV{d} 】{red}')
@@ -99,6 +121,7 @@ def venv_install():
 print('checking venv...')
 tempe()
 trashing()
+unused_venv()
 venv_install()
 clear_output(wait=True)
 os.chdir(cwd)
