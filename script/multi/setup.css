@@ -27,6 +27,7 @@
 }
 
 .a1111, .forge, .comfyui, .reforge, .facefusion,
+.sdtrainer,
 .button-15, .button-xl, .button-back {
     height: 300px;
     cursor: pointer;
@@ -39,7 +40,8 @@
     overflow: hidden;
     -webkit-mask: linear-gradient(to left, transparent, #000 1px);
 }
-.a1111, .forge, .comfyui, .reforge, .facefusion {
+.a1111, .forge, .comfyui, .reforge, .facefusion,
+.sdtrainer {
     width: 70%;
     filter: brightness(50%);
     transition: 0.4s ease;
@@ -50,7 +52,42 @@
     transition: 0.4s ease;
 }
 
+.a1111 {
+    background-image: url('https://i.imgur.com/qIYOTBp.jpg');
+}
+.forge {
+    background-image: url('https://i.imgur.com/XCCKSRW.png');
+}
+.comfyui {
+    background-image: url('https://raw.githubusercontent.com/comfyanonymous/ComfyUI/master/comfyui_screenshot.png');
+}
+.reforge {
+    background-image: url('https://i.imgur.com/95Afkbg.jpg');
+}
+.facefusion {
+    background-image: url('https://i.imgur.com/1R9rDO6.png');
+}
+.sdtrainer {
+    background-image: url('https://i.imgur.com/Ga2GV5F.png');
+}
+.button-15 {
+    background-image: url('https://i.imgur.com/2jsyKzZ.jpg');
+}
+.button-xl {
+    background-image: url('https://i.imgur.com/2WFq4LL.png');
+}
+
+.button-back {
+    background-image: url('https://icons.veryicon.com/png/System/Longhorn%20R2/Back%20Button.png');
+    border: 1px solid transparent;
+    background-color: transparent;
+    background-size: 80%;
+    cursor: pointer;
+    outline: none;
+}
+
 .a1111::after, .forge::after, .comfyui::after, .reforge::after, .facefusion::after,
+.sdtrainer::after,
 .button-15::after, .button-xl::after {
     font-family: 'Times New Roman', serif;
     text-align: center;
@@ -82,9 +119,12 @@
 }
 .facefusion::after {
     content: 'Face Fusion';
-    font-size: 30px;
+    font-size: 35px;
 }
-
+.sdtrainer::after {
+    content: 'SD Trainer';
+    font-size: 35px;
+}
 .button-15::after {
     content: 'SD 1.5';
     font-size: 40px;
@@ -94,39 +134,8 @@
     font-size: 40px;
 }
 
-.a1111 {
-    background-image: url('https://i.imgur.com/qIYOTBp.jpg');
-}
-.forge {
-    background-image: url('https://i.imgur.com/XCCKSRW.png');
-}
-.comfyui {
-    background-image: url('https://raw.githubusercontent.com/comfyanonymous/ComfyUI/master/comfyui_screenshot.png');
-}
-.reforge {
-    background-image: url('https://i.imgur.com/95Afkbg.jpg');
-}
-.facefusion {
-    background-image: url('https://i.imgur.com/yaikjH2.png');
-}
-
-.button-15 {
-    background-image: url('https://i.imgur.com/2jsyKzZ.jpg');
-}
-.button-xl {
-    background-image: url('https://i.imgur.com/2WFq4LL.png');
-}
-
-.button-back {
-    background-image: url('https://icons.veryicon.com/png/System/Longhorn%20R2/Back%20Button.png');
-    border: 1px solid transparent;
-    background-color: transparent;
-    background-size: 80%;
-    cursor: pointer;
-    outline: none;
-}
-
 .a1111:hover, .forge:hover, .comfyui:hover, .reforge:hover, .facefusion:hover,
+.sdtrainer:hover,
 .button-15:hover, .button-xl:hover {
     filter: brightness(100%);
     width: 100%;
