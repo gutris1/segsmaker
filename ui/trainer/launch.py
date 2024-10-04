@@ -20,7 +20,7 @@ def logging_launch():
     return logging.getLogger()
 
 def launch(logger):
-    webui = subprocess.Popen(['/tmp/venv/bin/python3', 'facefusion.py', 'run'],
+    webui = subprocess.Popen(['/tmp/venv-sd-trainer/bin/python3', 'gui.py'],
                              stdout=subprocess.PIPE, stderr=sys.stdout, text=True)
 
     local_url = False
@@ -58,7 +58,7 @@ def load_config():
             ngrok_thread.join()
             print(ngrok_queue.get())
             print('wait for the local URL')
-            os.system(f"/tmp/venv/bin/python3 facefusion.py run")
+            os.system(f"/tmp/venv-sd-trainer/bin/python3 gui.py")
         except KeyboardInterrupt:
             pass
     else:
