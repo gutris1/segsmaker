@@ -57,6 +57,8 @@ def venv_install():
 def req_list():
     return [
         f"rm -rf {HOME}/tmp {HOME}/.cache/*",
+        f"mkdir -p {WEBUI}/dataset",
+        f"mkdir -p {WEBUI}/VAE",
         f"ln -vs /tmp {HOME}/tmp"]
 
 def webui_req():
