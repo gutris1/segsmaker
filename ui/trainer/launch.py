@@ -1,13 +1,13 @@
 import os
 os.environ['MPLBACKEND'] = 'gtk3agg'
-import matplotlib, subprocess, sys, logging, time, json
+import matplotlib, subprocess, sys, logging, json, re
 from pathlib import Path
-from threading import Timer
-from queue import Queue
 from pyngrok import ngrok
 
 SRC = Path.home() / '.gutris1'
 MARK = SRC / 'marking.json'
+RST = '\033[0m'
+ORG = '\033[38;5;208m'
 
 def logging_launch():
     log_file = Path('segsmaker.log')
@@ -19,50 +19,58 @@ def logging_launch():
     )
     return logging.getLogger()
 
-def launch(logger):
-    webui = subprocess.Popen(['/tmp/venv-sd-trainer/bin/python3', 'gui.py'],
-                             stdout=subprocess.PIPE, stderr=sys.stdout, text=True)
+def launch(logger, args):
+    webui = subprocess.Popen(['/tmp/venv-sd-trainer/bin/python3', 'gui.py'] + args,
+                             stdout=sys.stdout, stderr=subprocess.PIPE, text=True)
 
     local_url = False
-    for line in webui.stdout:
+    for line in webui.stderr:
         print(line, end='')
         logger.info(line.strip())
         if not local_url:
-            if 'Running on local URL' in line:
+            if any(keyword in line for keyword in ['http://127.0.0.1:6006/']):
                 local_url = True
-                for handler in logger.handlers[:]:
-                    handler.flush()
-                    handler.close()
-                    logger.removeHandler(handler)
-    webui.wait()
+                break
 
-def load_config():
+    return webui
+
+def ngrok_tunnel(port, auth_token):
+    ngrok.set_auth_token(auth_token)
+    public_url = ngrok.connect(port)
+
+    match = re.search(r'"(https?://[^"]+)"', str(public_url))
+    if match:
+        return match.group(1)
+    return None
+
+def load_config(logger):
     config = json.load(MARK.open('r')) if MARK.exists() else {}
     tunnel = config.get('tunnel')
 
     if tunnel == 'NGROK':
-        def ngrok_tunnel(port, queue, auth_token):
-            ngrok.set_auth_token(auth_token)
-            url = ngrok.connect(port)
-            queue.put(url)
-
         try:
             if len(sys.argv) < 2:
-                sys.exit(1)
+                sys.exit("Missing NGROK Token")
 
             token = sys.argv[1]
-            
-            ngrok_queue = Queue()
-            ngrok_thread = Timer(2, ngrok_tunnel, args=(7860, ngrok_queue, token))
-            ngrok_thread.start()
-            ngrok_thread.join()
-            print(ngrok_queue.get())
-            print('wait for the local URL')
-            os.system(f"/tmp/venv-sd-trainer/bin/python3 gui.py")
+            args = sys.argv[2:]
+            port = 28000
+
+            webui = launch(logger, args)
+
+            public_url = ngrok_tunnel(port, token)
+            if public_url:
+                print(f'\n{ORG}▶{RST} NGROK {ORG}:{RST} {public_url}')
+
+            webui.wait()
+            ngrok.disconnect(public_url)
+
         except KeyboardInterrupt:
             pass
     else:
-        launch(logger)
+        args = sys.argv[1:]
+        webui = launch(logger, args)
+        webui.wait()
 
 if __name__ == '__main__':
     if 'LD_PRELOAD' not in os.environ:
@@ -70,6 +78,6 @@ if __name__ == '__main__':
 
     logger = logging_launch()
     try:
-        load_config()
+        load_config(logger)
     except KeyboardInterrupt:
         pass
