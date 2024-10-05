@@ -5,7 +5,6 @@ from pathlib import Path
 import subprocess, time, os, shlex, json, shutil
 from nenen88 import say, download, tempe
 
-
 repo = f"git clone https://github.com/enricogolfieri/facefusion-open FaceFusion"
 
 HOME = Path.home()
@@ -15,7 +14,7 @@ IMG = SRC / 'loading.png'
 MARK = SRC / 'marking.py'
 
 tmp = Path('/tmp')
-vnv = tmp / 'venv'
+vnv = tmp / 'venv-fusion'
 WEBUI = HOME / 'FaceFusion'
 
 os.chdir(HOME)
@@ -39,34 +38,6 @@ def tmp_cleaning():
             shutil.rmtree(item)
         elif item.is_file() and item != vnv:
             item.unlink()
-
-def venv_install():
-    url = 'https://huggingface.co/pantat88/back_up/resolve/main/venv-fusion.tar.lz4'
-    fn = Path(url).name
-
-    def check_venv(folder):
-        du = get_ipython().getoutput(f'du -s -b {folder}')
-        return int(du[0].split()[0]) if du else 0
-
-    while True:
-        if vnv.exists():
-            size = check_venv(vnv)
-            if size < 7 * 1024**3:
-                return
-            get_ipython().system(f'rm -rf {vnv}/* {vnv}')
-
-        os.chdir(tmp)
-
-        say("<br><b>【{red} Installing VENV{d} 】{red}</b>")
-        download(url)
-
-        get_ipython().system(f'pv {fn} | lz4 -d | tar xf -')
-        Path(fn).unlink()
-
-        get_ipython().system(f'rm -rf {vnv / "bin" / "pip*"}')
-        get_ipython().system(f'rm -rf {vnv / "bin" / "python*"}')
-        get_ipython().system(f'python3 -m venv {vnv}')
-        get_ipython().system(f'{vnv / "bin" / "python3"} -m pip install -q --upgrade --force-reinstall pip')
 
 def req_list():
     return [
@@ -134,10 +105,10 @@ def webui_install():
         webui_req()
         get_ipython().run_line_magic('run', f'{MARK}')
 
-        venv_install()
-        os.chdir(HOME)
-
         with loading:
+            loading.clear_output(wait=True)
+            get_ipython().run_line_magic('run', 'venv.py')
+            os.chdir(HOME)
             loading.clear_output(wait=True)
             say("<b>【{red} Done{d} 】{red}</b>")
 
@@ -171,14 +142,13 @@ def webui_widgets():
         for y in x:
             download(y)
 
-        venv_install()
-
     else:
         webui_list = [
             ('A1111', HOME / 'A1111'),
             ('Forge', HOME / 'Forge'),
             ('ComfyUI', HOME / 'ComfyUI'),
-            ('ReForge', HOME / 'ReForge')
+            ('ReForge', HOME / 'ReForge'),
+            ('SDTrainer', HOME / 'SDTrainer')
         ]
         
         for ui_name, path in webui_list:
