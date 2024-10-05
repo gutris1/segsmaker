@@ -49,28 +49,22 @@ def load_config(logger):
     config = json.load(MARK.open('r')) if MARK.exists() else {}
     tunnel = config.get('tunnel')
 
+    args = sys.argv[1:]
+
     if tunnel == 'NGROK':
-        try:
-            if len(sys.argv) < 2:
-                sys.exit("Missing NGROK Token")
+        token = config.get('ngrok_token', '').strip()
+        if not token:
+            sys.exit("Missing NGROK Token")
 
-            token = sys.argv[1]
-            args = sys.argv[2:]
-            port = 7860
+        port = 7860
+        webui = launch(logger, args)
+        url = ngrok_tunnel(port, token)
+        print(f'\n{ORG}▶{RST} NGROK {ORG}:{RST} {url}')
 
-            webui = launch(logger, args)
+        webui.wait()
+        ngrok.disconnect(url)
 
-            url = ngrok_tunnel(port, token)
-            if url:
-                print(f'\n{ORG}▶{RST} NGROK {ORG}:{RST} {url}')
-
-            webui.wait()
-            ngrok.disconnect(url)
-
-        except KeyboardInterrupt:
-            pass
     else:
-        args = sys.argv[1:]
         webui = launch(logger, args)
         webui.wait()
 
@@ -79,6 +73,7 @@ if __name__ == '__main__':
         os.environ['LD_PRELOAD'] = '/home/studio-lab-user/.conda/envs/default/lib/libtcmalloc_minimal.so.4'
 
     logger = logging_launch()
+
     try:
         load_config(logger)
     except KeyboardInterrupt:
