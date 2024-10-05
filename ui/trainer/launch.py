@@ -1,6 +1,6 @@
 import os
 os.environ['MPLBACKEND'] = 'gtk3agg'
-import matplotlib, subprocess, sys, logging, json, re
+import matplotlib, subprocess, sys, logging, json, re, shlex
 from pathlib import Path
 from pyngrok import ngrok
 
@@ -20,8 +20,8 @@ def logging_launch():
     return logging.getLogger()
 
 def launch(logger, args):
-    webui = subprocess.Popen(['/tmp/venv-sd-trainer/bin/python3', 'gui.py'] + args,
-                             stdout=sys.stdout, stderr=subprocess.PIPE, text=True)
+    cmd = f"/tmp/venv-sd-trainer/bin/python3 gui.py {' '.join(shlex.quote(arg) for arg in args)}"
+    webui = subprocess.Popen(shlex.split(cmd), stdout=sys.stdout, stderr=subprocess.PIPE, text=True)
 
     local_url = False
     for line in webui.stderr:
