@@ -12,7 +12,7 @@ IMG = SRC / 'loading.png'
 tmp = Path('/tmp')
 cwd = Path.cwd()
 
-vnv_FF = tmp / "venv-facefusion"
+vnv_FF = tmp / "venv-fusion"
 vnv_SDT = tmp / "venv-sd-trainer"
 vnv_D = tmp / "venv"
 
@@ -37,15 +37,15 @@ def load_config():
     return ui, url, need_space, vnv, fn
 
 def unused_venv():
-    if vnv_FF.exists() or vnv_SDT.exists() or vnv_D.exists():
-        if vnv == vnv_FF:
-            rmf = f'rm -rf {vnv_SDT}/* {vnv_SDT} {vnv_D}/* {vnv_D}'
-            get_ipython().system(rmf)
-        elif vnv == vnv_SDT:
-            rmf = f'rm -rf {vnv_FF}/* {vnv_FF} {vnv_D}/* {vnv_D}'
-            get_ipython().system(rmf)
-        else:
-            rmf = f'rm -rf {vnv_FF}/* {vnv_FF} {vnv_SDT}/* {vnv_SDT}'
+    if any(venv.exists() for venv in [vnv_FF, vnv_SDT, vnv_D]):
+        vnv_list = {
+            vnv_FF: [vnv_SDT, vnv_D],
+            vnv_SDT: [vnv_FF, vnv_D],
+            vnv_D: [vnv_FF, vnv_SDT]
+        }.get(vnv)
+
+        if vnv_list:
+            rmf = f'rm -rf {" ".join(f"{venv}/* {venv}" for venv in vnv_list)}'
             get_ipython().system(rmf)
 
 def check_venv(folder):
