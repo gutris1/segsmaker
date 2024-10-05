@@ -241,6 +241,7 @@ def launching(ui, skip_comfyui_check=False):
             run_tunnel(cmd, configs, port)
 
 def tunnel_cmd(tunnel_value, port, args, FF, SDT):
+    global py
     if FF:
         display(Image(filename=str(IMG)))
         clear_output(wait=True)
@@ -283,18 +284,22 @@ def tunnel_configs(tunnel_value, port):
     return config_list.get(tunnel_value)
 
 def run_tunnel(cmd, configs, port):
-    from cupang import Tunnel as Alice_Zuberg
+    try:
+        from cupang import Tunnel as Alice_Zuberg
 
-    if tunnel.value == 'ZROK':
-        zrok_enable()
+        if tunnel.value == 'ZROK':
+            zrok_enable()
 
-    Alice_Synthesis_Thirty = Alice_Zuberg(port)
-    Alice_Synthesis_Thirty.logger.setLevel(logging.DEBUG)
-    Alice_Synthesis_Thirty.add_tunnel(command=configs['command'], name=configs['name'], pattern=configs['pattern'])
-    Alice_Synthesis_Thirty.check_local_port = False
+        Alice_Synthesis_Thirty = Alice_Zuberg(port)
+        Alice_Synthesis_Thirty.logger.setLevel(logging.DEBUG)
+        Alice_Synthesis_Thirty.add_tunnel(command=configs['command'], name=configs['name'], pattern=configs['pattern'])
+        Alice_Synthesis_Thirty.check_local_port = False
 
-    with Alice_Synthesis_Thirty:
-        get_ipython().system(cmd)
+        with Alice_Synthesis_Thirty:
+            get_ipython().system(cmd)
+
+    except KeyboardInterrupt:
+        pass
 
 def waiting(condition, is_ready):
     with condition:
