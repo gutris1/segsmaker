@@ -10,11 +10,18 @@ you can find me here https://discord.gg/k5BwmmvJJU <br /><br />
 
 
 # Changelog
-### 2024-10-01
+### 2024-10-05
+- <code>[SD-Trainer](https://github.com/Akegarasu/lora-scripts)</code> webui added.<br>
+
+![Screenshot_1](https://github.com/user-attachments/assets/055a5391-834f-4343-b0af-3c180df480dd)
+
+
+<details><summary>2024-10-01</summary><br>
+
 - ReForge and Face Fusion webui Added.
 
 ![Screenshot_1](https://github.com/user-attachments/assets/869d4277-da52-46f4-a53e-ba530a7a1df3)
-
+</details>
 
 <details><summary>2024-07-25</summary><br>
 

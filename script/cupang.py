@@ -1,6 +1,6 @@
 import sys
-if sys.version_info < (3, 8):
-    raise RuntimeError(f"Minimum python version is 3.8, you have {sys.version}")
+if sys.version_info < (3, 10, 6):
+    raise RuntimeError(f"Minimum Python version is 3.10.6, you have {sys.version}")
 
 import logging
 import os
@@ -501,7 +501,9 @@ class Tunnel:
                 RST = '\033[0m'
                 ORG = '\033[38;5;208m'
                 TNL = f'{ORG}▶{RST} {name} {ORG}:{RST}'
-                print(f"\n{TNL} {url}")
+
+                print(f"\n{TNL} {url}\n")
+
         self.printed.set()
 
     def _print(self) -> None:
@@ -520,11 +522,20 @@ class Tunnel:
                 if any('A1111/Forge' in z for z in x):
                     if any('Running on local URL' in z for z in x):
                         L = True
-                        break 
+                        break
+                if any('Face-Fusion' in z for z in x):
+                    if any('Running on local URL' in z for z in x):
+                        L = True
+                        break
+                if any('SD-Trainer' in z for z in x):
+                    if any('http://127.0.0.1:6006/' in z for z in x):
+                        L = True
+                        break
         if L:
             if D == 'ZROK':
                 g = Path(f'tunnel_{D}.log')
                 l = g.read_text()
                 if "ERROR" in l:
                     print(f"\n{l.strip()}")
+
             self._print_urls()

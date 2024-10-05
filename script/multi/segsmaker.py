@@ -42,7 +42,8 @@ def get_args(ui):
             '--disable-console-progressbars '
             '--theme dark'
         ),
-        'FaceFusion': ''
+        'FaceFusion': '',
+        'SDTrainer': ''
     }
 
     return args_line.get(ui, '')
@@ -79,6 +80,8 @@ def load_config():
         title.value = '<div class="title"><h1>ReForge</h1></div>'
     elif ui == 'FaceFusion':
         title.value = '<div class="title"><h1>Face Fusion</h1></div>'
+    elif ui == 'SDTrainer':
+        title.value = '<div class="title"><h1>SD Trainer</h1></div>'
 
 def save_config(zrok_token, ngrok_token, args1, args2, tunnel):
     config = {}
@@ -218,12 +221,17 @@ def launching(ui, skip_comfyui_check=False):
             get_ipython().system(f'{py} apotek.py')
             clear_output(wait=True)
 
-        tunnel_list, cmd = tunnel_cmd(tunnel.value, port, args, FF=False)
+        tunnel_list, cmd = tunnel_cmd(tunnel.value, port, args, FF=False, SDT=False)
 
     elif ui == 'FaceFusion':
-        log_file.write_text('A1111/Forge\n')
+        log_file.write_text('Face-Fusion\n')
         port = 7860
-        tunnel_list, cmd = tunnel_cmd(tunnel.value, port, args, FF=True)
+        tunnel_list, cmd = tunnel_cmd(tunnel.value, port, args, FF=True, SDT=False)
+
+    elif ui == 'SDTrainer':
+        log_file.write_text('SD-Trainer\n')
+        port = 28000
+        tunnel_list, cmd = tunnel_cmd(tunnel.value, port, args, FF=False, SDT=True)
 
     if cmd:        
         if tunnel.value == 'NGROK':
@@ -232,13 +240,22 @@ def launching(ui, skip_comfyui_check=False):
             configs = tunnel_configs(tunnel.value, port)
             run_tunnel(cmd, configs, port)
 
-def tunnel_cmd(tunnel_value, port, args, FF):
+def tunnel_cmd(tunnel_value, port, args, FF, SDT):
     if FF:
         display(Image(filename=str(IMG)))
+        clear_output(wait=True)
+        py = '/tmp/venv-fusion/bin/python3'
         tunnel_list = {
-            'Pinggy': f'{py} launch.py',
-            'ZROK': f'{py} launch.py',
-            'NGROK': f'{py} launch.py {ngrok_token.value}'
+            'Pinggy': f'{py} launch.py {args}',
+            'ZROK': f'{py} launch.py {args}',
+            'NGROK': f'{py} launch.py {ngrok_token.value} {args}'
+        }
+    elif SDT:
+        py = 'HF_HOME=huggingface /tmp/venv-sd-trainer/bin/python3'
+        tunnel_list = {
+            'Pinggy': f'{py} launch.py {args}',
+            'ZROK': f'{py} launch.py {args}',
+            'NGROK': f'{py} launch.py {ngrok_token.value} {args}'
         }
     else:
         tunnel_list = {
@@ -318,9 +335,11 @@ if __name__ == '__main__':
         if args.skip_widget:
             load_config()
             launching(ui, skip_comfyui_check=args.skip_comfyui_check)
+
         else:
             display_widgets()
             p = Process(target=waiting, args=(condition, is_ready))
             p.start()
+
     except KeyboardInterrupt:
         pass

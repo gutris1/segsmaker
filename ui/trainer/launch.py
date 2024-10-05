@@ -20,15 +20,15 @@ def logging_launch():
     return logging.getLogger()
 
 def launch(logger, args):
-    cmd = f"/tmp/venv-fusion/bin/python3 facefusion.py run {' '.join(shlex.quote(arg) for arg in args)}"
-    webui = subprocess.Popen(shlex.split(cmd), stdout=subprocess.PIPE, stderr=sys.stdout, text=True)
+    cmd = f"/tmp/venv-sd-trainer/bin/python3 gui.py {' '.join(shlex.quote(arg) for arg in args)}"
+    webui = subprocess.Popen(shlex.split(cmd), stdout=sys.stdout, stderr=subprocess.PIPE, text=True)
 
     local_url = False
-    for line in webui.stdout:
+    for line in webui.stderr:
         print(line, end='')
         logger.info(line.strip())
         if not local_url:
-            if any(keyword in line for keyword in ['Running on local URL']):
+            if any(keyword in line for keyword in ['http://127.0.0.1:6006/']):
                 local_url = True
                 for handler in logger.handlers:
                     logger.removeHandler(handler)
@@ -56,7 +56,7 @@ def load_config(logger):
 
             token = sys.argv[1]
             args = sys.argv[2:]
-            port = 7860
+            port = 28000
 
             webui = launch(logger, args)
 

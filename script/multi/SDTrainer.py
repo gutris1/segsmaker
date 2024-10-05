@@ -5,7 +5,7 @@ from pathlib import Path
 import subprocess, time, os, shlex, json, shutil
 from nenen88 import say, download, tempe
 
-repo = f"git clone https://github.com/enricogolfieri/facefusion-open FaceFusion"
+repo = f"git clone --recurse-submodules https://github.com/Akegarasu/lora-scripts SDTrainer"
 
 HOME = Path.home()
 SRC = HOME / '.gutris1'
@@ -14,23 +14,10 @@ IMG = SRC / 'loading.png'
 MARK = SRC / 'marking.py'
 
 tmp = Path('/tmp')
-vnv = tmp / 'venv-fusion'
-WEBUI = HOME / 'FaceFusion'
+vnv = tmp / 'venv-sd-trainer'
+WEBUI = HOME / 'SDTrainer'
 
 os.chdir(HOME)
-
-def check_ffmpeg():
-    installed = get_ipython().getoutput('conda list ffmpeg')
-    if not any('ffmpeg' in line for line in installed):
-        cmd_list = [
-            ('conda install -qyc conda-forge ffmpeg', '\ninstalling ffmpeg...'),
-            ('conda clean -qy --all', None)
-        ]
-
-        for cmd, msg in cmd_list:
-            if msg is not None:
-                print(msg)
-            subprocess.run(shlex.split(cmd), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 def tmp_cleaning():
     for item in tmp.iterdir():
@@ -42,6 +29,8 @@ def tmp_cleaning():
 def req_list():
     return [
         f"rm -rf {HOME}/tmp {HOME}/.cache/*",
+        f"mkdir -p {WEBUI}/dataset",
+        f"mkdir -p {WEBUI}/VAE",
         f"ln -vs /tmp {HOME}/tmp"]
 
 def webui_req():
@@ -54,7 +43,7 @@ def webui_req():
         subprocess.run(shlex.split(lines), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     scripts = [
-        f"https://github.com/gutris1/segsmaker/raw/main/ui/ff/launch.py {WEBUI}",
+        f"https://github.com/gutris1/segsmaker/raw/main/ui/trainer/launch.py {WEBUI}",
         f"https://github.com/gutris1/segsmaker/raw/main/script/venv.py {WEBUI}",
         f"https://github.com/gutris1/segsmaker/raw/main/script/multi/segsmaker.py {WEBUI}"]
 
@@ -96,12 +85,10 @@ def webui_install():
         display(Image(filename=str(IMG)))
 
     with webui_setup:
-        say("<b>【{red} Installing Face Fusion{d} 】{red}</b>")
+        say("<b>【{red} Installing SD Trainer{d} 】{red}</b>")
         get_ipython().system(f"{repo}")
 
-        check_ffmpeg()
-
-        marking(SRC, 'marking.json', 'FaceFusion')
+        marking(SRC, 'marking.json', 'SDTrainer')
         webui_req()
         get_ipython().run_line_magic('run', f'{MARK}')
 
@@ -129,11 +116,11 @@ def webui_widgets():
             os.chdir(WEBUI)
             commit_hash = subprocess.check_output(['git', 'rev-parse', 'HEAD']).strip().decode('utf-8')
 
-            get_ipython().system("git pull origin master")
+            get_ipython().system("git pull origin main")
             get_ipython().system("git fetch --tags")
 
         x = [
-            f"https://github.com/gutris1/segsmaker/raw/main/ui/ff/launch.py {WEBUI}",
+            f"https://github.com/gutris1/segsmaker/raw/main/ui/trainer/launch.py {WEBUI}",
             f"https://github.com/gutris1/segsmaker/raw/main/script/venv.py {WEBUI}",
             f"https://github.com/gutris1/segsmaker/raw/main/script/multi/segsmaker.py {WEBUI}"
         ]
@@ -148,7 +135,7 @@ def webui_widgets():
             ('Forge', HOME / 'Forge'),
             ('ComfyUI', HOME / 'ComfyUI'),
             ('ReForge', HOME / 'ReForge'),
-            ('SDTrainer', HOME / 'SDTrainer')
+            ('FaceFusion', HOME / 'FaceFusion')
         ]
         
         for ui_name, path in webui_list:
