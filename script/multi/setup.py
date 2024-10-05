@@ -58,10 +58,10 @@ for btn in row2:
     button.on_click(lambda x, btn=btn: selection(btn))
     buttons2.append(button)
     
-hbox1 = widgets.HBox(buttons1, layout=widgets.Layout(width='630px', height='305px'))
-hbox2 = widgets.HBox(buttons2, layout=widgets.Layout(width='630px', height='305px'))
+hbox1 = widgets.HBox(buttons1, layout=widgets.Layout(width='630px', height='300px'))
+hbox2 = widgets.HBox(buttons2, layout=widgets.Layout(width='630px', height='300px'))
 
-multi_panel = widgets.VBox([hbox1, hbox2], layout=widgets.Layout(width='600px', height='610px'))
+multi_panel = widgets.VBox([hbox1, hbox2], layout=widgets.Layout(width='600px', height='600px'))
 multi_panel.add_class('multi-panel')
 
 def multi_widgets():
