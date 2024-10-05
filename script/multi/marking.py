@@ -11,20 +11,9 @@ tmp = Path('/tmp')
 
 def purge():
     var_list = [
-        'webui',
-        'models',
-        'webui_output',
-        'extensions',
-        'embeddings',
-        'vae',
-        'ckpt',
-        'lora',
-        'tmp_ckpt',
-        'tmp_lora',
-        'forge_svd',
-        'controlnet_models'
+        'webui', 'models', 'webui_output', 'extensions', 'embeddings',
+        'vae', 'ckpt', 'lora', 'tmp_ckpt', 'tmp_lora', 'forge_svd', 'controlnet_models'
     ]
-
     for var in var_list:
         if var in globals():
             del globals()[var]
@@ -44,18 +33,12 @@ def get_webui_paths():
         'FaceFusion': 'FaceFusion',
         'SDTrainer': 'SDTrainer'
     }
-
-    webui = HOME / webui_paths[ui]
-
-    if ui in ('A1111', 'ReForge'):
-        webui_output = webui / 'outputs'
-    elif ui in ('ComfyUI', 'Forge', 'SDTrainer'):
-        webui_output = webui / 'output'
-    elif ui == 'FaceFusion':
-        webui_output = None
-    else:
-        webui_output = None
-
+    webui = HOME / webui_paths[ui] if ui in webui_paths else None
+    webui_output = (
+        webui / 'outputs' if ui in ('A1111', 'ReForge') else
+        webui / 'output' if ui in ('ComfyUI', 'Forge', 'SDTrainer') else
+        None
+    )
     return webui, webui_output
 
 @register_line_magic
@@ -88,18 +71,22 @@ def set_paths(ui):
     if ui in webui_paths:
         webui_name, ext, emb, v, c, l = webui_paths[ui]
         webui = HOME / webui_name if webui_name else None
-        models = webui / 'models' if webui else None
+
+        models = webui if ui == 'SDTrainer' else (webui / 'models' if webui else None)
+
         webui_output = (
-            webui / 'outputs' if ui in ('A1111', 'ReForge')
-            else webui / 'output' if ui in ('ComfyUI', 'Forge', 'SDTrainer')
-            else None
+            webui / 'outputs' if ui in ('A1111', 'ReForge') else
+            webui / 'output' if ui in ('ComfyUI', 'Forge', 'SDTrainer') else
+            None
         )
+
         extensions = webui / ext if ext else None
         embeddings = (
-            models / emb if ui == 'ComfyUI'
-            else webui / emb if ui in ('A1111', 'Forge', 'ReForge')
-            else None
+            models / emb if ui == 'ComfyUI' else
+            webui / emb if ui in ('A1111', 'Forge', 'ReForge') else
+            None
         )
+
         vae = models / v if models and v else None
         ckpt = models / c if models and c else None
         lora = models / l if models and l else None
@@ -116,4 +103,5 @@ if marked.exists():
     forge_svd = tmp / 'svd' if ui in ['Forge', 'ReForge'] else None
     tmp_ckpt = tmp / 'ckpt'
     tmp_lora = tmp / 'lora'
+
     tempe()
