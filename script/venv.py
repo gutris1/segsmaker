@@ -1,11 +1,14 @@
 from IPython.display import clear_output, Image, display
 from IPython import get_ipython
 from pathlib import Path
-import subprocess, os, shlex
+import subprocess, os, shlex, json
 from nenen88 import tempe, say, download
 
 HOME = Path.home()
-IMG = HOME / ".gutris1/loading.png"
+SRC = HOME / '.gutris1'
+MARK = SRC / 'marking.json'
+IMG = SRC / 'loading.png'
+
 tmp = Path('/tmp')
 cwd = Path.cwd()
 
@@ -13,37 +16,37 @@ vnv_FF = tmp / "venv-facefusion"
 vnv_SDT = tmp / "venv-sd-trainer"
 vnv_D = tmp / "venv"
 
-if cwd == HOME / 'FaceFusion':
-    url = 'https://huggingface.co/pantat88/back_up/resolve/main/venv-fusion.tar.lz4'
-    need_space = 12 * 1024**3
-    vnv = vnv_FF
-elif cwd == HOME / 'SDTrainer':
-    url = 'https://huggingface.co/pantat88/back_up/resolve/main/venv-sd-trainer.tar.lz4'
-    need_space = 14 * 1024**3
-    vnv = vnv_SDT
-else:
-    url = 'https://huggingface.co/pantat88/back_up/resolve/main/venv_torch231.tar.lz4'
-    need_space = 13 * 1024**3
-    vnv = vnv_D
+def load_config():
+    config = json.load(MARK.open('r')) if MARK.exists() else {}
+    ui = config.get('ui')
 
-fn = Path(url).name
+    if ui == 'FaceFusion':
+        url = 'https://huggingface.co/pantat88/back_up/resolve/main/venv-fusion.tar.lz4'
+        need_space = 12 * 1024**3
+        vnv = vnv_FF
+    elif ui == 'SDTrainer':
+        url = 'https://huggingface.co/pantat88/back_up/resolve/main/venv-sd-trainer.tar.lz4'
+        need_space = 14 * 1024**3
+        vnv = vnv_SDT
+    else:
+        url = 'https://huggingface.co/pantat88/back_up/resolve/main/venv_torch231.tar.lz4'
+        need_space = 13 * 1024**3
+        vnv = vnv_D
+
+    fn = Path(url).name
+    return url, need_space, vnv, fn
 
 def unused_venv():
-    if cwd == HOME / 'FaceFusion':
-        if vnv_SDT.exists():
-            get_ipython().system(f'rm -rf {vnv_SDT}/* {vnv_SDT}')
-        if vnv_D.exists():
-            get_ipython().system(f'rm -rf {vnv_D}/* {vnv_D}')
-    elif cwd == HOME / 'SDTrainer':
-        if vnv_FF.exists():
-            get_ipython().system(f'rm -rf {vnv_FF}/* {vnv_FF}')
-        if vnv_D.exists():
-            get_ipython().system(f'rm -rf {vnv_D}/* {vnv_D}')
-    else:
-        if vnv_FF.exists():
-            get_ipython().system(f'rm -rf {vnv_FF}/* {vnv_FF}')
-        if vnv_SDT.exists():
-            get_ipython().system(f'rm -rf {vnv_SDT}/* {vnv_SDT}')
+    if vnv_FF.exists() or vnv_SDT.exists() or vnv_D.exists():
+        if vnv == vnv_FF:
+            rmf = f'rm -rf {vnv_SDT}/* {vnv_SDT} {vnv_D}/* {vnv_D}'
+            get_ipython().system(rmf)
+        elif vnv == vnv_SDT:
+            rmf = f'rm -rf {vnv_FF}/* {vnv_FF} {vnv_D}/* {vnv_D}'
+            get_ipython().system(rmf)
+        else:
+            rmf = f'rm -rf {vnv_FF}/* {vnv_FF} {vnv_SDT}/* {vnv_SDT}'
+            get_ipython().system(rmf)
 
 def check_venv(folder):
     du = get_ipython().getoutput(f'du -s -b {folder}')
@@ -84,7 +87,8 @@ def venv_install():
     while True:
         if vnv.exists():
             size = check_venv(vnv)
-            if cwd == HOME / 'FaceFusion' and size < 7 * 1024**3:
+
+            if ui == 'FaceFusion' and size < 7 * 1024**3:
                 return
             elif size > 7 * 1024**3:
                 return
@@ -119,6 +123,7 @@ def venv_install():
         get_ipython().system(f'{vnv / "bin" / "python3"} -m pip install -q --upgrade --force-reinstall pip')
 
 print('checking venv...')
+url, need_space, vnv, fn = load_config()
 tempe()
 trashing()
 unused_venv()
