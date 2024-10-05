@@ -432,7 +432,8 @@ def tempe(line):
         "/tmp/lora",
         "/tmp/controlnet",
         "/tmp/svd",
-        "/tmp/z123"
+        "/tmp/z123",
+        "/tmp/clip"
     ]
 
     for path in tmp:
