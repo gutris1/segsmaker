@@ -1,5 +1,6 @@
 from IPython.display import clear_output, Image, display
 from IPython import get_ipython
+from ipywidgets import widgets
 from pathlib import Path
 import subprocess, os, shlex, json
 from nenen88 import tempe, say, download
@@ -15,6 +16,8 @@ cwd = Path.cwd()
 vnv_FF = tmp / "venv-facefusion"
 vnv_SDT = tmp / "venv-sd-trainer"
 vnv_D = tmp / "venv"
+
+loading = widgets.Output()
 
 def load_config():
     config = json.load(MARK.open('r')) if MARK.exists() else {}
@@ -84,6 +87,9 @@ def trashing():
         subprocess.run(shlex.split(cmd), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 def venv_install():
+    with loading:
+        display(Image(filename=str(IMG)))
+
     while True:
         if vnv.exists():
             size = check_venv(vnv)
@@ -96,7 +102,6 @@ def venv_install():
             get_ipython().system(f'rm -rf {vnv}/* {vnv}')
 
         clear_output(wait=True)
-        display(Image(filename=str(IMG)))
 
         free_space = check_tmp(tmp)
         req_space = need_space - free_space
@@ -121,6 +126,9 @@ def venv_install():
         get_ipython().system(f'rm -rf {vnv / "bin" / "python*"}')
         get_ipython().system(f'python3 -m venv {vnv}')
         get_ipython().system(f'{vnv / "bin" / "python3"} -m pip install -q --upgrade --force-reinstall pip')
+
+    with loading:
+        loading.clear_output(wait=True)
 
 print('checking venv...')
 url, need_space, vnv, fn = load_config()
