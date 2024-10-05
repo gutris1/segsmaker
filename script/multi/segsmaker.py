@@ -221,17 +221,17 @@ def launching(ui, skip_comfyui_check=False):
             get_ipython().system(f'{py} apotek.py')
             clear_output(wait=True)
 
-        tunnel_list, cmd = tunnel_cmd(tunnel.value, port, args, FF=False, SDT=False)
+        tunnel_list, cmd = tunnel_cmd(tunnel.value, port, args, ui, FF=False, SDT=False)
 
     elif ui == 'FaceFusion':
         log_file.write_text('Face-Fusion\n')
         port = 7860
-        tunnel_list, cmd = tunnel_cmd(tunnel.value, port, args, FF=True, SDT=False)
+        tunnel_list, cmd = tunnel_cmd(tunnel.value, port, args, ui, FF=True, SDT=False)
 
     elif ui == 'SDTrainer':
         log_file.write_text('SD-Trainer\n')
         port = 28000
-        tunnel_list, cmd = tunnel_cmd(tunnel.value, port, args, FF=False, SDT=True)
+        tunnel_list, cmd = tunnel_cmd(tunnel.value, port, args, ui, FF=False, SDT=True)
 
     if cmd:        
         if tunnel.value == 'NGROK':
@@ -240,7 +240,7 @@ def launching(ui, skip_comfyui_check=False):
             configs = tunnel_configs(tunnel.value, port)
             run_tunnel(cmd, configs, port)
 
-def tunnel_cmd(tunnel_value, port, args, FF, SDT):
+def tunnel_cmd(tunnel_value, port, args, ui, FF, SDT):
     global py
     if FF:
         display(Image(filename=str(IMG)))
@@ -249,14 +249,20 @@ def tunnel_cmd(tunnel_value, port, args, FF, SDT):
         tunnel_list = {
             'Pinggy': f'{py} launch.py {args}',
             'ZROK': f'{py} launch.py {args}',
-            'NGROK': f'{py} launch.py {ngrok_token.value} {args}'
+            'NGROK': f'{py} launch.py {args}'
         }
     elif SDT:
         py = 'HF_HOME=huggingface /tmp/venv-sd-trainer/bin/python3'
         tunnel_list = {
             'Pinggy': f'{py} launch.py {args}',
             'ZROK': f'{py} launch.py {args}',
-            'NGROK': f'{py} launch.py {ngrok_token.value} {args}'
+            'NGROK': f'{py} launch.py {args}'
+        }
+    elif ui == 'ComfyUI':
+        tunnel_list = {
+            'Pinggy': f'{py} launch.py {args}',
+            'ZROK': f'{py} launch.py {args}',
+            'NGROK': f'{py} launch.py {args}'
         }
     else:
         tunnel_list = {
@@ -265,7 +271,7 @@ def tunnel_cmd(tunnel_value, port, args, FF, SDT):
             'NGROK': f'{py} ngrokk.py {ngrok_token.value} {args}'
         }
 
-    return tunnel_list.get(tunnel_value), tunnel_list.get(tunnel_value)
+    return tunnel_list, tunnel_list.get(tunnel_value)
 
 def tunnel_configs(tunnel_value, port):
     config_list = {

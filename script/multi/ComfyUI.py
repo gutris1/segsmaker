@@ -224,9 +224,7 @@ def webui_widgets():
             f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/controlnet.py {WEBUI}/asd",
             f"https://github.com/gutris1/segsmaker/raw/main/script/venv.py {WEBUI}",
             f"https://github.com/gutris1/segsmaker/raw/main/ui/cui/apotek.py {WEBUI}",
-            f"https://github.com/gutris1/segsmaker/raw/main/ui/cui/ngrokk.py {WEBUI}",
-            f"https://github.com/gutris1/segsmaker/raw/main/ui/cui/pinggy.py {WEBUI}",
-            f"https://github.com/gutris1/segsmaker/raw/main/ui/cui/zrok.py {WEBUI}",
+            f"https://github.com/gutris1/segsmaker/raw/main/ui/cui/launch.py {WEBUI}",
             f"https://github.com/gutris1/segsmaker/raw/main/script/multi/segsmaker.py {WEBUI}"
         ]
 

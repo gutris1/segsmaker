@@ -516,7 +516,7 @@ class Tunnel:
             with open(O, 'r') as y:
                 x = y.readlines()
                 if any('comfyui' in z for z in x):
-                    if any('Torch version:' in z for z in x):
+                    if any('To see the GUI go to:' in z for z in x):
                         L = True
                         break
                 if any('A1111/Forge' in z for z in x):

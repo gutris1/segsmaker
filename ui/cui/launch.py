@@ -1,6 +1,4 @@
-import os
-os.environ['MPLBACKEND'] = 'gtk3agg'
-import matplotlib, subprocess, sys, logging, json, re, shlex, threading
+import subprocess, sys, logging, json, re, shlex, os, threading
 from pathlib import Path
 from pyngrok import ngrok
 
@@ -19,31 +17,29 @@ def logging_launch():
     )
     return logging.getLogger()
 
-def read_stderr(webui, logger, url_event):
-    while True:
-        line = webui.stderr.readline()
-        if line:
-            print(line, end='')
-            logger.info(line.strip())
+def read_output(stream, logger, url_event):
+    for line in iter(stream.readline, ''):
+        print(line, end='')
+        logger.info(line.strip())
+        if 'To see the GUI go to:' in line:
+            url_event.set()
+            for handler in logger.handlers:
+                logger.removeHandler(handler)
 
-            if any(keyword in line for keyword in ['http://127.0.0.1:6006/']):
-                url_event.set()
-                for handler in logger.handlers:
-                    logger.removeHandler(handler)
-
-        else:
-            if webui.poll() is not None:
-                break
+    stream.close()
 
 def launch(logger, args):
-    cmd = f"/tmp/venv-sd-trainer/bin/python3 gui.py {' '.join(shlex.quote(arg) for arg in args)}"
-    webui = subprocess.Popen(shlex.split(cmd), stdout=sys.stdout, stderr=subprocess.PIPE, text=True)
+    cmd = f"/tmp/venv/bin/python3 main.py {' '.join(shlex.quote(arg) for arg in args)}"
+    webui = subprocess.Popen(shlex.split(cmd), stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
     url_event = threading.Event()
-    std_err = threading.Thread(target=read_stderr, args=(webui, logger, url_event))
+    std_out = threading.Thread(target=read_output, args=(webui.stdout, logger, url_event))
+    std_err = threading.Thread(target=read_output, args=(webui.stderr, logger, url_event))
+
+    std_out.start()
     std_err.start()
 
-    return webui, std_err, url_event
+    return webui, std_out, std_err, url_event
 
 def ngrok_tunnel(port, auth_token):
     ngrok.set_auth_token(auth_token)
@@ -65,8 +61,8 @@ def load_config(logger):
         if not token:
             sys.exit("Missing NGROK Token")
 
-        port = 28000
-        webui, std_err, url_event = launch(logger, args)
+        port = 8188
+        webui, std_out, std_err, url_event = launch(logger, args)
         url_event.wait()
         url = ngrok_tunnel(port, token)
         print(f'\n{ORG}▶{RST} NGROK {ORG}:{RST} {url}')
@@ -74,11 +70,13 @@ def load_config(logger):
         webui.wait()
         ngrok.disconnect(url)
 
+        std_out.join()
         std_err.join()
 
     else:
-        webui, std_err, _ = launch(logger, args)
+        webui, std_out, std_err, _ = launch(logger, args)
         webui.wait()
+        std_out.join()
         std_err.join()
 
 if __name__ == '__main__':
