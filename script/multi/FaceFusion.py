@@ -107,7 +107,7 @@ def webui_install():
 
         with loading:
             loading.clear_output(wait=True)
-            get_ipython().run_line_magic('run', 'venv.py')
+            get_ipython().run_line_magic('run', f'{WEBUI}/venv.py')
             os.chdir(HOME)
             loading.clear_output(wait=True)
             say("<b>【{red} Done{d} 】{red}</b>")
