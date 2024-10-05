@@ -37,11 +37,12 @@ def req_list():
     return [
         f"rm -rf {HOME}/tmp {HOME}/.cache/*",
         f"rm -rf {WEBUI}/models/checkpoints/tmp_ckpt",
-        f"rm -rf {WEBUI}/models/loras/tmp_lora {WEBUI}/models/controlnet",
+        f"rm -rf {WEBUI}/models/loras/tmp_lora {WEBUI}/models/controlnet {WEBUI}/models/clip",
         f"ln -vs /tmp {HOME}/tmp",
         f"ln -vs /tmp/ckpt {WEBUI}/models/checkpoints/tmp_ckpt",
         f"ln -vs /tmp/lora {WEBUI}/models/loras/tmp_lora",
         f"ln -vs /tmp/controlnet {WEBUI}/models/controlnet",
+        f"ln -vs /tmp/clip {WEBUI}/models/clip",
         f"ln -vs {WEBUI}/models/checkpoints {WEBUI}/models/checkpoints_symlink"]
 
 def webui_req():
