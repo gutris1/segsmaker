@@ -110,10 +110,8 @@ def venv_install(ui, url, need_space, fn):
                 req_space -= removing(tmp / 'controlnet', req_space)
 
         os.chdir(tmp)
-        say('<br>【{red} Downloading VENV{d} 】{red}')
-        download(url)
-
         say('<br>【{red} Installing VENV{d} 】{red}')
+        download(url)
         get_ipython().system(f'pv {fn} | lz4 -d | tar xf -')
         Path(fn).unlink()
 
