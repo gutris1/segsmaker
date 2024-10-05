@@ -242,8 +242,9 @@ def launching(ui, skip_comfyui_check=False):
 
 def tunnel_cmd(tunnel_value, port, args, FF, SDT):
     if FF:
-        py = '/tmp/venv-fusion/bin/python3'
         display(Image(filename=str(IMG)))
+        clear_output(wait=True)
+        py = '/tmp/venv-fusion/bin/python3'
         tunnel_list = {
             'Pinggy': f'{py} launch.py {args}',
             'ZROK': f'{py} launch.py {args}',
