@@ -1,6 +1,6 @@
 import os
 os.environ['MPLBACKEND'] = 'gtk3agg'
-import matplotlib, subprocess, sys, logging, json, re, shlex
+import matplotlib, subprocess, sys, logging, json, re, shlex, threading
 from pathlib import Path
 from pyngrok import ngrok
 
@@ -19,22 +19,31 @@ def logging_launch():
     )
     return logging.getLogger()
 
+def read_stderr(webui, logger, url_event):
+    while True:
+        line = webui.stderr.readline()
+        if line:
+            print(line, end='')
+            logger.info(line.strip())
+
+            if any(keyword in line for keyword in ['http://127.0.0.1:6006/']):
+                url_event.set()
+                for handler in logger.handlers:
+                    logger.removeHandler(handler)
+
+        else:
+            if webui.poll() is not None:
+                break
+
 def launch(logger, args):
     cmd = f"/tmp/venv-sd-trainer/bin/python3 gui.py {' '.join(shlex.quote(arg) for arg in args)}"
     webui = subprocess.Popen(shlex.split(cmd), stdout=sys.stdout, stderr=subprocess.PIPE, text=True)
 
-    local_url = False
-    for line in webui.stderr:
-        print(line, end='')
-        logger.info(line.strip())
-        if not local_url:
-            if any(keyword in line for keyword in ['http://127.0.0.1:6006/']):
-                local_url = True
-                for handler in logger.handlers:
-                    logger.removeHandler(handler)
-                break
+    url_event = threading.Event()
+    std_err = threading.Thread(target=read_stderr, args=(webui, logger, url_event))
+    std_err.start()
 
-    return webui
+    return webui, std_err, url_event
 
 def ngrok_tunnel(port, auth_token):
     ngrok.set_auth_token(auth_token)
@@ -49,36 +58,35 @@ def load_config(logger):
     config = json.load(MARK.open('r')) if MARK.exists() else {}
     tunnel = config.get('tunnel')
 
+    args = sys.argv[1:]
+
     if tunnel == 'NGROK':
-        try:
-            if len(sys.argv) < 2:
-                sys.exit("Missing NGROK Token")
+        token = config.get('ngrok_token', '').strip()
+        if not token:
+            sys.exit("Missing NGROK Token")
 
-            token = sys.argv[1]
-            args = sys.argv[2:]
-            port = 28000
+        port = 28000
+        webui, std_err, url_event = launch(logger, args)
+        url_event.wait()
+        url = ngrok_tunnel(port, token)
+        print(f'\n{ORG}▶{RST} NGROK {ORG}:{RST} {url}')
 
-            webui = launch(logger, args)
-
-            url = ngrok_tunnel(port, token)
-            if url:
-                print(f'\n{ORG}▶{RST} NGROK {ORG}:{RST} {url}')
-
-            webui.wait()
-            ngrok.disconnect(url)
-
-        except KeyboardInterrupt:
-            pass
-    else:
-        args = sys.argv[1:]
-        webui = launch(logger, args)
         webui.wait()
+        ngrok.disconnect(url)
+
+        std_err.join()
+
+    else:
+        webui, std_err, _ = launch(logger, args)
+        webui.wait()
+        std_err.join()
 
 if __name__ == '__main__':
     if 'LD_PRELOAD' not in os.environ:
         os.environ['LD_PRELOAD'] = '/home/studio-lab-user/.conda/envs/default/lib/libtcmalloc_minimal.so.4'
 
     logger = logging_launch()
+
     try:
         load_config(logger)
     except KeyboardInterrupt:
