@@ -33,34 +33,6 @@ def tmp_cleaning():
         elif item.is_file() and item != vnv:
             item.unlink()
 
-def venv_install():
-    url = 'https://huggingface.co/pantat88/back_up/resolve/main/venv_torch231.tar.lz4'
-    fn = Path(url).name
-
-    def check_venv(folder):
-        du = get_ipython().getoutput(f'du -s -b {folder}')
-        return int(du[0].split()[0]) if du else 0
-
-    while True:
-        if vnv.exists():
-            size = check_venv(vnv)
-            if size > 7 * 1024**3:
-                return
-            get_ipython().system(f'rm -rf {vnv}/* {vnv}')
-
-        os.chdir(tmp)
-
-        say("<br><b>【{red} Installing VENV{d} 】{red}</b>")
-        download(url)
-
-        get_ipython().system(f'pv {fn} | lz4 -d | tar xf -')
-        Path(fn).unlink()
-
-        get_ipython().system(f'rm -rf {vnv / "bin" / "pip*"}')
-        get_ipython().system(f'rm -rf {vnv / "bin" / "python*"}')
-        get_ipython().system(f'python3 -m venv {vnv}')
-        get_ipython().system(f'{vnv / "bin" / "python3"} -m pip install -q --upgrade --force-reinstall pip')
-
 def req_list():
     return [
         f"rm -rf {HOME}/tmp {HOME}/.cache/*",
@@ -189,10 +161,10 @@ def webui_install(b):
 
         get_ipython().run_line_magic('run', f'{MARK}')
 
-        venv_install()
-        os.chdir(HOME)
-
         with loading:
+            loading.clear_output(wait=True)
+            get_ipython().run_line_magic('run', 'venv.py')
+            os.chdir(HOME)
             loading.clear_output(wait=True)
             say("<b>【{red} Done{d} 】{red}</b>")
 
@@ -259,7 +231,8 @@ def webui_widgets():
             ('A1111', HOME / 'A1111'),
             ('Forge', HOME / 'Forge'),
             ('ComfyUI', HOME / 'ComfyUI'),
-            ('FaceFusion', HOME / 'FaceFusion')
+            ('FaceFusion', HOME / 'FaceFusion'),
+            ('SDTrainer', HOME / 'SDTrainer')
         ]
         
         for ui_name, path in webui_list:
