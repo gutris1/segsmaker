@@ -242,18 +242,19 @@ def launching(ui, skip_comfyui_check=False):
 
 def tunnel_cmd(tunnel_value, port, args, FF, SDT):
     if FF:
+        py = '/tmp/venv-fusion/bin/python3'
         display(Image(filename=str(IMG)))
         tunnel_list = {
-            'Pinggy': f'{py} launch.py',
-            'ZROK': f'{py} launch.py',
-            'NGROK': f'{py} launch.py {ngrok_token.value}'
+            'Pinggy': f'{py} launch.py {args}',
+            'ZROK': f'{py} launch.py {args}',
+            'NGROK': f'{py} launch.py {ngrok_token.value} {args}'
         }
     elif SDT:
-        py = '/tmp/venv-sd-trainer/bin/python3'
+        py = 'HF_HOME=huggingface /tmp/venv-sd-trainer/bin/python3'
         tunnel_list = {
-            'Pinggy': f'HF_HOME=huggingface {py} launch.py {args}',
-            'ZROK': f'HF_HOME=huggingface {py} launch.py {args}',
-            'NGROK': f'HF_HOME=huggingface {py} launch.py {ngrok_token.value} {args}'
+            'Pinggy': f'{py} launch.py {args}',
+            'ZROK': f'{py} launch.py {args}',
+            'NGROK': f'{py} launch.py {ngrok_token.value} {args}'
         }
     else:
         tunnel_list = {
