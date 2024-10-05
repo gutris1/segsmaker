@@ -23,26 +23,29 @@
     border-radius: 3px;
     margin: 0;
     background-color: transparent;
-    animation: blurBlur 1s;
+    max-height: 0;
+    overflow: hidden;
+    animation: Undress 1s forwards ease-out;
 }
 
 .a1111, .forge, .comfyui, .reforge, .facefusion,
 .sdtrainer,
 .button-15, .button-xl, .button-back {
+    background-color: transparent;
     height: 300px;
     cursor: pointer;
-    border-width: 0px;
+    border: 0px solid transparent;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    border-radius: 3px;
+    border-radius: 5px;
     position: relative;
     overflow: hidden;
     -webkit-mask: linear-gradient(to left, transparent, #000 1px);
 }
 .a1111, .forge, .comfyui, .reforge, .facefusion,
 .sdtrainer {
-    width: 70%;
+    width: 69%;
     filter: brightness(50%);
     transition: 0.4s ease;
 }
@@ -137,9 +140,10 @@
 .a1111:hover, .forge:hover, .comfyui:hover, .reforge:hover, .facefusion:hover,
 .sdtrainer:hover,
 .button-15:hover, .button-xl:hover {
-    filter: brightness(100%);
+    border-radius: 0px;
     width: 100%;
-    border-width: 0px;
+    filter: brightness(100%);
+    border: 0px solid transparent;
 }
 
 .button-back:active,
@@ -160,27 +164,11 @@
     border: 3px solid transparent;
     border-radius: 10px;
     margin: 0;
+    max-height: 0;
     background: url('https://wallpapercave.com/dwp1x/wp5126154.jpg');
     background-size: 100% 100%;
     background-position: 100% 200%;
-    animation: slide-panel 1s, BorderPulse 15s infinite;
-}
-
-@keyframes slide-panel {
-    from {
-        transform: scale(0);
-        opacity: 0;
-        filter: blur(30px);
-        width: 450px;
-        height: 0;
-    }
-    to {
-        transform: scale(1);
-        opacity: 1;
-        filter: blur(0px);
-        width: 700px;
-        height: 350px;
-    }
+    animation: Undress 1s forwards ease-out, BorderPulse 15s infinite;
 }
 
 .title {
@@ -340,11 +328,24 @@
     animation: slideBackground 10s linear infinite, BorderPulse 7s infinite;
 }
 
+@keyframes Undress {
+    0% {
+        max-height: 0;
+        opacity: 0;
+        filter: blur(10px);
+    }
+    100% {
+        max-height: 600px;
+        opacity: 1;
+        filter: blur(0px);
+    }
+}
+
 @keyframes blurBlur {
     from {
         transform: scale(1);
         opacity: 0;
-        filter: blur(100px);
+        filter: blur(50px);
     }
     to {
         transform: scale(1);
