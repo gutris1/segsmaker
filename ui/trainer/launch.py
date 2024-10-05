@@ -30,15 +30,17 @@ def launch(logger, args):
         if not local_url:
             if any(keyword in line for keyword in ['http://127.0.0.1:6006/']):
                 local_url = True
+                for handler in logger.handlers:
+                    logger.removeHandler(handler)
                 break
 
     return webui
 
 def ngrok_tunnel(port, auth_token):
     ngrok.set_auth_token(auth_token)
-    public_url = ngrok.connect(port)
+    url = ngrok.connect(port)
 
-    match = re.search(r'"(https?://[^"]+)"', str(public_url))
+    match = re.search(r'"(https?://[^"]+)"', str(url))
     if match:
         return match.group(1)
     return None
@@ -58,12 +60,12 @@ def load_config(logger):
 
             webui = launch(logger, args)
 
-            public_url = ngrok_tunnel(port, token)
-            if public_url:
-                print(f'\n{ORG}▶{RST} NGROK {ORG}:{RST} {public_url}')
+            url = ngrok_tunnel(port, token)
+            if url:
+                print(f'\n{ORG}▶{RST} NGROK {ORG}:{RST} {url}')
 
             webui.wait()
-            ngrok.disconnect(public_url)
+            ngrok.disconnect(url)
 
         except KeyboardInterrupt:
             pass
