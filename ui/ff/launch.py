@@ -20,7 +20,7 @@ def logging_launch():
     return logging.getLogger()
 
 def launch(logger, args):
-    cmd = f"/tmp/venv/bin/python3 facefusion.py run {' '.join(shlex.quote(arg) for arg in args)}"
+    cmd = f"/tmp/venv-fusion/bin/python3 facefusion.py run {' '.join(shlex.quote(arg) for arg in args)}"
     webui = subprocess.Popen(shlex.split(cmd), stdout=subprocess.PIPE, stderr=sys.stdout, text=True)
 
     local_url = False
