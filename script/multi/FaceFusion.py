@@ -24,6 +24,8 @@ def check_ffmpeg():
     if not any('ffmpeg' in line for line in installed):
         cmd_list = [
             ('conda install -qyc conda-forge ffmpeg', '\ninstalling ffmpeg...'),
+            ('conda install -qy cuda-runtime=12.4.1', '\ninstalling cuda-runtime=12.4.1...'),
+            ('conda install -qy cudnn=9.2.1.18', '\ninstalling cudnn=9.2.1.18...'),
             ('conda clean -qy --all', None)
         ]
 
