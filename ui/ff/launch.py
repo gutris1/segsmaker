@@ -1,5 +1,6 @@
 import os
 os.environ['MPLBACKEND'] = 'gtk3agg'
+
 import matplotlib, subprocess, sys, logging, json, re, shlex
 from pathlib import Path
 from pyngrok import ngrok
@@ -20,8 +21,8 @@ def logging_launch():
     return logging.getLogger()
 
 def launch(logger, args):
-    cmd = f"/tmp/venv-fusion/bin/python3 facefusion.py run {' '.join(shlex.quote(arg) for arg in args)}"
-    webui = subprocess.Popen(shlex.split(cmd), stdout=subprocess.PIPE, stderr=sys.stdout, text=True)
+    cmd = f"source activate default && /tmp/venv-fusion/bin/python3 facefusion.py run {' '.join(shlex.quote(arg) for arg in args)}"
+    webui = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=sys.stdout, text=True, shell=True, executable="/bin/bash")
 
     local_url = False
     for line in webui.stdout:
@@ -70,7 +71,12 @@ def load_config(logger):
 
 if __name__ == '__main__':
     if 'LD_PRELOAD' not in os.environ:
-        os.environ['LD_PRELOAD'] = '/home/studio-lab-user/.conda/envs/default/lib/libtcmalloc_minimal.so.4'
+        os.environ['LD_PRELOAD'] = (
+            '/home/studio-lab-user/.conda/envs/default/lib/libcublasLt.so.12:' +
+            '/home/studio-lab-user/.conda/envs/default/lib/libcublas.so.12'
+        )
+
+    os.environ['LD_LIBRARY_PATH'] = '/home/studio-lab-user/.conda/envs/default/lib:' + os.environ.get('LD_LIBRARY_PATH', '')
 
     logger = logging_launch()
 

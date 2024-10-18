@@ -22,15 +22,15 @@ def load_config():
 
     if ui == 'FaceFusion':
         url = 'https://huggingface.co/pantat88/back_up/resolve/main/venv-fusion.tar.lz4'
-        need_space = 12 * 1024**3
+        need_space = 13 * 1024**3
         vnv = vnv_FF
     elif ui == 'SDTrainer':
         url = 'https://huggingface.co/pantat88/back_up/resolve/main/venv-sd-trainer.tar.lz4'
         need_space = 14 * 1024**3
         vnv = vnv_SDT
     else:
-        url = 'https://huggingface.co/pantat88/back_up/resolve/main/venv_torch231.tar.lz4'
-        need_space = 13 * 1024**3
+        url = 'https://huggingface.co/pantat88/back_up/resolve/main/venv-torch241-cu121.tar.lz4'
+        need_space = 14 * 1024**3
         vnv = vnv_D
 
     fn = Path(url).name
