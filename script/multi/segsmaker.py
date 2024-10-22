@@ -70,6 +70,13 @@ def load_config():
     else:
         tunnel.value = 'Pinggy'
 
+    cpu_cb.value = config.get('cpu_usage', False)
+
+    if ui in ['SDTrainer', 'FaceFusion']:
+        cpu_cb.layout.display = 'none'
+    else:
+        cpu_cb.layout.display = 'block'
+
     if ui == 'A1111':
         title.value = '<div class="title"><h1>A1111</h1></div>'
     elif ui == 'Forge':
@@ -94,7 +101,8 @@ def save_config(zrok_token, ngrok_token, args1, args2, tunnel):
         "ngrok_token": ngrok_token,
         "launch_args1": args1,
         "launch_args2": args2,
-        "tunnel": tunnel
+        "tunnel": tunnel,
+        "cpu_usage": cpu_cb.value
     })
 
     with MARK.open('w') as file:
@@ -131,9 +139,11 @@ top = widgets.HBox([tunnel, title], layout=widgets.Layout(
 
 launch_button = widgets.Button(description='Launch')
 exit_button = widgets.Button(description='Exit')
-button_box = widgets.HBox([launch_button, exit_button], layout=widgets.Layout(
+cpu_cb = widgets.Checkbox(value=False, description='CPU', layout=widgets.Layout(left='10px'))
+button_box = widgets.HBox([launch_button, cpu_cb, exit_button], layout=widgets.Layout(
     display='flex',
     flex_flow='row',
+    align_items='center',
     justify_content='space-between'))
 
 token_box = widgets.VBox([zrok_token, ngrok_token, args_box], layout=widgets.Layout(
@@ -152,6 +162,7 @@ launch_panel = widgets.Box([top, token_box, button_box], layout=widgets.Layout(
     justify_content='space-between',
     padding='20px'))
 
+cpu_cb.add_class('cpu-cbx')
 tunnel.add_class('tunnel')
 zrok_token.add_class('zrok')
 ngrok_token.add_class('ngrok')
@@ -203,6 +214,15 @@ def import_cupang():
 def launching(ui, skip_comfyui_check=False):
     import_cupang()
     args = f'{launch_args1.value} {launch_args2.value}'
+
+    if cpu_cb.value:
+        if ui == 'A1111':
+            args += ' --use-cpu all --precision full --no-half --skip-torch-cuda-test'
+        elif ui in ['ReForge', 'Forge']:
+            args += ' --always-cpu --skip-torch-cuda-test'
+        elif ui == 'ComfyUI':
+            args += ' --cpu'
+
     get_ipython().run_line_magic('run', 'venv.py')
 
     log_file = Path('segsmaker.log')
@@ -310,7 +330,12 @@ def run_tunnel(cmd, configs, port):
 def waiting(condition, is_ready):
     with condition:
         while not is_ready.value:
-            condition.wait()
+            try:
+                condition.wait()
+            except KeyboardInterrupt:
+                print('')
+                clear_output()
+                sys.exit()
 
     load_config()
     launching(ui, skip_comfyui_check=args.skip_comfyui_check)
