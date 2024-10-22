@@ -638,3 +638,92 @@
 .tunnel *:after {
     box-sizing: inherit;
 }
+
+.cpu-cbx input[type=checkbox] {
+  --active: #275EFE;
+  --active-inner: #fff;
+  --focus: 2px rgba(39, 94, 254, .3);
+  --border: #BBC1E1;
+  --border-hover: #275EFE;
+  --background: #fff;
+  --disabled: #F6F8FF;
+  --disabled-inner: #E1E6F9;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 20px;
+  height: 20px;
+  right: 0px;
+  border-radius: 50%;
+  margin-top: -3px;
+  margin-right: 10px;
+  margin-bottom: 0px;
+  margin-left: 0px;
+  vertical-align: middle;
+  cursor: pointer;
+  border: 1px solid var(--bc, var(--border));
+  background: var(--b, var(--background));
+  transition: background 0.3s, border-color 0.3s, box-shadow 0.2s;
+  position: relative;
+}
+
+.cpu-cbx input[type=checkbox]:checked,
+.cpu-cbx input[type=checkbox]:hover {
+  --o: 1;
+  --b: var(--active);
+  --bc: var(--active);
+  --d-o: .3s;
+  --d-t: .6s;
+  --d-t-e: cubic-bezier(.2, .85, .32, 1.2);
+}
+
+.cpu-cbx input[type=checkbox]:checked::after {
+  text-align: center;
+  font-family: 'Roboto Mono', monospace;
+  content: '\2713';
+  display: block;
+  position: absolute;
+  top: -2px;
+  left: 2px;
+  color: white;
+  font-size: 20px;
+}
+
+.cpu-cbx input[type=checkbox]:not(:checked)::after {
+  content: '';
+}
+
+.cpu-cbx input[type=checkbox]:focus {
+  box-shadow: 0 0 0 var(--focus);
+}
+
+.cpu-cbx label {
+  text-align: center;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 18px;
+  color: white;
+  margin-top: 0px;
+  margin-right: -50px;
+  margin-left: 0px;
+  margin-bottom: -5px;
+  vertical-align: middle;
+}
+
+.cpu-cbx label:hover {
+  margin-top: -10px;
+  margin-right: -50px;
+  margin-bottom: -50px;
+  margin-left: -10px;
+  border-radius: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-bottom: 0px;
+  color: #ab22fe;
+  transition: border 0s;
+  cursor: pointer;
+}
+
+.cpu-cbx label:active {
+  background-image: var(--cn-gradient-bg);
+  background-size: 800% 500%;
+  animation: slideBackground 10s linear infinite, BorderPulse 7s infinite;
+}
