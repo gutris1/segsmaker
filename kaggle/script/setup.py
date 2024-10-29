@@ -2,7 +2,7 @@ from IPython.display import display, HTML, clear_output
 from IPython import get_ipython
 from ipywidgets import widgets
 from pathlib import Path
-import os, sys
+import subprocess, shlex, os, sys
 
 env, HOME = 'Unknown', None
 env_list = {'Colab': '/content', 'Kaggle': '/kaggle/working'}
@@ -28,6 +28,24 @@ ComfyUI = SRC / 'ComfyUI.py'
 ReForge = SRC / 'ReForge.py'
 FaceFusion = SRC / 'FaceFusion.py'
 SDTrainer = SRC / 'SDTrainer.py'
+
+STR = Path('/root/.ipython/profile_default/startup')
+with open(STR / 'HOMEPATH.py', 'w') as file:
+    file.write(f"PATHHOME = '{HOME}'\n")
+
+scripts = [
+    f"curl -sLo {STR}/00-startup.py https://github.com/gutris1/segsmaker/raw/K/kaggle/script/00-startup.py"
+    f"curl -sLo {STR}/pantat88.py https://github.com/gutris1/segsmaker/raw/K/kaggle/script/pantat88.py",
+    f"curl -sLo {STR}/nenen88.py https://github.com/gutris1/segsmaker/raw/K/kaggle/script/nenen88.py",
+    f"curl -sLo {STR}/util.py https://github.com/gutris1/segsmaker/raw/main/script/util.py",
+    f"curl -sLo {STR}/loading.png https://github.com/gutris1/segsmaker/raw/main/script/loading.png",
+    f"curl -sLo {STR}/cupang.py https://github.com/gutris1/segsmaker/raw/main/script/cupang.py"
+]
+
+for items in scripts:
+    subprocess.run(shlex.split(items), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+sys.path.append(str(STR))
 
 def load_css():
     with open(CSS, "r") as file:
@@ -84,7 +102,7 @@ def multi_widgets():
         f"curl -sLo {IMG} https://github.com/gutris1/segsmaker/raw/main/script/loading.png",
         f"curl -sLo {CSS} https://github.com/gutris1/segsmaker/raw/main/script/multi/setup.css",
         f"curl -sLo {MARK} https://github.com/gutris1/segsmaker/raw/main/script/multi/marking.py",
-        f"curl -sLo {A1111} https://github.com/gutris1/segsmaker/raw/main/script/multi/A1111.py",
+        f"curl -sLo {A1111} https://github.com/gutris1/segsmaker/raw/K/kaggle/script/A1111.py",
         f"curl -sLo {Forge} https://github.com/gutris1/segsmaker/raw/main/script/multi/Forge.py",
         f"curl -sLo {ComfyUI} https://github.com/gutris1/segsmaker/raw/main/script/multi/ComfyUI.py",
         f"curl -sLo {ReForge} https://github.com/gutris1/segsmaker/raw/main/script/multi/ReForge.py",
@@ -99,4 +117,6 @@ def multi_widgets():
     display(multi_panel, output)
     os.chdir(HOME)
 
+print('Loading Widget...')
+clear_output(wait=True)
 multi_widgets()
