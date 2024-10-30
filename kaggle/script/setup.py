@@ -146,7 +146,7 @@ def multi_widgets():
 
     x = [
         f"curl -sLo {IMG} https://github.com/gutris1/segsmaker/raw/main/script/loading.png",
-        f"curl -sLo {CSS} https://github.com/gutris1/segsmaker/raw/main/script/multi/setup.css",
+        f"curl -sLo {CSS} https://github.com/gutris1/segsmaker/raw/K/kaggle/script/setup.css",
         f"curl -sLo {MARK} https://github.com/gutris1/segsmaker/raw/main/script/multi/marking.py",
         f"curl -sLo {A1111} https://github.com/gutris1/segsmaker/raw/K/kaggle/script/A1111.py",
         f"curl -sLo {Forge} https://github.com/gutris1/segsmaker/raw/main/script/multi/Forge.py",
