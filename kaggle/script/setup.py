@@ -2,7 +2,7 @@ from IPython.display import display, HTML, clear_output
 from IPython import get_ipython
 from ipywidgets import widgets
 from pathlib import Path
-import subprocess, shlex, os, sys
+import subprocess, shlex, os, sys, json
 
 env, HOME = 'Unknown', None
 env_list = {'Colab': '/content', 'Kaggle': '/kaggle/working'}
@@ -17,6 +17,7 @@ if HOME is None:
     sys.exit()
 
 HOME = Path(HOME)
+#HOME = Path.home()
 SRC = HOME / 'gutris1'
 CSS = SRC / 'setup.css'
 MARK = SRC / 'marking.py'
@@ -26,15 +27,14 @@ A1111 = SRC / 'A1111.py'
 Forge = SRC / 'Forge.py'
 ComfyUI = SRC / 'ComfyUI.py'
 ReForge = SRC / 'ReForge.py'
-FaceFusion = SRC / 'FaceFusion.py'
-SDTrainer = SRC / 'SDTrainer.py'
 
+#STR = HOME / '.ipython/profile_default/startup'
 STR = Path('/root/.ipython/profile_default/startup')
 with open(STR / 'HOMEPATH.py', 'w') as file:
     file.write(f"PATHHOME = '{HOME}'\n")
 
 scripts = [
-    f"curl -sLo {STR}/00-startup.py https://github.com/gutris1/segsmaker/raw/K/kaggle/script/00-startup.py"
+    f"curl -sLo {STR}/00-startup.py https://github.com/gutris1/segsmaker/raw/K/kaggle/script/00-startup.py",
     f"curl -sLo {STR}/pantat88.py https://github.com/gutris1/segsmaker/raw/K/kaggle/script/pantat88.py",
     f"curl -sLo {STR}/nenen88.py https://github.com/gutris1/segsmaker/raw/K/kaggle/script/nenen88.py",
     f"curl -sLo {STR}/util.py https://github.com/gutris1/segsmaker/raw/main/script/util.py",
@@ -53,46 +53,92 @@ def load_css():
 
     display(HTML(f"<style>{data}</style>"))
 
-def selection(btn):
+def marking(path, fn, ui):
+    txt = path / fn
+    values = {
+        'ui': ui,
+        'launch_args1': '',
+        'launch_args2': '',
+        'zrok_token': '',
+        'ngrok_token': '',
+        'tunnel': ''
+    }
+
+    if not txt.exists():
+        with open(txt, 'w') as file:
+            json.dump(values, file, indent=4)
+
+    with open(txt, 'r') as file:
+        data = json.load(file)
+
+    data.update({
+        'ui': ui,
+        'launch_args1': '',
+        'launch_args2': '',
+        'tunnel': ''
+    })
+
+    with open(txt, 'w') as file:
+        json.dump(data, file, indent=4)
+
+def installing_webui(ui, sd_value):
+    print(f"{ui} - {sd_value}")
+
+def handle_launch(b):
     multi_panel.close()
 
     webui_selection = {
         'A1111': A1111,
         'Forge': Forge,
         'ComfyUI': ComfyUI,
-        'ReForge': ReForge,
-        'FaceFusion': FaceFusion,
-        'SDTrainer': SDTrainer
+        'ReForge': ReForge
     }
 
+    ui = webuiradio1.value
+    sd_value = webuiradio2.value
+    marking(SRC, 'marking.json', ui)
+
     with output:
-        script = webui_selection.get(btn)
-        if script:
-            get_ipython().run_line_magic('run', f'{script}')
+        installing_webui(ui, sd_value)
 
 output = widgets.Output()
-row1 = ['A1111', 'Forge', 'ComfyUI', 'ReForge']
-row2 = ['FaceFusion', 'SDTrainer']
 
-buttons1 = []
-for btn in row1:
-    button = widgets.Button(description='')
-    button.add_class(btn.lower())
-    button.on_click(lambda x, btn=btn: selection(btn))
-    buttons1.append(button)
+civitai_key_box = widgets.Text(placeholder='Enter Your Civitai API KEY Here',
+                               layout=widgets.Layout(left='35px', padding='10px', width='320px'))
 
-buttons2 = []
-for btn in row2:
-    button = widgets.Button(description='')
-    button.add_class(btn.lower())
-    button.on_click(lambda x, btn=btn: selection(btn))
-    buttons2.append(button)
-    
-hbox1 = widgets.HBox(buttons1, layout=widgets.Layout(width='630px', height='300px'))
-hbox2 = widgets.HBox(buttons2, layout=widgets.Layout(width='630px', height='300px'))
+WEBUI_LIST = ['A1111', 'Forge', 'ComfyUI', 'ReForge']
+list1 = {btn: btn.lower() for btn in WEBUI_LIST}
 
-multi_panel = widgets.VBox([hbox1, hbox2], layout=widgets.Layout(width='600px', height='600px'))
-multi_panel.add_class('multi-panel')
+webuiradio1 = widgets.RadioButtons(options=list1, layout=widgets.Layout(width='300px', height='auto'))
+
+WHICH_SD = ['SD 1.5', 'SD XL']
+list2 = {btn: btn.lower() for btn in WHICH_SD}
+
+webuiradio2 = widgets.RadioButtons(options=list2,
+                                   layout=widgets.Layout(right='50px', width='300px', height='auto'))
+
+radio_list = widgets.HBox([webuiradio1, webuiradio2],
+                          layout=widgets.Layout(padding='10px', width='600px', height='400px'))
+
+launch_button = widgets.Button(description='Install')
+exit_button = widgets.Button(description='Exit')
+button_box = widgets.HBox([exit_button, launch_button], layout=widgets.Layout(
+    padding='10px',
+    display='flex',
+    flex_flow='row',
+    justify_content='space-between'))
+
+multi_panel = widgets.VBox([civitai_key_box, radio_list, button_box], layout=widgets.Layout(width='400px', height='340px'))
+
+civitai_key_box.add_class("api-input")
+webuiradio1.add_class("webui-radio")
+webuiradio2.add_class("webui-radio")
+multi_panel.add_class('launch-panel')
+launch_button.add_class('buttons')
+exit_button.add_class('buttons')
+
+launch_button.on_click(handle_launch)
+exit_button.on_click(lambda b: (multi_panel.close(), clear_output()))
 
 def multi_widgets():
     if not SRC.exists():
@@ -105,9 +151,7 @@ def multi_widgets():
         f"curl -sLo {A1111} https://github.com/gutris1/segsmaker/raw/K/kaggle/script/A1111.py",
         f"curl -sLo {Forge} https://github.com/gutris1/segsmaker/raw/main/script/multi/Forge.py",
         f"curl -sLo {ComfyUI} https://github.com/gutris1/segsmaker/raw/main/script/multi/ComfyUI.py",
-        f"curl -sLo {ReForge} https://github.com/gutris1/segsmaker/raw/main/script/multi/ReForge.py",
-        f"curl -sLo {FaceFusion} https://github.com/gutris1/segsmaker/raw/main/script/multi/FaceFusion.py",
-        f"curl -sLo {SDTrainer} https://github.com/gutris1/segsmaker/raw/main/script/multi/SDTrainer.py"
+        f"curl -sLo {ReForge} https://github.com/gutris1/segsmaker/raw/main/script/multi/ReForge.py"
     ]
 
     for y in x:
