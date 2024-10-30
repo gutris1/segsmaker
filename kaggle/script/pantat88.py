@@ -428,7 +428,7 @@ def pull(line):
     cmd3 = 'git checkout'
     subs(shlex.split(cmd3), cwd=str(repofold), **opts)
 
-    zipin = repofold / 'kaggle' / tarfold
+    zipin = repofold / 'ui' / tarfold
     zipout = path / f'{tarfold}.zip'
     
     with zipfile.ZipFile(str(zipout), 'w') as zipf:
