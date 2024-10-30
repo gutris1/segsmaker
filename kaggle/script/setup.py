@@ -1,8 +1,8 @@
-from IPython.display import display, HTML, clear_output
+from IPython.display import display, HTML, clear_output, Image
 from IPython import get_ipython
 from ipywidgets import widgets
 from pathlib import Path
-import subprocess, shlex, os, sys, json
+import subprocess, os, sys, shlex, json, time
 
 env, HOME = 'Unknown', None
 env_list = {'Colab': '/content', 'Kaggle': '/kaggle/working'}
@@ -17,35 +17,29 @@ if HOME is None:
     sys.exit()
 
 HOME = Path(HOME)
-#HOME = Path.home()
 SRC = HOME / 'gutris1'
 CSS = SRC / 'setup.css'
 MARK = SRC / 'marking.py'
 IMG = SRC / 'loading.png'
-
-A1111 = SRC / 'A1111.py'
-Forge = SRC / 'Forge.py'
-ComfyUI = SRC / 'ComfyUI.py'
-ReForge = SRC / 'ReForge.py'
+KEY = SRC / "api-key.json"
 
 #STR = HOME / '.ipython/profile_default/startup'
 STR = Path('/root/.ipython/profile_default/startup')
+nenen = STR / "nenen88.py"
+pantat = STR / "pantat88.py"
+
+tmp = Path('/kaggle/temp')
+tmp.mkdir(parents=True, exist_ok=True)
+vnv = Path('/kaggle/venv')
+
 with open(STR / 'HOMEPATH.py', 'w') as file:
     file.write(f"PATHHOME = '{HOME}'\n")
 
-scripts = [
-    f"curl -sLo {STR}/00-startup.py https://github.com/gutris1/segsmaker/raw/K/kaggle/script/00-startup.py",
-    f"curl -sLo {STR}/pantat88.py https://github.com/gutris1/segsmaker/raw/K/kaggle/script/pantat88.py",
-    f"curl -sLo {STR}/nenen88.py https://github.com/gutris1/segsmaker/raw/K/kaggle/script/nenen88.py",
-    f"curl -sLo {STR}/util.py https://github.com/gutris1/segsmaker/raw/main/script/util.py",
-    f"curl -sLo {STR}/loading.png https://github.com/gutris1/segsmaker/raw/main/script/loading.png",
-    f"curl -sLo {STR}/cupang.py https://github.com/gutris1/segsmaker/raw/main/script/cupang.py"
-]
-
-for items in scripts:
-    subprocess.run(shlex.split(items), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-
-sys.path.append(str(STR))
+current_key = ""
+if KEY.exists():
+    with open(KEY, "r") as file:
+        value = json.load(file)
+        current_key = value.get("civitai-api-key", "")
 
 def load_css():
     with open(CSS, "r") as file:
@@ -59,8 +53,6 @@ def marking(path, fn, ui):
         'ui': ui,
         'launch_args1': '',
         'launch_args2': '',
-        'zrok_token': '',
-        'ngrok_token': '',
         'tunnel': ''
     }
 
@@ -81,54 +73,272 @@ def marking(path, fn, ui):
     with open(txt, 'w') as file:
         json.dump(data, file, indent=4)
 
-def installing_webui(ui, sd_value):
-    print(f"{ui} - {sd_value}")
+def key_inject(api_key):
+    target = [pantat, nenen]
 
-def handle_launch(b):
-    multi_panel.close()
+    for line in target:
+        with open(line, "r") as file:
+            variable = file.read()
+            
+        value = variable.replace('toket = ""', f'toket = "{api_key}"')
+        with open(line, "w") as file:
+            file.write(value)
 
-    webui_selection = {
-        'A1111': A1111,
-        'Forge': Forge,
-        'ComfyUI': ComfyUI,
-        'ReForge': ReForge
-    }
+def fuckin_symlink(ui, WEBUI):
+    if ui == 'A1111':
+        return [
+            f"rm -rf {tmp}/*",
+            f"rm -rf {WEBUI}/models/Stable-diffusion/tmp_ckpt {WEBUI}/models/Lora/tmp_lora {WEBUI}/models/ControlNet",
+            f"mkdir -p {WEBUI}/models/Lora {WEBUI}/models/ESRGAN",
+            f"ln -vs {tmp}/ckpt {WEBUI}/models/Stable-diffusion/tmp_ckpt",
+            f"ln -vs {tmp}/lora {WEBUI}/models/Lora/tmp_lora",
+            f"ln -vs {tmp}/controlnet {WEBUI}/models/ControlNet"
+        ]
 
-    ui = webuiradio1.value
-    sd_value = webuiradio2.value
-    marking(SRC, 'marking.json', ui)
+    elif ui == 'ComfyUI':
+        return [
+            f"rm -rf {tmp}/*",
+            f"rm -rf {WEBUI}/models/checkpoints/tmp_ckpt {WEBUI}/models/loras/tmp_lora",
+            f"rm -rf {WEBUI}/models/controlnet {WEBUI}/models/clip",
+            f"ln -vs {tmp}/ckpt {WEBUI}/models/checkpoints/tmp_ckpt",
+            f"ln -vs {tmp}/lora {WEBUI}/models/loras/tmp_lora",
+            f"ln -vs {tmp}/controlnet {WEBUI}/models/controlnet",
+            f"ln -vs {tmp}/clip {WEBUI}/models/clip",
+            f"ln -vs {WEBUI}/models/checkpoints {WEBUI}/models/checkpoints_symlink"
+        ]
+
+    elif ui in ['Forge', 'ReForge']:
+        return [
+            f"rm -rf {tmp}/*",
+            f"rm -rf {WEBUI}/models/Stable-diffusion/tmp_ckpt {WEBUI}/models/Lora/tmp_lora",
+            f"rm -rf {WEBUI}/models/ControlNet {WEBUI}/models/svd {WEBUI}/models/z123",
+            f"mkdir -p {WEBUI}/models/Lora {WEBUI}/models/ESRGAN",
+            f"ln -vs {tmp}/ckpt {WEBUI}/models/Stable-diffusion/tmp_ckpt",
+            f"ln -vs {tmp}/lora {WEBUI}/models/Lora/tmp_lora",
+            f"ln -vs {tmp}/controlnet {WEBUI}/models/ControlNet",
+            f"ln -vs {tmp}/z123 {WEBUI}/models/z123",
+            f"ln -vs {tmp}/svd {WEBUI}/models/svd"
+        ]
+
+def webui_req(ui, WEBUI):
+    if ui == 'A1111':
+        pull(f"https://github.com/gutris1/segsmaker sd {WEBUI}")
+    elif ui == 'Forge':
+        pull(f"https://github.com/gutris1/segsmaker forge {WEBUI}")
+    elif ui == 'ComfyUI':
+        pull(f"https://github.com/gutris1/segsmaker cui {WEBUI}")
+    elif ui == 'ReForge':
+        pull(f"https://github.com/gutris1/segsmaker reforge {WEBUI}")
+
+    os.chdir(WEBUI)
+    req = fuckin_symlink(ui, WEBUI)
+
+    for lines in req:
+        subprocess.run(shlex.split(lines), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+    scripts = [
+        f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/controlnet.py {WEBUI}/asd",
+        f"https://github.com/gutris1/segsmaker/raw/K/kaggle/script/venv.py {WEBUI}",
+        f"https://github.com/gutris1/segsmaker/raw/main/script/multi/segsmaker.py {WEBUI}"
+    ]
+    
+    upscalers_path = f"{WEBUI}/models/upscale_models" if ui == 'ComfyUI' else f"{WEBUI}/models/ESRGAN"
+    upscalers = [
+        f"https://huggingface.co/pantat88/ui/resolve/main/4x-UltraSharp.pth {upscalers_path}",
+        f"https://huggingface.co/pantat88/ui/resolve/main/4x-AnimeSharp.pth {upscalers_path}",
+        f"https://huggingface.co/pantat88/ui/resolve/main/4x_NMKD-Superscale-SP_178000_G.pth {upscalers_path}",
+        f"https://huggingface.co/pantat88/ui/resolve/main/4x_RealisticRescaler_100000_G.pth {upscalers_path}",
+        f"https://huggingface.co/pantat88/ui/resolve/main/8x_RealESRGAN.pth {upscalers_path}",
+        f"https://huggingface.co/pantat88/ui/resolve/main/4x_foolhardy_Remacri.pth {upscalers_path}"
+    ]
+
+    line = scripts + upscalers
+    for item in line:
+        download(item)
+
+    tempe()
+
+def Extensions(ui, WEBUI):
+    if ui == 'ComfyUI':
+        say("<br><b>【{red} Installing Custom Nodes{d} 】{red}</b>")
+        os.chdir(WEBUI / "custom_nodes")
+        clone(str(WEBUI / "asd/custom_nodes.txt"))
+        print()
+
+        custom_nodes_models = [
+            f"https://github.com/sczhou/CodeFormer/releases/download/v0.1.0/codeformer.pth {WEBUI}/models/facerestore_models",
+            f"https://github.com/TencentARC/GFPGAN/releases/download/v1.3.4/GFPGANv1.4.pth {WEBUI}/models/facerestore_models"]
+
+        for item in custom_nodes_models:
+            download(item)
+
+    else:
+        say("<br><b>【{red} Installing Extensions{d} 】{red}</b>")
+        os.chdir(WEBUI / "extensions")
+        clone(str(WEBUI / "asd/extension.txt"))
+        get_ipython().system("git clone -q https://github.com/gutris1/sd-encrypt-image")
+        
+def installing_webui(ui, which_sd, WEBUI, EMB, VAE):
+    webui_req(ui, WEBUI)
+
+    if which_sd == "sd 1.5":
+        extras = [
+            f"https://huggingface.co/pantat88/ui/resolve/main/embeddings.zip {WEBUI}",
+            f"https://huggingface.co/stabilityai/sd-vae-ft-mse-original/resolve/main/vae-ft-mse-840000-ema-pruned.safetensors {VAE}"
+        ]
+        unzip_path = f"{WEBUI}/embeddings.zip"
+
+    elif which_sd == "sd xl":
+        extras = [
+            f"https://civitai.com/api/download/models/403492 {EMB}",
+            f"https://civitai.com/api/download/models/182974 {EMB}",
+            f"https://civitai.com/api/download/models/159385 {EMB}",
+            f"https://civitai.com/api/download/models/159184 {EMB}",
+            f"https://huggingface.co/stabilityai/sdxl-vae/resolve/main/sdxl_vae.safetensors {VAE}"
+        ]
+        unzip_path = None
+
+    for item in extras:
+        download(item)
+
+    if which_sd == "sd 1.5":
+        get_ipython().system(f"unzip -qo {unzip_path} -d {EMB} && rm {unzip_path}")
+
+    Extensions(ui, WEBUI)
+
+def webui_install(ui, which_sd):
+    from nenen88 import pull, say, download, clone, tempe
+
+    with loading:
+        display(Image(filename=str(IMG)))
 
     with output:
-        installing_webui(ui, sd_value)
+        if ui == 'A1111':
+            WEBUI = HOME / 'A1111'
+            version = 'v1.10.1'
+            repo = f'git clone -q -b {version} https://github.com/gutris1/A1111'
+            say("<b>【{red} Installing A1111{d} 】{red}</b>")
+
+        elif ui == 'Forge':
+            WEBUI = HOME / 'Forge'
+            repo = f'git clone -q https://github.com/lllyasviel/stable-diffusion-webui-forge Forge'
+            say("<b>【{red} Installing Forge{d} 】{red}</b>")
+
+        elif ui == 'ComfyUI':
+            WEBUI = HOME / 'ComfyUI'
+            repo = f'git clone -q https://github.com/comfyanonymous/ComfyUI'
+            say("<b>【{red} Installing ComfyUI{d} 】{red}</b>")
+
+        elif ui == 'ReForge':
+            WEBUI = HOME / 'ReForge'
+            repo = f'git clone -q https://github.com/Panchovix/stable-diffusion-webui-reForge ReForge'
+            say("<b>【{red} Installing ReForge{d} 】{red}</b>")
+
+        EMB = f"{WEBUI}/models/embeddings" if ui == 'ComfyUI' else f"{WEBUI}/embeddings"
+        VAE = f"{WEBUI}/models/vae" if ui == 'ComfyUI' else f"{WEBUI}/models/VAE"
+
+        req_list = [
+            "curl -LO /kaggle/working/new_tunnel https://github.com/DEX-1101/sd-webui-notebook/raw/main/res/new_tunnel",
+            "curl -Lo /usr/bin/cl https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64",
+            "apt-get update",
+            "apt -y install pv",
+            "pip install -q gdown aria2 cloudpickle",
+            "chmod +x /usr/bin/cl"
+        ]
+
+        for items in req_list:
+            subprocess.run(shlex.split(items), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+        get_ipython().system(f"{repo}")
+        time.sleep(1)
+        installing_webui(ui, which_sd, WEBUI, EMB, VAE)
+        #get_ipython().run_line_magic('run', f'{MARK}')
+
+        with loading:
+            loading.clear_output(wait=True)
+            get_ipython().run_line_magic('run', f'{WEBUI}/venv.py')
+            loading.clear_output(wait=True)
+            say("<b>【{red} Done{d} 】{red}</b>")
+            get_ipython().kernel.do_shutdown(True)
+            os.chdir(HOME)
+
+def handle_launch(b):
+    try:
+        def webui_selection():
+            multi_panel.close()
+            webui_selection = {
+                'A1111': 'A1111',
+                'Forge': 'Forge',
+                'ComfyUI': 'ComfyUI',
+                'ReForge': 'ReForge'
+            }
+            ui = webuiradio1.value
+            which_sd = webuiradio2.value
+            marking(SRC, 'marking.json', ui)
+            webui_install(ui, which_sd)
+
+        def key_input(b):
+            api_key = civitai_key_box.value.strip()
+
+            with output:
+                if not api_key:
+                    print("Please enter your CivitAI API KEY / CivitAI APIキーのおっぱいを入力してください。")
+                    return
+
+                if len(api_key) < 32:
+                    print("API key must be at least 32 characters long / APIキーは少なくとも32オッパイの長さに達する必要があります。")
+                    return
+
+                key_value = {"civitai-api-key": api_key}
+                with open(KEY, "w") as file:
+                    json.dump(key_value, file, indent=4)
+
+            key_inject(api_key)
+            output.clear_output()
+            sys.path.append(str(STR))
+            get_ipython().run_line_magic('run', f'{pantat}')
+            get_ipython().run_line_magic('run', f'{nenen}')
+            webui_selection()
+
+        key_input(b)
+
+    except KeyboardInterrupt:
+        print('Canceled')
 
 output = widgets.Output()
+loading = widgets.Output()
 
-civitai_key_box = widgets.Text(placeholder='Enter Your Civitai API KEY Here',
-                               layout=widgets.Layout(left='35px', padding='10px', width='320px'))
+civitai_key_box = widgets.Text(
+    value=current_key,
+    placeholder='Enter Your Civitai API KEY Here',
+    layout=widgets.Layout(left='26px', padding='10px', width='300px')
+)
 
 WEBUI_LIST = ['A1111', 'Forge', 'ComfyUI', 'ReForge']
-list1 = {btn: btn.lower() for btn in WEBUI_LIST}
+list1 = {btn: btn for btn in WEBUI_LIST}
 
-webuiradio1 = widgets.RadioButtons(options=list1, layout=widgets.Layout(width='300px', height='auto'))
+SD_LIST = ['SD 1.5', 'SD XL']
+list2 = {btn: btn.lower() for btn in SD_LIST}
 
-WHICH_SD = ['SD 1.5', 'SD XL']
-list2 = {btn: btn.lower() for btn in WHICH_SD}
+webuiradio1 = widgets.RadioButtons(options=list1)
+webuiradio2 = widgets.RadioButtons(options=list2, layout=widgets.Layout(left='25px'))
 
-webuiradio2 = widgets.RadioButtons(options=list2,
-                                   layout=widgets.Layout(right='50px', width='300px', height='auto'))
-
-radio_list = widgets.HBox([webuiradio1, webuiradio2],
-                          layout=widgets.Layout(padding='10px', width='600px', height='400px'))
+radio_list = widgets.HBox(
+    [webuiradio1, webuiradio2],
+    layout=widgets.Layout(padding='10px', width='360px', height='360px')
+)
 
 launch_button = widgets.Button(description='Install')
 exit_button = widgets.Button(description='Exit')
-button_box = widgets.HBox([exit_button, launch_button], layout=widgets.Layout(
-    padding='10px',
-    display='flex',
-    flex_flow='row',
-    justify_content='space-between'))
+button_box = widgets.HBox(
+    [exit_button, launch_button],
+    layout=widgets.Layout(padding='10px', display='flex',flex_flow='row', justify_content='space-between')
+)
 
-multi_panel = widgets.VBox([civitai_key_box, radio_list, button_box], layout=widgets.Layout(width='400px', height='340px'))
+multi_panel = widgets.VBox(
+    [civitai_key_box, radio_list, button_box],
+    layout=widgets.Layout(width='360px', height='360px')
+)
 
 civitai_key_box.add_class("api-input")
 webuiradio1.add_class("webui-radio")
@@ -145,22 +355,23 @@ def multi_widgets():
         SRC.mkdir(parents=True, exist_ok=True)
 
     x = [
-        f"curl -sLo {IMG} https://github.com/gutris1/segsmaker/raw/main/script/loading.png",
+        f"curl -sLo {STR}/00-startup.py https://github.com/gutris1/segsmaker/raw/K/kaggle/script/00-startup.py",
+        f"curl -sLo {pantat} https://github.com/gutris1/segsmaker/raw/K/kaggle/script/pantat88.py",
+        f"curl -sLo {nenen} https://github.com/gutris1/segsmaker/raw/K/kaggle/script/nenen88.py",
+        f"curl -sLo {STR}/util.py https://github.com/gutris1/segsmaker/raw/main/script/util.py",
+        f"curl -sLo {STR}/cupang.py https://github.com/gutris1/segsmaker/raw/main/script/cupang.py"
         f"curl -sLo {CSS} https://github.com/gutris1/segsmaker/raw/K/kaggle/script/setup.css",
-        f"curl -sLo {MARK} https://github.com/gutris1/segsmaker/raw/main/script/multi/marking.py",
-        f"curl -sLo {A1111} https://github.com/gutris1/segsmaker/raw/K/kaggle/script/A1111.py",
-        f"curl -sLo {Forge} https://github.com/gutris1/segsmaker/raw/main/script/multi/Forge.py",
-        f"curl -sLo {ComfyUI} https://github.com/gutris1/segsmaker/raw/main/script/multi/ComfyUI.py",
-        f"curl -sLo {ReForge} https://github.com/gutris1/segsmaker/raw/main/script/multi/ReForge.py"
+        f"curl -sLo {IMG} https://github.com/gutris1/segsmaker/raw/main/script/loading.png",
+        f"curl -sLo {MARK} https://github.com/gutris1/segsmaker/raw/main/script/multi/marking.py"
     ]
 
     for y in x:
         get_ipython().system(y)
 
     load_css()
-    display(multi_panel, output)
-    os.chdir(HOME)
+    display(multi_panel, output, loading)
 
 print('Loading Widget...')
 clear_output(wait=True)
+os.chdir(HOME)
 multi_widgets()
