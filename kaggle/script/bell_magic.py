@@ -8,6 +8,11 @@ import requests
 
 
 class _InvisibleAudio(Audio):
+    """
+    An invisible (`display: none`) `Audio` element which removes itself when finished playing.
+    Taken from https://stackoverflow.com/a/50648266.
+    """
+
     def _repr_html_(self) -> str:
         audio = super()._repr_html_()
         audio = audio.replace(
@@ -18,7 +23,15 @@ class _InvisibleAudio(Audio):
 
 @magics_class
 class NotificationMagics(Magics):
-    SOUND_DIR = Path(__file__).parent.resolve() / "SOUND"
+    """
+    Inspired by https://stackoverflow.com/a/50648266.
+
+    If a bell.wav file exists in the same directory as this file, that will be used as
+    the default sound. Otherwise, the default is the wav file at `DEFAULT_URL`.
+    Providing a URL to the magic overrides either of these defaults.
+    """
+
+    SOUND_DIR = Path(__file__).parent.resolve()
     SOUND_FILES = {
         "1": "https://huggingface.co/pantat88/ui/resolve/main/1.wav",
         "2": "https://huggingface.co/pantat88/ui/resolve/main/2.wav",
