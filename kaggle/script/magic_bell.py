@@ -17,10 +17,6 @@ class _InvisibleAudio(Audio):
         audio = audio.replace(
             "<audio", '<audio onended="this.parentNode.removeChild(this)"'
         )
-        # Set volume to 0
-        audio = audio.replace(
-            "<audio", '<audio volume="0"'
-        )
         return f'<div style="display:none">{audio}</div>'
 
 
@@ -67,11 +63,10 @@ class NotificationMagics(Magics):
                 audio = _InvisibleAudio(url=maybe_url, autoplay=True)
 
             if args.mute:
-                audio._repr_html_ = lambda: audio._repr_html_().replace(
-                    '<audio', '<audio volume="0"'
-                )
-
-            display(audio)
+                audio_html = audio._repr_html_().replace('<audio', '<audio volume="0"')
+                display.display_html(audio_html, raw=True)
+            else:
+                display(audio)
 
         return ret
 
