@@ -1,17 +1,17 @@
 from pathlib import Path
-from typing import Optional, Union
+from typing import Optional
 from IPython import get_ipython
 from IPython.core.magic import line_cell_magic, Magics, magics_class
 from IPython.core.magic_arguments import argument, magic_arguments, parse_argstring
 from IPython.display import Audio, display
 import requests
-import uuid
+
 
 class _InvisibleAudio(Audio):
     """
     An invisible (`display: none`) `Audio` element which removes itself when finished playing.
-    Taken from https://stackoverflow.com/a/50648266.
     """
+
     def _repr_html_(self) -> str:
         audio = super()._repr_html_()
         audio = audio.replace(
@@ -19,66 +19,58 @@ class _InvisibleAudio(Audio):
         )
         return f'<div style="display:none">{audio}</div>'
 
+
 @magics_class
 class NotificationMagics(Magics):
     """
-    Magic class to notify via sounds. If a sound file (1.wav, 2.wav, or 3.wav) exists in the same 
-    directory as this file, it will be used as a default sound. Otherwise, the default is a URL.
+    Adds a magic to IPython which will play a given sound when a cell finishes running.
     """
 
     SOUND_DIR = Path(__file__).parent.resolve()
-    SOUND_FILES = {
-        1: SOUND_DIR / "1.wav",
-        2: SOUND_DIR / "2.wav",
-        3: SOUND_DIR / "3.wav",
+    FILE_MAP = {
+        "1": SOUND_DIR / "1.wav",
+        "2": SOUND_DIR / "2.wav",
+        "3": SOUND_DIR / "3.wav",
     }
-    SOUND_URLS = {
-        1: "https://huggingface.co/pantat88/ui/resolve/main/1.wav",
-        2: "https://huggingface.co/pantat88/ui/resolve/main/2.wav",
-        3: "https://huggingface.co/pantat88/ui/resolve/main/3.wav",
-    }
+    DEFAULT_URL = "https://freewavesamples.com/files/E-Mu-Proteus-FX-CosmoBel-C3.wav"
 
     def __init__(self, shell):
         super().__init__(shell)
-        self._download_sounds()
+        self._ensure_audio_files()
 
-    def _download_sounds(self):
-        for num, path in self.SOUND_FILES.items():
-            if not path.is_file():
-                url = self.SOUND_URLS[num]
-                print(f"Downloading {url} to {path}")
+    def _ensure_audio_files(self):
+        """Download the sound files if they are not present."""
+        for num, file_path in self.FILE_MAP.items():
+            if not file_path.exists():
+                url = f"https://huggingface.co/pantat88/ui/resolve/main/{num}.wav"
                 response = requests.get(url)
-                path.write_bytes(response.content)
+                file_path.write_bytes(response.content)
 
     @magic_arguments()
     @argument(
-        "-u", "--url", default=None, help="URL or integer to play local audio file (1, 2, or 3).",
+        "-u", "--url", default="1", help="Specify sound by number (1, 2, or 3).",
     )
     @argument(
         "line_code",
         nargs="*",
-        help="Other code on the line will be executed, unless this is called as a cell magic.",
+        help="Other code on the line will be executed unless called as a cell magic.",
     )
     @line_cell_magic
     def notify(self, line: str, cell: Optional[str] = None):
         args = parse_argstring(self.notify, line)
+
         code = cell if cell else " ".join(args.line_code)
-
-        try:
+        ret = None
+        if code:
             ret = self.shell.ex(code)
-        finally:
-            maybe_url = args.url
-            if maybe_url and maybe_url.isdigit() and int(maybe_url) in self.SOUND_FILES:
-                file_path = self.SOUND_FILES[int(maybe_url)]
-                unique_id = uuid.uuid4()
-                audio = _InvisibleAudio(filename=file_path, autoplay=True)
-                audio.html_id = f"audio_{unique_id}"
-            elif maybe_url:
-                audio = _InvisibleAudio(url=maybe_url, autoplay=True)
-            else:
-                audio = _InvisibleAudio(url=self.SOUND_URLS[1], autoplay=True)
-            display(audio)
 
+        sound_file = self.FILE_MAP.get(args.url, None)
+        if sound_file and sound_file.exists():
+            audio = _InvisibleAudio(filename=str(sound_file), autoplay=True)
+        else:
+            audio = _InvisibleAudio(url=self.DEFAULT_URL, autoplay=True)
+        
+        display(audio)
         return ret
 
 get_ipython().register_magics(NotificationMagics)
