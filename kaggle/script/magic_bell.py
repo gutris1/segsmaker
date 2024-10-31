@@ -4,7 +4,7 @@ from IPython import get_ipython
 from IPython.core.magic import line_cell_magic, Magics, magics_class
 from IPython.core.magic_arguments import argument, magic_arguments, parse_argstring
 from IPython.display import Audio, display
-
+import os
 
 class _InvisibleAudio(Audio):
     """
@@ -49,7 +49,7 @@ class NotificationMagics(Magics):
             ret = self.shell.ex(code)
         finally:
             maybe_url = args.url
-            if Path(maybe_url).is_file():
+            if os.path.isfile(maybe_url):
                 audio = _InvisibleAudio(filename=maybe_url, autoplay=True)
             elif maybe_url == self.SOUND_FILE and Path(self.SOUND_FILE).is_file():
                 audio = _InvisibleAudio(filename=self.SOUND_FILE, autoplay=True)
