@@ -17,29 +17,37 @@ if HOME is None:
     sys.exit()
 
 HOME = Path(HOME)
+BASEPATH = Path('/content') if env == 'Colab' else Path('/kaggle')
+tmp = BASEPATH / 'temp'
+vnv = BASEPATH / 'venv'
+
+tmp.mkdir(parents=True, exist_ok=True)
+
 SRC = HOME / 'gutris1'
 CSS = SRC / 'setup.css'
-MARK = SRC / 'marking.py'
+MRK = SRC / 'marking.py'
 IMG = SRC / 'loading.png'
-KEY = SRC / "api-key.json"
+KEY = SRC / 'api-key.json'
+MARKED = SRC / 'marking.json'
 
-#STR = HOME / '.ipython/profile_default/startup'
 STR = Path('/root/.ipython/profile_default/startup')
 nenen = STR / "nenen88.py"
 pantat = STR / "pantat88.py"
+KANDANG = STR / 'KANDANG.py'
 
-tmp = Path('/kaggle/temp')
-tmp.mkdir(parents=True, exist_ok=True)
-vnv = Path('/kaggle/venv')
-
-with open(STR / 'HOMEPATH.py', 'w') as file:
-    file.write(f"PATHHOME = '{HOME}'\n")
+with open(KANDANG, 'w') as file:
+    file.write(f"HOMEPATH = '{HOME}'\n")
+    file.write(f"TEMPPATH = '{tmp}'\n")
+    file.write(f"VENVPATH = '{vnv}'\n")
+    file.write(f"BASEPATH = '{BASEPATH}'\n")
 
 current_key = ""
 if KEY.exists():
     with open(KEY, "r") as file:
         value = json.load(file)
         current_key = value.get("civitai-api-key", "")
+
+SRC.mkdir(parents=True, exist_ok=True)
 
 def load_css():
     with open(CSS, "r") as file:
@@ -84,7 +92,7 @@ def key_inject(api_key):
         with open(line, "w") as file:
             file.write(value)
 
-def fuckin_symlink(ui, WEBUI):
+def sym_link(ui, WEBUI):
     if ui == 'A1111':
         return [
             f"rm -rf {tmp}/*",
@@ -131,15 +139,15 @@ def webui_req(ui, WEBUI):
         pull(f"https://github.com/gutris1/segsmaker reforge {WEBUI}")
 
     os.chdir(WEBUI)
-    req = fuckin_symlink(ui, WEBUI)
+    req = sym_link(ui, WEBUI)
 
     for lines in req:
         subprocess.run(shlex.split(lines), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     scripts = [
-        f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/controlnet.py {WEBUI}/asd",
+        f"https://github.com/gutris1/segsmaker/raw/K/script/controlnet/controlnet.py {WEBUI}/asd",
         f"https://github.com/gutris1/segsmaker/raw/K/kaggle/script/venv.py {WEBUI}",
-        f"https://github.com/gutris1/segsmaker/raw/main/script/multi/segsmaker.py {WEBUI}"
+        f"https://github.com/gutris1/segsmaker/raw/K/script/multi/segsmaker.py {WEBUI}"
     ]
     
     upscalers_path = f"{WEBUI}/models/upscale_models" if ui == 'ComfyUI' else f"{WEBUI}/models/ESRGAN"
@@ -175,7 +183,7 @@ def Extensions(ui, WEBUI):
     else:
         say("<br><b>【{red} Installing Extensions{d} 】{red}</b>")
         os.chdir(WEBUI / "extensions")
-        clone(str(WEBUI / "asd/extension.txt"))
+        clone(str(WEBUI / "asd/ext-xl.txt"))
         get_ipython().system("git clone -q https://github.com/gutris1/sd-encrypt-image")
         
 def installing_webui(ui, which_sd, WEBUI, EMB, VAE):
@@ -186,7 +194,7 @@ def installing_webui(ui, which_sd, WEBUI, EMB, VAE):
             f"https://huggingface.co/pantat88/ui/resolve/main/embeddings.zip {WEBUI}",
             f"https://huggingface.co/stabilityai/sd-vae-ft-mse-original/resolve/main/vae-ft-mse-840000-ema-pruned.safetensors {VAE}"
         ]
-        unzip_path = f"{WEBUI}/embeddings.zip"
+        embzip = f"{WEBUI}/embeddings.zip"
 
     elif which_sd == "sd xl":
         extras = [
@@ -196,13 +204,13 @@ def installing_webui(ui, which_sd, WEBUI, EMB, VAE):
             f"https://civitai.com/api/download/models/159184 {EMB}",
             f"https://huggingface.co/stabilityai/sdxl-vae/resolve/main/sdxl_vae.safetensors {VAE}"
         ]
-        unzip_path = None
+        embzip = None
 
     for item in extras:
         download(item)
 
     if which_sd == "sd 1.5":
-        get_ipython().system(f"unzip -qo {unzip_path} -d {EMB} && rm {unzip_path}")
+        get_ipython().system(f"unzip -qo {embzip} -d {EMB} && rm {embzip}")
 
     Extensions(ui, WEBUI)
 
@@ -215,7 +223,6 @@ def webui_install(ui, which_sd):
     with output:
         if ui == 'A1111':
             WEBUI = HOME / 'A1111'
-            version = 'v1.10.1'
             repo = f'git clone -q -b {version} https://github.com/gutris1/A1111'
             say("<b>【{red} Installing A1111{d} 】{red}</b>")
 
@@ -252,7 +259,7 @@ def webui_install(ui, which_sd):
         get_ipython().system(f"{repo}")
         time.sleep(1)
         installing_webui(ui, which_sd, WEBUI, EMB, VAE)
-        #get_ipython().run_line_magic('run', f'{MARK}')
+        get_ipython().run_line_magic('run', f'{MRK}')
 
         with loading:
             loading.clear_output(wait=True)
@@ -274,7 +281,7 @@ def handle_launch(b):
             }
             ui = webuiradio1.value
             which_sd = webuiradio2.value
-            marking(SRC, 'marking.json', ui)
+            marking(SRC, MARKED, ui)
             webui_install(ui, which_sd)
 
         def key_input(b):
@@ -296,8 +303,8 @@ def handle_launch(b):
             key_inject(api_key)
             output.clear_output()
             sys.path.append(str(STR))
-            get_ipython().run_line_magic('run', f'{pantat}')
             get_ipython().run_line_magic('run', f'{nenen}')
+            get_ipython().run_line_magic('run', f'{KANDANG}')
             webui_selection()
 
         key_input(b)
@@ -351,25 +358,48 @@ launch_button.on_click(handle_launch)
 exit_button.on_click(lambda b: (multi_panel.close(), clear_output()))
 
 def multi_widgets():
-    if not SRC.exists():
-        SRC.mkdir(parents=True, exist_ok=True)
+    config = json.load(MARKED.open('r')) if MARKED.exists() else {}
+    ui = config.get('ui')
+    WEBUI = HOME / ui if ui else None
 
-    x = [
-        f"curl -sLo {STR}/00-startup.py https://github.com/gutris1/segsmaker/raw/K/kaggle/script/00-startup.py",
-        f"curl -sLo {pantat} https://github.com/gutris1/segsmaker/raw/K/kaggle/script/pantat88.py",
-        f"curl -sLo {nenen} https://github.com/gutris1/segsmaker/raw/K/kaggle/script/nenen88.py",
-        f"curl -sLo {STR}/util.py https://github.com/gutris1/segsmaker/raw/main/script/util.py",
-        f"curl -sLo {STR}/cupang.py https://github.com/gutris1/segsmaker/raw/main/script/cupang.py"
-        f"curl -sLo {CSS} https://github.com/gutris1/segsmaker/raw/K/kaggle/script/setup.css",
-        f"curl -sLo {IMG} https://github.com/gutris1/segsmaker/raw/main/script/loading.png",
-        f"curl -sLo {MARK} https://github.com/gutris1/segsmaker/raw/main/script/multi/marking.py"
-    ]
+    if ui:
+        if WEBUI and WEBUI.exists():
+            git_dir = WEBUI / '.git'
+            if git_dir.exists():
+                os.chdir(WEBUI)
+                commit_hash = subprocess.check_output(['git', 'rev-parse', 'HEAD']).strip().decode('utf-8')
+                if ui == 'A1111':
+                    if commit_hash != version:
+                        get_ipython().system(f"git pull origin {version}")
+                        get_ipython().system("git fetch --tags")
+                elif ui == 'ComfyUI':
+                    get_ipython().system("git pull origin master")
+                    get_ipython().system("git fetch --tags")
+                elif ui in ['Forge', 'ReForge']:
+                    get_ipython().system("git pull origin main")
+                    get_ipython().system("git fetch --tags")
 
-    for y in x:
-        get_ipython().system(y)
+    else:            
+        z = [
+            (STR / '00-startup.py', f"curl -sLo {STR}/00-startup.py https://github.com/gutris1/segsmaker/raw/K/kaggle/script/00-startup.py"),
+            (pantat, f"curl -sLo {pantat} https://github.com/gutris1/segsmaker/raw/K/kaggle/script/pantat88.py"),
+            (nenen, f"curl -sLo {nenen} https://github.com/gutris1/segsmaker/raw/K/kaggle/script/nenen88.py"),
+            (STR / 'util.py', f"curl -sLo {STR}/util.py https://github.com/gutris1/segsmaker/raw/main/script/util.py"),
+            (STR / 'cupang.py', f"curl -sLo {STR}/cupang.py https://github.com/gutris1/segsmaker/raw/main/script/cupang.py"),
+            (CSS, f"curl -sLo {CSS} https://github.com/gutris1/segsmaker/raw/K/kaggle/script/setup.css"),
+            (IMG, f"curl -sLo {IMG} https://github.com/gutris1/segsmaker/raw/main/script/loading.png"),
+            (MRK, f"curl -sLo {MRK} https://github.com/gutris1/segsmaker/raw/K/kaggle/script/marking.py"),
+        ]
 
-    load_css()
-    display(multi_panel, output, loading)
+        for x, y in z:
+            if not Path(x).exists():
+                get_ipython().system(y)
+        
+        clear_output()
+        load_css()
+        display(multi_panel, output, loading)
+
+version = 'v1.10.1'
 
 print('Loading Widget...')
 clear_output(wait=True)
