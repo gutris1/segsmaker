@@ -1,6 +1,6 @@
-import sys, os
-from pathlib import Path
 from IPython import get_ipython
+from pathlib import Path
+import sys, os
 
 env, HOME = 'Unknown', None
 env_list = {'Colab': '/content', 'Kaggle': '/kaggle/working'}
@@ -16,5 +16,5 @@ MRK = SRC / 'marking.py'
 STR = Path('/root/.ipython/profile_default/startup')
 
 sys.path.append(str(STR))
-#if marking.exists():
-    #get_ipython().run_line_magic('run', f'{marking}')
+if MRK.exists():
+    get_ipython().run_line_magic('run', f'{MRK}')
