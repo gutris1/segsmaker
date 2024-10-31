@@ -7,11 +7,6 @@ from IPython.display import Audio, display, HTML
 
 
 class _InvisibleAudio(Audio):
-    """
-    An invisible (`display: none`) `Audio` element which removes itself when finished playing.
-    Taken from https://stackoverflow.com/a/50648266.
-    """
-
     def _repr_html_(self) -> str:
         audio = super()._repr_html_()
         audio = audio.replace(
@@ -22,14 +17,6 @@ class _InvisibleAudio(Audio):
 
 @magics_class
 class NotificationMagics(Magics):
-    """
-    Inspired by https://stackoverflow.com/a/50648266.
-
-    If a bell.wav file exists in the same directory as this file, that will be used as
-    the default sound. Otherwise, the default is the wav file at `DEFAULT_URL`.
-    Providing a URL to the magic overrides either of these defaults.
-    """
-
     SOUND_FILE = str(Path(__file__).parent.resolve() / "bell.wav")
     DEFAULT_URL = "https://freewavesamples.com/files/E-Mu-Proteus-FX-CosmoBel-C3.wav"
 
@@ -38,7 +25,7 @@ class NotificationMagics(Magics):
         "-u", "--url", default=SOUND_FILE, help="URL of audio file to play.",
     )
     @argument(
-        "-m", "--mute", action="store_true", help="Mute the audio (volume = 0)."
+        "-m", "--mute", action="store_true", help="Mute the audio playback.",
     )
     @argument(
         "line_code",
@@ -48,7 +35,7 @@ class NotificationMagics(Magics):
     @line_cell_magic
     def notify(self, line: str, cell: Optional[str] = None):
         args = parse_argstring(self.notify, line)
-    
+
         code = cell if cell else " ".join(args.line_code)
         try:
             ret = self.shell.ex(code)
@@ -61,14 +48,17 @@ class NotificationMagics(Magics):
                     audio = _InvisibleAudio(url=self.DEFAULT_URL, autoplay=True)
             else:
                 audio = _InvisibleAudio(url=maybe_url, autoplay=True)
-    
+
             if args.mute:
-                audio_html = audio._repr_html_().replace('<audio', '<audio volume="0"')
-                display(HTML(audio_html))
+                audio_html = audio._repr_html_()
+                audio_html_with_mute = audio_html.replace(
+                    '<audio', '<audio onended="this.parentNode.removeChild(this)" volume="0" ' +
+                    'onload="this.volume=0;"'
+                )
+                display(HTML(audio_html_with_mute))
             else:
                 display(audio)
-    
-        return ret
 
+        return ret
 
 get_ipython().register_magics(NotificationMagics)
