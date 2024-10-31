@@ -6,10 +6,6 @@ from pathlib import Path
 from tqdm import tqdm
 import subprocess, zipfile, sys, os, re, shlex, requests
 
-xxx = "/kaggle/working"
-zzz = "/kaggle/working/asd"
-fff = "/kaggle/venv/bin/python3"
-
 @register_line_magic
 def say(line):
     args = re.findall(r'\{[^\{\}]+\}|[^\s\{\}]+', line)
@@ -392,10 +388,9 @@ def cloning(lines):
 @register_line_magic
 def tempe(line):
     tmp = [
-        "/kaggle/temp/checkpoint",
+        "/kaggle/temp/ckpt",
         "/kaggle/temp/lora",
         "/kaggle/temp/controlnet",
-        "/kaggle/temp/output",
         "/kaggle/temp/svd",
         "/kaggle/temp/z123",
         "/kaggle/temp/clip"
