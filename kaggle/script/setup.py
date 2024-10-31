@@ -4,6 +4,9 @@ from ipywidgets import widgets
 from pathlib import Path
 import subprocess, os, sys, shlex, json, time
 
+print('Loading Widget...')
+clear_output(wait=True)
+
 env, HOME = 'Unknown', None
 env_list = {'Colab': '/content', 'Kaggle': '/kaggle/working'}
 
@@ -48,7 +51,7 @@ if KEY.exists():
         current_key = value.get("civitai-api-key", "")
 
 SRC.mkdir(parents=True, exist_ok=True)
-
+                
 def load_css():
     with open(CSS, "r") as file:
         data = file.read()
@@ -272,6 +275,8 @@ def webui_install(ui, which_sd):
 def handle_launch(b):
     try:
         def webui_selection():
+            with aiueo:
+                PLAY('-u https://huggingface.co/pantat88/ui/resolve/main/2.wav')
             multi_panel.close()
             webui_selection = {
                 'A1111': 'A1111',
@@ -289,10 +294,12 @@ def handle_launch(b):
 
             with output:
                 if not api_key:
+                    PLAY('-u https://huggingface.co/pantat88/ui/resolve/main/3.wav')
                     print("Please enter your CivitAI API KEY / CivitAI APIキーのおっぱいを入力してください。")
                     return
 
                 if len(api_key) < 32:
+                    PLAY('-u https://huggingface.co/pantat88/ui/resolve/main/3.wav')
                     print("API key must be at least 32 characters long / APIキーは少なくとも32オッパイの長さに達する必要があります。")
                     return
 
@@ -312,6 +319,7 @@ def handle_launch(b):
     except KeyboardInterrupt:
         print('Canceled')
 
+aiueo = widgets.Output()
 output = widgets.Output()
 loading = widgets.Output()
 
@@ -335,10 +343,10 @@ radio_list = widgets.HBox(
     layout=widgets.Layout(padding='10px', width='360px', height='360px')
 )
 
-launch_button = widgets.Button(description='Install')
+install_button = widgets.Button(description='Install')
 exit_button = widgets.Button(description='Exit')
 button_box = widgets.HBox(
-    [exit_button, launch_button],
+    [exit_button, install_button],
     layout=widgets.Layout(padding='10px', display='flex',flex_flow='row', justify_content='space-between')
 )
 
@@ -351,11 +359,42 @@ civitai_key_box.add_class("api-input")
 webuiradio1.add_class("webui-radio")
 webuiradio2.add_class("webui-radio")
 multi_panel.add_class('launch-panel')
-launch_button.add_class('buttons')
+install_button.add_class('buttons')
 exit_button.add_class('buttons')
 
-launch_button.on_click(handle_launch)
-exit_button.on_click(lambda b: (multi_panel.close(), clear_output()))
+MGC = 'https://github.com/neighthan/jupyter-magics/raw/master/jupyter_magics/bell_magic.py'
+BELL = STR / 'bell_magic.py'
+z = [(BELL, f"curl -sLo {BELL} {MGC}")]
+for x, y in z:
+    if not Path(x).exists():
+        get_ipython().system(y)
+
+get_ipython().run_line_magic('run', f'{BELL}')
+sys.path.append(str(STR))
+from bell_magic import NotificationMagics
+PLAY = NotificationMagics(get_ipython()).notify
+
+def radio1webui(b):
+    if b['name'] == 'value' and b['new']:
+        with aiueo:
+            PLAY('-u https://huggingface.co/pantat88/ui/resolve/main/1.wav')
+
+def radio2webui(b):
+    if b['name'] == 'value' and b['new']:
+        with aiueo:
+            PLAY('-u https://huggingface.co/pantat88/ui/resolve/main/3.wav')
+
+def exiting(b):
+    multi_panel.close()
+    with aiueo:
+        PLAY('-u https://huggingface.co/pantat88/ui/resolve/main/2.wav')
+        output.clear_output()
+
+webuiradio1.observe(radio1webui, names='value')
+webuiradio2.observe(radio2webui, names='value')
+
+install_button.on_click(handle_launch)
+exit_button.on_click(exiting)
 
 def multi_widgets():
     config = json.load(MARKED.open('r')) if MARKED.exists() else {}
@@ -388,7 +427,7 @@ def multi_widgets():
             (STR / 'cupang.py', f"curl -sLo {STR}/cupang.py https://github.com/gutris1/segsmaker/raw/main/script/cupang.py"),
             (CSS, f"curl -sLo {CSS} https://github.com/gutris1/segsmaker/raw/K/kaggle/script/setup.css"),
             (IMG, f"curl -sLo {IMG} https://github.com/gutris1/segsmaker/raw/main/script/loading.png"),
-            (MRK, f"curl -sLo {MRK} https://github.com/gutris1/segsmaker/raw/K/kaggle/script/marking.py"),
+            (MRK, f"curl -sLo {MRK} https://github.com/gutris1/segsmaker/raw/K/kaggle/script/marking.py")
         ]
 
         for x, y in z:
@@ -397,11 +436,9 @@ def multi_widgets():
         
         clear_output()
         load_css()
-        display(multi_panel, output, loading)
+        display(multi_panel, aiueo, output, loading)
 
 version = 'v1.10.1'
 
-print('Loading Widget...')
-clear_output(wait=True)
 os.chdir(HOME)
 multi_widgets()
