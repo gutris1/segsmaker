@@ -383,12 +383,12 @@ def cloning(lines):
 
 def tempe():
     tmp = [
-        "/kaggle/temp/checkpoint",
+        "/kaggle/temp/ckpt",
         "/kaggle/temp/lora",
         "/kaggle/temp/controlnet",
-        "/kaggle/temp/output",
         "/kaggle/temp/svd",
-        "/kaggle/temp/z123"
+        "/kaggle/temp/z123",
+        "/kaggle/temp/clip"
     ]
 
     for path in tmp:
