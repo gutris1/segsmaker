@@ -45,12 +45,16 @@ class NotificationMagics(Magics):
             is_muted = args.mute
             volume = 0 if is_muted else 1.0
 
-            if maybe_url == self.SOUND_FILE and Path(self.SOUND_FILE).is_file():
-                audio = _InvisibleAudio(filename=maybe_url, autoplay=True, volume=volume)
+            if maybe_url == self.SOUND_FILE:
+                if Path(self.SOUND_FILE).is_file():
+                    audio = _InvisibleAudio(filename=maybe_url, autoplay=True)
+                else:
+                    audio = _InvisibleAudio(url=self.DEFAULT_URL, autoplay=True)
             else:
-                audio = _InvisibleAudio(url=maybe_url, autoplay=True, volume=volume)
+                audio = _InvisibleAudio(url=maybe_url, autoplay=True)
             display(audio)
 
         return ret
+
 
 get_ipython().register_magics(NotificationMagics)
