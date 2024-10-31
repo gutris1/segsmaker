@@ -4,7 +4,6 @@ from IPython import get_ipython
 from IPython.core.magic import line_cell_magic, Magics, magics_class
 from IPython.core.magic_arguments import argument, magic_arguments, parse_argstring
 from IPython.display import Audio, display
-import requests
 
 
 class _InvisibleAudio(Audio):
@@ -32,26 +31,15 @@ class NotificationMagics(Magics):
     """
 
     SOUND_DIR = Path(__file__).parent.resolve()
+
     SOUND_FILES = {
-        "1": "https://huggingface.co/pantat88/ui/resolve/main/1.wav",
-        "2": "https://huggingface.co/pantat88/ui/resolve/main/2.wav",
-        "3": "https://huggingface.co/pantat88/ui/resolve/main/3.wav"
+        "1": f"{SOUND_DIR}/1.wav",
+        "2": f"{SOUND_DIR}/2.wav",
+        "3": f"{SOUND_DIR}/3.wav"
     }
     
     SOUND_FILE = str(SOUND_DIR / "bell.wav")
     DEFAULT_URL = "https://freewavesamples.com/files/E-Mu-Proteus-FX-CosmoBel-C3.wav"
-
-    def __init__(self, shell):
-        super().__init__(shell)
-        self._download_sounds()
-
-    def _download_sounds(self):
-        for key, url in self.SOUND_FILES.items():
-            file_path = self.SOUND_DIR / f"{key}.wav"
-            if not file_path.is_file():
-                response = requests.get(url)
-                with open(file_path, 'wb') as f:
-                    f.write(response.content)
 
     @magic_arguments()
     @argument(
@@ -72,8 +60,8 @@ class NotificationMagics(Magics):
         finally:
             if args.line_code and args.line_code[0] in self.SOUND_FILES:
                 sound_key = args.line_code[0]
-                audio_file = self.SOUND_DIR / f"{sound_key}.wav"
-                audio = _InvisibleAudio(filename=str(audio_file), autoplay=True)
+                audio_file = self.SOUND_FILES[sound_key]
+                audio = _InvisibleAudio(filename=audio_file, autoplay=True)
             else:
                 maybe_url = args.url
                 if maybe_url == self.SOUND_FILE:
