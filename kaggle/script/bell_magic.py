@@ -5,6 +5,7 @@ from IPython.core.magic import line_cell_magic, Magics, magics_class
 from IPython.core.magic_arguments import argument, magic_arguments, parse_argstring
 from IPython.display import Audio, display
 import requests
+import uuid
 
 class _InvisibleAudio(Audio):
     """
@@ -69,7 +70,9 @@ class NotificationMagics(Magics):
             maybe_url = args.url
             if maybe_url and maybe_url.isdigit() and int(maybe_url) in self.SOUND_FILES:
                 file_path = self.SOUND_FILES[int(maybe_url)]
+                unique_id = uuid.uuid4()
                 audio = _InvisibleAudio(filename=file_path, autoplay=True)
+                audio.html_id = f"audio_{unique_id}"
             elif maybe_url:
                 audio = _InvisibleAudio(url=maybe_url, autoplay=True)
             else:
@@ -77,3 +80,5 @@ class NotificationMagics(Magics):
             display(audio)
 
         return ret
+
+get_ipython().register_magics(NotificationMagics)
