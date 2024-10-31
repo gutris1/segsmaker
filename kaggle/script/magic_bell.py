@@ -17,6 +17,10 @@ class _InvisibleAudio(Audio):
         audio = audio.replace(
             "<audio", '<audio onended="this.parentNode.removeChild(this)"'
         )
+        # Set volume to 0
+        audio = audio.replace(
+            "<audio", '<audio volume="0"'
+        )
         return f'<div style="display:none">{audio}</div>'
 
 
@@ -38,6 +42,9 @@ class NotificationMagics(Magics):
         "-u", "--url", default=SOUND_FILE, help="URL of audio file to play.",
     )
     @argument(
+        "-m", "--mute", action="store_true", help="Mute the audio (volume = 0)."
+    )
+    @argument(
         "line_code",
         nargs="*",
         help="Other code on the line will be executed, unless this is called as a cell magic.",
@@ -45,8 +52,8 @@ class NotificationMagics(Magics):
     @line_cell_magic
     def notify(self, line: str, cell: Optional[str] = None):
         args = parse_argstring(self.notify, line)
+
         code = cell if cell else " ".join(args.line_code)
-        
         try:
             ret = self.shell.ex(code)
         finally:
@@ -56,10 +63,17 @@ class NotificationMagics(Magics):
                     audio = _InvisibleAudio(filename=maybe_url, autoplay=True)
                 else:
                     audio = _InvisibleAudio(url=self.DEFAULT_URL, autoplay=True)
-            elif Path(maybe_url).is_file():
-                audio = _InvisibleAudio(filename=maybe_url, autoplay=True)
             else:
                 audio = _InvisibleAudio(url=maybe_url, autoplay=True)
+
+            if args.mute:
+                audio._repr_html_ = lambda: audio._repr_html_().replace(
+                    '<audio', '<audio volume="0"'
+                )
+
             display(audio)
+
         return ret
+
+
 get_ipython().register_magics(NotificationMagics)
