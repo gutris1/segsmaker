@@ -31,7 +31,7 @@ class NotificationMagics(Magics):
 
     @magic_arguments()
     @argument("-u", "--url", default=SOUND_FILE, help="URL of audio file to play.")
-    @argument("-m", "--mute", action="store_true", help="Play audio muted (for caching).")
+    @argument("-m", "--mute", default=SOUND_FILE, help="Play audio muted (for caching).")
     @argument("line_code", nargs="*", help="Code to execute on the same line.")
     @line_cell_magic
     def notify(self, line: str, cell: Optional[str] = None):
