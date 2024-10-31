@@ -1,53 +1,20 @@
 from IPython.display import clear_output, Image, display
 from IPython import get_ipython
 from pathlib import Path
-import subprocess, os, shlex, json, errno
 from nenen88 import tempe, say, download
-from HOMEPATH import PATHHOME
+from KANDANG import HOMEPATH, TEMPPATH, VENVPATH, BASEPATH
+import subprocess, os, shlex, errno
 
-HOME = Path(PATHHOME)
-SRC = HOME / 'gutris1'
-MARK = SRC / 'marking.json'
-IMG = SRC / 'loading.png'
+HOME = Path(HOMEPATH)
+IMG = HOME / "gutris1/loading.png"
+tmp = Path(TEMPPATH)
+vnv = Path(VENVPATH)
 
-tmp = Path('/kaggle')
+url = 'https://huggingface.co/pantat88/back_up/resolve/main/venv-torch241-cu121.tar.lz4'
+fn = Path(url).name
+
+need_space = 14 * 1024**3
 cwd = Path.cwd()
-
-vnv_FF = tmp / "venv-fusion"
-vnv_SDT = tmp / "venv-sd-trainer"
-vnv_D = tmp / "venv"
-
-def load_config():
-    config = json.load(MARK.open('r')) if MARK.exists() else {}
-    ui = config.get('ui')
-
-    if ui == 'FaceFusion':
-        url = 'https://huggingface.co/pantat88/back_up/resolve/main/venv-fusion.tar.lz4'
-        need_space = 13 * 1024**3
-        vnv = vnv_FF
-    elif ui == 'SDTrainer':
-        url = 'https://huggingface.co/pantat88/back_up/resolve/main/venv-sd-trainer.tar.lz4'
-        need_space = 14 * 1024**3
-        vnv = vnv_SDT
-    else:
-        url = 'https://huggingface.co/pantat88/back_up/resolve/main/venv-torch241-cu121.tar.lz4'
-        need_space = 14 * 1024**3
-        vnv = vnv_D
-
-    fn = Path(url).name
-    return ui, url, need_space, vnv, fn
-
-def unused_venv():
-    if any(venv.exists() for venv in [vnv_FF, vnv_SDT, vnv_D]):
-        vnv_list = {
-            vnv_FF: [vnv_SDT, vnv_D],
-            vnv_SDT: [vnv_FF, vnv_D],
-            vnv_D: [vnv_FF, vnv_SDT]
-        }.get(vnv)
-
-        if vnv_list:
-            rmf = f'rm -rf {" ".join(f"{venv}/* {venv}" for venv in vnv_list)}'
-            get_ipython().system(rmf)
 
 def check_venv(folder):
     du = get_ipython().getoutput(f'du -s -b {folder}')
@@ -76,7 +43,7 @@ def removing(directory, req_space):
 
     return freed_space
 
-def she_bang(vnv):
+def she_bang():
     vnv_bin = vnv / 'bin'
     old_shebang = b'#!/home/studio-lab-user/tmp/venv/bin/python3\n'
     new_shebang = f"#!{vnv}/bin/python3\n"
@@ -95,19 +62,13 @@ def she_bang(vnv):
             except OSError as e:
                 if e.errno == 26:
                     pass
-                else:
-                    pass
 
-def venv_install(ui, url, need_space, fn):
+def venv_install():
     while True:
         if vnv.exists():
             size = check_venv(vnv)
-
-            if ui == 'FaceFusion' and size < 7 * 1024**3:
+            if size > 7 * 1024**3:
                 return
-            elif size > 7 * 1024**3:
-                return
-
             get_ipython().system(f'rm -rf {vnv}/* {vnv}')
 
         clear_output(wait=True)
@@ -124,7 +85,7 @@ def venv_install(ui, url, need_space, fn):
             if req_space > 0:
                 req_space -= removing(tmp / 'controlnet', req_space)
 
-        os.chdir(tmp)
+        os.chdir(BASEPATH)
         say('<br>【{red} Installing VENV{d} 】{red}')
         download(url)
         get_ipython().system(f'pv {fn} | lz4 -d | tar xf -')
@@ -136,11 +97,8 @@ def venv_install(ui, url, need_space, fn):
         get_ipython().system(f'{vnv / "bin" / "python3"} -m pip install -q --upgrade --force-reinstall pip')
 
 print('checking venv...')
-ui, url, need_space, vnv, fn = load_config()
-
 tempe()
-unused_venv()
-venv_install(ui, url, need_space, fn)
-she_bang(vnv)
+venv_install()
+she_bang()
 clear_output(wait=True)
 os.chdir(cwd)
