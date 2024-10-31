@@ -3,7 +3,7 @@ from typing import Optional
 from IPython import get_ipython
 from IPython.core.magic import line_cell_magic, Magics, magics_class
 from IPython.core.magic_arguments import argument, magic_arguments, parse_argstring
-from IPython.display import Audio, display, HTML
+from IPython.display import Audio, display, HTML, Javascript
 
 
 class _InvisibleAudio(Audio):
@@ -13,7 +13,6 @@ class _InvisibleAudio(Audio):
             "<audio", '<audio onended="this.parentNode.removeChild(this)"'
         )
         return f'<div style="display:none">{audio}</div>'
-
 
 @magics_class
 class NotificationMagics(Magics):
@@ -48,16 +47,14 @@ class NotificationMagics(Magics):
                     audio = _InvisibleAudio(url=self.DEFAULT_URL, autoplay=True)
             else:
                 audio = _InvisibleAudio(url=maybe_url, autoplay=True)
-
+            display(audio)
             if args.mute:
-                audio_html = audio._repr_html_()
-                audio_html_with_mute = audio_html.replace(
-                    '<audio', '<audio onended="this.parentNode.removeChild(this)" volume="0" ' +
-                    'onload="this.volume=0;"'
-                )
-                display(HTML(audio_html_with_mute))
-            else:
-                display(audio)
+                display(Javascript('''
+                    var audioElem = document.querySelector('audio');
+                    if (audioElem) {
+                        audioElem.volume = 0;
+                    }
+                '''))
 
         return ret
 
