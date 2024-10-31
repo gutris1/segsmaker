@@ -1,11 +1,8 @@
-from IPython.display import display, HTML, clear_output, Image
+from IPython.display import display, HTML, clear_output, Image, Audio
 from IPython import get_ipython
 from ipywidgets import widgets
 from pathlib import Path
 import subprocess, os, sys, shlex, json, time
-
-print('Loading Widget...')
-clear_output(wait=True)
 
 env, HOME = 'Unknown', None
 env_list = {'Colab': '/content', 'Kaggle': '/kaggle/working'}
@@ -363,16 +360,23 @@ install_button.add_class('buttons')
 exit_button.add_class('buttons')
 
 MGC = 'https://github.com/neighthan/jupyter-magics/raw/master/jupyter_magics/bell_magic.py'
-BELL = STR / 'bell_magic.py'
+BELL = STR / Path(MGC).name
 z = [(BELL, f"curl -sLo {BELL} {MGC}")]
 for x, y in z:
     if not Path(x).exists():
         get_ipython().system(y)
-
 get_ipython().run_line_magic('run', f'{BELL}')
 sys.path.append(str(STR))
 from bell_magic import NotificationMagics
 PLAY = NotificationMagics(get_ipython()).notify
+PLAY('-u https://huggingface.co/pantat88/ui/resolve/main/1.wav')
+clear_output()
+PLAY('-u https://huggingface.co/pantat88/ui/resolve/main/2.wav')
+clear_output()
+PLAY('-u https://huggingface.co/pantat88/ui/resolve/main/3.wav')
+clear_output()
+print('Loading Widget...')
+clear_output(wait=True)
 
 def radio1webui(b):
     if b['name'] == 'value' and b['new']:
