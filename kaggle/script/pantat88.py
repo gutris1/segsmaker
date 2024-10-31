@@ -397,7 +397,8 @@ def tempe(line):
         "/kaggle/temp/controlnet",
         "/kaggle/temp/output",
         "/kaggle/temp/svd",
-        "/kaggle/temp/z123"
+        "/kaggle/temp/z123",
+        "/kaggle/temp/clip"
     ]
 
     for path in tmp:
