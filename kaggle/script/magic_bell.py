@@ -3,7 +3,7 @@ from typing import Optional
 from IPython import get_ipython
 from IPython.core.magic import line_cell_magic, Magics, magics_class
 from IPython.core.magic_arguments import argument, magic_arguments, parse_argstring
-from IPython.display import Audio, display
+from IPython.display import Audio, display, HTML
 
 
 class _InvisibleAudio(Audio):
@@ -48,7 +48,7 @@ class NotificationMagics(Magics):
     @line_cell_magic
     def notify(self, line: str, cell: Optional[str] = None):
         args = parse_argstring(self.notify, line)
-
+    
         code = cell if cell else " ".join(args.line_code)
         try:
             ret = self.shell.ex(code)
@@ -61,13 +61,13 @@ class NotificationMagics(Magics):
                     audio = _InvisibleAudio(url=self.DEFAULT_URL, autoplay=True)
             else:
                 audio = _InvisibleAudio(url=maybe_url, autoplay=True)
-
+    
             if args.mute:
                 audio_html = audio._repr_html_().replace('<audio', '<audio volume="0"')
-                display.display_html(audio_html, raw=True)
+                display(HTML(audio_html))
             else:
                 display(audio)
-
+    
         return ret
 
 
