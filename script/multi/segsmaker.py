@@ -49,6 +49,8 @@ def get_args(ui):
     return args_line.get(ui, '')
 
 def load_config():
+    import torch
+
     global ui
     config = json.load(MARK.open('r')) if MARK.exists() else {}
 
@@ -72,7 +74,7 @@ def load_config():
 
     cpu_cb.value = config.get('cpu_usage', False)
 
-    if ui in ['SDTrainer', 'FaceFusion']:
+    if ui in ['SDTrainer', 'FaceFusion'] or torch.cuda.is_available():
         cpu_cb.layout.display = 'none'
     else:
         cpu_cb.layout.display = 'block'
