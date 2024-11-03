@@ -12,19 +12,6 @@ parser.add_argument('--civitai_key', required=True, help="CivitAI API key")
 
 args = parser.parse_args()
 
-if args.webui not in VALID_WEBUI_OPTIONS:
-    print(f"Invalid webui option: {args.webui}. Please choose from {VALID_WEBUI_OPTIONS}.")
-    sys.exit(1)
-
-if args.sd not in VALID_SD_OPTIONS:
-    print(f"Invalid sd option: {args.sd}. Please choose from {VALID_SD_OPTIONS}.")
-    sys.exit(1)
-
-civitai_key = args.civitai_key.strip()
-if len(civitai_key) < 32:
-    print("API key must be at least 32 characters long.")
-    sys.exit(1)
-
 env, HOME = 'Unknown', None
 env_list = {'Colab': '/content', 'Kaggle': '/kaggle/working'}
 
@@ -120,6 +107,7 @@ def sym_link(ui, WEBUI):
         ]
 
 def webui_req(ui, WEBUI):
+    from nenen88 import pull, download
     if ui == 'A1111':
         pull(f"https://github.com/gutris1/segsmaker sd {WEBUI}")
     elif ui == 'Forge':
@@ -152,6 +140,7 @@ def webui_req(ui, WEBUI):
 
 
 def Extensions(ui, WEBUI):
+    from nenen88 import clone, say
     if ui == 'ComfyUI':
         say("<br><b>【{red} Installing Custom Nodes{d} 】{red}</b>")
         os.chdir(WEBUI / "custom_nodes")
@@ -169,6 +158,7 @@ def Extensions(ui, WEBUI):
         get_ipython().system("git clone -q https://github.com/gutris1/sd-encrypt-image")
 
 def installing_webui(ui, which_sd, WEBUI, EMB, VAE):
+    from nenen88 import download
     webui_req(ui, WEBUI)
     if which_sd == "sd 1.5":
         extras = [
@@ -193,6 +183,7 @@ def installing_webui(ui, which_sd, WEBUI, EMB, VAE):
 
 
 def webui_install(ui, which_sd):
+    from nenen88 import say, tempe
     if ui == 'A1111':
         WEBUI = HOME / 'A1111'
         repo = f'git clone -q -b {version} https://github.com/gutris1/A1111'
@@ -233,6 +224,19 @@ def webui_install(ui, which_sd):
     
 
 def lets_go():
+    if args.webui not in VALID_WEBUI_OPTIONS:
+        print(f"Invalid webui option: {args.webui}. Please choose from {VALID_WEBUI_OPTIONS}.")
+        return
+
+    if args.sd not in VALID_SD_OPTIONS:
+        print(f"Invalid sd option: {args.sd}. Please choose from {VALID_SD_OPTIONS}.")
+        return
+
+    civitai_key = args.civitai_key.strip()
+    if len(civitai_key) < 32:
+        print("API key must be at least 32 characters long.")
+        return
+
     config = json.load(MARKED.open('r')) if MARKED.exists() else {}
     ui = config.get('ui')
     WEBUI = HOME / ui if ui else None
@@ -269,7 +273,6 @@ def lets_go():
         sys.path.append(str(STR))
         get_ipython().run_line_magic('run', f'{nenen}')
         get_ipython().run_line_magic('run', f'{KANDANG}')
-        from nenen88 import say, tempe, pull, clone, download
         webui_install(args.webui, args.sd)
 
 version = 'v1.10.1'
