@@ -7,9 +7,9 @@ VALID_WEBUI_OPTIONS = {'A1111', 'Forge', 'ComfyUI', 'ReForge'}
 VALID_SD_OPTIONS = {'1.5', 'xl'}
 
 parser = argparse.ArgumentParser(description="WebUI Installer Script for kaggle and google colab")
-parser.add_argument('--webui', required=True, help="WebUI selection (A1111, Forge, ComfyUI, ReForge)")
-parser.add_argument('--sd', required=True, help="Stable Diffusion version (1.5, xl)")
-parser.add_argument('--civitai_key', required=True, help="CivitAI API key")
+parser.add_argument('--webui', required=True, help="available list:\nA1111, Forge, ComfyUI, ReForge")
+parser.add_argument('--sd', required=True, help="available list:\n1.5, xl")
+parser.add_argument('--civitai_key', required=True, help="your CivitAI API key")
 
 args = parser.parse_args()
 
@@ -18,7 +18,6 @@ def prevent_silly():
     invalid_webui = [ui for ui in webui_list if ui not in VALID_WEBUI_OPTIONS]
     if invalid_webui:
         print(f"invalid webui options: {', '.join(invalid_webui)}\navailable webui: [{', '.join(VALID_WEBUI_OPTIONS)}]")
-        print(f"")
         return False
 
     sd_list = [sd.strip() for sd in args.sd.split(',')]
@@ -242,7 +241,7 @@ def webui_install(ui, which_sd):
 
 def lets_go():
     if not prevent_silly():
-        return
+        exit(1)
 
     civitai_key = args.civitai_key.strip()
     if not civitai_key:
