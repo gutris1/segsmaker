@@ -7,8 +7,8 @@ VALID_WEBUI_OPTIONS = {'A1111', 'Forge', 'ComfyUI', 'ReForge'}
 VALID_SD_OPTIONS = {'1.5', 'xl'}
 
 parser = argparse.ArgumentParser(description="WebUI Installer Script for kaggle and google colab")
-parser.add_argument('--webui', required=True, help="available list:\nA1111, Forge, ComfyUI, ReForge")
-parser.add_argument('--sd', required=True, help="available list:\n1.5, xl")
+parser.add_argument('--webui', required=True, help="available webui: A1111, Forge, ComfyUI, ReForge")
+parser.add_argument('--sd', required=True, help="available sd: 1.5, xl")
 parser.add_argument('--civitai_key', required=True, help="your CivitAI API key")
 
 args = parser.parse_args()
