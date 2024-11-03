@@ -297,5 +297,9 @@ def main():
 
         marking(SRC, MARKED, args.webui)
         key_inject(civitai_key)
+        sys.path.append(str(STR))
+        get_ipython().run_line_magic('run', f'{nenen}')
+        get_ipython().run_line_magic('run', f'{KANDANG}')
         webui_install(args.webui, args.sd)
+
 main()
