@@ -102,7 +102,6 @@ def sym_link(ui, WEBUI):
             f"ln -vs {tmp}/lora {WEBUI}/models/Lora/tmp_lora",
             f"ln -vs {tmp}/controlnet {WEBUI}/models/ControlNet"
         ]
-
     elif ui == 'ComfyUI':
         return [
             f"rm -rf {tmp}/*",
@@ -114,7 +113,6 @@ def sym_link(ui, WEBUI):
             f"ln -vs {tmp}/clip {WEBUI}/models/clip",
             f"ln -vs {WEBUI}/models/checkpoints {WEBUI}/models/checkpoints_symlink"
         ]
-
     elif ui in ['Forge', 'ReForge']:
         return [
             f"rm -rf {tmp}/*",
@@ -137,19 +135,15 @@ def webui_req(ui, WEBUI):
         pull(f"https://github.com/gutris1/segsmaker cui {WEBUI}")
     elif ui == 'ReForge':
         pull(f"https://github.com/gutris1/segsmaker reforge {WEBUI}")
-
     os.chdir(WEBUI)
     req = sym_link(ui, WEBUI)
-
     for lines in req:
         subprocess.run(shlex.split(lines), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-
     scripts = [
         f"https://github.com/gutris1/segsmaker/raw/K/script/controlnet/controlnet.py {WEBUI}/asd",
         f"https://github.com/gutris1/segsmaker/raw/K/kaggle/script/venv.py {WEBUI}",
         f"https://github.com/gutris1/segsmaker/raw/K/script/multi/segsmaker.py {WEBUI}"
     ]
-    
     upscalers_path = f"{WEBUI}/models/upscale_models" if ui == 'ComfyUI' else f"{WEBUI}/models/ESRGAN"
     upscalers = [
         f"https://huggingface.co/pantat88/ui/resolve/main/4x-UltraSharp.pth {upscalers_path}",
@@ -159,12 +153,10 @@ def webui_req(ui, WEBUI):
         f"https://huggingface.co/pantat88/ui/resolve/main/8x_RealESRGAN.pth {upscalers_path}",
         f"https://huggingface.co/pantat88/ui/resolve/main/4x_foolhardy_Remacri.pth {upscalers_path}"
     ]
-
     line = scripts + upscalers
     for item in line:
         download(item)
 
-    tempe()
 
 def Extensions(ui, WEBUI):
     if ui == 'ComfyUI':
@@ -185,14 +177,12 @@ def Extensions(ui, WEBUI):
 
 def installing_webui(ui, which_sd, WEBUI, EMB, VAE):
     webui_req(ui, WEBUI)
-
     if which_sd == "sd 1.5":
         extras = [
             f"https://huggingface.co/pantat88/ui/resolve/main/embeddings.zip {WEBUI}",
             f"https://huggingface.co/stabilityai/sd-vae-ft-mse-original/resolve/main/vae-ft-mse-840000-ema-pruned.safetensors {VAE}"
         ]
         embzip = f"{WEBUI}/embeddings.zip"
-
     elif which_sd == "sd xl":
         extras = [
             f"https://civitai.com/api/download/models/403492 {EMB}",
@@ -202,41 +192,32 @@ def installing_webui(ui, which_sd, WEBUI, EMB, VAE):
             f"https://huggingface.co/stabilityai/sdxl-vae/resolve/main/sdxl_vae.safetensors {VAE}"
         ]
         embzip = None
-
     for item in extras:
         download(item)
-
     if which_sd == "sd 1.5":
         get_ipython().system(f"unzip -qo {embzip} -d {EMB} && rm {embzip}")
-
     Extensions(ui, WEBUI)
 
-def webui_install(ui, which_sd):
-    from nenen88 import pull, say, download, clone, tempe
 
+def webui_install(ui, which_sd):
     if ui == 'A1111':
         WEBUI = HOME / 'A1111'
         repo = f'git clone -q -b {version} https://github.com/gutris1/A1111'
         say("<b>【{red} Installing A1111{d} 】{red}</b>")
-
     elif ui == 'Forge':
         WEBUI = HOME / 'Forge'
         repo = f'git clone -q https://github.com/lllyasviel/stable-diffusion-webui-forge Forge'
         say("<b>【{red} Installing Forge{d} 】{red}</b>")
-
     elif ui == 'ComfyUI':
         WEBUI = HOME / 'ComfyUI'
         repo = f'git clone -q https://github.com/comfyanonymous/ComfyUI'
         say("<b>【{red} Installing ComfyUI{d} 】{red}</b>")
-
     elif ui == 'ReForge':
         WEBUI = HOME / 'ReForge'
         repo = f'git clone -q https://github.com/Panchovix/stable-diffusion-webui-reForge ReForge'
         say("<b>【{red} Installing ReForge{d} 】{red}</b>")
-
     EMB = f"{WEBUI}/models/embeddings" if ui == 'ComfyUI' else f"{WEBUI}/embeddings"
     VAE = f"{WEBUI}/models/vae" if ui == 'ComfyUI' else f"{WEBUI}/models/VAE"
-
     req_list = [
         "curl -LO /kaggle/working/new_tunnel https://github.com/DEX-1101/sd-webui-notebook/raw/main/res/new_tunnel",
         "curl -Lo /usr/bin/cl https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64",
@@ -245,25 +226,23 @@ def webui_install(ui, which_sd):
         "pip install -q gdown aria2 cloudpickle",
         "chmod +x /usr/bin/cl"
     ]
-
     for items in req_list:
         subprocess.run(shlex.split(items), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-
     get_ipython().system(f"{repo}")
     time.sleep(1)
     installing_webui(ui, which_sd, WEBUI, EMB, VAE)
     get_ipython().run_line_magic('run', f'{MRK}')
-
     get_ipython().run_line_magic('run', f'{WEBUI}/venv.py')
     say("<b>【{red} Done{d} 】{red}</b>")
-    get_ipython().kernel.do_shutdown(True)
+    tempe()
     os.chdir(HOME)
+    get_ipython().kernel.do_shutdown(True)
+    
 
-def main():
+def lets_go():
     config = json.load(MARKED.open('r')) if MARKED.exists() else {}
     ui = config.get('ui')
     WEBUI = HOME / ui if ui else None
-
     if ui:
         if WEBUI and WEBUI.exists():
             git_dir = WEBUI / '.git'
@@ -280,7 +259,6 @@ def main():
                 elif ui in ['Forge', 'ReForge']:
                     get_ipython().system("git pull origin main")
                     get_ipython().system("git fetch --tags")
-
     else:            
         z = [
             (STR / '00-startup.py', f"curl -sLo {STR}/00-startup.py https://github.com/gutris1/segsmaker/raw/K/kaggle/script/00-startup.py"),
@@ -290,18 +268,17 @@ def main():
             (STR / 'cupang.py', f"curl -sLo {STR}/cupang.py https://github.com/gutris1/segsmaker/raw/main/script/cupang.py"),
             (MRK, f"curl -sLo {MRK} https://github.com/gutris1/segsmaker/raw/K/kaggle/script/marking.py")
         ]
-
         for x, y in z:
             if not Path(x).exists():
                 get_ipython().system(y)
-
         marking(SRC, MARKED, args.webui)
         key_inject(civitai_key)
         sys.path.append(str(STR))
         get_ipython().run_line_magic('run', f'{nenen}')
         get_ipython().run_line_magic('run', f'{KANDANG}')
+        from nenen88 import say, tempe, pull, clone, download
         webui_install(args.webui, args.sd)
 
 version = 'v1.10.1'
 os.chdir(HOME)
-main()
+lets_go()
