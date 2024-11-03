@@ -1,6 +1,7 @@
 import argparse, sys, json, os, subprocess, shlex, time
-from pathlib import Path
+from IPython.display import display, Image
 from IPython import get_ipython
+from pathlib import Path
 
 VALID_WEBUI_OPTIONS = {'A1111', 'Forge', 'ComfyUI', 'ReForge'}
 VALID_SD_OPTIONS = {'1.5', 'xl'}
@@ -32,6 +33,7 @@ vnv = BASEPATH / 'venv'
 SRC = HOME / 'gutris1'
 MRK = SRC / 'marking.py'
 KEY = SRC / 'api-key.json'
+IMG = SRC / 'loading.png'
 MARKED = SRC / 'marking.json'
 
 STR = Path('/root/.ipython/profile_default/startup')
@@ -48,7 +50,6 @@ with open(KANDANG, 'w') as file:
     file.write(f"VENVPATH = '{vnv}'\n")
     file.write(f"BASEPATH = '{BASEPATH}'\n")
 
-# Functions
 def marking(path, fn, ui):
     txt = path / fn
     values = {'ui': ui, 'launch_args1': '', 'launch_args2': '', 'tunnel': ''}
@@ -160,13 +161,13 @@ def Extensions(ui, WEBUI):
 def installing_webui(ui, which_sd, WEBUI, EMB, VAE):
     from nenen88 import download
     webui_req(ui, WEBUI)
-    if which_sd == "sd 1.5":
+    if which_sd == "1.5":
         extras = [
             f"https://huggingface.co/pantat88/ui/resolve/main/embeddings.zip {WEBUI}",
             f"https://huggingface.co/stabilityai/sd-vae-ft-mse-original/resolve/main/vae-ft-mse-840000-ema-pruned.safetensors {VAE}"
         ]
         embzip = f"{WEBUI}/embeddings.zip"
-    elif which_sd == "sd xl":
+    elif which_sd == "xl":
         extras = [
             f"https://civitai.com/api/download/models/403492 {EMB}",
             f"https://civitai.com/api/download/models/182974 {EMB}",
@@ -177,7 +178,7 @@ def installing_webui(ui, which_sd, WEBUI, EMB, VAE):
         embzip = None
     for item in extras:
         download(item)
-    if which_sd == "sd 1.5":
+    if which_sd == "1.5":
         get_ipython().system(f"unzip -qo {embzip} -d {EMB} && rm {embzip}")
     Extensions(ui, WEBUI)
 
@@ -236,7 +237,19 @@ def lets_go():
     if len(civitai_key) < 32:
         print("API key must be at least 32 characters long.")
         return
-
+    z = [
+        (STR / '00-startup.py', f"curl -sLo {STR}/00-startup.py https://github.com/gutris1/segsmaker/raw/K/kaggle/script/00-startup.py"),
+        (pantat, f"curl -sLo {pantat} https://github.com/gutris1/segsmaker/raw/K/kaggle/script/pantat88.py"),
+        (nenen, f"curl -sLo {nenen} https://github.com/gutris1/segsmaker/raw/K/kaggle/script/nenen88.py"),
+        (STR / 'util.py', f"curl -sLo {STR}/util.py https://github.com/gutris1/segsmaker/raw/main/script/util.py"),
+        (STR / 'cupang.py', f"curl -sLo {STR}/cupang.py https://github.com/gutris1/segsmaker/raw/main/script/cupang.py"),
+        (IMG, f"curl -sLo {IMG} https://github.com/gutris1/segsmaker/raw/main/script/loading.png"),
+        (MRK, f"curl -sLo {MRK} https://github.com/gutris1/segsmaker/raw/K/kaggle/script/marking.py")
+    ]
+    for x, y in z:
+        if not Path(x).exists():
+            get_ipython().system(y)
+    display(Image(filename=str(IMG)))
     config = json.load(MARKED.open('r')) if MARKED.exists() else {}
     ui = config.get('ui')
     WEBUI = HOME / ui if ui else None
@@ -256,18 +269,7 @@ def lets_go():
                 elif ui in ['Forge', 'ReForge']:
                     get_ipython().system("git pull origin main")
                     get_ipython().system("git fetch --tags")
-    else:            
-        z = [
-            (STR / '00-startup.py', f"curl -sLo {STR}/00-startup.py https://github.com/gutris1/segsmaker/raw/K/kaggle/script/00-startup.py"),
-            (pantat, f"curl -sLo {pantat} https://github.com/gutris1/segsmaker/raw/K/kaggle/script/pantat88.py"),
-            (nenen, f"curl -sLo {nenen} https://github.com/gutris1/segsmaker/raw/K/kaggle/script/nenen88.py"),
-            (STR / 'util.py', f"curl -sLo {STR}/util.py https://github.com/gutris1/segsmaker/raw/main/script/util.py"),
-            (STR / 'cupang.py', f"curl -sLo {STR}/cupang.py https://github.com/gutris1/segsmaker/raw/main/script/cupang.py"),
-            (MRK, f"curl -sLo {MRK} https://github.com/gutris1/segsmaker/raw/K/kaggle/script/marking.py")
-        ]
-        for x, y in z:
-            if not Path(x).exists():
-                get_ipython().system(y)
+    else:
         marking(SRC, MARKED, args.webui)
         key_inject(civitai_key)
         sys.path.append(str(STR))
