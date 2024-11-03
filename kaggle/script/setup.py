@@ -6,12 +6,29 @@ from pathlib import Path
 VALID_WEBUI_OPTIONS = {'A1111', 'Forge', 'ComfyUI', 'ReForge'}
 VALID_SD_OPTIONS = {'1.5', 'xl'}
 
-parser = argparse.ArgumentParser(description="WebUI Installer Script")
+parser = argparse.ArgumentParser(description="WebUI Installer Script for kaggle and google colab")
 parser.add_argument('--webui', required=True, help="WebUI selection (A1111, Forge, ComfyUI, ReForge)")
 parser.add_argument('--sd', required=True, help="Stable Diffusion version (1.5, xl)")
 parser.add_argument('--civitai_key', required=True, help="CivitAI API key")
 
 args = parser.parse_args()
+
+def prevent_silly():
+    webui_list = [ui.strip() for ui in args.webui.split(',')]
+    invalid_webui = [ui for ui in webui_list if ui not in VALID_WEBUI_OPTIONS]
+    if invalid_webui:
+        print(f"invalid webui options: {', '.join(invalid_webui)}\navailable webui: [{', '.join(VALID_WEBUI_OPTIONS)}]")
+        print(f"")
+        return False
+
+    sd_list = [sd.strip() for sd in args.sd.split(',')]
+    invalid_sd = [sd for sd in sd_list if sd not in VALID_SD_OPTIONS]
+    if invalid_sd:
+        print(f"invalid sd options: {', '.join(invalid_sd)}\navailable sd: [{', '.join(VALID_SD_OPTIONS)}]")
+        return False
+
+    return True
+
 
 env, HOME = 'Unknown', None
 env_list = {'Colab': '/content', 'Kaggle': '/kaggle/working'}
@@ -224,6 +241,9 @@ def webui_install(ui, which_sd):
 
 
 def lets_go():
+    if not prevent_silly():
+        return
+
     civitai_key = args.civitai_key.strip()
     if not civitai_key:
         print("Please enter your CivitAI API KEY")
@@ -231,14 +251,6 @@ def lets_go():
 
     if len(civitai_key) < 32:
         print("API key must be at least 32 characters long")
-        return
-
-    if args.webui not in VALID_WEBUI_OPTIONS:
-        print(f"invalid webui: {args.webui}\navailable webui: [{', '.join(VALID_WEBUI_OPTIONS)}]")
-        return
-
-    if args.sd not in VALID_SD_OPTIONS:
-        print(f"invalid sd: {args.sd}\navailable list: [{', '.join(VALID_SD_OPTIONS)}]")
         return
 
     z = [
