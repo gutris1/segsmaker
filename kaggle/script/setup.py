@@ -1,16 +1,9 @@
-import argparse
-import sys
-import json
-import os
-import subprocess
-import shlex
-import time
+import argparse, sys, json, os, subprocess, shlex, time
 from pathlib import Path
 from IPython import get_ipython
 
 VALID_WEBUI_OPTIONS = {'A1111', 'Forge', 'ComfyUI', 'ReForge'}
 VALID_SD_OPTIONS = {'1.5', 'xl'}
-VERSION = 'v1.10.1'
 
 parser = argparse.ArgumentParser(description="WebUI Installer Script")
 parser.add_argument('--webui', required=True, help="WebUI selection (A1111, Forge, ComfyUI, ReForge)")
