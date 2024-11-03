@@ -302,4 +302,6 @@ def main():
         get_ipython().run_line_magic('run', f'{KANDANG}')
         webui_install(args.webui, args.sd)
 
+version = 'v1.10.1'
+os.chdir(HOME)
 main()
