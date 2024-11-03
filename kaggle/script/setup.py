@@ -218,24 +218,29 @@ def webui_install(ui, which_sd):
     installing_webui(ui, which_sd, WEBUI, EMB, VAE)
     get_ipython().run_line_magic('run', f'{MRK}')
     get_ipython().run_line_magic('run', f'{WEBUI}/venv.py')
-    say("<b>【{red} Done{d} 】{red}</b>")
+    say("<br><b>【{red} Done{d} 】{red}</b>")
     tempe()
     os.chdir(HOME)
 
 
 def lets_go():
+    civitai_key = args.civitai_key.strip()
+    if not civitai_key:
+        print("Please enter your CivitAI API KEY")
+        return
+
+    if len(civitai_key) < 32:
+        print("API key must be at least 32 characters long")
+        return
+
     if args.webui not in VALID_WEBUI_OPTIONS:
-        print(f"Invalid webui option: {args.webui}. Please choose from {VALID_WEBUI_OPTIONS}.")
+        print(f"invalid webui: {args.webui}\navailable webui: [{', '.join(VALID_WEBUI_OPTIONS)}]")
         return
 
     if args.sd not in VALID_SD_OPTIONS:
-        print(f"Invalid sd option: {args.sd}. Please choose from {VALID_SD_OPTIONS}.")
+        print(f"invalid sd: {args.sd}\navailable list: [{', '.join(VALID_SD_OPTIONS)}]")
         return
 
-    civitai_key = args.civitai_key.strip()
-    if len(civitai_key) < 32:
-        print("API key must be at least 32 characters long.")
-        return
     z = [
         (STR / '00-startup.py', f"curl -sLo {STR}/00-startup.py https://github.com/gutris1/segsmaker/raw/K/kaggle/script/00-startup.py"),
         (pantat, f"curl -sLo {pantat} https://github.com/gutris1/segsmaker/raw/K/kaggle/script/pantat88.py"),
