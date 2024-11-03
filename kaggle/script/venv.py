@@ -1,4 +1,3 @@
-from IPython.display import clear_output, Image, display
 from IPython import get_ipython
 from pathlib import Path
 from nenen88 import tempe, say, download
@@ -6,7 +5,6 @@ from KANDANG import HOMEPATH, TEMPPATH, VENVPATH, BASEPATH
 import subprocess, os, shlex, errno
 
 HOME = Path(HOMEPATH)
-IMG = HOME / "gutris1/loading.png"
 tmp = Path(TEMPPATH)
 vnv = Path(VENVPATH)
 
@@ -14,7 +12,6 @@ url = 'https://huggingface.co/pantat88/back_up/resolve/main/venv-torch241-cu121.
 fn = Path(url).name
 
 need_space = 14 * 1024**3
-cwd = Path.cwd()
 
 def check_venv(folder):
     du = get_ipython().getoutput(f'du -s -b {folder}')
@@ -71,9 +68,6 @@ def venv_install():
                 return
             get_ipython().system(f'rm -rf {vnv}/* {vnv}')
 
-        clear_output(wait=True)
-        display(Image(filename=str(IMG)))
-
         free_space = check_tmp(tmp)
         req_space = need_space - free_space
 
@@ -96,9 +90,7 @@ def venv_install():
         get_ipython().system(f'python3 -m venv {vnv}')
         get_ipython().system(f'{vnv / "bin" / "python3"} -m pip install -q --upgrade --force-reinstall pip')
 
-print('checking venv...')
 tempe()
 venv_install()
 she_bang()
-clear_output(wait=True)
-os.chdir(cwd)
+os.chdir(HOME)
