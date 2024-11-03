@@ -221,8 +221,7 @@ def webui_install(ui, which_sd):
     say("<b>【{red} Done{d} 】{red}</b>")
     tempe()
     os.chdir(HOME)
-    get_ipython().kernel.do_shutdown(True)
-    
+
 
 def lets_go():
     if args.webui not in VALID_WEBUI_OPTIONS:
@@ -276,6 +275,7 @@ def lets_go():
         get_ipython().run_line_magic('run', f'{nenen}')
         get_ipython().run_line_magic('run', f'{KANDANG}')
         webui_install(args.webui, args.sd)
+        os._exit(00)
 
 version = 'v1.10.1'
 os.chdir(HOME)
