@@ -306,7 +306,7 @@ def webui_install(ui, which_sd):
 
     tempe()
     os.chdir(HOME)
-    os._exit(00)
+    get_ipython().kernel.do_shutdown(True)
 
 
 def lets_go():
