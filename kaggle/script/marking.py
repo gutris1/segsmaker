@@ -3,7 +3,7 @@ from IPython import get_ipython
 from pathlib import Path
 from nenen88 import tempe
 from KANDANG import HOMEPATH, TEMPPATH
-import json
+import json, os
 
 HOME = Path(HOMEPATH)
 marked = HOME / 'gutris1/marking.json'
@@ -33,11 +33,19 @@ def get_webui_paths():
     }
     webui = HOME / webui_paths[ui] if ui in webui_paths else None
     webui_output = (
-        webui / 'outputs' if ui in ('A1111', 'ReForge') else
-        webui / 'output' if ui in ('ComfyUI', 'Forge') else
-        None
+        webui / 'outputs' if ui in ('A1111', 'ReForge', 'Forge') else
+        webui / 'output' if ui == 'ComfyUI' else None
     )
     return webui, webui_output
+
+@register_line_magic
+def uninstall_webui(line):
+    ui = get_name(marked)
+    webui, _ = get_webui_paths()
+    get_ipython().system(f"rm -rf {webui}")
+    print(f'{ui} uninstalled.')
+    os.chdir(HOME)
+    os._exit(00)
 
 def set_paths(ui):
     webui_paths = {
@@ -54,9 +62,8 @@ def set_paths(ui):
         models = webui / 'models' if webui else None
 
         webui_output = (
-            webui / 'outputs' if ui in ('A1111', 'ReForge') else
-            webui / 'output' if ui in ('ComfyUI', 'Forge') else
-            None
+            webui / 'outputs' if ui in ('A1111', 'ReForge', 'Forge') else
+            webui / 'output' if ui == 'ComfyUI' else None
         )
 
         extensions = webui / ext if ext else None
