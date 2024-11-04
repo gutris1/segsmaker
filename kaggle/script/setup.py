@@ -185,9 +185,9 @@ def webui_req(ui, WEBUI):
         subprocess.run(shlex.split(lines), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     scripts = [
-        f"https://github.com/gutris1/segsmaker/raw/K/script/controlnet/controlnet.py {WEBUI}/asd",
-        f"https://github.com/gutris1/segsmaker/raw/K/kaggle/script/venv.py {WEBUI}",
-        f"https://github.com/gutris1/segsmaker/raw/K/kaggle/script/segsmaker.py {WEBUI}"
+        f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/controlnet.py {WEBUI}/asd",
+        f"https://github.com/gutris1/segsmaker/raw/main/kaggle/script/venv.py {WEBUI}",
+        f"https://github.com/gutris1/segsmaker/raw/main/kaggle/script/segsmaker.py {WEBUI}"
     ]
 
     upscalers_path = f"{WEBUI}/models/upscale_models" if ui == 'ComfyUI' else f"{WEBUI}/models/ESRGAN"
@@ -316,12 +316,12 @@ def lets_go():
     webui, sd = args
 
     z = [
-        (STR / '00-startup.py', f"curl -sLo {STR}/00-startup.py https://github.com/gutris1/segsmaker/raw/K/kaggle/script/00-startup.py"),
-        (pantat, f"curl -sLo {pantat} https://github.com/gutris1/segsmaker/raw/K/kaggle/script/pantat88.py"),
-        (nenen, f"curl -sLo {nenen} https://github.com/gutris1/segsmaker/raw/K/kaggle/script/nenen88.py"),
+        (STR / '00-startup.py', f"curl -sLo {STR}/00-startup.py https://github.com/gutris1/segsmaker/raw/main/kaggle/script/00-startup.py"),
+        (pantat, f"curl -sLo {pantat} https://github.com/gutris1/segsmaker/raw/main/kaggle/script/pantat88.py"),
+        (nenen, f"curl -sLo {nenen} https://github.com/gutris1/segsmaker/raw/main/kaggle/script/nenen88.py"),
         (STR / 'util.py', f"curl -sLo {STR}/util.py https://github.com/gutris1/segsmaker/raw/main/script/util.py"),
-        (STR / 'cupang.py', f"curl -sLo {STR}/cupang.py https://github.com/gutris1/segsmaker/raw/K/kaggle/script/cupang.py"),
-        (MRK, f"curl -sLo {MRK} https://github.com/gutris1/segsmaker/raw/K/kaggle/script/marking.py")
+        (STR / 'cupang.py', f"curl -sLo {STR}/cupang.py https://github.com/gutris1/segsmaker/raw/main/kaggle/script/cupang.py"),
+        (MRK, f"curl -sLo {MRK} https://github.com/gutris1/segsmaker/raw/main/kaggle/script/marking.py")
     ]
 
     for x, y in z:
