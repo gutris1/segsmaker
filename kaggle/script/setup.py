@@ -32,33 +32,39 @@ def prevent_silly():
             print(f"\navailable sd options: [{', '.join(VALID_SD_OPTIONS)}]")
             return None, None
 
-    parser = argparse.ArgumentParser(description="WebUI Installer Script for kaggle and google colab")
+    parser = argparse.ArgumentParser(description="WebUI Installer Script for Kaggle and Google Colab")
     parser.add_argument('--webui', required=True, help="available webui: A1111, Forge, ComfyUI, ReForge")
     parser.add_argument('--sd', required=True, help="available sd: 1.5, xl")
     parser.add_argument('--civitai_key', required=True, help="your CivitAI API key")
 
     args = parser.parse_args()
 
-    if args.webui not in VALID_WEBUI_OPTIONS:
-        print(f"Invalid webui option: {args.webui}")
-        print(f"Available webui options are: {', '.join(VALID_WEBUI_OPTIONS)}")
+    webui_input = args.webui.lower()
+    sd_input = args.sd.lower()
+
+    if not any(webui_input == option.lower() for option in VALID_WEBUI_OPTIONS):
+        print(f"invalid webui option: {args.webui}")
+        print(f"available webui options: {', '.join(VALID_WEBUI_OPTIONS)}")
         return None, None
 
-    if args.sd not in VALID_SD_OPTIONS:
-        print(f"Invalid sd option: {args.sd}")
-        print(f"Available sd options are: {', '.join(VALID_SD_OPTIONS)}")
+    if not any(sd_input == option.lower() for option in VALID_SD_OPTIONS):
+        print(f"invalid sd option: {args.sd}")
+        print(f"available sd options: {', '.join(VALID_SD_OPTIONS)}")
         return None, None
 
     civitai_key = args.civitai_key.strip()
     if not civitai_key:
-        print("Please enter your civitAI API key")
+        print("Please enter your CivitAI API key")
         return None, None
 
     if len(civitai_key) < 32:
         print("API key must be at least 32 characters long")
         return None, None
 
-    return args, civitai_key
+    webui_webui = next(option for option in VALID_WEBUI_OPTIONS if webui_input == option.lower())
+    sd_sd = next(option for option in VALID_SD_OPTIONS if sd_input == option.lower())
+
+    return (webui_webui, sd_sd), civitai_key
 
 
 env, HOME = 'Unknown', None
@@ -307,6 +313,7 @@ def lets_go():
     args, civitai_key = prevent_silly()
     if args is None or civitai_key is None:
         return
+    webui, sd = args
 
     z = [
         (STR / '00-startup.py', f"curl -sLo {STR}/00-startup.py https://github.com/gutris1/segsmaker/raw/K/kaggle/script/00-startup.py"),
@@ -351,11 +358,11 @@ def lets_go():
         get_ipython().run_line_magic('run', f'{nenen}')
         get_ipython().run_line_magic('run', f'{KANDANG}')
 
-        marking(SRC, MARKED, args.webui)
+        marking(SRC, MARKED, webui)
         key_inject(civitai_key)
 
         try:
-            webui_install(args.webui, args.sd)
+            webui_install(webui, sd)
         except KeyboardInterrupt:
             print("\nCanceled.")
 
