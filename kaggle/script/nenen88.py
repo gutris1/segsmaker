@@ -382,16 +382,21 @@ def cloning(lines):
 
 
 def tempe():
-    tmp = [
-        "/kaggle/temp/ckpt",
-        "/kaggle/temp/lora",
-        "/kaggle/temp/controlnet",
-        "/kaggle/temp/svd",
-        "/kaggle/temp/z123",
-        "/kaggle/temp/clip"
+    ENVPATH = None
+    env_list = {'Colab': '/content', 'Kaggle': '/kaggle'}
+    for env_name, path in env_list.items():
+        if os.getenv(env_name.upper() + '_JUPYTER_TRANSPORT') or os.getenv(env_name.upper() + '_DATA_PROXY_TOKEN'):
+            ENVPATH = path
+            break
+    tmp_paths = [
+        f"{ENVPATH}/temp/ckpt",
+        f"{ENVPATH}/temp/lora",
+        f"{ENVPATH}/temp/controlnet",
+        f"{ENVPATH}/temp/svd",
+        f"{ENVPATH}/temp/z123",
+        f"{ENVPATH}/temp/clip"
     ]
-
-    for path in tmp:
+    for path in tmp_paths:
         Path(path).mkdir(parents=True, exist_ok=True)
 
 
