@@ -280,11 +280,9 @@ def webui_install(ui, which_sd):
     VAE = f"{WEBUI}/models/vae" if ui == 'ComfyUI' else f"{WEBUI}/models/VAE"
 
     req_list = [
-        "curl -LO /kaggle/working/new_tunnel https://github.com/DEX-1101/sd-webui-notebook/raw/main/res/new_tunnel",
         "curl -Lo /usr/bin/cl https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64",
-        "apt-get update",
         "apt -y install pv",
-        "pip install -q gdown aria2 cloudpickle",
+        "pip install -q gdown aria2",
         "chmod +x /usr/bin/cl"
     ]
 
