@@ -181,7 +181,7 @@ def webui_req(ui, WEBUI):
     scripts = [
         f"https://github.com/gutris1/segsmaker/raw/K/script/controlnet/controlnet.py {WEBUI}/asd",
         f"https://github.com/gutris1/segsmaker/raw/K/kaggle/script/venv.py {WEBUI}",
-        f"https://github.com/gutris1/segsmaker/raw/K/script/multi/segsmaker.py {WEBUI}"
+        f"https://github.com/gutris1/segsmaker/raw/K/kaggle/script/segsmaker.py {WEBUI}"
     ]
 
     upscalers_path = f"{WEBUI}/models/upscale_models" if ui == 'ComfyUI' else f"{WEBUI}/models/ESRGAN"
