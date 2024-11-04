@@ -93,7 +93,7 @@ def sd_15():
 
     say("<br><b>【{red} Installing Extensions{d} 】{red}</b>")
     os.chdir(WEBUI / "extensions")
-    clone(str(WEBUI / "asd/ext-15.txt"))
+    clone(str(WEBUI / "asd/extension.txt"))
 
 def sd_xl():
     webui_req()
@@ -109,7 +109,7 @@ def sd_xl():
 
     say("<br><b>【{red} Installing Extensions{d} 】{red}</b>")
     os.chdir(WEBUI / "extensions")
-    clone(str(WEBUI / "asd/ext-xl.txt"))
+    clone(str(WEBUI / "asd/extension.txt"))
 
 def marking(path, fn, ui):
     txt = path / fn
