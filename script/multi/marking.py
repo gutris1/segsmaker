@@ -35,8 +35,8 @@ def get_webui_paths():
     }
     webui = HOME / webui_paths[ui] if ui in webui_paths else None
     webui_output = (
-        webui / 'outputs' if ui in ('A1111', 'ReForge') else
-        webui / 'output' if ui in ('ComfyUI', 'Forge', 'SDTrainer') else
+        webui / 'outputs' if ui in ('A1111', 'Forge', 'ReForge') else
+        webui / 'output' if ui in ('ComfyUI', 'SDTrainer') else
         None
     )
     return webui, webui_output
@@ -75,8 +75,8 @@ def set_paths(ui):
         models = webui if ui == 'SDTrainer' else (webui / 'models' if webui else None)
 
         webui_output = (
-            webui / 'outputs' if ui in ('A1111', 'ReForge') else
-            webui / 'output' if ui in ('ComfyUI', 'Forge', 'SDTrainer') else
+            webui / 'outputs' if ui in ('A1111', 'Forge', 'ReForge') else
+            webui / 'output' if ui in ('ComfyUI', 'SDTrainer') else
             None
         )
 
