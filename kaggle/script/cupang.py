@@ -512,10 +512,7 @@ class Tunnel:
                 timeout=None,
             )
             if not self.stop_event.is_set():
-                log.info(
-                    f"Port is online, waiting tunnel URLs (timeout: {self.timeout}s)"
-                )
-
+                pass
         # Wait until all URLs are available or stop_event is set
         if not self.wait_for_condition(
             lambda: len(self.urls) == len(self.tunnel_list) or self.stop_event.is_set(),
