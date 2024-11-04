@@ -83,7 +83,7 @@ def venv_install():
         say('<br>【{red} Installing VENV{d} 】{red}')
         download(url)
 
-        if BASEPATH == 'colab':
+        if BASEPATH == '/content':
             z = ["apt -y install python3.10-venv", "apt -y install lz4"]
             for b in z:
                 subprocess.run(shlex.split(b), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
