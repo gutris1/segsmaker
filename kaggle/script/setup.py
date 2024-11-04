@@ -3,34 +3,62 @@ from IPython import get_ipython
 from pathlib import Path
 import argparse, sys, json, os, subprocess, shlex, time
 
+
+R = "\033[31m"
+P = "\033[38;5;135m"
+RST = "\033[0m"
+
 IMG = "https://github.com/gutris1/segsmaker/raw/main/script/loading.png"
 display(Image(url=IMG))
 clear_output(wait=True)
 
-VALID_WEBUI_OPTIONS = {'A1111', 'Forge', 'ComfyUI', 'ReForge'}
-VALID_SD_OPTIONS = {'1.5', 'xl'}
-
-parser = argparse.ArgumentParser(description="WebUI Installer Script for kaggle and google colab")
-parser.add_argument('--webui', required=True, help="available webui: A1111, Forge, ComfyUI, ReForge")
-parser.add_argument('--sd', required=True, help="available sd: 1.5, xl")
-parser.add_argument('--civitai_key', required=True, help="your CivitAI API key")
-
-args = parser.parse_args()
+VALID_WEBUI_OPTIONS = ["A1111", "Forge", "ComfyUI", "ReForge"]
+VALID_SD_OPTIONS = ["1.5", "xl"]
 
 def prevent_silly():
-    webui_list = [ui.strip() for ui in args.webui.split(',')]
-    invalid_webui = [ui for ui in webui_list if ui not in VALID_WEBUI_OPTIONS]
-    if invalid_webui:
-        print(f"invalid webui options: {', '.join(invalid_webui)}\navailable webui: [{', '.join(VALID_WEBUI_OPTIONS)}]")
-        return False
+    full_args = ' '.join(sys.argv)
 
-    sd_list = [sd.strip() for sd in args.sd.split(',')]
-    invalid_sd = [sd for sd in sd_list if sd not in VALID_SD_OPTIONS]
-    if invalid_sd:
-        print(f"invalid sd options: {', '.join(invalid_sd)}\navailable sd: [{', '.join(VALID_SD_OPTIONS)}]")
-        return False
+    if '--webui' in full_args:
+        webui_value = full_args.split('--webui=')[1].split('--')[0].strip()
+        if ',' in webui_value:
+            print(f"{P}[{RST}{R}ERROR{RST}{P}]{RST} multiple values for --webui detected >> [{webui_value}] << provide only one valid option")
+            print(f"\navailable webui options: [{', '.join(VALID_WEBUI_OPTIONS)}]")
+            return None, None
 
-    return True
+    if '--sd' in full_args:
+        sd_value = full_args.split('--sd=')[1].split('--')[0].strip()
+        if ',' in sd_value:
+            print(f"{P}[{RST}{R}ERROR{RST}{P}]{RST} multiple values for --sd detected >> [{sd_value}] << provide only one valid option")
+            print(f"\navailable sd options: [{', '.join(VALID_SD_OPTIONS)}]")
+            return None, None
+
+    parser = argparse.ArgumentParser(description="WebUI Installer Script for kaggle and google colab")
+    parser.add_argument('--webui', required=True, help="available webui: A1111, Forge, ComfyUI, ReForge")
+    parser.add_argument('--sd', required=True, help="available sd: 1.5, xl")
+    parser.add_argument('--civitai_key', required=True, help="your CivitAI API key")
+
+    args = parser.parse_args()
+
+    if args.webui not in VALID_WEBUI_OPTIONS:
+        print(f"Invalid webui option: {args.webui}")
+        print(f"Available webui options are: {', '.join(VALID_WEBUI_OPTIONS)}")
+        return None, None
+
+    if args.sd not in VALID_SD_OPTIONS:
+        print(f"Invalid sd option: {args.sd}")
+        print(f"Available sd options are: {', '.join(VALID_SD_OPTIONS)}")
+        return None, None
+
+    civitai_key = args.civitai_key.strip()
+    if not civitai_key:
+        print("Please enter your civitAI API key")
+        return None, None
+
+    if len(civitai_key) < 32:
+        print("API key must be at least 32 characters long")
+        return None, None
+
+    return args, civitai_key
 
 
 env, HOME = 'Unknown', None
@@ -278,16 +306,8 @@ def webui_install(ui, which_sd):
 
 
 def lets_go():
-    if not prevent_silly():
-        exit(1)
-
-    civitai_key = args.civitai_key.strip()
-    if not civitai_key:
-        print("Please enter your CivitAI API KEY")
-        return
-
-    if len(civitai_key) < 32:
-        print("API key must be at least 32 characters long")
+    args, civitai_key = prevent_silly()
+    if args is None or civitai_key is None:
         return
 
     z = [
