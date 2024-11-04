@@ -9,7 +9,7 @@ def get_enabled_subdirectories_with_files(base_directory):
         try:
             full_path = base_path / subdir
             if full_path.is_dir() and not subdir.endswith(".disabled") and not subdir.startswith('.') and subdir != '__pycache__':
-                print(f"## Checking dependencies for '{subdir}'")
+                print(f"Checking dependencies for >> '{subdir}'")
                 requirements_file = full_path / "requirements.txt"
                 install_script = full_path / "install.py"
 
@@ -80,24 +80,24 @@ def install_requirements(requirements_file_path):
                         action = check_package_installed(package_name, required_version)
 
                         if action == "install":
-                            print(f"## Installing '{package_name} {required_version}'")
+                            print(f"Installing '{package_name} {required_version}'")
                             subprocess.run([sys.executable, "-m", "pip", "install", "-q", f"{package_name}{comparison_operator}{required_version}"], check=True)
                         elif action == "uninstall":
-                            print(f"## Uninstalling '{package_name}'")
+                            print(f"Uninstalling '{package_name}'")
                             subprocess.run([sys.executable, "-m", "pip", "uninstall", "-y", package_name], check=True)
-                            print(f"## Re-installing '{package_name} {required_version}'")
+                            print(f"Re-installing '{package_name} {required_version}'")
                             subprocess.run([sys.executable, "-m", "pip", "install", "-q", f"{package_name}{comparison_operator}{required_version}"], check=True)
                         else:
-                            print(f"## '{package_name}' is already up to date, skipping")
+                            pass
                     else:
                         package_name = line.strip()
                         action = check_package_installed(package_name, "")
 
                         if action == "install":
-                            print(f"## Installing '{package_name}'")
+                            print(f"Installing '{package_name}'")
                             subprocess.run([sys.executable, "-m", "pip", "install", "-q", package_name], check=True)
                         else:
-                            print(f"## '{package_name}' is already installed, skipping")
+                            pass
 
 def run_install_script(install_script_path):
     if install_script_path.exists():
@@ -109,5 +109,3 @@ subdirs_with_files = get_enabled_subdirectories_with_files(custom_nodes_director
 for subdir, requirements_file, install_script in subdirs_with_files:
     install_requirements(requirements_file)
     run_install_script(install_script)
-
-print("## Finished checking and installing dependencies")
