@@ -79,6 +79,11 @@ def webui_req():
 
     tempe()
 
+def Extensions():
+    say("<br><b>【{red} Installing Extensions{d} 】{red}</b>")
+    os.chdir(WEBUI / "extensions")
+    clone(str(WEBUI / "asd/extension.txt"))
+
 def sd_15():
     webui_req()
 
@@ -90,10 +95,7 @@ def sd_15():
         download(items)
 
     get_ipython().system(f"unzip -qo {WEBUI}/embeddings.zip -d {WEBUI}/embeddings && rm {WEBUI}/embeddings.zip")
-
-    say("<br><b>【{red} Installing Extensions{d} 】{red}</b>")
-    os.chdir(WEBUI / "extensions")
-    clone(str(WEBUI / "asd/extension.txt"))
+    Extensions()
 
 def sd_xl():
     webui_req()
@@ -106,10 +108,7 @@ def sd_xl():
 
     for items in extras:
         download(items)
-
-    say("<br><b>【{red} Installing Extensions{d} 】{red}</b>")
-    os.chdir(WEBUI / "extensions")
-    clone(str(WEBUI / "asd/extension.txt"))
+    Extensions()
 
 def marking(path, fn, ui):
     txt = path / fn
