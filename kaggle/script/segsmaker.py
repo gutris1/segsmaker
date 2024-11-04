@@ -1,13 +1,15 @@
-import json, logging, sys
-from pathlib import Path
+from IPython.display import clear_output
 from IPython import get_ipython
-from cupang import Tunnel as Alice_Zuberg
+from pathlib import Path
 from KANDANG import HOMEPATH
+from cupang import Tunnel as Alice_Zuberg
+import json, logging, sys, argparse
 
 MARKED = Path(HOMEPATH) / 'gutris1/marking.json'
 pw = '82a973c04367123ae98bd9abdf80d9eda9b910e2'
+py = '/kaggle/venv/bin/python3'
 
-def shut_up(launch_args):
+def shut_up(launch_args, skip_comfyui_check):
     config = json.load(MARKED.open('r')) if MARKED.exists() else {}
     ui = config.get('ui')
 
@@ -17,6 +19,10 @@ def shut_up(launch_args):
     if ui != 'ComfyUI':
         launch_args += f' --enable-insecure-extension-access --disable-console-progressbars --theme dark --encrypt-pass={pw}'
 
+    if ui == 'ComfyUI' and not skip_comfyui_check:
+        get_ipython().system(f'{py} apotek.py')
+        clear_output(wait=True)
+
     tunnel = f'cl tunnel --url localhost:{port}'
 
     Alice_Synthesis_Thirty = Alice_Zuberg(port)
@@ -24,13 +30,17 @@ def shut_up(launch_args):
     Alice_Synthesis_Thirty.add_tunnel(command=tunnel, name='Cloudflared', pattern=r"[\w-]+\.trycloudflare\.com")
 
     with Alice_Synthesis_Thirty:
-        cmd = f'/kaggle/venv/bin/python3 {launch} {launch_args}'
+        cmd = f'{py} {launch} {launch_args}'
         get_ipython().system(cmd)
 
 if __name__ == '__main__':
-    launch_args = ' '.join(sys.argv[1:])
+    parser = argparse.ArgumentParser(description='nothing to read here')
+    parser.add_argument('--skip-comfyui-check', action='store_true', help='Skip checking custom node dependencies for ComfyUI')
+
+    args, unknown = parser.parse_known_args()
+    launch_args = ' '.join(unknown)
 
     try:
-        shut_up(launch_args)
+        shut_up(launch_args, args.skip_comfyui_check)
     except KeyboardInterrupt:
         pass
