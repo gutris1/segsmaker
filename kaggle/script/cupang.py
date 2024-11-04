@@ -266,10 +266,10 @@ class Tunnel:
             raise RuntimeError("Tunnel is not running")
 
         log = self.logger
-        log.info("Stopping tunnel")
+
         self.stop_event.set()
         tunnel_names = ', '.join(tunnel["name"] for tunnel in self.tunnel_list)
-        log.info(f"{tunnel_names} Killed.")
+        log.info(f"\n{tunnel_names} Killed.")
 
         for process in self.processes:
             log.debug(f"Stopping {process}")
@@ -504,11 +504,8 @@ class Tunnel:
         Print the tunnel URLs.
         """
         log = self.logger
-        log.info("Getting URLs")
 
         if self.check_local_port:
-            # Wait until the port is available or stop_event is set
-            log.info(f"Wait until port: {self.port} online before print URLs")
             self.wait_for_condition(
                 lambda: self.is_port_in_use(self.port) or self.stop_event.is_set(),
                 interval=1,
