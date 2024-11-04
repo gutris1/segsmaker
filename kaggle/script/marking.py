@@ -3,7 +3,7 @@ from IPython import get_ipython
 from pathlib import Path
 from nenen88 import tempe
 from KANDANG import HOMEPATH, TEMPPATH
-import json, os
+import json
 
 HOME = Path(HOMEPATH)
 marked = HOME / 'gutris1/marking.json'
@@ -44,8 +44,8 @@ def uninstall_webui(line):
     webui, _ = get_webui_paths()
     get_ipython().system(f"rm -rf {webui}")
     print(f'{ui} uninstalled.')
-    os.chdir(HOME)
-    os._exit(00)
+    get_ipython().run_line_magic('cd', f'-q {HOME}')
+    get_ipython().kernel.do_shutdown(True)
 
 def set_paths(ui):
     webui_paths = {
