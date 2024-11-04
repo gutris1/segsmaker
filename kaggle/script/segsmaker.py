@@ -1,5 +1,6 @@
-import json, os, logging, sys
+import json, logging, sys
 from pathlib import Path
+from IPython import get_ipython
 from cupang import Tunnel as Alice_Zuberg
 from KANDANG import HOMEPATH
 
@@ -14,7 +15,7 @@ def shut_up(launch_args):
     launch = 'main.py' if ui == 'ComfyUI' else 'launch.py'
 
     if ui != 'ComfyUI':
-        launch_args += f' --encrypt-pass={pw}'
+        launch_args += f' --enable-insecure-extension-access --disable-console-progressbars --theme dark --encrypt-pass={pw}'
 
     tunnel = f'cl tunnel --url localhost:{port}'
 
@@ -24,7 +25,7 @@ def shut_up(launch_args):
 
     with Alice_Synthesis_Thirty:
         cmd = f'/kaggle/venv/bin/python3 {launch} {launch_args}'
-        os.system(cmd)
+        get_ipython().system(cmd)
 
 if __name__ == '__main__':
     launch_args = ' '.join(sys.argv[1:])
