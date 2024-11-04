@@ -1,16 +1,16 @@
 from IPython.display import clear_output
 from IPython import get_ipython
 from pathlib import Path
-from KANDANG import HOMEPATH
+from KANDANG import HOMEPATH, VENVPATH
 from cupang import Tunnel as Alice_Zuberg
 import json, logging, sys, argparse
 
-MARKED = Path(HOMEPATH) / 'gutris1/marking.json'
+MD = Path(HOMEPATH) / 'gutris1/marking.json'
+py = Path(VENVPATH) / 'bin/python3'
 pw = '82a973c04367123ae98bd9abdf80d9eda9b910e2'
-py = '/kaggle/venv/bin/python3'
 
 def shut_up(launch_args, skip_comfyui_check):
-    config = json.load(MARKED.open('r')) if MARKED.exists() else {}
+    config = json.load(MD.open('r')) if MD.exists() else {}
     ui = config.get('ui')
 
     port = 8188 if ui == 'ComfyUI' else 7860
