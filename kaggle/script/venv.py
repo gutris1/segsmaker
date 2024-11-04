@@ -82,6 +82,12 @@ def venv_install():
         os.chdir(BASEPATH)
         say('<br>【{red} Installing VENV{d} 】{red}')
         download(url)
+
+        if BASEPATH == 'colab':
+            z = ["apt -y install python3.10-venv", "apt -y install lz4"]
+            for b in z:
+                subprocess.run(shlex.split(b), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            
         get_ipython().system(f'pv {fn} | lz4 -d | tar xf -')
         Path(fn).unlink()
 
