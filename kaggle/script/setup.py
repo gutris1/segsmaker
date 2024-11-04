@@ -206,7 +206,7 @@ def webui_req(ui, WEBUI):
 
 
 def Extensions(ui, WEBUI):
-    from nenen88 import clone, say
+    from nenen88 import clone, say, download
 
     if ui == 'ComfyUI':
         say("<br><b>【{red} Installing Custom Nodes{d} 】{red}</b>")
