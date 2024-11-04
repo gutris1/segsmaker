@@ -1,20 +1,26 @@
-# Stable Diffusion Webui, Forge and ComfyUI notebook<br />for SageMaker Studio Lab
+# Stable Diffusion Webui, Forge and ComfyUI notebook<br />for SageMaker Studio Lab, Kaggle and Google Colab
 [<img src="https://api.visitorbadge.io/api/visitors?path=https%3A%2F%2Fgithub.com%2Fpantat88%2Fsegsmaker&label=Visitors&countColor=%232ccce4&style=flat">](https://visitorbadge.io/status?path=https%3A%2F%2Fgithub.com%2Fpantat88%2Fsegsmaker)<br>[<img src="https://img.shields.io/badge/Support%20me%20on%20Ko--fi-F16061?logo=ko-fi&logoColor=white&style=flat">](https://ko-fi.com/gutris1)
 
-| Segsmaker.ipynb | [![Open in Studio Lab](https://studiolab.sagemaker.aws/studiolab.svg)](https://studiolab.sagemaker.aws/import/github/gutris1/segsmaker/blob/main/Segsmaker.ipynb) |
+| SageMaker Studio Lab | [![Open in Studio Lab](https://studiolab.sagemaker.aws/studiolab.svg)](https://studiolab.sagemaker.aws/import/github/gutris1/segsmaker/blob/main/Segsmaker.ipynb) |
 | :---------------------------------------- | :-----------------------------------------------------------------------------------------------------------------: |
+| Google Colab | [![Open in Google Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/gutris1/segsmaker/blob/main/Segsmaker_COLAB.ipynb) |
+| Kaggle | [![Open in Kaggle](https://kaggle.com/static/images/open-in-kaggle.svg)](https://www.kaggle.com/code/jejejojo/1-2-3-4-5) |
+
+
 <br />
 
 you can find me here https://discord.gg/k5BwmmvJJU <br /><br />
-![image](https://github.com/gutris1/segsmaker/assets/132797949/670da491-58f7-4fc0-b5ef-b2cde93f79bf)
 
 
 # Changelog
-### 2024-10-05
+### 2024-11-04
+- Notebook for colab and kaggle.
+<details><summary>2024-10-05</summary><br>
+
 - <code>[SD-Trainer](https://github.com/Akegarasu/lora-scripts)</code> webui added.<br>
 
 ![Screenshot_1](https://github.com/user-attachments/assets/055a5391-834f-4343-b0af-3c180df480dd)
-
+</details>
 
 <details><summary>2024-10-01</summary><br>
 

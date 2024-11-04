@@ -2,12 +2,12 @@ from IPython.core.magic import register_line_magic
 from IPython import get_ipython
 from pathlib import Path
 from nenen88 import tempe
+from KANDANG import HOMEPATH, TEMPPATH
 import json
 
-HOME = Path.home()
-SRC = HOME / '.gutris1'
-marked = SRC / 'marking.json'
-tmp = Path('/tmp')
+HOME = Path(HOMEPATH)
+marked = HOME / 'gutris1/marking.json'
+tmp = Path(TEMPPATH)
 
 def purge():
     var_list = [
@@ -29,33 +29,22 @@ def get_webui_paths():
         'A1111': 'A1111',
         'Forge': 'Forge',
         'ComfyUI': 'ComfyUI',
-        'ReForge': 'ReForge',
-        'FaceFusion': 'FaceFusion',
-        'SDTrainer': 'SDTrainer'
+        'ReForge': 'ReForge'
     }
     webui = HOME / webui_paths[ui] if ui in webui_paths else None
     webui_output = (
-        webui / 'outputs' if ui in ('A1111', 'Forge', 'ReForge') else
-        webui / 'output' if ui in ('ComfyUI', 'SDTrainer') else
-        None
+        webui / 'outputs' if ui in ('A1111', 'ReForge', 'Forge') else
+        webui / 'output' if ui == 'ComfyUI' else None
     )
     return webui, webui_output
-
-@register_line_magic
-def clear_output_images(line):
-    ui = get_name(marked)
-    _, webui_output = get_webui_paths()
-    get_ipython().system(f"rm -rf {webui_output}/* {HOME / '.cache/*'}")
-    get_ipython().run_line_magic('cd', '-q ~')
-    print(f'{ui} outputs cleared.')
 
 @register_line_magic
 def uninstall_webui(line):
     ui = get_name(marked)
     webui, _ = get_webui_paths()
-    get_ipython().system(f"rm -rf {webui} {HOME / 'tmp'} {HOME / '.cache/*'}")
-    get_ipython().run_line_magic('cd', '-q ~')
+    get_ipython().system(f"rm -rf {webui}")
     print(f'{ui} uninstalled.')
+    get_ipython().run_line_magic('cd', f'-q {HOME}')
     get_ipython().kernel.do_shutdown(True)
 
 def set_paths(ui):
@@ -63,21 +52,18 @@ def set_paths(ui):
         'A1111': ('A1111', 'extensions', 'embeddings', 'VAE', 'Stable-diffusion', 'Lora'),
         'Forge': ('Forge', 'extensions', 'embeddings', 'VAE', 'Stable-diffusion', 'Lora'),
         'ComfyUI': ('ComfyUI', 'custom_nodes', 'embeddings', 'vae', 'checkpoints', 'loras'),
-        'ReForge': ('ReForge', 'extensions', 'embeddings', 'VAE', 'Stable-diffusion', 'Lora'),
-        'FaceFusion': ('FaceFusion', None, None, None, None, None),
-        'SDTrainer': ('SDTrainer', None, None, 'VAE', 'sd-models', None)
+        'ReForge': ('ReForge', 'extensions', 'embeddings', 'VAE', 'Stable-diffusion', 'Lora')
     }
 
     if ui in webui_paths:
         webui_name, ext, emb, v, c, l = webui_paths[ui]
         webui = HOME / webui_name if webui_name else None
 
-        models = webui if ui == 'SDTrainer' else (webui / 'models' if webui else None)
+        models = webui / 'models' if webui else None
 
         webui_output = (
-            webui / 'outputs' if ui in ('A1111', 'Forge', 'ReForge') else
-            webui / 'output' if ui in ('ComfyUI', 'SDTrainer') else
-            None
+            webui / 'outputs' if ui in ('A1111', 'ReForge', 'Forge') else
+            webui / 'output' if ui == 'ComfyUI' else None
         )
 
         extensions = webui / ext if ext else None

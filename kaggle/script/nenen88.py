@@ -1,12 +1,10 @@
-from IPython.core.magic import register_line_magic
 from IPython.display import display, HTML
 from urllib.parse import urlparse
 from IPython import get_ipython
 from pathlib import Path
 from tqdm import tqdm
-import subprocess, zipfile, sys, os, re, shlex, requests
+import subprocess, zipfile, shlex, sys, os, re, requests
 
-@register_line_magic
 def say(line):
     args = re.findall(r'\{[^\{\}]+\}|[^\s\{\}]+', line)
     output = []
@@ -44,7 +42,6 @@ def say(line):
 
 
 toket = ""
-@register_line_magic
 def download(line):
     args = line.split()
 
@@ -335,7 +332,6 @@ def ketsuno_ana(fc, fn):
         curlly(fc, fn)
 
 
-@register_line_magic
 def clone(line):
     path = Path(line).expanduser()
 
@@ -385,8 +381,7 @@ def cloning(lines):
         proc.wait()
 
 
-@register_line_magic
-def tempe(line):
+def tempe():
     ENVPATH = None
     env_list = {'Colab': '/content', 'Kaggle': '/kaggle'}
     for env_name, path in env_list.items():
@@ -405,7 +400,6 @@ def tempe(line):
         Path(path).mkdir(parents=True, exist_ok=True)
 
 
-@register_line_magic
 def pull(line):
     inputs = line.split()
     if len(inputs) != 3:
