@@ -4,7 +4,7 @@
 | SageMaker Studio Lab | [![Open in Studio Lab](https://studiolab.sagemaker.aws/studiolab.svg)](https://studiolab.sagemaker.aws/import/github/gutris1/segsmaker/blob/main/Segsmaker.ipynb) |
 | :---------------------------------------- | :-----------------------------------------------------------------------------------------------------------------: |
 | Google Colab | [![Open in Google Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/gutris1/segsmaker/blob/main/Segsmaker_COLAB.ipynb) |
-| Kaggle | [![Open in Kaggle](https://kaggle.com/static/images/open-in-kaggle.svg)](https://www.kaggle.com/code/jejejojo/1-2-3-4-5) |
+| Kaggle | [![Open in Kaggle](https://kaggle.com/static/images/open-in-kaggle.svg)](https://www.kaggle.com/code/jejejojo/asdasd) |
 
 
 <br />
