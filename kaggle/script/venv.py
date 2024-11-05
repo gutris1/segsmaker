@@ -91,10 +91,13 @@ def venv_install():
         get_ipython().system(f'pv {fn} | lz4 -d | tar xf -')
         Path(fn).unlink()
 
-        get_ipython().system(f'rm -rf {vnv / "bin" / "pip*"}')
-        get_ipython().system(f'rm -rf {vnv / "bin" / "python*"}')
+        get_ipython().system(f'rm -rf {vnv}/bin/pip*')
+        get_ipython().system(f'rm -rf {vnv}/bin/python*')
         get_ipython().system(f'python3 -m venv {vnv}')
-        get_ipython().system(f'{vnv / "bin" / "python3"} -m pip install -q --upgrade --force-reinstall pip')
+        get_ipython().system(f'{vnv}/bin/python3 -m pip install -q -U --force-reinstall pip')
+
+        if BASEPATH == '/content':
+            get_ipython().system(f'{vnv}/bin/pip3 install -q ipykernel')
 
 tempe()
 venv_install()
