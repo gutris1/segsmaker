@@ -124,6 +124,7 @@
 }
 
 .download-button-15, .select-all-button-15, .unselect-all-button-15 {
+    position: relative;
     margin-top: 0px;
     top: 415px;
     font-family: 'Times New Roman', serif;
@@ -162,6 +163,7 @@
 }
 
 .download-button-xl, .select-all-button-xl, .unselect-all-button-xl {
+    position: relative;
     margin-top: 0px;
     top: 505px;
     font-family: 'Times New Roman', serif;
