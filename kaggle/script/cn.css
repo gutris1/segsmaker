@@ -20,7 +20,7 @@
 
 .cn-panel {
     border: 0px solid transparent;
-    border-radius: 3px;
+    border-radius: 30px;
     margin: 0;
     background-color: transparent;
     animation: slide-blur-panel 1s;
@@ -39,7 +39,7 @@
 }
 
 .btn-cn-15, .btn-cn-xl {
-    height: 400px;
+    height: auto;
     cursor: pointer;
     border-width: 0px;
     filter: brightness(50%) blur(3px);
@@ -55,11 +55,11 @@
 }
 
 .btn-cn-15 {
-    background-image: url('https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/966a2d11-c70d-4a36-9fde-fd8f16be7247/original=true,quality=90/00119-1067016011.jpeg');
+    background-image: url('https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/5f06d0e2-5959-4c31-be80-546735970d76/original=true,quality=90/00014-1506.jpeg');
 }
 
 .btn-cn-xl {
-    background-image: url('https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/a59f1c9c-d5ce-486e-8969-36d4d4075f9c/original=true,quality=90/2112325.jpeg');
+    background-image: url('https://i.imgur.com/giAg91c.jpg');
 }
 
 .btn-cn-15::after, .btn-cn-xl::after {
@@ -98,7 +98,7 @@
     background: url('https://wallpapercave.com/dwp1x/wp5126154.jpg');
     background-size: 110% 110%;
     background-position: 50% 80%;
-    overflow: visible;
+    overflow: hidden;
     animation: slide-blur-above-xl 1s, BorderPulse 15s infinite;
 }
 
@@ -110,7 +110,7 @@
     background: url('https://wallpapercave.com/dwp1x/wp5126154.jpg');
     background-size: 110% 110%;
     background-position: 50% 80%;
-    overflow: visible;
+    overflow: hidden;
     animation: slide-blur-above-15 1s, BorderPulse 15s infinite;
 }
 
