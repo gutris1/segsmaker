@@ -318,30 +318,71 @@ def change_key(line):
     cancel_button = widgets.Button(description="Cancel")
     cancel_button.add_class("cancel")
 
-    new_key = widgets.Text(placeholder='Enter Your New Civitai API KEY')
-    new_key.add_class("key-input")
+    new_civitai_key = widgets.Text(placeholder='New Civitai API KEY')
+    new_civitai_key.add_class("key-input")
 
-    current_key = widgets.Text(placeholder='', disabled=True)
-    current_key.add_class("current-key")
+    new_hf_token = widgets.Text(
+        placeholder='New Huggingface READ Token (optional)',
+        layout=widgets.Layout(left='6px', width='340px'))
+    new_hf_token.add_class("key-hf")
+    
+    current_civitai_key = widgets.Text(
+        placeholder='',
+        disabled=True,
+        layout=widgets.Layout(left='-3px', top='0px'))
+    current_civitai_key.add_class("current-key")
 
-    buttons = widgets.HBox([save_button, cancel_button],
-                           layout=widgets.Layout(
-                               width='400px',
-                               display='flex',
-                               flex_flow='row',
-                               align_items='center',
-                               justify_content='space-around',
-                               padding='0px'))
+    current_hf_token = widgets.Text(
+        placeholder='',
+        disabled=True,
+        layout=widgets.Layout(top='0px'))
+    current_hf_token.add_class("current-hf")
 
-    input_widget = widgets.VBox([current_key, new_key, buttons],
-                                layout=widgets.Layout(
-                                    width='400px',
-                                    height='200px',
-                                    display='flex',
-                                    flex_flow='column',
-                                    align_items='center',
-                                    justify_content='space-around',
-                                    padding='20px'))
+    buttons = widgets.HBox(
+        [cancel_button, save_button],
+        layout=widgets.Layout(
+            width='400px',
+            display='flex',
+            flex_flow='row',
+            align_items='center',
+            justify_content='space-around',
+            padding='0px'))
+
+    current_box = widgets.Box(
+        [current_civitai_key, current_hf_token],
+        layout=widgets.Layout(
+            left='12px',
+            top='0px',
+            height='100px',
+            display='flex',
+            flex_flow='column',
+            justify_content='space-around',
+            align_items='baseline'))
+    
+    new_box = widgets.Box(
+        [new_civitai_key, new_hf_token],
+        layout=widgets.Layout(
+            left='50px',
+            top='-10px',
+            height='100px',
+            display='flex',
+            flex_flow='column',
+            justify_content='space-around',
+            align_items='flex-end'))
+
+    key_box = widgets.HBox([current_box, new_box])
+
+    input_widget = widgets.VBox(
+        [key_box, buttons],
+        layout=widgets.Layout(
+            position='absolute', 
+            width='700px',
+            height='180px',
+            display='flex',
+            flex_flow='column',
+            align_items='center',
+            justify_content='space-around',
+            padding='20px'))
     input_widget.add_class("input-widget")
 
     def load_css(css):
@@ -350,7 +391,7 @@ def change_key(line):
 
         display(HTML(f"<style>{panel}</style>"))
 
-    def key_inject(api_key):
+    def key_inject(civitai_key, hf_token):
         x = [
             f"curl -sLo {pantat} https://github.com/gutris1/segsmaker/raw/main/script/pantat88.py",
             f"curl -sLo {nenen} https://github.com/gutris1/segsmaker/raw/main/script/nenen88.py"
@@ -363,36 +404,43 @@ def change_key(line):
 
         for line in target:
             with open(line, "r") as file:
-                variable = file.read()
+                v = file.read()
 
-            value = variable.replace("YOUR_CIVITAI_API_KEY", f"{api_key}")
+            v = v.replace('toket = ""', f'toket = "{civitai_key}"')
+            v = v.replace('tobrut = ""', f'tobrut = "{hf_token}"')
+
             with open(line, "w") as file:
-                file.write(value)
+                file.write(v)
 
-    def key_widget(current_key_value=''):
-        current_key.value = current_key_value
+    def key_widget(current_civitai_key_value='', current_hf_token_value=''):
+        current_civitai_key.value = current_civitai_key_value
+        current_hf_token.value = current_hf_token_value
 
         def save_key(b):
-            api_key = new_key.value.strip()
+            civitai_key = new_civitai_key.value.strip()
+            hf_token = new_hf_token.value.strip()
 
             with main_output:
-                if not api_key:
-                    print("Please enter your CivitAI API KEY / CivitAI APIキーのおっぱいを入力してください。")
+                if not civitai_key:
+                    print("Please enter your CivitAI API Key")
                     return
 
-                if len(api_key) < 32:
-                    print("API key must be at least 32 characters long / APIキーは少なくとも32オッパイの長さに達する必要があります。")
+                if len(civitai_key) < 32:
+                    print("API key must be at least 32 characters long")
                     return
 
-                key_value = {"civitai-api-key": api_key}
+                civitai_ke = {"civitai-api-key": civitai_key}
+                hf_to = {"huggingface-read-token": hf_token}
+
+                secrets = {**civitai_k, **hf_t}
                 with open(key_file, "w") as file:
-                    json.dump(key_value, file, indent=4)
+                    json.dump(secrets, file, indent=4)
 
             with main_output:
                 input_widget.close()
                 main_output.clear_output(wait=True)
                 say("Saving...")
-                key_inject(api_key)
+                key_inject(civitai_key, hf_token)
 
                 main_output.clear_output(wait=True)
                 get_ipython().kernel.do_shutdown(True)
@@ -404,7 +452,8 @@ def change_key(line):
                 say("Done")
 
         def cancel_key(b):
-            new_key.value = ''
+            new_civitai_key.value = ''
+            new_hf_token.value = ''
 
             with main_output:
                 input_widget.close()
@@ -419,8 +468,9 @@ def change_key(line):
             with open(key_file, "r") as file:
                 value = json.load(file)
 
-            api_key = value.get("civitai-api-key", "")
-            key_widget(api_key)
+            civitai_key = value.get("civitai-api-key", "")
+            hf_token = value.get("huggingface-read-token", "")
+            key_widget(civitai_key, hf_token)
             display(input_widget, main_output)
         else:
             say("API Key File does not exist")
