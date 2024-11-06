@@ -42,7 +42,7 @@ def say(line):
 
 
 toket = ""
-hf_token = ""
+tobrut = ""
 def download(line):
     args = line.split()
 
