@@ -438,7 +438,7 @@ def tempe(line):
     env_list = {
         'Colab': ('/content', 'COLAB_JUPYTER_TRANSPORT'),
         'Kaggle': ('/kaggle', 'KAGGLE_DATA_PROXY_TOKEN'),
-        'SageMaker': ('/home', 'SAGEMAKER_INTERNAL_IMAGE_URI')
+        'SageMaker': ('/home/studio-lab-user', 'SAGEMAKER_INTERNAL_IMAGE_URI')
     }
 
     for env_name, (path, env_var) in env_list.items():
