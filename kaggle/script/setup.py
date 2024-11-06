@@ -36,7 +36,7 @@ def prevent_silly():
     parser.add_argument('--webui', required=True, help="available webui: A1111, Forge, ComfyUI, ReForge")
     parser.add_argument('--sd', required=True, help="available sd: 1.5, xl")
     parser.add_argument('--civitai_key', required=True, help="your CivitAI API key")
-    parser.add_argument('--hf_read_token', required=True, help="your Huggingface READ Token (optional)")
+    parser.add_argument('--hf_read_token', default=None, help="your Huggingface READ Token (optional)")
 
     args = parser.parse_args()
 
@@ -54,15 +54,16 @@ def prevent_silly():
         return None, None
 
     civitai_key = args.civitai_key.strip()
-    hf_read_token = args.hf_read_token.strip()
-
     if not civitai_key:
         print("Please enter your CivitAI API key")
         return None, None
-
     if len(civitai_key) < 32:
         print("API key must be at least 32 characters long")
         return None, None
+
+    hf_read_token = args.hf_read_token.strip() if args.hf_read_token else ""
+    if " " in hf_read_token:
+        hf_read_token = ""
 
     webui_webui = next(option for option in VALID_WEBUI_OPTIONS if webui_input == option.lower())
     sd_sd = next(option for option in VALID_SD_OPTIONS if sd_input == option.lower())
@@ -132,7 +133,7 @@ def key_inject(civitai_key, hf_read_token):
         v = v.replace('tobrut = ""', f'tobrut = "{hf_read_token}"')
 
         with open(line, "w") as file:
-            file.write(value)
+            file.write(v)
 
 def sym_link(ui, WEBUI):
     if ui == 'A1111':
