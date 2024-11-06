@@ -219,12 +219,15 @@ def zipping(line, cell):
             arg_name = soup[0].strip()
             arg_value = soup[1].strip().strip("'")
 
+            if '$HOME' in arg_value or '$home' in arg_value:
+                arg_value = arg_value.replace('$HOME', str(Path.home())).replace('$home', str(Path.home()))
+
             if arg_value.startswith('$'):
                 var_name = arg_value[1:]
                 if var_name in globals():
                     arg_value = str(globals()[var_name])
                 else:
-                    print(f"Error: '{var_name}' is not defined.")
+                    print(f"[ERROR]: {var_name} is not defined.")
                     return
 
             if arg_name == 'inputs':
@@ -237,7 +240,7 @@ def zipping(line, cell):
                 custom_name = arg_value
 
     if not input_path.exists():
-        print(f"Error: '{input_path}' does not exist.")
+        print(f"[ERROR]: {input_path} does not exist.")
         return
 
     if not output_path.exists():
@@ -251,9 +254,17 @@ def zipping(line, cell):
 
         all_files = []
 
+        skip_extensions = {
+            '.safetensors', '.ckpt',
+            '.pt', '.pth',
+            '.h5', '.pickle', '.pkl', '.bin',
+            '.zip', '.tar.gz', '.tar.lz4', '.py'
+        }
+
         for file_path in input_path.rglob('*'):
             if file_path.is_file():
-                all_files.append(file_path)
+                if file_path.suffix.lower() not in skip_extensions:
+                    all_files.append(file_path)
 
         zip_number = 1
         current_zip_size = 0
