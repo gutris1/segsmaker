@@ -315,12 +315,31 @@
     background-color: #202123;
     animation: slideAndBlurFromCenter 1s, BorderPulse 15s infinite;
 }
-
+.current-hf input[type="text"], .key-hf input[type="text"] {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 12px;
+    height: 30px;
+    width: 270px;
+    color: white;
+    text-align: center;
+    border-radius: 8px;
+    position: absolute;
+    transform: scale(125%);
+    margin-right: 0px;
+    margin-bottom: 0px;
+    margin-left: 0px;
+    background: #212121;
+}
+.current-hf input[type="text"] {
+    background: #212121;
+    border: 3px solid #2197f2;
+    margin-top: -30px;
+}
 .current-key input[type="text"], .key-input input[type="text"] {
     font-family: 'Roboto Mono', monospace;
-    font-size: 15px;
-    height: 35px;
-    width: 100%;
+    font-size: 12px;
+    height: 30px;
+    width: 240px;
     color: white;
     text-align: center;
     border-radius: 8px;
@@ -345,11 +364,20 @@
     color: grey;
 }
 .key-input input:focus {
-    height: 35px;
     border: 3px solid transparent;
     animation: BorderPulse 10s infinite;
 }
-
+.key-hf input[type="text"] {
+    border: 3px solid #ab22fe;
+    margin-top: -20px;
+}
+.key-hf input[type="text"]::placeholder {
+    color: grey;
+}
+.key-hf input:focus {
+    border: 3px solid transparent;
+    animation: BorderPulse 10s infinite;
+}
 .save, .cancel {
     font-family: 'Times New Roman', serif;
     text-align: center;
