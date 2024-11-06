@@ -113,9 +113,13 @@ def netorare(line):
     _dir = Path.cwd()
 
     aria2c = (
-        "aria2c --header='User-Agent: Mozilla/5.0' --allow-overwrite=true "
-        "--console-log-level=error --stderr=true -c -x16 -s16 -k1M -j5"
+        "aria2c --header='User-Agent: Mozilla/5.0' "
+        "--allow-overwrite=true --console-log-level=error --stderr=true "
+        "-c -x16 -s16 -k1M -j5"
     )
+
+    if tobrut and "huggingface.co" in url:
+        aria2c += f" --header='Authorization: Bearer {tobrut}'"
 
     try:
         if len(hitozuma) >= 3:
