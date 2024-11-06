@@ -1,4 +1,0 @@
-{
-    "gradio_theme": "NoCrypt/miku",
-    "samples_filename_pattern": "[datetime<%M%S>]"
-}
