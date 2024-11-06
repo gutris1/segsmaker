@@ -44,7 +44,7 @@ def say(line):
 
 
 toket = ""
-hf_token = ""
+tobrut = ""
 @register_line_magic
 def download(line):
     args = line.split()
