@@ -43,7 +43,8 @@ def say(line):
     display(HTML(" ".join(output)))
 
 
-toket = "YOUR_CIVITAI_API_KEY"
+toket = ""
+hf_token = ""
 @register_line_magic
 def download(line):
     args = line.split()
