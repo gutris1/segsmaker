@@ -42,13 +42,16 @@ main_output = widgets.Output()
 save_button = widgets.Button(description="Save")
 save_button.add_class("save-button")
 
-civitai_key_box = widgets.Text(placeholder='Enter Your Civitai API KEY Here', layout=widgets.Layout(width='350px'))
+civitai_key_box = widgets.Text(placeholder='Enter Your Civitai API Key Here', layout=widgets.Layout(width='350px'))
 civitai_key_box.add_class("api-input")
 
+hf_token_box = widgets.Text(placeholder='Huggingface READ Token (optional)', layout=widgets.Layout(width='350px'))
+hf_token_box.add_class("api-input")
+
 input_widget = widgets.Box(
-    [civitai_key_box, save_button], layout=widgets.Layout(
+    [civitai_key_box, hf_token_box, save_button], layout=widgets.Layout(
         width='500px',
-        height='150px',
+        height='200px',
         display='flex',
         flex_flow='column',
         align_items='center',
@@ -105,41 +108,58 @@ def load_css():
         
     display(HTML(f"<style>{panel}</style>"))
 
-def key_inject(api_key):
+def key_inject(civitai_key, hf_token):
     target = [pantat, nenen]
-    
+
     for line in target:
         with open(line, "r") as file:
-            variable = file.read()
-            
-        value = variable.replace("YOUR_CIVITAI_API_KEY", f"{api_key}")
-        with open(line, "w") as file:
-            file.write(value)
+            v = file.read()
 
-def key_widget():
+        v = v.replace('toket = ""', f'toket = "{civitai_key}"')
+        v = v.replace('tobrut = ""', f'tobrut = "{hf_token}"')
+
+        with open(line, "w") as file:
+            file.write(v)
+
+def key_widget(civitai_key='', hf_token=''):
+    civitai_key_box.value = civitai_key
+    hf_token_box.value = hf_token
+
     def key_input(b):
-        api_key = civitai_key_box.value.strip()
+        civitai_key = civitai_key_box.value.strip()
+        hf_token = hf_token_box.value.strip()
 
         with main_output:
-            if not api_key:
-                print("Please enter your CivitAI API KEY / CivitAI APIキーのおっぱいを入力してください。")
+            if not civitai_key:
+                print("Please enter your Civitai API Key")
                 return
 
-            if len(api_key) < 32:
-                print("API key must be at least 32 characters long / APIキーは少なくとも32オッパイの長さに達する必要があります。")
+            if len(civitai_key) < 32:
+                print("API key must be at least 32 characters long")
                 return
 
-            key_value = {"civitai-api-key": api_key}
+            civitai_key_value = {"civitai-api-key": civitai_key}
+            hf_token_value = {"huggingface-read-token": hf_token}
+
+            secrets = {**civitai_key_value, **hf_token_value}
             with open(key_file, "w") as file:
-                json.dump(key_value, file, indent=4)
+                json.dump(secrets, file, indent=4)
 
-        key_inject(api_key)
+        key_inject(civitai_key, hf_token)
 
         input_widget.close()
         main_output.clear_output()
 
+        p = subprocess.run(["conda", "--version"], capture_output=True, text=True, check=True)
+        cv = p.stdout.strip().split()[1]
+        mv = int(cv.split('.')[0])
+        
         with main_output:
-            conda_install()
+            if mv < 24:
+                conda_install()
+            else:
+                print(f"{GREEN} Done")
+                get_ipython().kernel.do_shutdown(True)
 
     save_button.on_click(key_input)
 
@@ -148,11 +168,16 @@ def key_check():
         with open(key_file, "r") as file:
             value = json.load(file)
 
-        api_key = value.get("civitai-api-key", "")
-        key_inject(api_key)
-        display(main_output)
-        conda_install()
+        civitai_key = value.get("civitai-api-key", "")
+        hf_token = value.get("huggingface-read-token", "")
 
+        if not civitai_key or not hf_token:
+            display(input_widget, main_output)
+            key_widget(civitai_key, hf_token)
+        else:
+            key_inject(civitai_key, hf_token)
+            display(main_output)
+            conda_install()
     else:
         display(input_widget, main_output)
         key_widget()
