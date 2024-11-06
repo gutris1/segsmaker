@@ -4,7 +4,7 @@ from ipywidgets import widgets
 from pathlib import Path
 
 src_cn = Path(__file__).parent
-css_cn = src_cn / "cn.css"
+css_cn = src_cn / "controlnet.css"
 cn15 = src_cn / "cn-15.py"
 cnxl = src_cn / "cn-xl.py"
 img = Path.home() / ".gutris1/loading.png"
@@ -44,9 +44,9 @@ cn_panel.add_class('cn-panel')
 
 def controlnet_widgets():
     x = [
-        f"curl -sLo {cn15} https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn-15.py",
-        f"curl -sLo {cnxl} https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn-xl.py",
-        f"curl -sLo {css_cn} https://github.com/gutris1/segsmaker/raw/main/script/controlnet/cn.css"]
+        f"curl -sLo {cn15} https://github.com/gutris1/segsmaker/raw/main/script/SM/cn-15.py",
+        f"curl -sLo {cnxl} https://github.com/gutris1/segsmaker/raw/main/script/SM/cn-xl.py",
+        f"curl -sLo {css_cn} https://github.com/gutris1/segsmaker/raw/main/script/SM/controlnet.css"]
     for y in x:
         get_ipython().system(y)
 
