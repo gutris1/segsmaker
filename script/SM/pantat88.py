@@ -414,7 +414,7 @@ def pull(line):
     cmd3 = 'git checkout'
     subs(shlex.split(cmd3), cwd=str(repofold), **opts)
 
-    zipin = repofold / 'ui' / tarfold
+    zipin = repofold / 'config' / tarfold
     zipout = path / f'{tarfold}.zip'
     
     with zipfile.ZipFile(str(zipout), 'w') as zipf:
@@ -432,14 +432,40 @@ def pull(line):
 
 @register_line_magic
 def tempe(line):
-    tmp = [
-        "/tmp/ckpt",
-        "/tmp/lora",
-        "/tmp/controlnet",
-        "/tmp/svd",
-        "/tmp/z123",
-        "/tmp/clip"
-    ]
+    BASEPATH = None
+    ENV = None
 
-    for path in tmp:
-        Path(path).mkdir(parents=True, exist_ok=True)
+    env_list = {
+        'Colab': ('/content', 'COLAB_JUPYTER_TRANSPORT'),
+        'Kaggle': ('/kaggle', 'KAGGLE_DATA_PROXY_TOKEN'),
+        'SageMaker': ('/home', 'SAGEMAKER_INTERNAL_IMAGE_URI')
+    }
+
+    for env_name, (path, env_var) in env_list.items():
+        if os.getenv(env_var):
+            BASEPATH = path
+            ENV = env_name
+            break
+
+    if ENV in ('Colab', 'Kaggle'):
+        tmplist = [
+            f"{BASEPATH}/temp/ckpt",
+            f"{BASEPATH}/temp/lora",
+            f"{BASEPATH}/temp/controlnet",
+            f"{BASEPATH}/temp/svd",
+            f"{BASEPATH}/temp/z123",
+            f"{BASEPATH}/temp/clip"
+        ]
+
+    else:
+        tmplist = [
+            "/tmp/ckpt",
+            "/tmp/lora",
+            "/tmp/controlnet",
+            "/tmp/svd",
+            "/tmp/z123",
+            "/tmp/clip"
+        ]
+
+    for paths in tmplist:
+        Path(paths).mkdir(parents=True, exist_ok=True)
