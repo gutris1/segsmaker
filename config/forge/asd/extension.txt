@@ -1,0 +1,9 @@
+git clone --depth 1 https://github.com/Bing-su/adetailer 4-adetailer
+git clone --depth 1 https://github.com/zanllp/sd-webui-infinite-image-browsing
+git clone --depth 1 https://github.com/DominikDoom/a1111-sd-webui-tagcomplete
+git clone --depth 1 https://github.com/thomasasfk/sd-webui-aspect-ratio-helper
+git clone --depth 1 https://github.com/IDEA-Research/DWPose
+git clone --depth 1 https://github.com/lllyasviel/sd-forge-layerdiffuse
+git clone --depth 1 https://github.com/BlafKing/sd-civitai-browser-plus
+git clone --depth 1 https://github.com/gutris1/timer_timer
+git clone --depth 1 https://github.com/gutris1/sd-hub

@@ -1,0 +1,86 @@
+import os
+os.environ['MPLBACKEND'] = 'gtk3agg'
+
+import matplotlib, subprocess, sys, logging, json, re, shlex
+from pathlib import Path
+from pyngrok import ngrok
+
+SRC = Path.home() / '.gutris1'
+MARK = SRC / 'marking.json'
+RST = '\033[0m'
+ORG = '\033[38;5;208m'
+
+def logging_launch():
+    log_file = Path('segsmaker.log')
+    logging.basicConfig(
+        filename=log_file,
+        level=logging.INFO,
+        format="{message}", style="{",
+        filemode='a'
+    )
+    return logging.getLogger()
+
+def launch(logger, args):
+    cmd = f"source activate default && /tmp/venv-fusion/bin/python3 facefusion.py run {' '.join(shlex.quote(arg) for arg in args)}"
+    webui = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=sys.stdout, text=True, shell=True, executable="/bin/bash")
+
+    local_url = False
+    for line in webui.stdout:
+        print(line, end='')
+        logger.info(line.strip())
+        if not local_url:
+            if any(keyword in line for keyword in ['Running on local URL']):
+                local_url = True
+                for handler in logger.handlers:
+                    logger.removeHandler(handler)
+                break
+
+    return webui
+
+def ngrok_tunnel(port, auth_token):
+    ngrok.set_auth_token(auth_token)
+    url = ngrok.connect(port)
+
+    match = re.search(r'"(https?://[^"]+)"', str(url))
+    if match:
+        return match.group(1)
+    return None
+
+def load_config(logger):
+    config = json.load(MARK.open('r')) if MARK.exists() else {}
+    tunnel = config.get('tunnel')
+
+    args = sys.argv[1:]
+
+    if tunnel == 'NGROK':
+        token = config.get('ngrok_token', '').strip()
+        if not token:
+            sys.exit("Missing NGROK Token")
+
+        port = 7860
+        webui = launch(logger, args)
+        url = ngrok_tunnel(port, token)
+        print(f'\n{ORG}▶{RST} NGROK {ORG}:{RST} {url}')
+
+        webui.wait()
+        ngrok.disconnect(url)
+
+    else:
+        webui = launch(logger, args)
+        webui.wait()
+
+if __name__ == '__main__':
+    if 'LD_PRELOAD' not in os.environ:
+        os.environ['LD_PRELOAD'] = (
+            '/home/studio-lab-user/.conda/envs/default/lib/libcublasLt.so.12:' +
+            '/home/studio-lab-user/.conda/envs/default/lib/libcublas.so.12'
+        )
+
+    os.environ['LD_LIBRARY_PATH'] = '/home/studio-lab-user/.conda/envs/default/lib:' + os.environ.get('LD_LIBRARY_PATH', '')
+
+    logger = logging_launch()
+
+    try:
+        load_config(logger)
+    except KeyboardInterrupt:
+        pass
