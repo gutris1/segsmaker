@@ -36,6 +36,7 @@ def prevent_silly():
     parser.add_argument('--webui', required=True, help="available webui: A1111, Forge, ComfyUI, ReForge")
     parser.add_argument('--sd', required=True, help="available sd: 1.5, xl")
     parser.add_argument('--civitai_key', required=True, help="your CivitAI API key")
+    parser.add_argument('--hf_read_token', required=True, help="your Huggingface READ Token (optional)")
 
     args = parser.parse_args()
 
@@ -53,6 +54,8 @@ def prevent_silly():
         return None, None
 
     civitai_key = args.civitai_key.strip()
+    hf_read_token = args.hf_read_token.strip()
+
     if not civitai_key:
         print("Please enter your CivitAI API key")
         return None, None
@@ -64,7 +67,7 @@ def prevent_silly():
     webui_webui = next(option for option in VALID_WEBUI_OPTIONS if webui_input == option.lower())
     sd_sd = next(option for option in VALID_SD_OPTIONS if sd_input == option.lower())
 
-    return (webui_webui, sd_sd), civitai_key
+    return (webui_webui, sd_sd), civitai_key, hf_read_token
 
 
 env, HOME = 'Unknown', None
@@ -118,14 +121,16 @@ def marking(path, fn, ui):
     with open(txt, 'w') as file:
         json.dump(data, file, indent=4)
 
-def key_inject(api_key):
+def key_inject(civitai_key, hf_read_token):
     target = [pantat, nenen]
 
     for line in target:
         with open(line, "r") as file:
-            variable = file.read()
+            v = file.read()
 
-        value = variable.replace('toket = ""', f'toket = "{api_key}"')
+        v = v.replace('toket = ""', f'toket = "{civitai_key}"')
+        v = v.replace('tobrut = ""', f'tobrut = "{hf_read_token}"')
+
         with open(line, "w") as file:
             file.write(value)
 
@@ -310,15 +315,15 @@ def webui_install(ui, which_sd):
 
 
 def lets_go():
-    args, civitai_key = prevent_silly()
+    args, civitai_key, hf_read_token = prevent_silly()
     if args is None or civitai_key is None:
         return
     webui, sd = args
 
     z = [
         (STR / '00-startup.py', f"curl -sLo {STR}/00-startup.py https://github.com/gutris1/segsmaker/raw/main/kaggle/script/00-startup.py"),
-        (pantat, f"curl -sLo {pantat} https://github.com/gutris1/segsmaker/raw/main/script/pantat88.py"),
-        (nenen, f"curl -sLo {nenen} https://github.com/gutris1/segsmaker/raw/main/script/nenen88.py"),
+        (pantat, f"curl -sLo {pantat} https://github.com/gutris1/segsmaker/raw/hf/script/pantat88.py"),
+        (nenen, f"curl -sLo {nenen} https://github.com/gutris1/segsmaker/raw/hf/script/nenen88.py"),
         (STR / 'cupang.py', f"curl -sLo {STR}/cupang.py https://github.com/gutris1/segsmaker/raw/main/kaggle/script/cupang.py"),
         (MRK, f"curl -sLo {MRK} https://github.com/gutris1/segsmaker/raw/main/kaggle/script/marking.py")
     ]
@@ -358,7 +363,7 @@ def lets_go():
         get_ipython().run_line_magic('run', f'{KANDANG}')
 
         marking(SRC, MARKED, webui)
-        key_inject(civitai_key)
+        key_inject(civitai_key, hf_read_token)
 
         try:
             webui_install(webui, sd)
