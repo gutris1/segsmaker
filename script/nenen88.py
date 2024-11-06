@@ -41,7 +41,8 @@ def say(line):
     display(HTML(" ".join(output)))
 
 
-toket = "YOUR_CIVITAI_API_KEY"
+toket = ""
+hf_token = ""
 def download(line):
     args = line.split()
 
