@@ -317,9 +317,8 @@ def lets_go():
 
     z = [
         (STR / '00-startup.py', f"curl -sLo {STR}/00-startup.py https://github.com/gutris1/segsmaker/raw/main/kaggle/script/00-startup.py"),
-        (pantat, f"curl -sLo {pantat} https://github.com/gutris1/segsmaker/raw/main/kaggle/script/pantat88.py"),
-        (nenen, f"curl -sLo {nenen} https://github.com/gutris1/segsmaker/raw/main/kaggle/script/nenen88.py"),
-        (STR / 'util.py', f"curl -sLo {STR}/util.py https://github.com/gutris1/segsmaker/raw/main/script/util.py"),
+        (pantat, f"curl -sLo {pantat} https://github.com/gutris1/segsmaker/raw/main/script/pantat88.py"),
+        (nenen, f"curl -sLo {nenen} https://github.com/gutris1/segsmaker/raw/main/script/nenen88.py"),
         (STR / 'cupang.py', f"curl -sLo {STR}/cupang.py https://github.com/gutris1/segsmaker/raw/main/kaggle/script/cupang.py"),
         (MRK, f"curl -sLo {MRK} https://github.com/gutris1/segsmaker/raw/main/kaggle/script/marking.py")
     ]
