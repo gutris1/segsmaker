@@ -1,0 +1,439 @@
+:root {
+  --cn-gradient-bg: linear-gradient(to right,
+    rgb(255, 0, 0), rgb(255, 0, 25), rgb(255, 0, 50), rgb(255, 0, 75),
+    rgb(255, 0, 100), rgb(255, 0, 125), rgb(255, 0, 150), rgb(255, 0, 175),
+    rgb(255, 0, 200), rgb(255, 0, 225), rgb(255, 0, 255), rgb(225, 0, 255),
+    rgb(200, 0, 255), rgb(175, 0, 255), rgb(150, 0, 255), rgb(125, 0, 255),
+    rgb(100, 0, 255), rgb(75, 0, 255), rgb(50, 0, 255), rgb(25, 0, 255),
+    rgb(0, 0, 255), rgb(0, 25, 255), rgb(0, 50, 255), rgb(0, 75, 255),
+    rgb(0, 100, 255), rgb(0, 125, 255), rgb(0, 150, 255), rgb(0, 175, 255),
+    rgb(0, 200, 255), rgb(0, 225, 255), rgb(0, 255, 255), rgb(0, 255, 225),
+    rgb(0, 255, 200), rgb(0, 255, 175), rgb(0, 255, 150), rgb(0, 255, 125),
+    rgb(0, 255, 100), rgb(0, 255, 75), rgb(0, 255, 50), rgb(0, 255, 25),
+    rgb(0, 255, 0), rgb(25, 255, 0), rgb(50, 255, 0), rgb(75, 255, 0),
+    rgb(100, 255, 0), rgb(125, 255, 0), rgb(150, 255, 0), rgb(175, 255, 0),
+    rgb(200, 255, 0), rgb(225, 255, 0), rgb(255, 255, 0), rgb(255, 225, 0),
+    rgb(255, 200, 0), rgb(255, 175, 0), rgb(255, 150, 0), rgb(255, 125, 0),
+    rgb(255, 100, 0), rgb(255, 75, 0), rgb(255, 50, 0), rgb(255, 25, 0),
+    rgb(255, 0, 0));
+}
+
+.cn-panel {
+    border: 0px solid transparent;
+    border-radius: 30px;
+    margin: 0;
+    background-color: transparent;
+    animation: slide-blur-panel 1s;
+}
+
+@keyframes slide-blur-panel {
+    from {
+        height: 0px;
+        opacity: 0;
+        filter: blur(30px);
+    }
+    to {
+        height: 405px;
+        opacity: 1;
+        filter: blur(0px);}
+}
+
+.btn-cn-15, .btn-cn-xl {
+    height: auto;
+    cursor: pointer;
+    border-width: 0px;
+    filter: brightness(50%) blur(3px);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 3px;
+    position: relative;
+    overflow: hidden;
+    -webkit-mask: linear-gradient(to left, transparent, #000 1px);
+    width: 70%;
+    transition: 0.4s ease;
+}
+
+.btn-cn-15 {
+    background-image: url('https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/5f06d0e2-5959-4c31-be80-546735970d76/original=true,quality=90/00014-1506.jpeg');
+}
+
+.btn-cn-xl {
+    background-image: url('https://i.imgur.com/giAg91c.jpg');
+}
+
+.btn-cn-15::after, .btn-cn-xl::after {
+    font-family: 'Times New Roman', serif;
+    text-align: center;
+    position: absolute;
+    bottom: 5px;
+    left: -10px;
+    color: white;
+    font-size: 40px;
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 10px;
+    display: block;
+    border-radius: 0px;
+    width: 100%;
+}
+
+.btn-cn-15::after {
+    content: 'SD 1.5';
+}
+.btn-cn-xl::after {
+    content: 'SD XL';
+}
+
+.btn-cn-15:hover, .btn-cn-xl:hover {
+    filter: brightness(100%);
+    width: 100%;
+    border-width: 0px;
+}
+
+.cn-xl {
+    border: 3px solid transparent;
+    border-radius: 15px;
+    padding: 10px;
+    margin: 0;
+    background: url('https://wallpapercave.com/dwp1x/wp5126154.jpg');
+    background-size: 110% 110%;
+    background-position: 50% 80%;
+    overflow: hidden;
+    animation: slide-blur-above-xl 1s, BorderPulse 15s infinite;
+}
+
+.cn-15 {
+    border: 3px solid transparent;
+    border-radius: 15px;
+    padding: 10px;
+    margin: 0;
+    background: url('https://wallpapercave.com/dwp1x/wp5126154.jpg');
+    background-size: 110% 110%;
+    background-position: 50% 80%;
+    overflow: hidden;
+    animation: slide-blur-above-15 1s, BorderPulse 15s infinite;
+}
+
+.widget-container {
+    margin-top: 0px;
+    margin-right: 0px;
+    margin-bottom: 0px;
+    margin-left: 0px;
+    overflow: visible;
+    position: relative;
+}
+
+.download-button-15, .select-all-button-15, .unselect-all-button-15 {
+    position: relative;
+    margin-top: 0px;
+    top: 415px;
+    font-family: 'Times New Roman', serif;
+    text-align: center;
+    height: 40px;
+    color: white;
+    border: 3px solid #2197f2;
+    background-color: transparent;
+    border-radius: 4px;
+    background-position: left bottom;
+    transition: all 0.5s ease-out;
+    transform: scale(0.9);
+    vertical-align: middle;
+    font-size: 20px;
+    z-index: 1;
+}
+
+.download-button-15, .download-button-xl {
+    left: -40px;
+    margin-right: 0px;
+    margin-bottom: 0px;
+    margin-left: 0px;
+}
+
+.select-all-button-15, .select-all-button-xl {
+    margin-right: 0px;
+    margin-bottom: 0px;
+    margin-left: 0px;
+}
+
+.unselect-all-button-15, .unselect-all-button-xl {
+    left: -40px;
+    margin-right: 0px;
+    margin-bottom: 0px;
+    margin-left: 0px;
+}
+
+.download-button-xl, .select-all-button-xl, .unselect-all-button-xl {
+    position: relative;
+    margin-top: 0px;
+    top: 505px;
+    font-family: 'Times New Roman', serif;
+    text-align: center;
+    height: 40px;
+    color: white;
+    border: 3px solid #2197f2;
+    background-color: transparent;
+    border-radius: 4px;
+    background-position: left bottom;
+    transition: all 0.5s ease-out;
+    transform: scale(0.9);
+    vertical-align: middle;
+    font-size: 20px;
+    z-index: 1;
+}
+
+.download-button-15:hover, .select-all-button-15:hover, .unselect-all-button-15:hover,
+.download-button-xl:hover, .select-all-button-xl:hover, .unselect-all-button-xl:hover {
+    font-weight: bold;
+    color: #212121;
+    border-radius: 4px;
+    border: 3px solid transparent;
+    background-image: var(--cn-gradient-bg);
+    background-size: 800% 500%;
+    background-position: left bottom;
+    transition: border 0s;
+    cursor: pointer;
+    transition: none;
+    vertical-align: middle;
+    transform: scale(1.1);
+    animation: slideBackground 10s linear infinite, BorderPulse 7s infinite;
+    transition: all 0.3s ease-out;
+}
+
+.bottom-box-15, .bottom-box-xl {
+    position: absolute;
+    display: block;
+    transform: translateX(-50%);
+    height: 55px;
+    border: 3px solid #ab22fe;
+    border-radius: 30px;
+    background-color: #212121;
+    padding: 0px;
+    cursor: pointer;
+}
+
+.bottom-box-15 {
+    bottom: -425px;
+    left: 49.5%;
+    width: 530px;
+}
+
+.bottom-box-xl {
+    bottom: -515px;
+    left: 49.5%;
+    width: 600px;
+}
+
+.checkbox input[type=checkbox] {
+    --active: #275EFE;
+    --active-inner: #fff;
+    --focus: 2px rgba(39, 94, 254, .3);
+    --border: #BBC1E1;
+    --border-hover: #275EFE;
+    --background: #fff;
+    --disabled: #F6F8FF;
+    --disabled-inner: #E1E6F9;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 15px;
+    height: 15px;
+    right: 0px;
+    border-radius: 50%;
+    margin-top: -3px;
+    margin-right: 10px;
+    margin-bottom: 0px;
+    margin-left: 0px;
+    vertical-align: middle;
+    cursor: pointer;
+    border: 1px solid var(--bc, var(--border));
+    background: var(--b, var(--background));
+    transition: background 0.3s, border-color 0.3s, box-shadow 0.2s;
+    position: relative;
+}
+
+.checkbox input[type=checkbox]:checked,
+.checkbox input[type=checkbox]:hover {
+    --o: 1;
+    --b: var(--active);
+    --bc: var(--active);
+    --d-o: .3s;
+    --d-t: .6s;
+    --d-t-e: cubic-bezier(.2, .85, .32, 1.2);
+}
+
+.checkbox input[type=checkbox]:checked::after {
+    text-align: center;
+    font-family: 'Roboto Mono', monospace;
+    content: '\2713';
+    display: block;
+    position: absolute;
+    top: -5px;
+    left: 2px;
+    color: white;
+    font-size: 15px;
+}
+
+.checkbox input[type=checkbox]:not(:checked)::after {
+    content: '';
+}
+
+.checkbox input[type=checkbox]:focus {
+    box-shadow: 0 0 0 var(--focus);
+}
+
+.checkbox label {
+    text-align: center;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 12px;
+    color: white;
+    margin-top: 0px;
+    margin-right: -50px;
+    margin-left: 0px;
+    margin-bottom: -5px;
+    vertical-align: middle;
+}
+
+.checkbox label:hover {
+    margin-top: -10px;
+    margin-right: -50px;
+    margin-bottom: -50px;
+    margin-left: 0px;
+    transform: translateY(0px) translateX(-12px);
+    border-radius: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-bottom: 0px;
+    color: #ab22fe;
+    background-color: #212121;
+    border: 2px solid transparent;
+    transition: border 0s;
+    cursor: pointer;
+    animation: BorderPulse 7s infinite;
+}
+
+.checkbox label:active {
+    background-image: var(--cn-gradient-bg);
+    background-size: 800% 500%;
+    animation: slideBackground 10s linear infinite, BorderPulse 7s infinite;
+    font-weight: bold;
+    color: #212121;
+}
+
+@keyframes slide-blur-above-xl {
+    from {
+        height: 0px;
+        opacity: 0;
+        filter: blur(30px);
+    }
+    to {
+        height: 580px;
+        opacity: 1;
+        filter: blur(0px);}
+}
+
+@keyframes slide-blur-above-15 {
+    from {
+        height: 0px;
+        opacity: 0;
+        filter: blur(30px);
+    }
+    to {
+        height: 490px;
+        opacity: 1;
+        filter: blur(0px);}
+}
+
+@keyframes slideBackground {
+    0% { background-position: 0% 50%; }
+    100% { background-position: -800% 50%; }
+}
+
+@keyframes blurBlur {
+    from {
+        transform: scale(1);
+        opacity: 0;
+        filter: blur(30px);
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+        filter: blur(0px);
+    }
+}
+
+@keyframes BorderPulse {
+    0% {border-color: rgba(255, 0, 0, 1);}
+    1.67% {border-color: rgba(255, 0, 25, 0.75);}
+    3.33% {border-color: rgba(255, 0, 50, 0.5);}
+    5.00% {border-color: rgba(255, 0, 75, 0.75);}
+    6.67% {border-color: rgba(255, 0, 100, 1);}
+    8.33% {border-color: rgba(255, 0, 125, 0.75);}
+    10.00% {border-color: rgba(255, 0, 150, 0.5);}
+    11.67% {border-color: rgba(255, 0, 175, 0.75);}
+    13.33% {border-color: rgba(255, 0, 200, 1);}
+    15.00% {border-color: rgba(255, 0, 225, 0.75);}
+    16.67% {border-color: rgba(255, 0, 255, 0.5);}
+    18.33% {border-color: rgba(225, 0, 255, 0.75);}
+    20.00% {border-color: rgba(200, 0, 255, 1);}
+    21.67% {border-color: rgba(175, 0, 255, 0.75);}
+    23.33% {border-color: rgba(150, 0, 255, 0.5);}
+    25.00% {border-color: rgba(125, 0, 255, 0.75);}
+    26.67% {border-color: rgba(100, 0, 255, 1);}
+    28.33% {border-color: rgba(75, 0, 255, 0.75);}
+    30.00% {border-color: rgba(50, 0, 255, 0.5);}
+    31.67% {border-color: rgba(25, 0, 255, 0.75);}
+    33.33% {border-color: rgba(0, 0, 255, 1);}
+    35.00% {border-color: rgba(0, 25, 255, 0.75);}
+    36.67% {border-color: rgba(0, 50, 255, 0.5);}
+    38.33% {border-color: rgba(0, 75, 255, 0.75);}
+    40.00% {border-color: rgba(0, 100, 255, 1);}
+    41.67% {border-color: rgba(0, 125, 255, 0.75);}
+    43.33% {border-color: rgba(0, 150, 255, 0.5);}
+    45.00% {border-color: rgba(0, 175, 255, 0.75);}
+    46.67% {border-color: rgba(0, 200, 255, 1);}
+    48.33% {border-color: rgba(0, 225, 255, 0.75);}
+    50.00% {border-color: rgba(0, 255, 255, 0.5);}
+    51.67% {border-color: rgba(0, 255, 225, 0.75);}
+    53.33% {border-color: rgba(0, 255, 200, 1);}
+    55.00% {border-color: rgba(0, 255, 175, 0.75);}
+    56.67% {border-color: rgba(0, 255, 150, 0.5);}
+    58.33% {border-color: rgba(0, 255, 125, 0.75);}
+    60.00% {border-color: rgba(0, 255, 100, 1);}
+    61.67% {border-color: rgba(0, 255, 75, 0.75);}
+    63.33% {border-color: rgba(0, 255, 50, 0.5);}
+    65.00% {border-color: rgba(0, 255, 25, 0.75);}
+    66.67% {border-color: rgba(0, 255, 0, 1);}
+    68.33% {border-color: rgba(25, 255, 0, 0.75);}
+    70.00% {border-color: rgba(50, 255, 0, 0.5);}
+    71.67% {border-color: rgba(75, 255, 0, 0.75);}
+    73.33% {border-color: rgba(100, 255, 0, 1);}
+    75.00% {border-color: rgba(125, 255, 0, 0.75);}
+    76.67% {border-color: rgba(150, 255, 0, 0.5);}
+    78.33% {border-color: rgba(175, 255, 0, 0.75);}
+    80.00% {border-color: rgba(200, 255, 0, 1);}
+    81.67% {border-color: rgba(225, 255, 0, 0.75);}
+    83.33% {border-color: rgba(255, 255, 0, 0.5);}
+    85.00% {border-color: rgba(255, 225, 0, 0.75);}
+    86.67% {border-color: rgba(255, 200, 0, 1);}
+    88.33% {border-color: rgba(255, 175, 0, 0.75);}
+    90.00% {border-color: rgba(255, 150, 0, 0.5);}
+    91.67% {border-color: rgba(255, 125, 0, 0.75);}
+    93.33% {border-color: rgba(255, 100, 0, 1);}
+    95.00% {border-color: rgba(255, 75, 0, 0.75);}
+    96.67% {border-color: rgba(255, 50, 0, 0.5);}
+    98.33% {border-color: rgba(255, 25, 0, 0.75);}
+    100% {border-color: rgba(255, 0, 0, 1);}
+}
+
+.gradient-cn {
+    width: 750px;
+    height: 5px;
+    font-size: 0px;
+    background-image: var(--cn-gradient-bg);
+    background-size: 800% 500%;
+    color: black;
+    border-radius: 2px;
+    border: 1px solid transparent;
+    display: inline-block;
+    animation: slideBackground 20s linear infinite, BorderPulse 7s infinite;
+    transition: all 0.3s ease-out;
+}
