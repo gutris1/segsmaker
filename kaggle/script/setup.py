@@ -61,7 +61,7 @@ def prevent_silly():
         print("API key must be at least 32 characters long")
         return None, None
 
-    hf_read_token = args.hf_read_token.strip() if args.hf_read_token else ""
+    hf_read_token = args.hf_read_token.strip()
     if " " in hf_read_token:
         hf_read_token = ""
 
