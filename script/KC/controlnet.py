@@ -309,7 +309,7 @@ def Download(b):
         os.chdir(HOMEPATH)
 
 def Controlnet_Widget():
-    z = [(CSSCN, f"curl -sLo {CSSCN} https://github.com/gutris1/segsmaker/raw/main/kaggle/script/cn.css")]
+    z = [(CSSCN, f"curl -sLo {CSSCN} https://github.com/gutris1/segsmaker/raw/main/script/KC/controlnet.css")]
 
     for x, y in z:
         if not Path(x).exists():
