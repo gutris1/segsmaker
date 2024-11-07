@@ -48,6 +48,10 @@ def get_args(ui):
 
     return args_line.get(ui, '')
 
+def GPU_check():
+    o = get_ipython().getoutput('nvidia-smi')
+    return not any("command not found" in ppai for ppai in o)
+
 def load_config():
     global ui
     config = json.load(MARK.open('r')) if MARK.exists() else {}
@@ -72,7 +76,9 @@ def load_config():
 
     cpu_cb.value = config.get('cpu_usage', False)
 
-    if ui in ['SDTrainer', 'FaceFusion']:
+    GPU = GPU_check()
+
+    if ui in ['SDTrainer', 'FaceFusion'] or not GPU:
         cpu_cb.layout.display = 'none'
     else:
         cpu_cb.layout.display = 'block'
@@ -207,7 +213,7 @@ def import_cupang():
         from cupang import Tunnel as Alice_Zuberg
     except ImportError:
         strup = Path.home() / '.ipython/profile_default/startup'
-        dl = f'curl -sLo {strup}/cupang.py https://github.com/gutris1/segsmaker/raw/main/script/cupang.py'
+        dl = f'curl -sLo {strup}/cupang.py https://github.com/gutris1/segsmaker/raw/main/script/SM/cupang.py'
         get_ipython().system(dl)
         sys.path.append(str(strup))
 
