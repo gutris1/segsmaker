@@ -308,7 +308,7 @@ def Download(b):
         loading.clear_output()
         os.chdir(HOMEPATH)
 
-def Controlnet_Widget():
+def Controlnet_Widgets():
     z = [(CSSCN, f"curl -sLo {CSSCN} https://github.com/gutris1/segsmaker/raw/main/script/KC/controlnet.css")]
 
     for x, y in z:
@@ -320,7 +320,7 @@ def Controlnet_Widget():
     display(cn_main_panel, cn15_panel, cnxl_panel, loading, output)
 
 tempe()
-Controlnet_Widget()
+Controlnet_Widgets()
 
 select_all_button_15.on_click(SelectAll)
 unselect_all_button_15.on_click(UnselectAll)
