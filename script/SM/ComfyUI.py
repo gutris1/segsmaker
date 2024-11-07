@@ -47,7 +47,7 @@ def req_list():
 
 def webui_req():
     time.sleep(1)
-    pull(f"https://github.com/gutris1/segsmaker cui {WEBUI}")
+    pull(f"https://github.com/gutris1/segsmaker comfyui {WEBUI}")
 
     tmp_cleaning()
 
@@ -109,10 +109,12 @@ def sd_xl():
     webui_req()
 
     extras = [
+        f"https://civitai.com/api/download/models/403492 {WEBUI}/models/embeddings",
         f"https://civitai.com/api/download/models/182974 {WEBUI}/models/embeddings",
         f"https://civitai.com/api/download/models/159385 {WEBUI}/models/embeddings",
         f"https://civitai.com/api/download/models/159184 {WEBUI}/models/embeddings",
-        f"https://civitai.com/api/download/models/264491 {WEBUI}/models/vae XL_VAE_F1.safetensors"]
+        f"https://huggingface.co/stabilityai/sdxl-vae/resolve/main/sdxl_vae.safetensors {WEBUI}/models/vae"
+    ]
 
     for items in extras:
         download(items)
