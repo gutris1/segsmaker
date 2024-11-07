@@ -2,7 +2,7 @@ from IPython.core.magic import register_line_magic
 from IPython import get_ipython
 from pathlib import Path
 from nenen88 import tempe
-import json
+import json, os
 
 HOME = Path.home()
 SRC = HOME / '.gutris1'
@@ -12,7 +12,7 @@ tmp = Path('/tmp')
 def purge():
     var_list = [
         'webui', 'models', 'webui_output', 'extensions', 'embeddings',
-        'vae', 'ckpt', 'lora', 'tmp_ckpt', 'tmp_lora', 'forge_svd', 'controlnet_models'
+        'vae', 'ckpt', 'lora', 'tmp_ckpt', 'tmp_lora', 'forge_svd', 'controlnet_widget'
     ]
     for var in var_list:
         if var in globals():
@@ -46,7 +46,7 @@ def clear_output_images(line):
     ui = get_name(marked)
     _, webui_output = get_webui_paths()
     get_ipython().system(f"rm -rf {webui_output}/* {HOME / '.cache/*'}")
-    get_ipython().run_line_magic('cd', '-q ~')
+    os.chdir(HOME)
     print(f'{ui} outputs cleared.')
 
 @register_line_magic
@@ -54,8 +54,8 @@ def uninstall_webui(line):
     ui = get_name(marked)
     webui, _ = get_webui_paths()
     get_ipython().system(f"rm -rf {webui} {HOME / 'tmp'} {HOME / '.cache/*'}")
-    get_ipython().run_line_magic('cd', '-q ~')
     print(f'{ui} uninstalled.')
+    os.chdir(HOME)
     get_ipython().kernel.do_shutdown(True)
 
 def set_paths(ui):
@@ -99,7 +99,7 @@ if marked.exists():
     ui = get_name(marked)
     webui, models, webui_output, extensions, embeddings, vae, ckpt, lora = set_paths(ui)
 
-    controlnet_models = (webui / 'asd' / 'controlnet.py') if (webui / 'asd').exists() else None
+    controlnet_widget = (webui / 'asd' / 'controlnet.py') if (webui / 'asd').exists() else None
     forge_svd = tmp / 'svd' if ui in ['Forge', 'ReForge'] else None
     tmp_ckpt = tmp / 'ckpt'
     tmp_lora = tmp / 'lora'
