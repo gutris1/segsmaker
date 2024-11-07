@@ -1,11 +1,10 @@
 # Stable Diffusion Webui, Forge and ComfyUI notebook<br />for SageMaker Studio Lab, Kaggle and Google Colab
 [<img src="https://api.visitorbadge.io/api/visitors?path=https%3A%2F%2Fgithub.com%2Fpantat88%2Fsegsmaker&label=Visitors&countColor=%232ccce4&style=flat">](https://visitorbadge.io/status?path=https%3A%2F%2Fgithub.com%2Fpantat88%2Fsegsmaker)<br>[<img src="https://img.shields.io/badge/Support%20me%20on%20Ko--fi-F16061?logo=ko-fi&logoColor=white&style=flat">](https://ko-fi.com/gutris1)
 
-| SageMaker Studio Lab | [![Open in Studio Lab](https://studiolab.sagemaker.aws/studiolab.svg)](https://studiolab.sagemaker.aws/import/github/gutris1/segsmaker/blob/main/Segsmaker.ipynb) |
+| SageMaker Studio Lab | [![Open in Studio Lab](https://studiolab.sagemaker.aws/studiolab.svg)](https://studiolab.sagemaker.aws/import/github/gutris1/segsmaker/blob/main/notebook/Segsmaker.ipynb) |
 | :---------------------------------------- | :-----------------------------------------------------------------------------------------------------------------: |
-| Google Colab | [![Open in Google Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/gutris1/segsmaker/blob/main/Segsmaker_COLAB.ipynb) |
+| Google Colab | [![Open in Google Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/gutris1/segsmaker/blob/main/notebook/Segsmaker_COLAB.ipynb) |
 | Kaggle | [![Open in Kaggle](https://kaggle.com/static/images/open-in-kaggle.svg)](https://www.kaggle.com/code/jejejojo/asdasd) |
-
 
 <br />
 
@@ -120,6 +119,6 @@ Usage:
 <p align="center">
   <img src="https://github.com/gutris1/segsmaker/assets/132797949/4ecc8360-a3ba-4564-8acc-64638acb3e35", widht=1000px>
   <img src="https://github.com/gutris1/segsmaker/assets/132797949/e19cc982-67ea-447f-a505-4efc932c822a", widht=1000px>
-  <img src="https://github.com/gutris1/segsmaker/blob/main/pre/fastpnginfo.png", widht=1000px>
-  <img src="https://github.com/gutris1/segsmaker/blob/main/pre/cn.png", widht=1000px>
+  <img src="https://github.com/gutris1/segsmaker/blob/main/script/preview/fastpnginfo.png", widht=1000px>
+  <img src="https://github.com/gutris1/segsmaker/blob/main/script/preview/cn.png", widht=1000px>
 </p>
