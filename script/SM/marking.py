@@ -11,8 +11,8 @@ tmp = Path('/tmp')
 
 def purge():
     var_list = [
-        'webui', 'models', 'webui_output', 'extensions', 'embeddings',
-        'vae', 'ckpt', 'lora', 'tmp_ckpt', 'tmp_lora', 'forge_svd', 'controlnet_widget'
+        'WebUI', 'Models', 'WebUI_Output', 'Extensions', 'Embeddings',
+        'VAE', 'CKPT', 'LORA', 'TMP_CKPT', 'TMP_LORA', 'Forge_SVD', 'Controlnet_Widget'
     ]
     for var in var_list:
         if var in globals():
@@ -97,11 +97,11 @@ if marked.exists():
     purge()
 
     ui = get_name(marked)
-    webui, models, webui_output, extensions, embeddings, vae, ckpt, lora = set_paths(ui)
+    WebUI, Models, WebUI_Output, Extensions, Embeddings, VAE, CKPT, LORA = set_paths(ui)
 
-    controlnet_widget = (webui / 'asd' / 'controlnet.py') if (webui / 'asd').exists() else None
-    forge_svd = tmp / 'svd' if ui in ['Forge', 'ReForge'] else None
-    tmp_ckpt = tmp / 'ckpt'
-    tmp_lora = tmp / 'lora'
+    Controlnet_Widget = (WebUI / 'asd' / 'controlnet.py') if (WebUI / 'asd').exists() else None
+    Forge_SVD = tmp / 'svd' if ui in ['Forge', 'ReForge'] else None
+    TMP_CKPT = tmp / 'ckpt'
+    TMP_LORA = tmp / 'lora'
 
     tempe()
