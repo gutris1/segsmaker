@@ -404,8 +404,8 @@ def change_key(line):
 
     def key_inject(civitai_key, hf_token):
         x = [
-            f"curl -sLo {pantat} https://github.com/gutris1/segsmaker/raw/main/script/pantat88.py",
-            f"curl -sLo {nenen} https://github.com/gutris1/segsmaker/raw/main/script/nenen88.py"
+            f"curl -sLo {pantat} https://github.com/gutris1/segsmaker/raw/main/script/SM/pantat88.py",
+            f"curl -sLo {nenen} https://github.com/gutris1/segsmaker/raw/main/script/SM/nenen88.py"
         ]
 
         for y in x:
@@ -441,9 +441,9 @@ def change_key(line):
                     return
 
                 civitai_ke = {"civitai-api-key": civitai_key}
-                hf_to = {"huggingface-read-token": hf_token}
+                hf_toke = {"huggingface-read-token": hf_token}
 
-                secrets = {**civitai_k, **hf_t}
+                secrets = {**civitai_ke, **hf_toke}
                 with open(key_file, "w") as file:
                     json.dump(secrets, file, indent=4)
 
@@ -484,7 +484,7 @@ def change_key(line):
             key_widget(civitai_key, hf_token)
             display(input_widget, main_output)
         else:
-            say("API Key File does not exist")
+            say("API Key does not exist")
 
     load_css(css)
     key_check()
