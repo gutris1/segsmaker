@@ -104,10 +104,12 @@ def sd_xl():
     webui_req()
 
     extras = [
+        f"https://civitai.com/api/download/models/403492 {WEBUI}/embeddings",
         f"https://civitai.com/api/download/models/182974 {WEBUI}/embeddings",
         f"https://civitai.com/api/download/models/159385 {WEBUI}/embeddings",
         f"https://civitai.com/api/download/models/159184 {WEBUI}/embeddings",
-        f"https://civitai.com/api/download/models/264491 {WEBUI}/models/VAE XL_VAE_F1.safetensors"]
+        f"https://huggingface.co/stabilityai/sdxl-vae/resolve/main/sdxl_vae.safetensors {WEBUI}/models/VAE"
+    ]
 
     for items in extras:
         download(items)
