@@ -69,15 +69,15 @@ def multi_widgets():
         SRC.mkdir(parents=True, exist_ok=True)
 
     x = [
-        f"curl -sLo {IMG} https://github.com/gutris1/segsmaker/raw/main/script/loading.png",
-        f"curl -sLo {CSS} https://github.com/gutris1/segsmaker/raw/main/script/multi/setup.css",
-        f"curl -sLo {MARK} https://github.com/gutris1/segsmaker/raw/main/script/multi/marking.py",
-        f"curl -sLo {A1111} https://github.com/gutris1/segsmaker/raw/main/script/multi/A1111.py",
-        f"curl -sLo {Forge} https://github.com/gutris1/segsmaker/raw/main/script/multi/Forge.py",
-        f"curl -sLo {ComfyUI} https://github.com/gutris1/segsmaker/raw/main/script/multi/ComfyUI.py",
-        f"curl -sLo {ReForge} https://github.com/gutris1/segsmaker/raw/main/script/multi/ReForge.py",
-        f"curl -sLo {FaceFusion} https://github.com/gutris1/segsmaker/raw/main/script/multi/FaceFusion.py",
-        f"curl -sLo {SDTrainer} https://github.com/gutris1/segsmaker/raw/main/script/multi/SDTrainer.py"
+        f"curl -sLo {IMG} https://github.com/gutris1/segsmaker/raw/main/script/SM/loading.png",
+        f"curl -sLo {CSS} https://github.com/gutris1/segsmaker/raw/main/script/SM/setup.css",
+        f"curl -sLo {MARK} https://github.com/gutris1/segsmaker/raw/main/script/SM/marking.py",
+        f"curl -sLo {A1111} https://github.com/gutris1/segsmaker/raw/main/script/SM/A1111.py",
+        f"curl -sLo {Forge} https://github.com/gutris1/segsmaker/raw/main/script/SM/Forge.py",
+        f"curl -sLo {ComfyUI} https://github.com/gutris1/segsmaker/raw/main/script/SM/ComfyUI.py",
+        f"curl -sLo {ReForge} https://github.com/gutris1/segsmaker/raw/main/script/SM/ReForge.py",
+        f"curl -sLo {FaceFusion} https://github.com/gutris1/segsmaker/raw/main/script/SM/FaceFusion.py",
+        f"curl -sLo {SDTrainer} https://github.com/gutris1/segsmaker/raw/main/script/SM/SDTrainer.py"
     ]
 
     for y in x:
