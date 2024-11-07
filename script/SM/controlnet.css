@@ -39,7 +39,7 @@
 }
 
 .btn-cn-15, .btn-cn-xl {
-    height: 400px;
+    height: auto;
     cursor: pointer;
     border-width: 0px;
     filter: brightness(50%) blur(3px);
@@ -55,11 +55,11 @@
 }
 
 .btn-cn-15 {
-    background-image: url('https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/037297f5-d136-4357-939e-7e7ac2a13683/width=1024,quality=90/00087-3965994872.jpeg');
+    background-image: url('https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/5f06d0e2-5959-4c31-be80-546735970d76/original=true,quality=90/00014-1506.jpeg');
 }
 
 .btn-cn-xl {
-    background-image: url('https://i.imgur.com/zCtlR53.jpg');
+    background-image: url('https://i.imgur.com/giAg91c.jpg');
 }
 
 .btn-cn-15::after, .btn-cn-xl::after {
