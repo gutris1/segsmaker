@@ -6,10 +6,10 @@ from nenen88 import download, say, tempe
 import os
 
 SRCN = Path(__file__).parent
-CSSCN = SRCN / "cn.css"
+CSSCN = SRCN / "controlnet.css"
 TMPLORA = Path(TEMPPATH) / 'lora'
 TMPCN = Path(TEMPPATH) / 'controlnet'
-IMG = "https://github.com/gutris1/segsmaker/raw/main/script/loading.png"
+IMG = "https://github.com/gutris1/segsmaker/raw/main/script/SM/loading.png"
 
 cn15_list = {
     "Openpose": [
