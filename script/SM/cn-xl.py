@@ -5,7 +5,7 @@ from pathlib import Path
 from nenen88 import download, say, tempe
 
 src_cn = Path(__file__).parent
-css_cn = src_cn / "cn.css"
+css_cn = src_cn / "controlnet.css"
 tmplora = '/tmp/lora'
 tmpcn = '/tmp/controlnet'
 img = Path.home() / ".gutris1/loading.png"
