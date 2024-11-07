@@ -60,12 +60,12 @@ def webui_req():
         subprocess.run(shlex.split(lines), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     scripts = [
-        f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/controlnet.py {WEBUI}/asd",
-        f"https://github.com/gutris1/segsmaker/raw/main/script/zrok.py {WEBUI}",
-        f"https://github.com/gutris1/segsmaker/raw/main/script/pinggy.py {WEBUI}",
-        f"https://github.com/gutris1/segsmaker/raw/main/script/ngrokk.py {WEBUI}",
-        f"https://github.com/gutris1/segsmaker/raw/main/script/venv.py {WEBUI}",
-        f"https://github.com/gutris1/segsmaker/raw/main/script/multi/segsmaker.py {WEBUI}"]
+        f"https://github.com/gutris1/segsmaker/raw/main/script/SM/controlnet.py {WEBUI}/asd",
+        f"https://github.com/gutris1/segsmaker/raw/main/script/SM/zrok.py {WEBUI}",
+        f"https://github.com/gutris1/segsmaker/raw/main/script/SM/pinggy.py {WEBUI}",
+        f"https://github.com/gutris1/segsmaker/raw/main/script/SM/ngrokk.py {WEBUI}",
+        f"https://github.com/gutris1/segsmaker/raw/main/script/SM/venv.py {WEBUI}",
+        f"https://github.com/gutris1/segsmaker/raw/main/script/SM/segsmaker.py {WEBUI}"]
 
     upscalers = [
         f"https://huggingface.co/pantat88/ui/resolve/main/4x-UltraSharp.pth {WEBUI}/models/ESRGAN",
@@ -103,10 +103,12 @@ def sd_xl():
     webui_req()
 
     extras = [
+        f"https://civitai.com/api/download/models/403492 {WEBUI}/embeddings",
         f"https://civitai.com/api/download/models/182974 {WEBUI}/embeddings",
         f"https://civitai.com/api/download/models/159385 {WEBUI}/embeddings",
         f"https://civitai.com/api/download/models/159184 {WEBUI}/embeddings",
-        f"https://civitai.com/api/download/models/264491 {WEBUI}/models/VAE XL_VAE_F1.safetensors"]
+        f"https://huggingface.co/stabilityai/sdxl-vae/resolve/main/sdxl_vae.safetensors {WEBUI}/models/VAE"
+    ]
 
     for items in extras:
         download(items)
@@ -214,12 +216,12 @@ def webui_widgets():
             get_ipython().system("git fetch --tags")
 
         x = [
-            f"https://github.com/gutris1/segsmaker/raw/main/script/controlnet/controlnet.py {WEBUI}/asd",
-            f"https://github.com/gutris1/segsmaker/raw/main/script/zrok.py {WEBUI}",
-            f"https://github.com/gutris1/segsmaker/raw/main/script/pinggy.py {WEBUI}",
-            f"https://github.com/gutris1/segsmaker/raw/main/script/ngrokk.py {WEBUI}",
-            f"https://github.com/gutris1/segsmaker/raw/main/script/venv.py {WEBUI}",
-            f"https://github.com/gutris1/segsmaker/raw/main/script/multi/segsmaker.py {WEBUI}"
+            f"https://github.com/gutris1/segsmaker/raw/main/script/SM/controlnet.py {WEBUI}/asd",
+            f"https://github.com/gutris1/segsmaker/raw/main/script/SM/zrok.py {WEBUI}",
+            f"https://github.com/gutris1/segsmaker/raw/main/script/SM/pinggy.py {WEBUI}",
+            f"https://github.com/gutris1/segsmaker/raw/main/script/SM/ngrokk.py {WEBUI}",
+            f"https://github.com/gutris1/segsmaker/raw/main/script/SM/venv.py {WEBUI}",
+            f"https://github.com/gutris1/segsmaker/raw/main/script/SM/segsmaker.py {WEBUI}"
         ]
 
         for y in x:
