@@ -8,7 +8,7 @@ R = "\033[31m"
 P = "\033[38;5;135m"
 RST = "\033[0m"
 
-IMG = "https://github.com/gutris1/segsmaker/raw/main/script/loading.png"
+IMG = "https://github.com/gutris1/segsmaker/raw/main/script/SM/loading.png"
 display(Image(url=IMG))
 clear_output(wait=True)
 
@@ -176,11 +176,11 @@ def webui_req(ui, WEBUI):
     from nenen88 import pull, download
 
     if ui == 'A1111':
-        pull(f"https://github.com/gutris1/segsmaker sd {WEBUI}")
+        pull(f"https://github.com/gutris1/segsmaker a1111 {WEBUI}")
     elif ui == 'Forge':
         pull(f"https://github.com/gutris1/segsmaker forge {WEBUI}")
     elif ui == 'ComfyUI':
-        pull(f"https://github.com/gutris1/segsmaker cui {WEBUI}")
+        pull(f"https://github.com/gutris1/segsmaker comfyui {WEBUI}")
     elif ui == 'ReForge':
         pull(f"https://github.com/gutris1/segsmaker reforge {WEBUI}")
 
@@ -191,9 +191,9 @@ def webui_req(ui, WEBUI):
         subprocess.run(shlex.split(lines), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     scripts = [
-        f"https://github.com/gutris1/segsmaker/raw/main/kaggle/script/controlnet.py {WEBUI}/asd",
-        f"https://github.com/gutris1/segsmaker/raw/main/kaggle/script/venv.py {WEBUI}",
-        f"https://github.com/gutris1/segsmaker/raw/main/kaggle/script/segsmaker.py {WEBUI}"
+        f"https://github.com/gutris1/segsmaker/raw/main/script/KC/controlnet.py {WEBUI}/asd",
+        f"https://github.com/gutris1/segsmaker/raw/main/script/KC/venv.py {WEBUI}",
+        f"https://github.com/gutris1/segsmaker/raw/main/script/KC/segsmaker.py {WEBUI}"
     ]
 
     upscalers_path = f"{WEBUI}/models/upscale_models" if ui == 'ComfyUI' else f"{WEBUI}/models/ESRGAN"
@@ -322,11 +322,11 @@ def lets_go():
     webui, sd = args
 
     z = [
-        (STR / '00-startup.py', f"curl -sLo {STR}/00-startup.py https://github.com/gutris1/segsmaker/raw/main/kaggle/script/00-startup.py"),
-        (pantat, f"curl -sLo {pantat} https://github.com/gutris1/segsmaker/raw/hf/script/pantat88.py"),
-        (nenen, f"curl -sLo {nenen} https://github.com/gutris1/segsmaker/raw/hf/script/nenen88.py"),
-        (STR / 'cupang.py', f"curl -sLo {STR}/cupang.py https://github.com/gutris1/segsmaker/raw/main/kaggle/script/cupang.py"),
-        (MRK, f"curl -sLo {MRK} https://github.com/gutris1/segsmaker/raw/main/kaggle/script/marking.py")
+        (STR / '00-startup.py', f"curl -sLo {STR}/00-startup.py https://github.com/gutris1/segsmaker/raw/main/script/KC/00-startup.py"),
+        (pantat, f"curl -sLo {pantat} https://github.com/gutris1/segsmaker/raw/main/script/SM/pantat88.py"),
+        (nenen, f"curl -sLo {nenen} https://github.com/gutris1/segsmaker/raw/main/script/SM/nenen88.py"),
+        (STR / 'cupang.py', f"curl -sLo {STR}/cupang.py https://github.com/gutris1/segsmaker/raw/main/script/KC/cupang.py"),
+        (MRK, f"curl -sLo {MRK} https://github.com/gutris1/segsmaker/raw/main/script/KC/marking.py")
     ]
 
     for x, y in z:
