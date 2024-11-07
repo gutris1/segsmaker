@@ -265,6 +265,8 @@ def zipping(line, cell):
             if file_path.is_file():
                 if file_path.suffix.lower() not in skip_extensions:
                     all_files.append(file_path)
+                else:
+                    print(f"{file_path.name} skipped")
 
         zip_number = 1
         current_zip_size = 0
