@@ -3,7 +3,6 @@ from IPython import get_ipython
 from pathlib import Path
 import argparse, sys, json, os, subprocess, shlex, time
 
-
 R = "\033[31m"
 P = "\033[38;5;135m"
 RST = "\033[0m"
@@ -71,20 +70,23 @@ def prevent_silly():
     return (webui_webui, sd_sd), civitai_key, hf_read_token
 
 
-env, HOME = 'Unknown', None
-env_list = {'Colab': '/content', 'Kaggle': '/kaggle/working'}
-
-for env_name, path in env_list.items():
-    if os.getenv(env_name.upper() + '_JUPYTER_TRANSPORT') or os.getenv(env_name.upper() + '_DATA_PROXY_TOKEN'):
-        env, HOME = env_name, path
+ENVNAME, ENVBASE, ENVHOME = None, None, None
+env_list = {
+    'Colab': ('/content', '/content', 'COLAB_JUPYTER_TRANSPORT'),
+    'Kaggle': ('/kaggle', '/kaggle/working', 'KAGGLE_DATA_PROXY_TOKEN')
+}
+for envname, (envbase, envhome, envvar) in env_list.items():
+    if os.getenv(envvar):
+        ENVNAME = envname
+        ENVBASE = envbase
+        ENVHOME = envhome
         break
-
-if HOME is None:
+if not ENVNAME:
     print("You are not in Kaggle or Google Colab.\nExiting.")
     sys.exit()
 
-HOME = Path(HOME)
-BASEPATH = Path('/content') if env == 'Colab' else Path('/kaggle')
+HOME = Path(ENVHOME)
+BASEPATH = Path(ENVBASE)
 tmp = BASEPATH / 'temp'
 vnv = BASEPATH / 'venv'
 
@@ -102,6 +104,7 @@ tmp.mkdir(parents=True, exist_ok=True)
 SRC.mkdir(parents=True, exist_ok=True)
 
 with open(KANDANG, 'w') as file:
+    file.write(f"ENVNAME = '{ENVNAME}'\n")
     file.write(f"HOMEPATH = '{HOME}'\n")
     file.write(f"TEMPPATH = '{tmp}'\n")
     file.write(f"VENVPATH = '{vnv}'\n")
