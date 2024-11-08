@@ -15,32 +15,16 @@ py = '/tmp/venv/bin/python3'
 def get_args(ui):
     args_line = {
         'A1111': (
-            '--xformers '
-            '--enable-insecure-extension-access '
-            '--disable-console-progressbars '
-            '--theme dark'
+            '--xformers --no-half-vae'
         ),
         'Forge': (
-            '--disable-xformers '
-            '--opt-sdp-attention '
-            '--cuda-stream '
-            '--pin-shared-memory '
-            '--enable-insecure-extension-access '
-            '--disable-console-progressbars '
-            '--theme dark'
+            '--disable-xformers --opt-sdp-attention --cuda-stream --pin-shared-memory'
         ),
         'ComfyUI': (
-            '--dont-print-server '
-            '--preview-method auto '
-            '--use-pytorch-cross-attention'
+            '--dont-print-server --preview-method auto --use-pytorch-cross-attention'
         ),
         'ReForge': (
-            '--xformers '
-            '--cuda-stream '
-            '--pin-shared-memory '
-            '--enable-insecure-extension-access '
-            '--disable-console-progressbars '
-            '--theme dark'
+            '--xformers --cuda-stream --pin-shared-memory'
         ),
         'FaceFusion': '',
         'SDTrainer': ''
@@ -268,34 +252,28 @@ def launching(ui, skip_comfyui_check=False):
 
 def tunnel_cmd(tunnel_value, port, args, ui, FF, SDT):
     global py
+
+    if ui != 'ComfyUI' and not FF and not SDT:
+        args += ' --enable-insecure-extension-access --disable-console-progressbars --theme dark'
+
     if FF:
         display(Image(filename=str(IMG)))
         clear_output(wait=True)
         py = '/tmp/venv-fusion/bin/python3'
-        tunnel_list = {
-            'Pinggy': f'{py} launch.py {args}',
-            'ZROK': f'{py} launch.py {args}',
-            'NGROK': f'{py} launch.py {args}'
-        }
+        c = f'{py} launch.py {args}'
     elif SDT:
         py = 'HF_HOME=huggingface /tmp/venv-sd-trainer/bin/python3'
-        tunnel_list = {
-            'Pinggy': f'{py} launch.py {args}',
-            'ZROK': f'{py} launch.py {args}',
-            'NGROK': f'{py} launch.py {args}'
-        }
+        c = f'{py} launch.py {args}'
     elif ui == 'ComfyUI':
-        tunnel_list = {
-            'Pinggy': f'{py} launch.py {args}',
-            'ZROK': f'{py} launch.py {args}',
-            'NGROK': f'{py} launch.py {args}'
-        }
+        c = f'{py} launch.py {args}'
     else:
-        tunnel_list = {
-            'Pinggy': f'{py} pinggy.py {args}',
-            'ZROK': f'{py} zrok.py {args}',
-            'NGROK': f'{py} ngrokk.py {ngrok_token.value} {args}'
-        }
+        c = f'{py} slauncher.py {args}'
+
+    tunnel_list = {
+        'Pinggy': c,
+        'ZROK': c,
+        'NGROK': c
+    }
 
     return tunnel_list, tunnel_list.get(tunnel_value)
 
@@ -325,7 +303,6 @@ def run_tunnel(cmd, configs, port):
         Alice_Synthesis_Thirty = Alice_Zuberg(port)
         Alice_Synthesis_Thirty.logger.setLevel(logging.DEBUG)
         Alice_Synthesis_Thirty.add_tunnel(command=configs['command'], name=configs['name'], pattern=configs['pattern'])
-        Alice_Synthesis_Thirty.check_local_port = False
 
         with Alice_Synthesis_Thirty:
             get_ipython().system(cmd)
