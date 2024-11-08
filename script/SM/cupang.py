@@ -1,6 +1,7 @@
 import sys
-if sys.version_info < (3, 10, 6):
-    raise RuntimeError(f"Minimum Python version is 3.10.6, you have {sys.version}")
+
+if sys.version_info < (3, 8):
+    raise RuntimeError(f"Minimum python version is 3.8, you have {sys.version}")
 
 import logging
 import os
@@ -249,7 +250,7 @@ class Tunnel:
             while not self.printed.is_set():
                 time.sleep(1)
         except KeyboardInterrupt:
-            log.warning("Keyboard Interrupt detected, Tunnel Killed")
+            log.warning("Keyboard Interrupt detected, stopping tunnel")
             self.stop()
         finally:
             self.check_local_port = _check_local_port
@@ -265,9 +266,10 @@ class Tunnel:
             raise RuntimeError("Tunnel is not running")
 
         log = self.logger
-        tunnel_names = ', '.join(tunnel["name"] for tunnel in self.tunnel_list)
-        log.info(f"{tunnel_names} Killed.")
+
         self.stop_event.set()
+        tunnel_names = ', '.join(tunnel["name"] for tunnel in self.tunnel_list)
+        log.info(f"\n{tunnel_names} Killed.")
 
         for process in self.processes:
             log.debug(f"Stopping {process}")
@@ -356,7 +358,7 @@ class Tunnel:
 
     @staticmethod
     def wait_for_condition(
-        condition: Callable[[], bool], *, interval: int = 1, timeout: int = 60
+        condition: Callable[[], bool], *, interval: int = 1, timeout: int = 10
     ) -> bool:
         """
         Wait for the condition to be true until the specified timeout.
@@ -444,8 +446,6 @@ class Tunnel:
             name (str): Name of the tunnel.
         """
         log_path = Path(self.log_dir, f"tunnel_{name}.log")
-        if log_path.exists():
-            log_path.unlink()
         log_path.write_text("")  # Clear the log
 
         # setup command logger
@@ -457,6 +457,10 @@ class Tunnel:
 
         try:
             if self.check_local_port:
+                # Wait until the port is available or stop_event is set
+                log.debug(
+                    f"Wait until port: {self.port} online before running the command for {name}"
+                )
                 self.wait_for_condition(
                     lambda: self.is_port_in_use(self.port) or self.stop_event.is_set(),
                     interval=1,
@@ -495,47 +499,42 @@ class Tunnel:
             for handler in log.handlers:
                 handler.close()
 
-    def _print_urls(self) -> None:
-        with self.urls_lock:
-            for url, note, name in self.urls:                        
-                RST = '\033[0m'
-                ORG = '\033[38;5;208m'
-                TNL = f'{ORG}▶{RST} {name} {ORG}:{RST}'
-
-                print(f"\n{TNL} {url}\n")
-
-        self.printed.set()
-
     def _print(self) -> None:
-        D = ', '.join(tunnel["name"] for tunnel in self.tunnel_list)
-        O = Path('segsmaker.log')
-        L = False
+        """
+        Print the tunnel URLs.
+        """
+        log = self.logger
 
-        while not L:
-            time.sleep(0.2)
-            with open(O, 'r') as y:
-                x = y.readlines()
-                if any('comfyui' in z for z in x):
-                    if any('To see the GUI go to:' in z for z in x):
-                        L = True
-                        break
-                if any('A1111/Forge' in z for z in x):
-                    if any('Running on local URL' in z for z in x):
-                        L = True
-                        break
-                if any('Face-Fusion' in z for z in x):
-                    if any('Running on local URL' in z for z in x):
-                        L = True
-                        break
-                if any('SD-Trainer' in z for z in x):
-                    if any('http://127.0.0.1:6006/' in z for z in x):
-                        L = True
-                        break
-        if L:
-            if D == 'ZROK':
-                g = Path(f'tunnel_{D}.log')
-                l = g.read_text()
-                if "ERROR" in l:
-                    print(f"\n{l.strip()}")
+        if self.check_local_port:
+            self.wait_for_condition(
+                lambda: self.is_port_in_use(self.port) or self.stop_event.is_set(),
+                interval=1,
+                timeout=None,
+            )
+            if not self.stop_event.is_set():
+                pass
 
-            self._print_urls()
+        if not self.wait_for_condition(
+            lambda: len(self.urls) == len(self.tunnel_list) or self.stop_event.is_set(),
+            interval=1,
+            timeout=self.timeout,
+        ):
+            log.warning("Timeout while getting tunnel URLs, print available URLs")
+
+        if not self.stop_event.is_set():
+            with self.urls_lock:
+                for url, note, name in self.urls:
+                    RST = '\033[0m'
+                    ORG = '\033[38;5;208m'
+                    TNL = f'{ORG}▶{RST} {name} {ORG}:{RST}'
+                    print(f"\n{TNL} {url}\n")
+
+                if self.callback:
+                    try:
+                        self.callback(self.urls)
+                    except Exception:
+                        log.error(
+                            "An error occurred while invoking URLs callback",
+                            exc_info=True,
+                        )
+            self.printed.set()
