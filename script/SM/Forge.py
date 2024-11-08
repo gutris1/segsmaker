@@ -61,9 +61,7 @@ def webui_req():
 
     scripts = [
         f"https://github.com/gutris1/segsmaker/raw/main/script/SM/controlnet.py {WEBUI}/asd",
-        f"https://github.com/gutris1/segsmaker/raw/main/script/SM/zrok.py {WEBUI}",
-        f"https://github.com/gutris1/segsmaker/raw/main/script/SM/pinggy.py {WEBUI}",
-        f"https://github.com/gutris1/segsmaker/raw/main/script/SM/ngrokk.py {WEBUI}",
+        f"https://github.com/gutris1/segsmaker/raw/main/script/SM/slauncher.py {WEBUI}",
         f"https://github.com/gutris1/segsmaker/raw/main/script/SM/venv.py {WEBUI}",
         f"https://github.com/gutris1/segsmaker/raw/main/script/SM/segsmaker.py {WEBUI}"]
 
@@ -219,9 +217,7 @@ def webui_widgets():
 
         x = [
             f"https://github.com/gutris1/segsmaker/raw/main/script/SM/controlnet.py {WEBUI}/asd",
-            f"https://github.com/gutris1/segsmaker/raw/main/script/SM/zrok.py {WEBUI}",
-            f"https://github.com/gutris1/segsmaker/raw/main/script/SM/pinggy.py {WEBUI}",
-            f"https://github.com/gutris1/segsmaker/raw/main/script/SM/ngrokk.py {WEBUI}",
+            f"https://github.com/gutris1/segsmaker/raw/main/script/SM/slauncher.py {WEBUI}",
             f"https://github.com/gutris1/segsmaker/raw/main/script/SM/venv.py {WEBUI}",
             f"https://github.com/gutris1/segsmaker/raw/main/script/SM/segsmaker.py {WEBUI}"
         ]
