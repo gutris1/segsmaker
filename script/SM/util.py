@@ -528,7 +528,7 @@ def zrok_register(line):
             return
 
         zrok_bin.mkdir(parents=True, exist_ok=True)
-        zrok_url = "https://github.com/openziti/zrok/releases/download/v0.4.32/zrok_0.4.32_linux_amd64.tar.gz"
+        zrok_url = "https://github.com/openziti/zrok/releases/download/v0.4.44/zrok_0.4.44_linux_amd64.tar.gz"
         zrok_tar = zrok_bin / Path(zrok_url).name
 
         get_ipython().system(f"curl -sLo {zrok_tar} {zrok_url}")
