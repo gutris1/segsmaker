@@ -65,7 +65,7 @@ def zrok_install():
         return
 
     zrok.mkdir(parents=True, exist_ok=True)
-    url = "https://github.com/openziti/zrok/releases/download/v0.4.32/zrok_0.4.32_linux_amd64.tar.gz"
+    url = "https://github.com/openziti/zrok/releases/download/v0.4.44/zrok_0.4.44_linux_amd64.tar.gz"
     name = zrok / Path(url).name
 
     get_ipython().system(f"curl -sLo {name} {url}")
