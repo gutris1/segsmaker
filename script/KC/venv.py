@@ -1,7 +1,7 @@
 from IPython import get_ipython
 from pathlib import Path
 from nenen88 import tempe, say, download
-from KANDANG import HOMEPATH, TEMPPATH, VENVPATH, BASEPATH
+from KANDANG import HOMEPATH, TEMPPATH, VENVPATH, BASEPATH, ENVNAME
 import subprocess, os, shlex, errno
 
 HOME = Path(HOMEPATH)
@@ -83,7 +83,7 @@ def venv_install():
         say('<br>【{red} Installing VENV{d} 】{red}')
         download(url)
 
-        if BASEPATH == '/content':
+        if ENVNAME == 'Colab':
             z = ["apt -y install python3.10-venv", "apt -y install lz4"]
             for b in z:
                 subprocess.run(shlex.split(b), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
@@ -91,13 +91,13 @@ def venv_install():
         get_ipython().system(f'pv {fn} | lz4 -d | tar xf -')
         Path(fn).unlink()
 
-        get_ipython().system(f'rm -rf {vnv}/bin/pip*')
-        get_ipython().system(f'rm -rf {vnv}/bin/python*')
-        get_ipython().system(f'python3 -m venv {vnv}')
-        get_ipython().system(f'{vnv}/bin/python3 -m pip install -q -U --force-reinstall pip')
+        get_ipython().system(f'rm -rf {vnv}/bin/pip* {vnv}/bin/python*')
 
-        if BASEPATH == '/content':
-            get_ipython().system(f'{vnv}/bin/pip3 install -q ipykernel')
+        n = [f'python3 -m venv {vnv}', f'{vnv}/bin/python3 -m pip install -q -U --force-reinstall pip']
+        if ENVNAME == 'Colab':
+            n.append(f'{vnv}/bin/pip3 install -q ipykernel')
+        for p in n:
+            subprocess.run(shlex.split(p), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 tempe()
 venv_install()
