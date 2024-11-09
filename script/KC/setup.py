@@ -3,7 +3,6 @@ from IPython import get_ipython
 from pathlib import Path
 import argparse, sys, json, os, subprocess, shlex, time
 
-
 R = "\033[31m"
 P = "\033[38;5;135m"
 RST = "\033[0m"
@@ -327,10 +326,10 @@ def lets_go():
 
     z = [
         (STR / '00-startup.py', f"curl -sLo {STR}/00-startup.py https://github.com/gutris1/segsmaker/raw/main/script/KC/00-startup.py"),
+        (STR / 'cupang.py', f"curl -sLo {STR}/cupang.py https://github.com/gutris1/segsmaker/raw/main/script/KC/cupang.py"),
         (pantat, f"curl -sLo {pantat} https://github.com/gutris1/segsmaker/raw/main/script/SM/pantat88.py"),
         (nenen, f"curl -sLo {nenen} https://github.com/gutris1/segsmaker/raw/main/script/SM/nenen88.py"),
-        (STR / 'cupang.py', f"curl -sLo {STR}/cupang.py https://github.com/gutris1/segsmaker/raw/main/script/KC/cupang.py"),
-        (MRK, f"curl -sLo {MRK} https://github.com/gutris1/segsmaker/raw/main/script/KC/marking.py")
+        (MRK, f"curl -sLo {MRK} https://github.com/gutris1/segsmaker/raw/main/script/SM/marking.py")
     ]
 
     for x, y in z:
