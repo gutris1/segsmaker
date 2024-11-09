@@ -1,3 +1,10 @@
+import sys, subprocess
+
+python_version = subprocess.run(['python', '--version'], capture_output=True, text=True).stdout.split()[1]
+if tuple(map(int, python_version.split('.'))) < (3, 10, 6):
+    print(f"[ERROR]: Python version 3.10.6 or higher required, and you are using Python {python_version}\nExiting.")
+    sys.exit()
+
 from IPython.display import display, HTML, clear_output
 from IPython import get_ipython
 from ipywidgets import widgets
