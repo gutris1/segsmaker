@@ -272,8 +272,6 @@ def tunnel_cmd(tunnel_value, port, args, ui, FF, SDT):
     elif SDT:
         py = 'HF_HOME=huggingface /tmp/venv-sd-trainer/bin/python3'
         c = f'{py} launch.py {args}'
-    elif ui == 'ComfyUI':
-        c = f'{py} launch.py {args}'
     else:
         c = f'{py} Launcher.py {args}'
 
