@@ -20,11 +20,26 @@ def launch():
 
     os.system(cmd)
 
-if __name__ == '__main__':
-    if 'LD_PRELOAD' not in os.environ:
-        os.environ['LD_PRELOAD'] = '/home/studio-lab-user/.conda/envs/default/lib/libtcmalloc_minimal.so.4'
+def sdtrainer_launch():
+    os.environ['MPLBACKEND'] = 'gtk3agg'
+    import matplotlib
 
+    cmd = f'/tmp/venv-sd-trainer/bin/python3 gui.py ' + ' '.join(sys.argv[1:])
+    os.system(cmd)
+
+if __name__ == '__main__':
     try:
-        launch()
+        if ui != 'FaceFusion':
+            if 'LD_PRELOAD' not in os.environ:
+                os.environ['LD_PRELOAD'] = '/home/studio-lab-user/.conda/envs/default/lib/libtcmalloc_minimal.so.4'
+
+        if ui == 'SDTrainer':
+            sdtrainer_launch()
+
+
+
+        else:
+            launch()
+
     except KeyboardInterrupt:
         pass
