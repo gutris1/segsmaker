@@ -268,10 +268,10 @@ def tunnel_cmd(tunnel_value, port, args, ui, FF, SDT):
         display(Image(filename=str(IMG)))
         clear_output(wait=True)
         py = '/tmp/venv-fusion/bin/python3'
-        c = f'{py} launch.py {args}'
+        c = f'{py} Launcher.py {args}'
     elif SDT:
         py = 'HF_HOME=huggingface /tmp/venv-sd-trainer/bin/python3'
-        c = f'{py} launch.py {args}'
+        c = f'{py} Launcher.py {args}'
     else:
         c = f'{py} Launcher.py {args}'
 
