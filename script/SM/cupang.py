@@ -1,16 +1,11 @@
-import sys
+import sys, subprocess
 
-if sys.version_info < (3, 8):
-    raise RuntimeError(f"Minimum python version is 3.8, you have {sys.version}")
+python_version = subprocess.run(['python', '--version'], capture_output=True, text=True).stdout.split()[1]
+if tuple(map(int, python_version.split('.'))) < (3, 10, 6):
+    print(f"[ERROR]: Python version 3.10.6 or higher required, and you are using Python {python_version}\nExiting.")
+    sys.exit()
 
-import logging
-import os
-import re
-import shlex
-import signal
-import socket
-import subprocess
-import time
+import logging, os, re, shlex, signal, socket, time
 from pathlib import Path
 from threading import Event, Lock, Thread
 from typing import Callable, List, Optional, Tuple, TypedDict, Union, get_args
@@ -421,6 +416,7 @@ class Tunnel:
             callback = tunnel.get("callback")
             regex = tunnel["pattern"]
             matches = regex.search(line)
+
             if matches:
                 link = matches.group().strip()
                 link = link if link.startswith("http") else "http://" + link
@@ -457,10 +453,6 @@ class Tunnel:
 
         try:
             if self.check_local_port:
-                # Wait until the port is available or stop_event is set
-                log.debug(
-                    f"Wait until port: {self.port} online before running the command for {name}"
-                )
                 self.wait_for_condition(
                     lambda: self.is_port_in_use(self.port) or self.stop_event.is_set(),
                     interval=1,
@@ -504,6 +496,7 @@ class Tunnel:
         Print the tunnel URLs.
         """
         log = self.logger
+        D = ', '.join(tunnel["name"] for tunnel in self.tunnel_list)
 
         if self.check_local_port:
             self.wait_for_condition(
@@ -513,7 +506,17 @@ class Tunnel:
             )
             if not self.stop_event.is_set():
                 pass
-
+              
+        if D == 'ZROK':
+            cwd = Path.cwd()
+            g = cwd / f'tunnel_{D}.log'
+            if g.exists():
+                time.sleep(1)
+                l = g.read_text()
+                if "ERROR" in l and "http://" not in l:
+                    print(f"\n{l.strip()}\n")
+                    sys.exit()
+                        
         if not self.wait_for_condition(
             lambda: len(self.urls) == len(self.tunnel_list) or self.stop_event.is_set(),
             interval=1,
@@ -522,11 +525,13 @@ class Tunnel:
             log.warning("Timeout while getting tunnel URLs, print available URLs")
 
         if not self.stop_event.is_set():
+
             with self.urls_lock:
                 for url, note, name in self.urls:
                     RST = '\033[0m'
                     ORG = '\033[38;5;208m'
                     TNL = f'{ORG}▶{RST} {name} {ORG}:{RST}'
+
                     print(f"\n{TNL} {url}\n")
 
                 if self.callback:
