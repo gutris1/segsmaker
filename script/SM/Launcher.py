@@ -2,18 +2,21 @@ import subprocess, sys, os, time, shlex, json
 from pathlib import Path
 
 MARK = Path.home() / '.gutris1/marking.json'
-    
+
+config = json.load(MARK.open('r'))
+tunnel = config.get('tunnel')
+ui = config.get('ui')
+
 def launch():
-    config = json.load(MARK.open('r'))
-    tunnel = config.get('tunnel')
+    launcher = 'main.py' if ui == 'ComfyUI' else 'launch.py'
+    cmd = f'/tmp/venv/bin/python3 {launcher} ' + ' '.join(sys.argv[1:])
 
-    cmd = '/tmp/venv/bin/python3 launch.py ' + ' '.join(sys.argv[1:])
-
-    if tunnel == 'Pinggy':
-        cwd = Path.cwd()
-        timer = cwd / "asd" / "pinggytimer.txt"
-        end_time = int(time.time()) + 3600
-        os.system(f"echo -n {end_time} > {timer}")
+    if ui in ['A1111', 'Forge', 'ReForge']:
+        if tunnel == 'Pinggy':
+            cwd = Path.cwd()
+            timer = cwd / "asd" / "pinggytimer.txt"
+            end_time = int(time.time()) + 3600
+            os.system(f"echo -n {end_time} > {timer}")
 
     os.system(cmd)
 
