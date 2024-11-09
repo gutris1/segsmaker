@@ -15,13 +15,6 @@ def launch():
         end_time = int(time.time()) + 3600
         os.system(f"echo -n {end_time} > {timer}")
 
-    if tunnel == 'NGROK':
-        token = config.get('ngrok_token', '').strip()
-        if not token:
-            sys.exit("Missing NGROK Token")
-
-        cmd += f' --ngrok {token}'
-
     os.system(cmd)
 
 if __name__ == '__main__':
