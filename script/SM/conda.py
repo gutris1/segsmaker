@@ -72,6 +72,20 @@ def zrok_install():
     get_ipython().system(f"tar -xzf {name} -C {zrok} --wildcards *zrok")
     get_ipython().system(f"rm -rf {home}/.cache/* {name}")
 
+def ngrok_install():
+    ngrokbin = home / ".ngrok/bin/ngrok"
+    if ngrokbin.exists():
+        return
+
+    ngrok = home / ".ngrok/bin"
+    ngrok.mkdir(parents=True, exist_ok=True)
+    url = "https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz"
+    name = ngrok / Path(url).name
+
+    get_ipython().system(f"curl -sLo {name} {url}")
+    get_ipython().system(f"tar -xzf {name} -C {ngrok} --wildcards *ngrok")
+    get_ipython().system(f"rm -rf {home}/.cache/* {name}")
+
 def conda_install():
     try:
         display(Image(filename=str(img)))
@@ -81,10 +95,10 @@ def conda_install():
             ('conda config --remove-key channels', None),
             ('conda install --repodata-fn repodata.json -qy conda curl', f'{BLUE} Installing Anaconda'),
             ('conda install --repodata-fn repodata.json -qy python=3.10', f'{CYAN} Installing Python 3.10'),
-            ('conda install -qy glib gperftools openssh pv', f'{PURPLE} Installing Conda Packages'),
+            ('conda install -qy glib gperftools openssh pv gputil', f'{PURPLE} Installing Conda Packages'),
             ('pip install -q psutil aria2 gdown', f'{PINK} Installing Python Packages'),
             ('conda clean -qy --all', None),
-            (f'rm -rf {home}/.cache/*', None)
+            (f'rm -rf {home}/.cache/* {home}/.condarc', None)
         ]
 
         for cmd, msg in cmd_list:
@@ -93,6 +107,7 @@ def conda_install():
             subprocess.run(shlex.split(cmd), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
         zrok_install()
+        ngrok_install()
 
         clear_output()
         print(f"{GREEN} Done")
