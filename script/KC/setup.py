@@ -1,11 +1,12 @@
 from IPython.display import display, Image, clear_output
 from IPython import get_ipython
 from pathlib import Path
-import argparse, sys, json, os, subprocess, shlex, time
+import argparse, sys, json, os, subprocess, shlex, time, re
 
 R = "\033[31m"
 P = "\033[38;5;135m"
 RST = "\033[0m"
+ERR = f"{P}[{RST}{R}ERROR{RST}{P}]{RST}"
 
 IMG = "https://github.com/gutris1/segsmaker/raw/main/script/SM/loading.png"
 display(Image(url=IMG))
@@ -16,20 +17,39 @@ VALID_SD_OPTIONS = ["1.5", "xl"]
 
 def prevent_silly():
     full_args = ' '.join(sys.argv)
+    hf_read_token = None
+    civitai_key = None
 
     if '--webui' in full_args:
         webui_value = full_args.split('--webui=')[1].split('--')[0].strip()
         if ',' in webui_value:
-            print(f"{P}[{RST}{R}ERROR{RST}{P}]{RST} multiple values for --webui detected >> [{webui_value}] << provide only one valid option")
-            print(f"\navailable webui options: [{', '.join(VALID_WEBUI_OPTIONS)}]")
-            return None, None
+            print(f"{ERR} multiple values for --webui detected '{webui_value}'\nprovide only one valid option")
+            print(f"available webui options: {', '.join(VALID_WEBUI_OPTIONS)}")
+            return None, None, None
 
     if '--sd' in full_args:
         sd_value = full_args.split('--sd=')[1].split('--')[0].strip()
         if ',' in sd_value:
-            print(f"{P}[{RST}{R}ERROR{RST}{P}]{RST} multiple values for --sd detected >> [{sd_value}] << provide only one valid option")
-            print(f"\navailable sd options: [{', '.join(VALID_SD_OPTIONS)}]")
-            return None, None
+            print(f"{ERR} multiple values for --sd detected '{sd_value}'\nprovide only one valid option")
+            print(f"available sd options: {', '.join(VALID_SD_OPTIONS)}")
+            return None, None, None
+
+    if '--civitai_key' in full_args:
+        civitai_key = full_args.split('--civitai_key=')[1].split('--')[0].strip()
+        if not civitai_key:
+            print(f"{ERR} CivitAI API key is missing.")
+            return None, None, None
+        if len(civitai_key) < 32:
+            print(f"{ERR} CivitAI API key must be at least 32 characters long.")
+            return None, None, None
+        if re.search(r'\s+', civitai_key):
+            print(f"{ERR} civitAI API key contains spaces '{civitai_key}'\nnot allowed.")
+            return None, None, None
+
+    if '--hf_read_token' in full_args:
+        hf_read_token = full_args.split('--hf_read_token=')[1].split('--')[0].strip()
+        if re.search(r'\s', hf_read_token):
+            hf_read_token = ""
 
     parser = argparse.ArgumentParser(description="WebUI Installer Script for Kaggle and Google Colab")
     parser.add_argument('--webui', required=True, help="available webui: A1111, Forge, ComfyUI, ReForge")
@@ -41,28 +61,18 @@ def prevent_silly():
 
     webui_input = args.webui.lower()
     sd_input = args.sd.lower()
+    civitai_key = args.civitai_key.strip()
+    hf_read_token = hf_read_token if hf_read_token else args.hf_read_token
 
     if not any(webui_input == option.lower() for option in VALID_WEBUI_OPTIONS):
-        print(f"invalid webui option: {args.webui}")
+        print(f"invalid webui option: '{args.webui}'")
         print(f"available webui options: {', '.join(VALID_WEBUI_OPTIONS)}")
-        return None, None
+        return None, None, None
 
     if not any(sd_input == option.lower() for option in VALID_SD_OPTIONS):
-        print(f"invalid sd option: {args.sd}")
+        print(f"invalid sd option: '{args.sd}'")
         print(f"available sd options: {', '.join(VALID_SD_OPTIONS)}")
-        return None, None
-
-    civitai_key = args.civitai_key.strip()
-    if not civitai_key:
-        print("Please enter your CivitAI API key")
-        return None, None
-    if len(civitai_key) < 32:
-        print("API key must be at least 32 characters long")
-        return None, None
-
-    hf_read_token = args.hf_read_token.strip()
-    if " " in hf_read_token:
-        hf_read_token = ""
+        return None, None, None
 
     webui_webui = next(option for option in VALID_WEBUI_OPTIONS if webui_input == option.lower())
     sd_sd = next(option for option in VALID_SD_OPTIONS if sd_input == option.lower())
@@ -194,7 +204,7 @@ def webui_req(ui, WEBUI):
         subprocess.run(shlex.split(lines), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     scripts = [
-        f"https://github.com/gutris1/segsmaker/raw/main/script/SM/controlnet.py {WEBUI}/asd",
+        f"https://github.com/gutris1/segsmaker/raw/main/script/KC/controlnet.py {WEBUI}/asd",
         f"https://github.com/gutris1/segsmaker/raw/main/script/KC/venv.py {WEBUI}",
         f"https://github.com/gutris1/segsmaker/raw/main/script/KC/segsmaker.py {WEBUI}"
     ]
@@ -326,10 +336,10 @@ def lets_go():
 
     z = [
         (STR / '00-startup.py', f"curl -sLo {STR}/00-startup.py https://github.com/gutris1/segsmaker/raw/main/script/KC/00-startup.py"),
-        (STR / 'cupang.py', f"curl -sLo {STR}/cupang.py https://github.com/gutris1/segsmaker/raw/main/script/SM/cupang.py"),
         (pantat, f"curl -sLo {pantat} https://github.com/gutris1/segsmaker/raw/main/script/SM/pantat88.py"),
         (nenen, f"curl -sLo {nenen} https://github.com/gutris1/segsmaker/raw/main/script/SM/nenen88.py"),
-        (MRK, f"curl -sLo {MRK} https://github.com/gutris1/segsmaker/raw/main/script/SM/marking.py")
+        (STR / 'cupang.py', f"curl -sLo {STR}/cupang.py https://github.com/gutris1/segsmaker/raw/main/script/KC/cupang.py"),
+        (MRK, f"curl -sLo {MRK} https://github.com/gutris1/segsmaker/raw/main/script/KC/marking.py")
     ]
 
     for x, y in z:
