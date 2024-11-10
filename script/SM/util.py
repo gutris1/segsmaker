@@ -89,7 +89,7 @@ def storage(line):
 def delete_everything(line):    
     main_output = widgets.Output()
     
-    ask = widgets.Label("Delete Everything?")
+    ask = widgets.Label("Delete?")
     ask.add_class("del")
 
     yes = widgets.Button(description="Yes")
@@ -99,10 +99,11 @@ def delete_everything(line):
     no.add_class("save-button")
 
     button = widgets.HBox(
-        [yes, no], layout=widgets.Layout(
+        [no, yes], layout=widgets.Layout(
             display='flex',
             flex_flow='row',
             align_items='center',
+            top='35px',
             justify_content='space-around',
             width='100%'))
 
@@ -114,7 +115,7 @@ def delete_everything(line):
             flex_flow='column',
             align_items='center',
             justify_content='space-around',
-            padding='20px'))
+            padding='10px'))
     boxs.add_class("boxs")
 
     def load_css(css):
