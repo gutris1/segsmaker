@@ -24,10 +24,27 @@ ReForge = SRC / 'ReForge.py'
 FaceFusion = SRC / 'FaceFusion.py'
 SDTrainer = SRC / 'SDTrainer.py'
 
+SRC.mkdir(parents=True, exist_ok=True)
+m = f"curl -sLo {CSS} https://github.com/gutris1/segsmaker/raw/main/script/SM/setup.css"
+get_ipython().system(m)
+        
+def ngrok_install():
+    ngrokbin = HOME / ".ngrok/bin/ngrok"
+    if ngrokbin.exists():
+        return
+
+    ngrok = HOME / ".ngrok/bin"
+    ngrok.mkdir(parents=True, exist_ok=True)
+    url = "https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz"
+    name = ngrok / Path(url).name
+
+    get_ipython().system(f"curl -sLo {name} {url}")
+    get_ipython().system(f"tar -xzf {name} -C {ngrok} --wildcards *ngrok")
+    get_ipython().system(f"rm -rf {HOME}/.cache/* {name}")
+
 def load_css():
     with open(CSS, "r") as file:
         data = file.read()
-
     display(HTML(f"<style>{data}</style>"))
 
 def selection(btn):
@@ -72,12 +89,8 @@ multi_panel = widgets.VBox([hbox1, hbox2], layout=widgets.Layout(width='600px', 
 multi_panel.add_class('multi-panel')
 
 def multi_widgets():
-    if not SRC.exists():
-        SRC.mkdir(parents=True, exist_ok=True)
-
     x = [
         f"curl -sLo {IMG} https://github.com/gutris1/segsmaker/raw/main/script/SM/loading.png",
-        f"curl -sLo {CSS} https://github.com/gutris1/segsmaker/raw/main/script/SM/setup.css",
         f"curl -sLo {MARK} https://github.com/gutris1/segsmaker/raw/main/script/SM/marking.py",
         f"curl -sLo {A1111} https://github.com/gutris1/segsmaker/raw/main/script/SM/A1111.py",
         f"curl -sLo {Forge} https://github.com/gutris1/segsmaker/raw/main/script/SM/Forge.py",
@@ -87,11 +100,13 @@ def multi_widgets():
         f"curl -sLo {SDTrainer} https://github.com/gutris1/segsmaker/raw/main/script/SM/SDTrainer.py"
     ]
 
+    load_css()
+    display(multi_panel, output)
+
     for y in x:
         get_ipython().system(y)
 
-    load_css()
-    display(multi_panel, output)
+    ngrok_install()
     os.chdir(HOME)
 
 multi_widgets()
