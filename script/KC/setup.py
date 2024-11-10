@@ -39,11 +39,11 @@ def prevent_silly():
         if not civitai_key:
             print(f"{ERR} CivitAI API key is missing.")
             return None, None, None
-        if len(civitai_key) < 32:
-            print(f"{ERR} CivitAI API key must be at least 32 characters long.")
-            return None, None, None
         if re.search(r'\s+', civitai_key):
             print(f"{ERR} civitAI API key contains spaces '{civitai_key}'\nnot allowed.")
+            return None, None, None
+        if len(civitai_key) < 32:
+            print(f"{ERR} CivitAI API key must be at least 32 characters long.")
             return None, None, None
 
     if '--hf_read_token' in full_args:
