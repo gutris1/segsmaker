@@ -89,7 +89,7 @@ def storage(line):
 def delete_everything(line):    
     main_output = widgets.Output()
     
-    ask = widgets.Label("Delete Everything?")
+    ask = widgets.Label("Delete?")
     ask.add_class("del")
 
     yes = widgets.Button(description="Yes")
@@ -99,10 +99,11 @@ def delete_everything(line):
     no.add_class("save-button")
 
     button = widgets.HBox(
-        [yes, no], layout=widgets.Layout(
+        [no, yes], layout=widgets.Layout(
             display='flex',
             flex_flow='row',
             align_items='center',
+            top='35px',
             justify_content='space-around',
             width='100%'))
 
@@ -114,7 +115,7 @@ def delete_everything(line):
             flex_flow='column',
             align_items='center',
             justify_content='space-around',
-            padding='20px'))
+            padding='10px'))
     boxs.add_class("boxs")
 
     def load_css(css):
@@ -528,7 +529,7 @@ def zrok_register(line):
             return
 
         zrok_bin.mkdir(parents=True, exist_ok=True)
-        zrok_url = "https://github.com/openziti/zrok/releases/download/v0.4.32/zrok_0.4.32_linux_amd64.tar.gz"
+        zrok_url = "https://github.com/openziti/zrok/releases/download/v0.4.44/zrok_0.4.44_linux_amd64.tar.gz"
         zrok_tar = zrok_bin / Path(zrok_url).name
 
         get_ipython().system(f"curl -sLo {zrok_tar} {zrok_url}")

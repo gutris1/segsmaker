@@ -20,7 +20,7 @@
 
 .cn-panel {
     border: 0px solid transparent;
-    border-radius: 3px;
+    border-radius: 30px;
     margin: 0;
     background-color: transparent;
     animation: slide-blur-panel 1s;
@@ -98,7 +98,7 @@
     background: url('https://wallpapercave.com/dwp1x/wp5126154.jpg');
     background-size: 110% 110%;
     background-position: 50% 80%;
-    overflow: visible;
+    overflow: hidden;
     animation: slide-blur-above-xl 1s, BorderPulse 15s infinite;
 }
 
@@ -110,7 +110,7 @@
     background: url('https://wallpapercave.com/dwp1x/wp5126154.jpg');
     background-size: 110% 110%;
     background-position: 50% 80%;
-    overflow: visible;
+    overflow: hidden;
     animation: slide-blur-above-15 1s, BorderPulse 15s infinite;
 }
 
@@ -124,6 +124,7 @@
 }
 
 .download-button-15, .select-all-button-15, .unselect-all-button-15 {
+    position: relative;
     margin-top: 0px;
     top: 415px;
     font-family: 'Times New Roman', serif;
@@ -162,6 +163,7 @@
 }
 
 .download-button-xl, .select-all-button-xl, .unselect-all-button-xl {
+    position: relative;
     margin-top: 0px;
     top: 505px;
     font-family: 'Times New Roman', serif;

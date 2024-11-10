@@ -60,7 +60,8 @@ def webui_req():
     scripts = [
         f"https://github.com/gutris1/segsmaker/raw/main/script/SM/controlnet.py {WEBUI}/asd",
         f"https://github.com/gutris1/segsmaker/raw/main/script/SM/venv.py {WEBUI}",
-        f"https://github.com/gutris1/segsmaker/raw/main/script/SM/multi/segsmaker.py {WEBUI}"]
+        f"https://github.com/gutris1/segsmaker/raw/main/script/SM/Launcher.py {WEBUI}",
+        f"https://github.com/gutris1/segsmaker/raw/main/script/SM/segsmaker.py {WEBUI}"]
 
     upscalers = [
         f"https://huggingface.co/pantat88/ui/resolve/main/4x-UltraSharp.pth {WEBUI}/models/upscale_models",
@@ -226,7 +227,7 @@ def webui_widgets():
             f"https://github.com/gutris1/segsmaker/raw/main/script/SM/controlnet.py {WEBUI}/asd",
             f"https://github.com/gutris1/segsmaker/raw/main/script/SM/venv.py {WEBUI}",
             f"https://github.com/gutris1/segsmaker/raw/main/config/comfyui/apotek.py {WEBUI}",
-            f"https://github.com/gutris1/segsmaker/raw/main/config/comfyui/launch.py {WEBUI}",
+            f"https://github.com/gutris1/segsmaker/raw/main/script/SM/Launcher.py {WEBUI}",
             f"https://github.com/gutris1/segsmaker/raw/main/script/SM/segsmaker.py {WEBUI}"
         ]
 

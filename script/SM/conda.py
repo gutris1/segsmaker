@@ -65,7 +65,7 @@ def zrok_install():
         return
 
     zrok.mkdir(parents=True, exist_ok=True)
-    url = "https://github.com/openziti/zrok/releases/download/v0.4.32/zrok_0.4.32_linux_amd64.tar.gz"
+    url = "https://github.com/openziti/zrok/releases/download/v0.4.44/zrok_0.4.44_linux_amd64.tar.gz"
     name = zrok / Path(url).name
 
     get_ipython().system(f"curl -sLo {name} {url}")
@@ -78,9 +78,10 @@ def conda_install():
 
         cmd_list = [
             (f'rm -rf {home}/.condarc', None),
-            ('conda install --repodata-fn repodata.json -qyc conda-forge conda', f'{BLUE} Installing Anaconda'),
-            ('conda install --repodata-fn repodata.json -qyc conda-forge python=3.10.13', f'{CYAN} Installing Python 3.10.13'),
-            ('conda install -qyc conda-forge glib gperftools openssh pv', f'{PURPLE} Installing Conda Packages'),
+            ('conda config --remove-key channels', None),
+            ('conda install --repodata-fn repodata.json -qy conda curl', f'{BLUE} Installing Anaconda'),
+            ('conda install --repodata-fn repodata.json -qy python=3.10', f'{CYAN} Installing Python 3.10'),
+            ('conda install -qy glib gperftools openssh pv', f'{PURPLE} Installing Conda Packages'),
             ('pip install -q psutil aria2 gdown', f'{PINK} Installing Python Packages'),
             ('conda clean -qy --all', None),
             (f'rm -rf {home}/.cache/*', None)

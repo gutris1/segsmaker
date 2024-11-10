@@ -5,7 +5,7 @@ from pathlib import Path
 import subprocess, time, os, shlex, json, shutil
 from nenen88 import say, download, tempe
 
-repo = f"git clone https://github.com/enricogolfieri/facefusion-open FaceFusion"
+repo = f"git clone https://github.com/LaoJiuYes/facefusion-lockless FaceFusion"
 
 HOME = Path.home()
 SRC = HOME / '.gutris1'
@@ -23,7 +23,7 @@ def check_ffmpeg():
     installed = get_ipython().getoutput('conda list ffmpeg')
     if not any('ffmpeg' in line for line in installed):
         cmd_list = [
-            ('conda install -qyc conda-forge ffmpeg', '\ninstalling ffmpeg...'),
+            ('conda install -qy ffmpeg curl', '\ninstalling ffmpeg...'),
             ('conda install -qy cuda-runtime=12.4.1', 'installing cuda-runtime=12.4.1...'),
             ('conda install -qy cudnn=9.2.1.18', 'installing cudnn=9.2.1.18...'),
             ('conda clean -qy --all', None)
@@ -56,8 +56,8 @@ def webui_req():
         subprocess.run(shlex.split(lines), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     scripts = [
-        f"https://github.com/gutris1/segsmaker/raw/main/config/facefusion/launch.py {WEBUI}",
         f"https://github.com/gutris1/segsmaker/raw/main/script/SM/venv.py {WEBUI}",
+        f"https://github.com/gutris1/segsmaker/raw/main/script/SM/Launcher.py {WEBUI}",
         f"https://github.com/gutris1/segsmaker/raw/main/script/SM/segsmaker.py {WEBUI}"]
 
     for items in scripts:
@@ -135,8 +135,8 @@ def webui_widgets():
             get_ipython().system("git fetch --tags")
 
         x = [
-            f"https://github.com/gutris1/segsmaker/raw/main/config/facefusion/launch.py {WEBUI}",
             f"https://github.com/gutris1/segsmaker/raw/main/script/SM/venv.py {WEBUI}",
+            f"https://github.com/gutris1/segsmaker/raw/main/script/SM/Launcher.py {WEBUI}",
             f"https://github.com/gutris1/segsmaker/raw/main/script/SM/segsmaker.py {WEBUI}"
         ]
         

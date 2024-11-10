@@ -4,10 +4,19 @@ from pathlib import Path
 from nenen88 import tempe
 import json, os
 
-HOME = Path.home()
-SRC = HOME / '.gutris1'
-marked = SRC / 'marking.json'
-tmp = Path('/tmp')
+SM = None
+
+try:
+    from KANDANG import TEMPPATH, HOMEPATH
+    tmp = Path(TEMPPATH)
+    HOME = Path(HOMEPATH)
+    SM = False
+except ImportError:
+    tmp = Path('/tmp')
+    HOME = Path.home()
+    SM = True
+
+marked = Path(__file__).parent / 'marking.json'
 
 def purge():
     var_list = [
@@ -40,23 +49,6 @@ def get_webui_paths():
         None
     )
     return webui, webui_output
-
-@register_line_magic
-def clear_output_images(line):
-    ui = get_name(marked)
-    _, webui_output = get_webui_paths()
-    get_ipython().system(f"rm -rf {webui_output}/* {HOME / '.cache/*'}")
-    os.chdir(HOME)
-    print(f'{ui} outputs cleared.')
-
-@register_line_magic
-def uninstall_webui(line):
-    ui = get_name(marked)
-    webui, _ = get_webui_paths()
-    get_ipython().system(f"rm -rf {webui} {HOME / 'tmp'} {HOME / '.cache/*'}")
-    print(f'{ui} uninstalled.')
-    os.chdir(HOME)
-    get_ipython().kernel.do_shutdown(True)
 
 def set_paths(ui):
     webui_paths = {
@@ -97,13 +89,30 @@ def set_paths(ui):
 
         return webui, models, webui_output, extensions, embeddings, vae, ckpt, lora, ups
 
+if SM:
+    @register_line_magic
+    def clear_output_images(line):
+        ui = get_name(marked)
+        _, webui_output = get_webui_paths()
+        get_ipython().system(f"rm -rf {webui_output}/* {HOME / '.cache/*'}")
+        os.chdir(HOME)
+        print(f'{ui} outputs cleared.')
+
+    @register_line_magic
+    def uninstall_webui(line):
+        ui = get_name(marked)
+        webui, _ = get_webui_paths()
+        get_ipython().system(f"rm -rf {webui} {HOME / 'tmp'} {HOME / '.cache/*'}")
+        print(f'{ui} uninstalled.')
+        os.chdir(HOME)
+        get_ipython().kernel.do_shutdown(True)
+
 if marked.exists():
     purge()
 
     ui = get_name(marked)
     WebUI, Models, WebUI_Output, Extensions, Embeddings, VAE, CKPT, LORA, Upscalers = set_paths(ui)
- 
- 
+
     Controlnet_Widget = (WebUI / 'asd' / 'controlnet.py') if (WebUI / 'asd').exists() else None
     Forge_SVD = tmp / 'svd' if ui in ['Forge', 'ReForge'] else None
     TMP_CKPT = tmp / 'ckpt'

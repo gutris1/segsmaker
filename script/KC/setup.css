@@ -23,7 +23,6 @@
     border-radius: 3px;
     margin: 0;
     background-color: transparent;
-    max-height: 0;
     overflow: hidden;
     animation: Undress 1s forwards ease-out;
 }
