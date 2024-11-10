@@ -64,22 +64,64 @@
 }
 
 .boxs {
+    position: relative;
     border: 3px solid transparent;
-    border-radius: 10px;
+    border-radius: 30px;
     margin: 0;
-    background: url('https://wallpapercave.com/dwp1x/wp5126154.jpg');
-    background-size: 100% 100%;
-    background-position: 100% 200%;
-    animation: slideAndBlurFromCenter 1s, BorderPulse 15s infinite;
+    background-color: transparent;
+    background-size: cover;
+    background-position: center;
+    animation: Undress 0.7s forwards ease-out, BorderPulse 15s infinite;
+}
+
+.boxs::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('https://i.imgur.com/5Mkdrpw.jpg');
+    background-size: cover;
+    background-position: center;
+    filter: brightness(80%);
+    filter: blur(0px);
+    transition: all 0.5s ease;
+    border-radius: 28px;
+    z-index: -1;
+}
+
+.boxs:hover::before {
+    filter: blur(5px);
+}
+
+@keyframes Undress {
+    0% {
+        max-height: 0;
+        opacity: 0;
+        filter: blur(10px);
+    }
+    100% {
+        max-height: 200px;
+        opacity: 1;
+        filter: blur(0px);
+    }
 }
 
 .del {
-    color: white;
-    font-size: 24px;
-    margin-top: -20px;
-    margin-right: 0px;
-    margin-bottom: 0px;
-    margin-left: 0px;
+    position: absolute;
+    font-family: 'Times New Roman', serif;
+    font-weight: bold;
+    font-size: 20px;
+    height: 100px;
+    color: black;
+    top: 30px;
+    transform: scale(2.5);
+    text-shadow: 
+        0 -2px 2px rgba(255, 165, 0, 0.6),
+        -2px 0 2px rgba(0, 255, 255, 0.6),
+        0 2px 2px rgba(128, 0, 128, 0.6),
+        2px 0 2px rgba(255, 0, 0, 0.6); 
 }
 
 .widget-container {
@@ -103,7 +145,7 @@
     text-align: center;
     border-radius: 10px;
     border: 3px solid #ab22fe;
-    background-color: #212121;
+    background-color: rgba(33, 33, 33, 0.8);
     transform: scale(125%);
 }
 
@@ -112,6 +154,7 @@
 }
 
 .api-input input:focus {
+    background-color: rgba(33, 33, 33, 1);
     height: 35px;
     border-radius: 10px;
     border: 3px solid transparent;
@@ -119,6 +162,7 @@
 }
 
 .api-input input:hover {
+    background-color: rgba(33, 33, 33, 0.9);
     height: 35px;
     border-radius: 10px;
     border: 3px solid #2197f2;
@@ -137,7 +181,7 @@
     color: white;
     border-radius: 10px;
     border: 3px solid #2197f2;
-    background: transparent;
+    background-color: rgba(0, 0, 0, 0.5);
     transition: transform 0.5s ease;
 }
 
