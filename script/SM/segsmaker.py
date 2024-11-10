@@ -172,14 +172,18 @@ condition = Condition()
 is_ready = Value('b', False)
 
 def ZROK_enable():
-    zrok_path = HOME / '.zrok'
-    if not zrok_path.exists():
-        print("ZROK is not installed.")
-        return
+    if not zrok_token.value:
+        print("[ERROR]: ZROK Token is empty")
+        sys.exit()
 
-    env = zrok_path / 'environment.json'
-    if env.exists():
-        with open(env, 'r') as f:
+    zrokbin = HOME / '.zrok/bin/zrok'
+    if not zrokbin.exists():
+        print("[ERROR]: ZROK is not installed")
+        sys.exit()
+
+    zrok_env = HOME / '.zrok/environment.json'
+    if zrok_env.exists():
+        with open(zrok_env, 'r') as f:
             current_value = json.load(f)
             current_token = current_value.get('zrok_token')
 
@@ -194,10 +198,14 @@ def ZROK_enable():
         print()
 
 def NGROK_auth():
-    ngrok_path = HOME / '.ngrok'
-    if not ngrok_path.exists():
-        print("NGROK is not installed.")
-        return
+    if not ngrok_token.value:
+        print("[ERROR]: NGROK Token is empty")
+        sys.exit()
+
+    ngrokbin = HOME / '.ngrok/bin/ngrok'
+    if not ngrokbin.exists():
+        print("[ERROR]: NGROK is not installed")
+        sys.exit()
 
     ngrok_yml = HOME / '.config/ngrok/ngrok.yml'
     if ngrok_yml.exists():
