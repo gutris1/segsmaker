@@ -1,5 +1,9 @@
 # Stable Diffusion Webui, Forge and ComfyUI notebook<br />for SageMaker Studio Lab, Kaggle and Google Colab
-[<img src="https://api.visitorbadge.io/api/visitors?path=https%3A%2F%2Fgithub.com%2Fpantat88%2Fsegsmaker&label=Visitors&countColor=%232ccce4&style=flat">](https://visitorbadge.io/status?path=https%3A%2F%2Fgithub.com%2Fpantat88%2Fsegsmaker)<br>[<img src="https://img.shields.io/badge/Support%20me%20on%20Ko--fi-F16061?logo=ko-fi&logoColor=white&style=flat">](https://ko-fi.com/gutris1)
+<a href="https://visitorbadge.io/status?path=https%3A%2F%2Fgithub.com%2Fpantat88%2Fsegsmaker"><img src="https://api.visitorbadge.io/api/visitors?path=https%3A%2F%2Fgithub.com%2Fpantat88%2Fsegsmaker&countColor=%232ccce4"/></a><br>
+<a href="https://www.paypal.com/paypalme/gutris1"><img alt="paypal" src="https://img.shields.io/badge/PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=black"/></a>
+<a href="https://ko-fi.com/gutris1"><img alt="ko-fi" src="https://img.shields.io/badge/Ko--fi-F16061?style=for-the-badge&logo=ko-fi&logoColor=black"/></a>
+<a href="https://discord.gg/k5BwmmvJJU"><img alt="Discord" src="https://img.shields.io/badge/Discrod-5865F2?style=for-the-badge&logo=discord&logoColor=black"/></a><br>
+
 
 | SageMaker Studio Lab | [![Open in Studio Lab](https://studiolab.sagemaker.aws/studiolab.svg)](https://studiolab.sagemaker.aws/import/github/gutris1/segsmaker/blob/main/notebook/Segsmaker.ipynb) |
 | :---------------------------------------- | :-----------------------------------------------------------------------------------------------------------------: |
@@ -7,8 +11,6 @@
 | Kaggle | [![Open in Kaggle](https://kaggle.com/static/images/open-in-kaggle.svg)](https://www.kaggle.com/code/jejejojo/asdasd) |
 
 <br />
-
-you can find me here https://discord.gg/k5BwmmvJJU <br /><br />
 
 
 # Changelog
