@@ -2,15 +2,17 @@ from IPython import get_ipython
 from pathlib import Path
 import sys, os
 
-env, HOME = 'Unknown', None
-env_list = {'Colab': '/content', 'Kaggle': '/kaggle/working'}
-
-for env_name, path in env_list.items():
-    if os.getenv(env_name.upper() + '_JUPYTER_TRANSPORT') or os.getenv(env_name.upper() + '_DATA_PROXY_TOKEN'):
-        env, HOME = env_name, path
+ENVHOME = None
+env_list = {
+    'Colab': ('/content', '/content', 'COLAB_JUPYTER_TRANSPORT'),
+    'Kaggle': ('/kaggle', '/kaggle/working', 'KAGGLE_DATA_PROXY_TOKEN')
+}
+for envname, (envbase, envhome, envvar) in env_list.items():
+    if os.getenv(envvar):
+        ENVHOME = envhome
         break
 
-HOME = Path(HOME)
+HOME = Path(ENVHOME)
 SRC = HOME / 'gutris1'
 MRK = SRC / 'marking.py'
 STR = Path('/root/.ipython/profile_default/startup')
