@@ -27,20 +27,6 @@ SDTrainer = SRC / 'SDTrainer.py'
 SRC.mkdir(parents=True, exist_ok=True)
 m = f"curl -sLo {CSS} https://github.com/gutris1/segsmaker/raw/main/script/SM/setup.css"
 get_ipython().system(m)
-        
-def ngrok_install():
-    ngrokbin = HOME / ".ngrok/bin/ngrok"
-    if ngrokbin.exists():
-        return
-
-    ngrok = HOME / ".ngrok/bin"
-    ngrok.mkdir(parents=True, exist_ok=True)
-    url = "https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz"
-    name = ngrok / Path(url).name
-
-    get_ipython().system(f"curl -sLo {name} {url}")
-    get_ipython().system(f"tar -xzf {name} -C {ngrok} --wildcards *ngrok")
-    get_ipython().system(f"rm -rf {HOME}/.cache/* {name}")
 
 def load_css():
     with open(CSS, "r") as file:
@@ -105,8 +91,6 @@ def multi_widgets():
 
     for y in x:
         get_ipython().system(y)
-
-    ngrok_install()
     os.chdir(HOME)
 
 multi_widgets()
