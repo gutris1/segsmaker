@@ -28,7 +28,8 @@ def get_args(ui):
             '--xformers --cuda-stream --pin-shared-memory'
         ),
         'FaceFusion': '',
-        'SDTrainer': ''
+        'SDTrainer': '',
+        'KohyaSS': ''
     }
 
     return args_line.get(ui, '')
@@ -80,6 +81,8 @@ def load_config():
         title.value = '<div class="title"><h1>Face Fusion</h1></div>'
     elif ui == 'SDTrainer':
         title.value = '<div class="title"><h1>SD Trainer</h1></div>'
+    elif ui == 'KohyaSS':
+        title.value = '<div class="title"><h1>Kohya SS GUI</h1></div>'
 
 def save_config(zrok_token, ngrok_token, args1, args2, tunnel):
     config = {}
@@ -222,18 +225,12 @@ def NGROK_auth():
         get_ipython().system(f'ngrok config add-authtoken {ngrok_token.value}')
         print()
 
-def import_cupang():
-    try:
-        from cupang import Tunnel as Alice_Zuberg
-    except ImportError:
-        strup = HOME / '.ipython/profile_default/startup'
-        dl = f'curl -sLo {strup}/cupang.py https://github.com/gutris1/segsmaker/raw/main/script/SM/cupang.py'
-        get_ipython().system(dl)
-        sys.path.append(str(strup))
-
 def launching(ui, skip_comfyui_check=False):
-    import_cupang()
+    global py
     args = f'{launch_args1.value} {launch_args2.value}'
+    tunnel_name = tunnel.value
+
+    get_ipython().run_line_magic('run', 'venv.py')
 
     if cpu_cb.value:
         if ui == 'A1111':
@@ -243,56 +240,22 @@ def launching(ui, skip_comfyui_check=False):
         elif ui == 'ComfyUI':
             args += ' --cpu'
 
-    get_ipython().run_line_magic('run', 'venv.py')
+    port = 28000 if ui == 'SDTrainer' else (8188 if ui == 'ComfyUI' else 7860)
 
-    if ui in ['A1111', 'Forge', 'ComfyUI', 'ReForge']:
-        port = 8188 if ui == 'ComfyUI' else 7860
-        
-        if ui == 'ComfyUI' and not skip_comfyui_check:
-            get_ipython().system(f'{py} apotek.py')
-            clear_output(wait=True)
-
-        tunnel_list, cmd = tunnel_cmd(tunnel.value, port, args, ui, FF=False, SDT=False)
-
-    elif ui == 'FaceFusion':
-        port = 7860
-        tunnel_list, cmd = tunnel_cmd(tunnel.value, port, args, ui, FF=True, SDT=False)
-
-    elif ui == 'SDTrainer':
-        port = 28000
-        tunnel_list, cmd = tunnel_cmd(tunnel.value, port, args, ui, FF=False, SDT=True)
-
-    if cmd:
-        configs = tunnel_configs(tunnel.value, port)
-        run_tunnel(cmd, configs, port)
-
-def tunnel_cmd(tunnel_value, port, args, ui, FF, SDT):
-    global py
-
-    if ui != 'ComfyUI' and not FF and not SDT:
-        args += ' --enable-insecure-extension-access --disable-console-progressbars --theme dark'
-
-    if FF:
-        display(Image(filename=str(IMG)))
+    if ui == 'ComfyUI' and not skip_comfyui_check:
+        get_ipython().system(f'{py} apotek.py')
         clear_output(wait=True)
+
+    if ui in ['A1111', 'Forge', 'ReForge']:
+        args += ' --enable-insecure-extension-access --disable-console-progressbars --theme dark'
+    elif ui == 'FaceFusion':
         py = '/tmp/venv-fusion/bin/python3'
-        c = f'{py} Launcher.py {args}'
-    elif SDT:
+    elif ui == 'SDTrainer':
         py = 'HF_HOME=huggingface /tmp/venv-sd-trainer/bin/python3'
-        c = f'{py} Launcher.py {args}'
-    else:
-        c = f'{py} Launcher.py {args}'
+    elif ui == 'KohyaSS':
+        py = '/tmp/venv-kohya/bin/python3'
 
-    tunnel_list = {
-        'Pinggy': c,
-        'ZROK': c,
-        'NGROK': c
-    }
-
-    return tunnel_list, tunnel_list.get(tunnel_value)
-
-def tunnel_configs(tunnel_value, port):
-    config_list = {
+    tunnel_config = {
         'Pinggy': {
             'command': f"ssh -o StrictHostKeyChecking=no -p 80 -R0:localhost:{port} a.pinggy.io",
             'name': "PINGGY",
@@ -310,27 +273,29 @@ def tunnel_configs(tunnel_value, port):
         }
     }
 
-    return config_list.get(tunnel_value)
+    c = f'{py} Launcher.py {args}'
+    cmd = {key: c for key in ['Pinggy', 'ZROK', 'NGROK']}.get(tunnel_name)
+    configs = tunnel_config.get(tunnel_name)
 
-def run_tunnel(cmd, configs, port):
-    try:
-        from cupang import Tunnel as Alice_Zuberg
+    if cmd and configs:
+        try:
+            from cupang import Tunnel as Alice_Zuberg
 
-        if tunnel.value == 'ZROK':
-            ZROK_enable()
+            if tunnel_name == 'ZROK':
+                ZROK_enable()
 
-        if tunnel.value == 'NGROK':
-            NGROK_auth()
+            if tunnel_name == 'NGROK':
+                NGROK_auth()
 
-        Alice_Synthesis_Thirty = Alice_Zuberg(port)
-        Alice_Synthesis_Thirty.logger.setLevel(logging.DEBUG)
-        Alice_Synthesis_Thirty.add_tunnel(command=configs['command'], name=configs['name'], pattern=configs['pattern'])
+            Alice_Synthesis_Thirty = Alice_Zuberg(port)
+            Alice_Synthesis_Thirty.logger.setLevel(logging.DEBUG)
+            Alice_Synthesis_Thirty.add_tunnel(command=configs['command'], name=configs['name'], pattern=configs['pattern'])
 
-        with Alice_Synthesis_Thirty:
-            get_ipython().system(cmd)
+            with Alice_Synthesis_Thirty:
+                get_ipython().system(cmd)
 
-    except KeyboardInterrupt:
-        pass
+        except KeyboardInterrupt:
+            pass
 
 def waiting(condition, is_ready):
     with condition:
