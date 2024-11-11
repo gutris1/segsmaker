@@ -201,7 +201,7 @@ for btn in options:
 panel = widgets.HBox(
     buttons, layout=widgets.Layout(
         width='450px',
-        height='300px'))
+        height='250px'))
 
 panel.add_class("multi-panel")
 
