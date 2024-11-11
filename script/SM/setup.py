@@ -21,8 +21,10 @@ A1111 = SRC / 'A1111.py'
 Forge = SRC / 'Forge.py'
 ComfyUI = SRC / 'ComfyUI.py'
 ReForge = SRC / 'ReForge.py'
+
 FaceFusion = SRC / 'FaceFusion.py'
 SDTrainer = SRC / 'SDTrainer.py'
+KohyaSS = SRC / 'KohyaSS'
 
 SRC.mkdir(parents=True, exist_ok=True)
 m = f"curl -sLo {CSS} https://github.com/gutris1/segsmaker/raw/main/script/SM/setup.css"
@@ -42,7 +44,8 @@ def selection(btn):
         'ComfyUI': ComfyUI,
         'ReForge': ReForge,
         'FaceFusion': FaceFusion,
-        'SDTrainer': SDTrainer
+        'SDTrainer': SDTrainer,
+        'KohyaSS': KohyaSS
     }
 
     with output:
@@ -52,7 +55,7 @@ def selection(btn):
 
 output = widgets.Output()
 row1 = ['A1111', 'Forge', 'ComfyUI', 'ReForge']
-row2 = ['FaceFusion', 'SDTrainer']
+row2 = ['FaceFusion', 'SDTrainer', 'KohyaSS']
 
 buttons1 = []
 for btn in row1:
@@ -68,10 +71,10 @@ for btn in row2:
     button.on_click(lambda x, btn=btn: selection(btn))
     buttons2.append(button)
     
-hbox1 = widgets.HBox(buttons1, layout=widgets.Layout(width='630px', height='300px'))
-hbox2 = widgets.HBox(buttons2, layout=widgets.Layout(width='630px', height='300px'))
+hbox1 = widgets.HBox(buttons1, layout=widgets.Layout(width='630px', height='250px'))
+hbox2 = widgets.HBox(buttons2, layout=widgets.Layout(width='630px', height='250px'))
 
-multi_panel = widgets.VBox([hbox1, hbox2], layout=widgets.Layout(width='600px', height='600px'))
+multi_panel = widgets.VBox([hbox1, hbox2], layout=widgets.Layout(width='600px', height='500px'))
 multi_panel.add_class('multi-panel')
 
 def multi_widgets():
@@ -83,7 +86,8 @@ def multi_widgets():
         f"curl -sLo {ComfyUI} https://github.com/gutris1/segsmaker/raw/main/script/SM/ComfyUI.py",
         f"curl -sLo {ReForge} https://github.com/gutris1/segsmaker/raw/main/script/SM/ReForge.py",
         f"curl -sLo {FaceFusion} https://github.com/gutris1/segsmaker/raw/main/script/SM/FaceFusion.py",
-        f"curl -sLo {SDTrainer} https://github.com/gutris1/segsmaker/raw/main/script/SM/SDTrainer.py"
+        f"curl -sLo {SDTrainer} https://github.com/gutris1/segsmaker/raw/main/script/SM/SDTrainer.py",
+        f"curl -sLo {KohyaSS} https://github.com/gutris1/segsmaker/raw/main/script/SM/KohyaSS.py"
     ]
 
     load_css()
