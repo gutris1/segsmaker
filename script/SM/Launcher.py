@@ -26,7 +26,7 @@ def kohyass_launch():
     os.environ['LD_PRELOAD'] = '/home/studio-lab-user/.conda/envs/default/lib/libtcmalloc_minimal.so.4'
     os.environ['LD_LIBRARY_PATH'] = '/tmp/venv-kohya/lib:/home/studio-lab-user/.conda/envs/default/lib:' + os.environ.get('LD_LIBRARY_PATH', '')
 
-    result = subprocess.run("bash ./gui.sh --headless", shell=True, check=True, stdout=sys.stdout, stderr=sys.stderr)
+    subprocess.run("bash ./gui.sh --headless", shell=True, check=True, stdout=sys.stdout, stderr=sys.stdout)
 
 def sdtrainer_launch():
     os.environ['MPLBACKEND'] = 'gtk3agg'
