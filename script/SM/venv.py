@@ -12,9 +12,10 @@ IMG = SRC / 'loading.png'
 tmp = Path('/tmp')
 cwd = Path.cwd()
 
-vnv_FF = tmp / "venv-fusion"
-vnv_SDT = tmp / "venv-sd-trainer"
-vnv_D = tmp / "venv"
+vnv_FF = tmp / 'venv-fusion'
+vnv_SDT = tmp / 'venv-sd-trainer'
+vnv_KSS = tmp / 'venv-kohya'
+vnv_D = tmp / 'venv'
 
 def load_config():
     config = json.load(MARK.open('r')) if MARK.exists() else {}
@@ -28,6 +29,10 @@ def load_config():
         url = 'https://huggingface.co/pantat88/back_up/resolve/main/venv-sd-trainer.tar.lz4'
         need_space = 14 * 1024**3
         vnv = vnv_SDT
+    elif ui == 'KohyaSS':
+        url = 'https://huggingface.co/pantat88/back_up/resolve/main/venv-kohya.tar.lz4'
+        need_space = 14 * 1024**3
+        vnv = vnv_KSS
     else:
         url = 'https://huggingface.co/pantat88/back_up/resolve/main/venv-torch241-cu121.tar.lz4'
         need_space = 14 * 1024**3
@@ -37,11 +42,12 @@ def load_config():
     return ui, url, need_space, vnv, fn
 
 def unused_venv():
-    if any(venv.exists() for venv in [vnv_FF, vnv_SDT, vnv_D]):
+    if any(venv.exists() for venv in [vnv_FF, vnv_SDT, vnv_KSS, vnv_D]):
         vnv_list = {
-            vnv_FF: [vnv_SDT, vnv_D],
-            vnv_SDT: [vnv_FF, vnv_D],
-            vnv_D: [vnv_FF, vnv_SDT]
+            vnv_FF: [vnv_SDT, vnv_KSS, vnv_D],
+            vnv_SDT: [vnv_FF, vnv_KSS, vnv_D],
+            vnv_KSS: [vnv_FF, vnv_SDT, vnv_D],
+            vnv_D: [vnv_FF, vnv_SDT, vnv_KSS]
         }.get(vnv)
 
         if vnv_list:
@@ -76,7 +82,7 @@ def removing(directory, req_space):
     return freed_space
 
 def trashing():
-    dirs1 = ["A1111", "Forge", "ComfyUI", "ReForge", "FaceFusion", "SDTrainer"]
+    dirs1 = ["A1111", "Forge", "ComfyUI", "ReForge", "FaceFusion", "SDTrainer", "KohyaSS"]
     dirs2 = ["ckpt", "lora", "controlnet", "svd", "z123"]
     paths = [HOME / name for name in dirs1] + [tmp / name for name in dirs2]
     for path in paths:
@@ -110,11 +116,12 @@ def venv_install(ui, url, need_space, fn):
                 req_space -= removing(tmp / 'controlnet', req_space)
 
         os.chdir(tmp)
-        say('<br>【{red} Installing VENV{d} 】{red}')
+        say('【{red} Installing VENV{d} 】{red}')
         download(url)
 
         pv = "conda install -qy pv"
         subprocess.run(shlex.split(pv), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
         get_ipython().system(f'pv {fn} | lz4 -d | tar xf -')
         Path(fn).unlink()
 
