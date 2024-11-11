@@ -119,9 +119,6 @@ def venv_install(ui, url, need_space, fn):
         say('【{red} Installing VENV{d} 】{red}')
         download(url)
 
-        pv = "conda install -qy pv"
-        subprocess.run(shlex.split(pv), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-
         get_ipython().system(f'pv {fn} | lz4 -d | tar xf -')
         Path(fn).unlink()
 
