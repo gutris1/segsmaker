@@ -23,7 +23,6 @@ os.chdir(HOME)
 def load_css():
     with open(CSS, "r") as file:
         data = file.read()
-
     display(HTML(f"<style>{data}</style>"))
 
 def tmp_cleaning():
@@ -232,7 +231,8 @@ def webui_widgets():
             ('ComfyUI', HOME / 'ComfyUI'),
             ('ReForge', HOME / 'ReForge'),
             ('FaceFusion', HOME / 'FaceFusion'),
-            ('SDTrainer', HOME / 'SDTrainer')
+            ('SDTrainer', HOME / 'SDTrainer'),
+            ('KohyaSS', HOME / 'KohyaSS')
         ]
         
         for ui_name, path in webui_list:
