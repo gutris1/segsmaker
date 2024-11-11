@@ -6,6 +6,7 @@ MARK = Path.home() / '.gutris1/marking.json'
 config = json.load(MARK.open('r'))
 tunnel = config.get('tunnel')
 ui = config.get('ui')
+cwd = Path.cwd()
 
 def launch():
     os.environ['LD_PRELOAD'] = '/home/studio-lab-user/.conda/envs/default/lib/libtcmalloc_minimal.so.4'
@@ -22,8 +23,21 @@ def launch():
     os.system(cmd)
 
 def kohyass_launch():
+    def denied_denied():
+        for r, _, f in os.walk(cwd):
+            for i in f:
+                if i.endswith('.toml'):
+                    toml = Path(r) / i
+                    toml.chmod(0o755)
+
+    denied_denied()
+    
+    gui_sh = cwd / 'gui.sh'
+    gui_sh.chmod(0o755)
+
     os.environ['MPLBACKEND'] = 'gtk3agg'
     import matplotlib
+
     os.environ['PATH'] = '/tmp/venv-kohya/bin:' + os.environ['PATH']
     os.environ['LD_PRELOAD'] = '/home/studio-lab-user/.conda/envs/default/lib/libtcmalloc_minimal.so.4'
     os.environ['LD_LIBRARY_PATH'] = '/tmp/venv-kohya/lib:/home/studio-lab-user/.conda/envs/default/lib:' + os.environ.get('LD_LIBRARY_PATH', '')
