@@ -24,7 +24,6 @@ ReForge = SRC / 'ReForge.py'
 
 FaceFusion = SRC / 'FaceFusion.py'
 SDTrainer = SRC / 'SDTrainer.py'
-KohyaSS = SRC / 'KohyaSS.py'
 
 SRC.mkdir(parents=True, exist_ok=True)
 m = f"curl -sLo {CSS} https://github.com/gutris1/segsmaker/raw/main/script/SM/setup.css"
@@ -44,8 +43,7 @@ def selection(btn):
         'ComfyUI': ComfyUI,
         'ReForge': ReForge,
         'FaceFusion': FaceFusion,
-        'SDTrainer': SDTrainer,
-        'KohyaSS': KohyaSS
+        'SDTrainer': SDTrainer
     }
 
     with output:
@@ -55,7 +53,7 @@ def selection(btn):
 
 output = widgets.Output()
 row1 = ['A1111', 'Forge', 'ComfyUI', 'ReForge']
-row2 = ['FaceFusion', 'SDTrainer', 'KohyaSS']
+row2 = ['FaceFusion', 'SDTrainer']
 
 buttons1 = []
 for btn in row1:
@@ -86,8 +84,7 @@ def multi_widgets():
         f"curl -sLo {ComfyUI} https://github.com/gutris1/segsmaker/raw/main/script/SM/ComfyUI.py",
         f"curl -sLo {ReForge} https://github.com/gutris1/segsmaker/raw/main/script/SM/ReForge.py",
         f"curl -sLo {FaceFusion} https://github.com/gutris1/segsmaker/raw/main/script/SM/FaceFusion.py",
-        f"curl -sLo {SDTrainer} https://github.com/gutris1/segsmaker/raw/main/script/SM/SDTrainer.py",
-        f"curl -sLo {KohyaSS} https://github.com/gutris1/segsmaker/raw/main/script/SM/KohyaSS.py"
+        f"curl -sLo {SDTrainer} https://github.com/gutris1/segsmaker/raw/main/script/SM/SDTrainer.py"
     ]
 
     load_css()
