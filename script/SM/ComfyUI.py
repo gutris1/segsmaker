@@ -239,8 +239,7 @@ def webui_widgets():
             ('Forge', HOME / 'Forge'),
             ('ReForge', HOME / 'ReForge'),
             ('FaceFusion', HOME / 'FaceFusion'),
-            ('SDTrainer', HOME / 'SDTrainer'),
-            ('KohyaSS', HOME / 'KohyaSS')
+            ('SDTrainer', HOME / 'SDTrainer')
         ]
         
         for ui_name, path in webui_list:

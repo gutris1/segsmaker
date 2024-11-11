@@ -29,7 +29,7 @@
 }
 
 .a1111, .forge, .comfyui, .reforge,
-.facefusion, .sdtrainer, .kohyass,
+.facefusion, .sdtrainer,
 .button-15, .button-xl, .button-back {
     background-color: transparent;
     height: 250px;
@@ -45,7 +45,7 @@
     -webkit-mask: linear-gradient(to left, transparent, #000 1px);
 }
 .a1111, .forge, .comfyui, .reforge,
-.facefusion, .sdtrainer, .kohyass {
+.facefusion, .sdtrainer {
     width: 69%;
     filter: brightness(50%);
     transition: 0.4s ease;
@@ -74,9 +74,6 @@
 .sdtrainer {
     background-image: url('https://i.imgur.com/Ga2GV5F.png');
 }
-.kohyass {
-    background-image: url('https://i.imgur.com/9jLoK6e.png');
-}
 
 .button-15 {
     background-image: url('https://i.imgur.com/2jsyKzZ.jpg');
@@ -95,7 +92,7 @@
 }
 
 .a1111::after, .forge::after, .comfyui::after, .reforge::after,
-.facefusion::after, .sdtrainer::after, .kohyass::after,
+.facefusion::after, .sdtrainer::after,
 .button-15::after, .button-xl::after {
     font-family: 'Times New Roman', serif;
     text-align: center;
@@ -135,10 +132,6 @@
     content: 'SD Trainer';
     font-size: 35px;
 }
-.kohyass::after {
-    content: 'Kohya SS';
-    font-size: 35px;
-}
 
 .button-15::after {
     content: 'SD 1.5';
@@ -150,7 +143,7 @@
 }
 
 .a1111:hover, .forge:hover, .comfyui:hover, .reforge:hover,
-.facefusion:hover, .sdtrainer:hover, .kohyass:hover,
+.facefusion:hover, .sdtrainer:hover,
 .button-15:hover, .button-xl:hover {
     border-radius: 0px;
     width: 100%;

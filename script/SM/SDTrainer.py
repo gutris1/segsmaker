@@ -135,8 +135,7 @@ def webui_widgets():
             ('Forge', HOME / 'Forge'),
             ('ComfyUI', HOME / 'ComfyUI'),
             ('ReForge', HOME / 'ReForge'),
-            ('FaceFusion', HOME / 'FaceFusion'),
-            ('KohyaSS', HOME / 'KohyaSS')
+            ('FaceFusion', HOME / 'FaceFusion')
         ]
         
         for ui_name, path in webui_list:

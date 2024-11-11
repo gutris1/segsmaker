@@ -40,12 +40,11 @@ def get_webui_paths():
         'ComfyUI': 'ComfyUI',
         'ReForge': 'ReForge',
         'FaceFusion': 'FaceFusion',
-        'SDTrainer': 'SDTrainer',
-        'KohyaSS': 'KohyaSS'
+        'SDTrainer': 'SDTrainer'
     }
     webui = HOME / webui_paths[ui] if ui in webui_paths else None
     webui_output = (
-        webui / 'outputs' if ui in ('A1111', 'Forge', 'ReForge', 'KohyaSS') else
+        webui / 'outputs' if ui in ('A1111', 'Forge', 'ReForge') else
         webui / 'output' if ui in ('ComfyUI', 'SDTrainer') else
         None
     )
@@ -58,8 +57,7 @@ def set_paths(ui):
         'ComfyUI': ('ComfyUI', 'custom_nodes', 'embeddings', 'vae', 'checkpoints', 'loras', 'upscale_models'),
         'ReForge': ('ReForge', 'extensions', 'embeddings', 'VAE', 'Stable-diffusion', 'Lora', 'ESRGAN'),
         'FaceFusion': ('FaceFusion', None, None, None, None, None, None),
-        'SDTrainer': ('SDTrainer', None, None, 'VAE', 'sd-models', None, None),
-        'KohyaSS': ('KohyaSS', None, None, None, None, None, None)
+        'SDTrainer': ('SDTrainer', None, None, 'VAE', 'sd-models', None, None)
     }
 
     if ui in webui_paths:
@@ -69,7 +67,7 @@ def set_paths(ui):
         models = webui if ui == 'SDTrainer' else (webui / 'models' if webui else None)
 
         webui_output = (
-            webui / 'outputs' if ui in ('A1111', 'Forge', 'ReForge', 'KohyaSS') else
+            webui / 'outputs' if ui in ('A1111', 'Forge', 'ReForge') else
             webui / 'output' if ui in ('ComfyUI', 'SDTrainer') else
             None
         )

@@ -28,8 +28,7 @@ def get_args(ui):
             '--xformers --cuda-stream --pin-shared-memory'
         ),
         'FaceFusion': '',
-        'SDTrainer': '',
-        'KohyaSS': ''
+        'SDTrainer': ''
     }
 
     return args_line.get(ui, '')
@@ -64,7 +63,7 @@ def load_config():
 
     GPU = GPU_check()
 
-    if ui in ['SDTrainer', 'FaceFusion', 'KohyaSS'] or not GPU:
+    if ui in ['SDTrainer', 'FaceFusion'] or not GPU:
         cpu_cb.layout.display = 'none'
     else:
         cpu_cb.layout.display = 'block'
@@ -81,8 +80,6 @@ def load_config():
         title.value = '<div class="title"><h1>Face Fusion</h1></div>'
     elif ui == 'SDTrainer':
         title.value = '<div class="title"><h1>SD Trainer</h1></div>'
-    elif ui == 'KohyaSS':
-        title.value = '<div class="title"><h1>Kohya SS GUI</h1></div>'
 
 def save_config(zrok_token, ngrok_token, args1, args2, tunnel):
     config = {}
@@ -252,8 +249,6 @@ def launching(ui, skip_comfyui_check=False):
         py = '/tmp/venv-fusion/bin/python3'
     elif ui == 'SDTrainer':
         py = 'HF_HOME=huggingface /tmp/venv-sd-trainer/bin/python3'
-    elif ui == 'KohyaSS':
-        py = '/tmp/venv-kohya/bin/python3'
 
     tunnel_config = {
         'Pinggy': {
