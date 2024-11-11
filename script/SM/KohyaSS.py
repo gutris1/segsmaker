@@ -5,7 +5,7 @@ from pathlib import Path
 import subprocess, time, os, shlex, json, shutil
 from nenen88 import say, download, tempe
 
-repo = f"git clone --recurse-submodules https://github.com/Akegarasu/lora-scripts SDTrainer"
+repo = f"git clone --recursive https://github.com/bmaltais/kohya_ss KohyaSS"
 
 HOME = Path.home()
 SRC = HOME / '.gutris1'
@@ -14,8 +14,8 @@ IMG = SRC / 'loading.png'
 MARK = SRC / 'marking.py'
 
 tmp = Path('/tmp')
-vnv = tmp / 'venv-sd-trainer'
-WEBUI = HOME / 'SDTrainer'
+vnv = tmp / 'venv-kohya'
+WEBUI = HOME / 'KohyaSS'
 
 os.chdir(HOME)
 
@@ -29,8 +29,6 @@ def tmp_cleaning():
 def req_list():
     return [
         f"rm -rf {HOME}/tmp {HOME}/.cache/*",
-        f"mkdir -p {WEBUI}/dataset",
-        f"mkdir -p {WEBUI}/VAE",
         f"ln -vs /tmp {HOME}/tmp"]
 
 def webui_req():
@@ -43,9 +41,9 @@ def webui_req():
         subprocess.run(shlex.split(lines), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     scripts = [
-        f"https://github.com/gutris1/segsmaker/raw/main/script/SM/venv.py {WEBUI}",
-        f"https://github.com/gutris1/segsmaker/raw/main/script/SM/Launcher.py {WEBUI}",
-        f"https://github.com/gutris1/segsmaker/raw/main/script/SM/segsmaker.py {WEBUI}"]
+        f"https://github.com/gutris1/segsmaker/raw/KSS/script/SM/venv.py {WEBUI}",
+        f"https://github.com/gutris1/segsmaker/raw/KSS/script/SM/Launcher.py {WEBUI}",
+        f"https://github.com/gutris1/segsmaker/raw/KSS/script/SM/segsmaker.py {WEBUI}"]
 
     for items in scripts:
         download(items)
@@ -85,18 +83,22 @@ def webui_install():
         display(Image(filename=str(IMG)))
 
     with webui_setup:
-        say("<b>【{red} Installing SD Trainer{d} 】{red}</b>")
+        say("<b>【{red} Installing Kohya SS GUI{d} 】{red}</b>")
         get_ipython().system(f"{repo}")
 
-        marking(SRC, 'marking.json', 'SDTrainer')
+        marking(SRC, 'marking.json', 'KohyaSS')
         webui_req()
         get_ipython().run_line_magic('run', f'{MARK}')
 
         with loading:
             loading.clear_output(wait=True)
             get_ipython().run_line_magic('run', f'{WEBUI}/venv.py')
+            
+            os.chdir(WEBUI)
+            os.environ["PYTHONWARNINGS"] = "ignore"
+            get_ipython().system('/tmp/venv-kohya/bin/pip install -e ./sd-scripts')
+
             os.chdir(HOME)
-            loading.clear_output(wait=True)
             say("<b>【{red} Done{d} 】{red}</b>")
 
 loading = widgets.Output()
@@ -116,13 +118,13 @@ def webui_widgets():
             os.chdir(WEBUI)
             commit_hash = subprocess.check_output(['git', 'rev-parse', 'HEAD']).strip().decode('utf-8')
 
-            get_ipython().system("git pull origin main")
+            get_ipython().system("git pull origin master")
             get_ipython().system("git fetch --tags")
 
         x = [
-            f"https://github.com/gutris1/segsmaker/raw/main/script/SM/venv.py {WEBUI}",
-            f"https://github.com/gutris1/segsmaker/raw/main/script/SM/Launcher.py {WEBUI}",
-            f"https://github.com/gutris1/segsmaker/raw/main/script/SM/segsmaker.py {WEBUI}"
+            f"https://github.com/gutris1/segsmaker/raw/KSS/script/SM/venv.py {WEBUI}",
+            f"https://github.com/gutris1/segsmaker/raw/KSS/script/SM/Launcher.py {WEBUI}",
+            f"https://github.com/gutris1/segsmaker/raw/KSS/script/SM/segsmaker.py {WEBUI}"
         ]
         
         print()
@@ -136,7 +138,7 @@ def webui_widgets():
             ('ComfyUI', HOME / 'ComfyUI'),
             ('ReForge', HOME / 'ReForge'),
             ('FaceFusion', HOME / 'FaceFusion'),
-            ('KohyaSS', HOME / 'KohyaSS')
+            ('SDTrainer', HOME / 'SDTrainer')
         ]
         
         for ui_name, path in webui_list:

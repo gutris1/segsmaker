@@ -23,7 +23,6 @@ os.chdir(HOME)
 def load_css():
     with open(CSS, "r") as file:
         data = file.read()
-
     display(HTML(f"<style>{data}</style>"))
 
 def tmp_cleaning():
@@ -193,7 +192,7 @@ for btn in options:
 panel = widgets.HBox(
     buttons, layout=widgets.Layout(
         width='450px',
-        height='300px'))
+        height='250px'))
 
 panel.add_class("multi-panel")
 
@@ -230,7 +229,8 @@ def webui_widgets():
             ('Forge', HOME / 'Forge'),
             ('ComfyUI', HOME / 'ComfyUI'),
             ('FaceFusion', HOME / 'FaceFusion'),
-            ('SDTrainer', HOME / 'SDTrainer')
+            ('SDTrainer', HOME / 'SDTrainer'),
+            ('KohyaSS', HOME / 'KohyaSS')
         ]
         
         for ui_name, path in webui_list:
