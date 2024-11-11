@@ -64,7 +64,7 @@ def load_config():
 
     GPU = GPU_check()
 
-    if ui in ['SDTrainer', 'FaceFusion'] or not GPU:
+    if ui in ['SDTrainer', 'FaceFusion', 'KohyaSS'] or not GPU:
         cpu_cb.layout.display = 'none'
     else:
         cpu_cb.layout.display = 'block'
