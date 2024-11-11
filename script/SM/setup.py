@@ -24,7 +24,7 @@ ReForge = SRC / 'ReForge.py'
 
 FaceFusion = SRC / 'FaceFusion.py'
 SDTrainer = SRC / 'SDTrainer.py'
-KohyaSS = SRC / 'KohyaSS'
+KohyaSS = SRC / 'KohyaSS.py'
 
 SRC.mkdir(parents=True, exist_ok=True)
 m = f"curl -sLo {CSS} https://github.com/gutris1/segsmaker/raw/main/script/SM/setup.css"
