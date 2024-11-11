@@ -22,28 +22,6 @@ def launch():
 
     os.system(cmd)
 
-def kohyass_launch():
-    def denied_denied():
-        for r, _, f in os.walk(cwd):
-            for i in f:
-                if i.endswith('.toml'):
-                    toml = Path(r) / i
-                    toml.chmod(0o755)
-
-    denied_denied()
-    
-    gui_sh = cwd / 'gui.sh'
-    gui_sh.chmod(0o755)
-
-    os.environ['MPLBACKEND'] = 'gtk3agg'
-    import matplotlib
-
-    os.environ['PATH'] = '/tmp/venv-kohya/bin:' + os.environ['PATH']
-    os.environ['LD_PRELOAD'] = '/home/studio-lab-user/.conda/envs/default/lib/libtcmalloc_minimal.so.4'
-    os.environ['LD_LIBRARY_PATH'] = '/tmp/venv-kohya/lib:/home/studio-lab-user/.conda/envs/default/lib:' + os.environ.get('LD_LIBRARY_PATH', '')
-
-    subprocess.run("bash ./gui.sh --headless", shell=True, check=True, stdout=sys.stdout, stderr=sys.stdout)
-
 def sdtrainer_launch():
     os.environ['MPLBACKEND'] = 'gtk3agg'
     os.environ['LD_PRELOAD'] = '/home/studio-lab-user/.conda/envs/default/lib/libtcmalloc_minimal.so.4'
@@ -80,8 +58,6 @@ if __name__ == '__main__':
             facefusion_launch()
         elif ui == 'SDTrainer':
             sdtrainer_launch()
-        elif ui == 'KohyaSS':
-            kohyass_launch()
         else:
             launch()
     except KeyboardInterrupt:
