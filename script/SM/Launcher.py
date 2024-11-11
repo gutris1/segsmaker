@@ -22,6 +22,8 @@ def launch():
     os.system(cmd)
 
 def kohyass_launch():
+    os.environ['MPLBACKEND'] = 'gtk3agg'
+    import matplotlib
     os.environ['PATH'] = '/tmp/venv-kohya/bin:' + os.environ['PATH']
     os.environ['LD_PRELOAD'] = '/home/studio-lab-user/.conda/envs/default/lib/libtcmalloc_minimal.so.4'
     os.environ['LD_LIBRARY_PATH'] = '/tmp/venv-kohya/lib:/home/studio-lab-user/.conda/envs/default/lib:' + os.environ.get('LD_LIBRARY_PATH', '')
