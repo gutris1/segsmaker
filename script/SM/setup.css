@@ -100,7 +100,7 @@
     font-family: 'Times New Roman', serif;
     text-align: center;
     position: absolute;
-    bottom: 1px;
+    bottom: 0px;
     left: -10px;
     color: white;
     background: rgba(0, 0, 0, 0.7);
