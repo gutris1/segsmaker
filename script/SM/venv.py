@@ -76,7 +76,7 @@ def removing(directory, req_space):
     return freed_space
 
 def trashing():
-    dirs1 = ["A1111", "Forge", "ComfyUI", "ReForge", "FaceFusion", "SDTrainer"]
+    dirs1 = ["A1111", "Forge", "ComfyUI", "ReForge", "FaceFusion", "SDTrainer", "SwarmUI"]
     dirs2 = ["ckpt", "lora", "controlnet", "svd", "z123"]
     paths = [HOME / name for name in dirs1] + [tmp / name for name in dirs2]
     for path in paths:
@@ -110,7 +110,7 @@ def venv_install(ui, url, need_space, fn):
                 req_space -= removing(tmp / 'controlnet', req_space)
 
         os.chdir(tmp)
-        say('【{red} Installing VENV{d} 】{red}')
+        say('<b>【{red} Installing VENV{d} 】{red}</b>')
         download(url)
 
         get_ipython().system(f'pv {fn} | lz4 -d | tar xf -')
