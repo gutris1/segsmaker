@@ -8,7 +8,7 @@ import json, logging, sys, argparse, os
 MD = Path(HOMEPATH) / 'gutris1/marking.json'
 py = Path(VENVPATH) / 'bin/python3'
 pw = '82a973c04367123ae98bd9abdf80d9eda9b910e2'
-cwd = Path.cwd()
+cd = Path.cwd()
 
 def shut_up(launch_args, skip_comfyui_check):
     config = json.load(MD.open('r'))
@@ -25,18 +25,16 @@ def shut_up(launch_args, skip_comfyui_check):
         clear_output(wait=True)
 
     tunnel = f'cl tunnel --url localhost:{port}'
-    
+    os.environ['PATH'] = f'{VENVPATH}/bin:' + os.environ['PATH']
+    os.environ["PYTHONWARNINGS"] = "ignore"
+
     if ui == 'SwarmUI':
-        os.environ['PATH'] = f'{VENVPATH}/bin:' + os.environ['PATH']
-        os.environ['SWARMPATH'] = str(cwd)
+        os.environ['SWARMPATH'] = str(cd)
         os.environ['SWARM_NO_VENV'] = 'true'
         get_ipython().system('pip install -q rembg')
         get_ipython().system('git pull -q')
-
         cmd = f"bash ./launch-linux.sh {launch_args}"
-        
     else:
-        os.environ["PYTHONWARNINGS"] = "ignore"
         cmd = f'{py} {launcher} {launch_args}'
 
     Alice_Synthesis_Thirty = Alice_Zuberg(port)
