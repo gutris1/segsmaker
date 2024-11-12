@@ -239,7 +239,7 @@ def webui_req(U, W, M):
         f"https://github.com/gutris1/segsmaker/raw/main/script/KC/segsmaker.py {W}"
     ]
 
-    u = M / 'upscale_models' if ui in ['ComfyUI', 'SwarmUI'] else M / 'ESRGAN'
+    u = M / 'upscale_models' if U in ['ComfyUI', 'SwarmUI'] else M / 'ESRGAN'
     upscalers = [
         f"https://huggingface.co/pantat88/ui/resolve/main/4x-UltraSharp.pth {u}",
         f"https://huggingface.co/pantat88/ui/resolve/main/4x-AnimeSharp.pth {u}",
