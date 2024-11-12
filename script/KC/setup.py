@@ -12,6 +12,40 @@ IMG = "https://github.com/gutris1/segsmaker/raw/main/script/SM/loading.png"
 display(Image(url=IMG))
 clear_output(wait=True)
 
+ENVNAME, ENVBASE, ENVHOME = None, None, None
+env_list = {
+    'Colab': ('/content', '/content', 'COLAB_JUPYTER_TRANSPORT'),
+    'Kaggle': ('/kaggle', '/kaggle/working', 'KAGGLE_DATA_PROXY_TOKEN')
+}
+for envname, (envbase, envhome, envvar) in env_list.items():
+    if os.getenv(envvar):
+        ENVNAME = envname
+        ENVBASE = envbase
+        ENVHOME = envhome
+        break
+
+if not ENVNAME:
+    print("You are not in Kaggle or Google Colab.\nExiting.")
+    sys.exit()
+
+HOME = Path(ENVHOME)
+BASEPATH = Path(ENVBASE)
+tmp = BASEPATH / 'temp'
+vnv = BASEPATH / 'venv'
+
+SRC = HOME / 'gutris1'
+MRK = SRC / 'marking.py'
+KEY = SRC / 'api-key.json'
+MARKED = SRC / 'marking.json'
+
+STR = Path('/root/.ipython/profile_default/startup')
+nenen = STR / "nenen88.py"
+pantat = STR / "pantat88.py"
+KANDANG = STR / 'KANDANG.py'
+
+tmp.mkdir(parents=True, exist_ok=True)
+SRC.mkdir(parents=True, exist_ok=True)
+
 VALID_WEBUI_OPTIONS = ["A1111", "Forge", "ComfyUI", "ReForge", "SwarmUI"]
 VALID_SD_OPTIONS = ["1.5", "xl"]
 
@@ -80,160 +114,132 @@ def prevent_silly():
     return (webui_webui, sd_sd), civitai_key, hf_read_token
 
 
-ENVNAME, ENVBASE, ENVHOME = None, None, None
-env_list = {
-    'Colab': ('/content', '/content', 'COLAB_JUPYTER_TRANSPORT'),
-    'Kaggle': ('/kaggle', '/kaggle/working', 'KAGGLE_DATA_PROXY_TOKEN')
-}
-for envname, (envbase, envhome, envvar) in env_list.items():
-    if os.getenv(envvar):
-        ENVNAME = envname
-        ENVBASE = envbase
-        ENVHOME = envhome
-        break
-
-if not ENVNAME:
-    print("You are not in Kaggle or Google Colab.\nExiting.")
-    sys.exit()
-
-HOME = Path(ENVHOME)
-BASEPATH = Path(ENVBASE)
-tmp = BASEPATH / 'temp'
-vnv = BASEPATH / 'venv'
-
-SRC = HOME / 'gutris1'
-MRK = SRC / 'marking.py'
-KEY = SRC / 'api-key.json'
-MARKED = SRC / 'marking.json'
-
-STR = Path('/root/.ipython/profile_default/startup')
-nenen = STR / "nenen88.py"
-pantat = STR / "pantat88.py"
-KANDANG = STR / 'KANDANG.py'
-
-tmp.mkdir(parents=True, exist_ok=True)
-SRC.mkdir(parents=True, exist_ok=True)
-
-with open(KANDANG, 'w') as file:
-    file.write(f"ENVNAME = '{ENVNAME}'\n")
-    file.write(f"HOMEPATH = '{HOME}'\n")
-    file.write(f"TEMPPATH = '{tmp}'\n")
-    file.write(f"VENVPATH = '{vnv}'\n")
-    file.write(f"BASEPATH = '{BASEPATH}'\n")
+def saving():
+    j = {
+        "ENVNAME": ENVNAME,
+        "HOMEPATH": HOME,
+        "TEMPPATH": tmp,
+        "VENVPATH": vnv,
+        "BASEPATH": BASEPATH
+    }
+    
+    with open(KANDANG, 'w') as q:
+        for k, v in j.items():
+            q.write(f"{k} = '{v}'\n")
 
 
-def marking(path, fn, ui):
-    txt = path / fn
-    values = {'ui': ui, 'launch_args': '', 'tunnel': ''}
+def marking(p, n, u):
+    t = p / n
+    v = {'ui': u, 'launch_args': '', 'tunnel': ''}
 
-    if not txt.exists():
-        with open(txt, 'w') as file:
-            json.dump(values, file, indent=4)
+    if not t.exists():
+        with open(t, 'w') as f:
+            json.dump(v, f, indent=4)
 
-    with open(txt, 'r') as file:
-        data = json.load(file)
+    with open(t, 'r') as f:
+        d = json.load(f)
 
-    data.update(values)
-    with open(txt, 'w') as file:
-        json.dump(data, file, indent=4)
-
-
-def key_inject(civitai_key, hf_read_token):
-    target = [pantat, nenen]
-
-    for line in target:
-        with open(line, "r") as file:
-            v = file.read()
-
-        v = v.replace('toket = ""', f'toket = "{civitai_key}"')
-        v = v.replace('tobrut = ""', f'tobrut = "{hf_read_token}"')
-
-        with open(line, "w") as file:
-            file.write(v)
+    d.update(v)
+    with open(t, 'w') as f:
+        json.dump(d, f, indent=4)
 
 
-def sym_link(ui, WEBUI, MODELS):
-    if ui == 'A1111':
+def key_inject(C, H):
+    t = [pantat, nenen]
+
+    for l in t:
+        with open(l, "r") as w:
+            v = w.read()
+
+        v = v.replace('toket = ""', f'toket = "{C}"')
+        v = v.replace('tobrut = ""', f'tobrut = "{H}"')
+
+        with open(l, "w") as b:
+            b.write(v)
+
+
+def sym_link(U, M):
+    if U == 'A1111':
         return [
-            f"rm -rf {tmp}/* {MODELS}/Stable-diffusion/tmp_ckpt",
-            f"rm -rf {MODELS}/Lora/tmp_lora {MODELS}/ControlNet",
-            f"mkdir -p {MODELS}/Lora {MODELS}/ESRGAN",
-            f"ln -vs {tmp}/ckpt {MODELS}/Stable-diffusion/tmp_ckpt",
-            f"ln -vs {tmp}/lora {MODELS}/Lora/tmp_lora",
-            f"ln -vs {tmp}/controlnet {MODELS}/ControlNet"
+            f"rm -rf {tmp}/* {M}/Stable-diffusion/tmp_ckpt",
+            f"rm -rf {M}/Lora/tmp_lora {M}/ControlNet",
+            f"mkdir -p {M}/Lora {M}/ESRGAN",
+            f"ln -vs {tmp}/ckpt {M}/Stable-diffusion/tmp_ckpt",
+            f"ln -vs {tmp}/lora {M}/Lora/tmp_lora",
+            f"ln -vs {tmp}/controlnet {M}/ControlNet"
         ]
 
-    elif ui == 'ComfyUI':
+    elif U == 'ComfyUI':
         return [
-            f"rm -rf {tmp}/* {MODELS}/controlnet {MODELS}/clip",
-            f"rm -rf {MODELS}/checkpoints/tmp_ckpt {MODELS}/loras/tmp_lora",
-            f"ln -vs {tmp}/ckpt {MODELS}/checkpoints/tmp_ckpt",
-            f"ln -vs {tmp}/lora {MODELS}/loras/tmp_lora",
-            f"ln -vs {tmp}/controlnet {MODELS}/controlnet",
-            f"ln -vs {tmp}/clip {MODELS}/clip",
-            f"ln -vs {MODELS}/checkpoints {MODELS}/checkpoints_symlink"
+            f"rm -rf {tmp}/* {M}/controlnet {M}/clip",
+            f"rm -rf {M}/checkpoints/tmp_ckpt {M}/loras/tmp_lora",
+            f"ln -vs {tmp}/ckpt {M}/checkpoints/tmp_ckpt",
+            f"ln -vs {tmp}/lora {M}/loras/tmp_lora",
+            f"ln -vs {tmp}/controlnet {M}/controlnet",
+            f"ln -vs {tmp}/clip {M}/clip",
+            f"ln -vs {M}/checkpoints {M}/checkpoints_symlink"
         ]
 
-    elif ui in ['Forge', 'ReForge']:
+    elif U in ['Forge', 'ReForge']:
         return [
-            f"rm -rf {tmp}/* {MODELS}/ControlNet {MODELS}/svd {MODELS}/z123",
-            f"rm -rf {MODELS}/Stable-diffusion/tmp_ckpt {MODELS}/Lora/tmp_lora",
-            f"mkdir -p {MODELS}/Lora {MODELS}/ESRGAN",
-            f"ln -vs {tmp}/ckpt {MODELS}/Stable-diffusion/tmp_ckpt",
-            f"ln -vs {tmp}/lora {MODELS}/Lora/tmp_lora",
-            f"ln -vs {tmp}/controlnet {MODELS}/ControlNet",
-            f"ln -vs {tmp}/z123 {MODELS}/z123",
-            f"ln -vs {tmp}/svd {MODELS}/svd"
+            f"rm -rf {tmp}/* {M}/ControlNet {M}/svd {M}/z123",
+            f"rm -rf {M}/Stable-diffusion/tmp_ckpt {M}/Lora/tmp_lora",
+            f"mkdir -p {M}/Lora {M}/ESRGAN",
+            f"ln -vs {tmp}/ckpt {M}/Stable-diffusion/tmp_ckpt",
+            f"ln -vs {tmp}/lora {M}/Lora/tmp_lora",
+            f"ln -vs {tmp}/controlnet {M}/ControlNet",
+            f"ln -vs {tmp}/z123 {M}/z123",
+            f"ln -vs {tmp}/svd {M}/svd"
         ]
 
-    elif ui == 'SwarmUI':
+    elif U == 'SwarmUI':
         return [
-            f"rm -rf {tmp}/* {MODELS}/Stable-Diffusion/tmp_ckpt",
-            f"rm -rf {MODELS}/Lora/tmp_lora {MODELS}/controlnet {MODELS}/clip",
-            f"ln -vs {tmp}/ckpt {MODELS}/Stable-Diffusion/tmp_ckpt",
-            f"ln -vs {tmp}/lora {MODELS}/Lora/tmp_lora",
-            f"ln -vs {tmp}/controlnet {MODELS}/controlnet",
-            f"ln -vs {tmp}/clip {MODELS}/clip"
+            f"rm -rf {tmp}/* {M}/Stable-Diffusion/tmp_ckpt",
+            f"rm -rf {M}/Lora/tmp_lora {M}/controlnet {M}/clip",
+            f"ln -vs {tmp}/ckpt {M}/Stable-Diffusion/tmp_ckpt",
+            f"ln -vs {tmp}/lora {M}/Lora/tmp_lora",
+            f"ln -vs {tmp}/controlnet {M}/controlnet",
+            f"ln -vs {tmp}/clip {M}/clip"
         ]
 
 
-def webui_req(ui, WEBUI, MODELS):
+def webui_req(U, W, M):
     from nenen88 import pull, download
 
-    os.chdir(WEBUI)
+    os.chdir(W)
 
-    if ui == 'A1111':
-        pull(f"https://github.com/gutris1/segsmaker a1111 {WEBUI}")
-    elif ui == 'Forge':
-        pull(f"https://github.com/gutris1/segsmaker forge {WEBUI}")
-    elif ui == 'ComfyUI':
-        pull(f"https://github.com/gutris1/segsmaker comfyui {WEBUI}")
-    elif ui == 'ReForge':
-        pull(f"https://github.com/gutris1/segsmaker reforge {WEBUI}")
-    elif ui == 'SwarmUI':
-        MODELS.mkdir(parents=True, exist_ok=True)
+    if U == 'A1111':
+        pull(f"https://github.com/gutris1/segsmaker a1111 {W}")
+    elif U == 'Forge':
+        pull(f"https://github.com/gutris1/segsmaker forge {W}")
+    elif U == 'ComfyUI':
+        pull(f"https://github.com/gutris1/segsmaker comfyui {W}")
+    elif U == 'ReForge':
+        pull(f"https://github.com/gutris1/segsmaker reforge {W}")
+    elif U == 'SwarmUI':
+        M.mkdir(parents=True, exist_ok=True)
 
         dirs = ['Stable-Diffusion', 'Lora', 'Embeddings', 'VAE', 'upscale_models']
         for sub in dirs:
-            (MODELS / sub).mkdir(parents=True, exist_ok=True)
+            (M / sub).mkdir(parents=True, exist_ok=True)
 
-        download(f"https://dot.net/v1/dotnet-install.sh {WEBUI}")
+        download(f"https://dot.net/v1/dotnet-install.sh {W}")
 
-        dotnet = WEBUI / 'dotnet-install.sh'
+        dotnet = W / 'dotnet-install.sh'
         dotnet.chmod(0o755)
         get_ipython().system("bash ./dotnet-install.sh --channel 8.0")
 
-    req = sym_link(ui, WEBUI, MODELS)
+    req = sym_link(U, M)
     for lines in req:
         subprocess.run(shlex.split(lines), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     scripts = [
-        f"https://github.com/gutris1/segsmaker/raw/main/script/SM/controlnet.py {WEBUI}/asd",
-        f"https://github.com/gutris1/segsmaker/raw/main/script/KC/venv.py {WEBUI}",
-        f"https://github.com/gutris1/segsmaker/raw/main/script/KC/segsmaker.py {WEBUI}"
+        f"https://github.com/gutris1/segsmaker/raw/main/script/SM/controlnet.py {W}/asd",
+        f"https://github.com/gutris1/segsmaker/raw/main/script/KC/venv.py {W}",
+        f"https://github.com/gutris1/segsmaker/raw/main/script/KC/segsmaker.py {W}"
     ]
 
-    u = f"{MODELS}/upscale_models" if ui in ['ComfyUI', 'SwarmUI'] else f"{MODELS}/ESRGAN"
+    u = M / 'upscale_models' if ui in ['ComfyUI', 'SwarmUI'] else M / 'ESRGAN'
     upscalers = [
         f"https://huggingface.co/pantat88/ui/resolve/main/4x-UltraSharp.pth {u}",
         f"https://huggingface.co/pantat88/ui/resolve/main/4x-AnimeSharp.pth {u}",
@@ -248,18 +254,18 @@ def webui_req(ui, WEBUI, MODELS):
         download(item)
 
 
-def Extensions(ui, WEBUI, MODELS):
+def Extensions(U, W, M):
     from nenen88 import clone, say, download
 
-    if ui == 'ComfyUI':
+    if U == 'ComfyUI':
         say("<br><b>【{red} Installing Custom Nodes{d} 】{red}</b>")
-        os.chdir(WEBUI / "custom_nodes")
-        clone(str(WEBUI / "asd/custom_nodes.txt"))
+        os.chdir(W / "custom_nodes")
+        clone(str(W / "asd/custom_nodes.txt"))
         print()
 
         custom_nodes_models = [
-            f"https://github.com/sczhou/CodeFormer/releases/download/v0.1.0/codeformer.pth {MODELS}/facerestore_models",
-            f"https://github.com/TencentARC/GFPGAN/releases/download/v1.3.4/GFPGANv1.4.pth {MODELS}/facerestore_models"
+            f"https://github.com/sczhou/CodeFormer/releases/download/v0.1.0/codeformer.pth {M}/facerestore_models",
+            f"https://github.com/TencentARC/GFPGAN/releases/download/v1.3.4/GFPGANv1.4.pth {M}/facerestore_models"
         ]
 
         for item in custom_nodes_models:
@@ -267,41 +273,41 @@ def Extensions(ui, WEBUI, MODELS):
 
     else:
         say("<br><b>【{red} Installing Extensions{d} 】{red}</b>")
-        os.chdir(WEBUI / "extensions")
-        clone(str(WEBUI / "asd/extension.txt"))
+        os.chdir(W / "extensions")
+        clone(str(W / "asd/extension.txt"))
         get_ipython().system("git clone -q https://github.com/gutris1/sd-encrypt-image")
 
 
-def installing_webui(ui, which_sd, WEBUI, MODELS, EMB, VAE):
+def installing_webui(U, S, W, M, E, V):
     from nenen88 import download
 
-    webui_req(ui, WEBUI, MODELS)
+    webui_req(U, W, M)
 
-    if which_sd == "1.5":
-        embzip =  WEBUI / 'embeddings.zip'
+    if S == "1.5":
+        embzip =  W / 'embeddings.zip'
         extras = [
-            f"https://huggingface.co/pantat88/ui/resolve/main/embeddings.zip {WEBUI}",
-            f"https://huggingface.co/stabilityai/sd-vae-ft-mse-original/resolve/main/vae-ft-mse-840000-ema-pruned.safetensors {VAE}"
+            f"https://huggingface.co/pantat88/ui/resolve/main/embeddings.zip {W}",
+            f"https://huggingface.co/stabilityai/sd-vae-ft-mse-original/resolve/main/vae-ft-mse-840000-ema-pruned.safetensors {V}"
         ]
 
-    elif which_sd == "xl":
+    elif S == "xl":
         embzip = None
         extras = [
-            f"https://civitai.com/api/download/models/403492 {EMB}",
-            f"https://civitai.com/api/download/models/182974 {EMB}",
-            f"https://civitai.com/api/download/models/159385 {EMB}",
-            f"https://civitai.com/api/download/models/159184 {EMB}",
-            f"https://huggingface.co/stabilityai/sdxl-vae/resolve/main/sdxl_vae.safetensors {VAE}"
+            f"https://civitai.com/api/download/models/403492 {E}",
+            f"https://civitai.com/api/download/models/182974 {E}",
+            f"https://civitai.com/api/download/models/159385 {E}",
+            f"https://civitai.com/api/download/models/159184 {E}",
+            f"https://huggingface.co/stabilityai/sdxl-vae/resolve/main/sdxl_vae.safetensors {V}"
         ]
 
     for item in extras:
         download(item)
 
-    if which_sd == "1.5":
-        get_ipython().system(f"unzip -qo {embzip} -d {EMB} && rm {embzip}")
+    if S == "1.5":
+        get_ipython().system(f"unzip -qo {embzip} -d {E} && rm {embzip}")
 
-    if ui != 'SwarmUI':
-        Extensions(ui, WEBUI, MODELS)
+    if U != 'SwarmUI':
+        Extensions(U, W, M)
 
 
 def webui_install(ui, which_sd):
@@ -419,4 +425,5 @@ def lets_go():
 
 version = 'v1.10.1'
 os.chdir(HOME)
+saving()
 lets_go()
