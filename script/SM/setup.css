@@ -29,7 +29,7 @@
 }
 
 .a1111, .forge, .comfyui, .reforge,
-.facefusion, .sdtrainer,
+.swarmui, .facefusion, .sdtrainer,
 .button-15, .button-xl, .button-back {
     background-color: transparent;
     height: 250px;
@@ -45,9 +45,9 @@
     -webkit-mask: linear-gradient(to left, transparent, #000 1px);
 }
 .a1111, .forge, .comfyui, .reforge,
-.facefusion, .sdtrainer {
+.swarmui, .facefusion, .sdtrainer {
     width: 69%;
-    filter: brightness(50%);
+    filter: brightness(40%);
     transition: 0.4s ease;
 }
 .button-15, .button-xl {
@@ -68,6 +68,10 @@
 .reforge {
     background-image: url('https://i.imgur.com/95Afkbg.jpg');
 }
+.swarmui {
+    background-image: url('https://raw.githubusercontent.com/mcmonkeyprojects/SwarmUI/master/.github/images/swarmui.jpg');
+}
+
 .facefusion {
     background-image: url('https://i.imgur.com/1R9rDO6.png');
 }
@@ -92,7 +96,7 @@
 }
 
 .a1111::after, .forge::after, .comfyui::after, .reforge::after,
-.facefusion::after, .sdtrainer::after,
+.swarmui::after, .facefusion::after, .sdtrainer::after,
 .button-15::after, .button-xl::after {
     font-family: 'Times New Roman', serif;
     text-align: center;
@@ -124,6 +128,10 @@
     content: 'ReForge';
     font-size: 35px;
 }
+.swarmui::after {
+    content: 'SwarmUI';
+    font-size: 35px;
+}
 .facefusion::after {
     content: 'Face Fusion';
     font-size: 35px;
@@ -143,7 +151,7 @@
 }
 
 .a1111:hover, .forge:hover, .comfyui:hover, .reforge:hover,
-.facefusion:hover, .sdtrainer:hover,
+.swarmui:hover, .facefusion:hover, .sdtrainer:hover,
 .button-15:hover, .button-xl:hover {
     border-radius: 0px;
     width: 100%;
