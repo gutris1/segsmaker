@@ -34,10 +34,10 @@ def swarmui_launch():
     os.environ['SWARM_NO_VENV'] = 'true'
 
     os.system('pip install -q rembg')
-    os.system('git pull')
+    os.system('git pull -q')
 
     cmd = "bash ./launch-linux.sh --launch_mode none"
-    subprocess.run(shlex.split(cmd), stdout=sys.stdout, stderr=sys.stdout, check=True)
+    os.system(cmd)
 
 
 def sdtrainer_launch():
