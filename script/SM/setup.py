@@ -21,6 +21,7 @@ A1111 = SRC / 'A1111.py'
 Forge = SRC / 'Forge.py'
 ComfyUI = SRC / 'ComfyUI.py'
 ReForge = SRC / 'ReForge.py'
+SwarmUI = SRC / 'SwarmUI.py'
 
 FaceFusion = SRC / 'FaceFusion.py'
 SDTrainer = SRC / 'SDTrainer.py'
@@ -43,7 +44,8 @@ def selection(btn):
         'ComfyUI': ComfyUI,
         'ReForge': ReForge,
         'FaceFusion': FaceFusion,
-        'SDTrainer': SDTrainer
+        'SDTrainer': SDTrainer,
+        'SwarmUI': SwarmUI
     }
 
     with output:
@@ -53,7 +55,7 @@ def selection(btn):
 
 output = widgets.Output()
 row1 = ['A1111', 'Forge', 'ComfyUI', 'ReForge']
-row2 = ['FaceFusion', 'SDTrainer']
+row2 = ['SwarmUI', 'FaceFusion', 'SDTrainer']
 
 buttons1 = []
 for btn in row1:
@@ -84,7 +86,8 @@ def multi_widgets():
         f"curl -sLo {ComfyUI} https://github.com/gutris1/segsmaker/raw/main/script/SM/ComfyUI.py",
         f"curl -sLo {ReForge} https://github.com/gutris1/segsmaker/raw/main/script/SM/ReForge.py",
         f"curl -sLo {FaceFusion} https://github.com/gutris1/segsmaker/raw/main/script/SM/FaceFusion.py",
-        f"curl -sLo {SDTrainer} https://github.com/gutris1/segsmaker/raw/main/script/SM/SDTrainer.py"
+        f"curl -sLo {SDTrainer} https://github.com/gutris1/segsmaker/raw/main/script/SM/SDTrainer.py",
+        f"curl -sLo {SwarmUI} https://github.com/gutris1/segsmaker/raw/main/script/SM/SwarmUI.py"
     ]
 
     load_css()
