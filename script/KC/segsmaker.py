@@ -8,6 +8,7 @@ import json, logging, sys, argparse, os
 MD = Path(HOMEPATH) / 'gutris1/marking.json'
 py = Path(VENVPATH) / 'bin/python3'
 pw = '82a973c04367123ae98bd9abdf80d9eda9b910e2'
+cwd = Path.cwd()
 
 def shut_up(launch_args, skip_comfyui_check):
     config = json.load(MD.open('r'))
