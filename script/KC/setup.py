@@ -12,7 +12,7 @@ IMG = "https://github.com/gutris1/segsmaker/raw/main/script/SM/loading.png"
 display(Image(url=IMG))
 clear_output(wait=True)
 
-VALID_WEBUI_OPTIONS = ["A1111", "Forge", "ComfyUI", "ReForge"]
+VALID_WEBUI_OPTIONS = ["A1111", "Forge", "ComfyUI", "ReForge", "SwarmUI"]
 VALID_SD_OPTIONS = ["1.5", "xl"]
 
 def prevent_silly():
@@ -91,6 +91,7 @@ for envname, (envbase, envhome, envvar) in env_list.items():
         ENVBASE = envbase
         ENVHOME = envhome
         break
+
 if not ENVNAME:
     print("You are not in Kaggle or Google Colab.\nExiting.")
     sys.exit()
@@ -120,9 +121,10 @@ with open(KANDANG, 'w') as file:
     file.write(f"VENVPATH = '{vnv}'\n")
     file.write(f"BASEPATH = '{BASEPATH}'\n")
 
+
 def marking(path, fn, ui):
     txt = path / fn
-    values = {'ui': ui, 'launch_args1': '', 'launch_args2': '', 'tunnel': ''}
+    values = {'ui': ui, 'launch_args': '', 'tunnel': ''}
 
     if not txt.exists():
         with open(txt, 'w') as file:
@@ -134,6 +136,7 @@ def marking(path, fn, ui):
     data.update(values)
     with open(txt, 'w') as file:
         json.dump(data, file, indent=4)
+
 
 def key_inject(civitai_key, hf_read_token):
     target = [pantat, nenen]
@@ -148,44 +151,53 @@ def key_inject(civitai_key, hf_read_token):
         with open(line, "w") as file:
             file.write(v)
 
-def sym_link(ui, WEBUI):
+
+def sym_link(ui, WEBUI, MODELS):
     if ui == 'A1111':
         return [
-            f"rm -rf {tmp}/*",
-            f"rm -rf {WEBUI}/models/Stable-diffusion/tmp_ckpt {WEBUI}/models/Lora/tmp_lora {WEBUI}/models/ControlNet",
-            f"mkdir -p {WEBUI}/models/Lora {WEBUI}/models/ESRGAN",
-            f"ln -vs {tmp}/ckpt {WEBUI}/models/Stable-diffusion/tmp_ckpt",
-            f"ln -vs {tmp}/lora {WEBUI}/models/Lora/tmp_lora",
-            f"ln -vs {tmp}/controlnet {WEBUI}/models/ControlNet"
+            f"rm -rf {tmp}/* {MODELS}/Stable-diffusion/tmp_ckpt",
+            f"rm -rf {MODELS}/Lora/tmp_lora {MODELS}/ControlNet",
+            f"mkdir -p {MODELS}/Lora {MODELS}/ESRGAN",
+            f"ln -vs {tmp}/ckpt {MODELS}/Stable-diffusion/tmp_ckpt",
+            f"ln -vs {tmp}/lora {MODELS}/Lora/tmp_lora",
+            f"ln -vs {tmp}/controlnet {MODELS}/ControlNet"
         ]
 
     elif ui == 'ComfyUI':
         return [
-            f"rm -rf {tmp}/*",
-            f"rm -rf {WEBUI}/models/checkpoints/tmp_ckpt {WEBUI}/models/loras/tmp_lora",
-            f"rm -rf {WEBUI}/models/controlnet {WEBUI}/models/clip",
-            f"ln -vs {tmp}/ckpt {WEBUI}/models/checkpoints/tmp_ckpt",
-            f"ln -vs {tmp}/lora {WEBUI}/models/loras/tmp_lora",
-            f"ln -vs {tmp}/controlnet {WEBUI}/models/controlnet",
-            f"ln -vs {tmp}/clip {WEBUI}/models/clip",
-            f"ln -vs {WEBUI}/models/checkpoints {WEBUI}/models/checkpoints_symlink"
+            f"rm -rf {tmp}/* {MODELS}/controlnet {MODELS}/clip",
+            f"rm -rf {MODELS}/checkpoints/tmp_ckpt {MODELS}/loras/tmp_lora",
+            f"ln -vs {tmp}/ckpt {MODELS}/checkpoints/tmp_ckpt",
+            f"ln -vs {tmp}/lora {MODELS}/loras/tmp_lora",
+            f"ln -vs {tmp}/controlnet {MODELS}/controlnet",
+            f"ln -vs {tmp}/clip {MODELS}/clip",
+            f"ln -vs {MODELS}/checkpoints {MODELS}/checkpoints_symlink"
         ]
 
     elif ui in ['Forge', 'ReForge']:
         return [
-            f"rm -rf {tmp}/*",
-            f"rm -rf {WEBUI}/models/Stable-diffusion/tmp_ckpt {WEBUI}/models/Lora/tmp_lora",
-            f"rm -rf {WEBUI}/models/ControlNet {WEBUI}/models/svd {WEBUI}/models/z123",
-            f"mkdir -p {WEBUI}/models/Lora {WEBUI}/models/ESRGAN",
-            f"ln -vs {tmp}/ckpt {WEBUI}/models/Stable-diffusion/tmp_ckpt",
-            f"ln -vs {tmp}/lora {WEBUI}/models/Lora/tmp_lora",
-            f"ln -vs {tmp}/controlnet {WEBUI}/models/ControlNet",
-            f"ln -vs {tmp}/z123 {WEBUI}/models/z123",
-            f"ln -vs {tmp}/svd {WEBUI}/models/svd"
+            f"rm -rf {tmp}/* {MODELS}/ControlNet {MODELS}/svd {MODELS}/z123",
+            f"rm -rf {MODELS}/Stable-diffusion/tmp_ckpt {MODELS}/Lora/tmp_lora",
+            f"mkdir -p {MODELS}/Lora {MODELS}/ESRGAN",
+            f"ln -vs {tmp}/ckpt {MODELS}/Stable-diffusion/tmp_ckpt",
+            f"ln -vs {tmp}/lora {MODELS}/Lora/tmp_lora",
+            f"ln -vs {tmp}/controlnet {MODELS}/ControlNet",
+            f"ln -vs {tmp}/z123 {MODELS}/z123",
+            f"ln -vs {tmp}/svd {MODELS}/svd"
+        ]
+
+    elif ui == 'SwarmUI':
+        return [
+            f"rm -rf {tmp}/* {MODELS}/Stable-Diffusion/tmp_ckpt",
+            f"rm -rf {MODELS}/Lora/tmp_lora {MODELS}/controlnet {MODELS}/clip",
+            f"ln -vs {tmp}/ckpt {MODELS}/Stable-Diffusion/tmp_ckpt",
+            f"ln -vs {tmp}/lora {MODELS}/Lora/tmp_lora",
+            f"ln -vs {tmp}/controlnet {MODELS}/controlnet",
+            f"ln -vs {tmp}/clip {MODELS}/clip"
         ]
 
 
-def webui_req(ui, WEBUI):
+def webui_req(ui, WEBUI, MODELS):
     from nenen88 import pull, download
 
     if ui == 'A1111':
@@ -196,10 +208,23 @@ def webui_req(ui, WEBUI):
         pull(f"https://github.com/gutris1/segsmaker comfyui {WEBUI}")
     elif ui == 'ReForge':
         pull(f"https://github.com/gutris1/segsmaker reforge {WEBUI}")
+    elif ui == 'SwarmUI':
+        MODELS.mkdir(parents=True, exist_ok=True)
 
+        dirs = ['Stable-Diffusion', 'Lora', 'Embeddings', 'VAE', 'upscale_models']
+        for sub in dirs:
+            (MODELS / sub).mkdir(parents=True, exist_ok=True)
+
+        download(f"https://dot.net/v1/dotnet-install.sh {WEBUI}")
+
+        dotnet = WEBUI / 'dotnet-install.sh'
+        dotnet.chmod(0o755)
+
+        netdot = "bash ./dotnet-install.sh --channel 8.0"
+        subprocess.run(shlex.split(netdot), stdout=sys.stdout, stderr=sys.stdout, check=True)
+        
     os.chdir(WEBUI)
-    req = sym_link(ui, WEBUI)
-
+    req = sym_link(ui, WEBUI, MODELS)
     for lines in req:
         subprocess.run(shlex.split(lines), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
@@ -209,14 +234,14 @@ def webui_req(ui, WEBUI):
         f"https://github.com/gutris1/segsmaker/raw/main/script/KC/segsmaker.py {WEBUI}"
     ]
 
-    upscalers_path = f"{WEBUI}/models/upscale_models" if ui == 'ComfyUI' else f"{WEBUI}/models/ESRGAN"
+    u = f"{MODELS}/upscale_models" if ui in ['ComfyUI', 'SwarmUI'] else f"{MODELS}/ESRGAN"
     upscalers = [
-        f"https://huggingface.co/pantat88/ui/resolve/main/4x-UltraSharp.pth {upscalers_path}",
-        f"https://huggingface.co/pantat88/ui/resolve/main/4x-AnimeSharp.pth {upscalers_path}",
-        f"https://huggingface.co/pantat88/ui/resolve/main/4x_NMKD-Superscale-SP_178000_G.pth {upscalers_path}",
-        f"https://huggingface.co/pantat88/ui/resolve/main/4x_RealisticRescaler_100000_G.pth {upscalers_path}",
-        f"https://huggingface.co/pantat88/ui/resolve/main/8x_RealESRGAN.pth {upscalers_path}",
-        f"https://huggingface.co/pantat88/ui/resolve/main/4x_foolhardy_Remacri.pth {upscalers_path}"
+        f"https://huggingface.co/pantat88/ui/resolve/main/4x-UltraSharp.pth {u}",
+        f"https://huggingface.co/pantat88/ui/resolve/main/4x-AnimeSharp.pth {u}",
+        f"https://huggingface.co/pantat88/ui/resolve/main/4x_NMKD-Superscale-SP_178000_G.pth {u}",
+        f"https://huggingface.co/pantat88/ui/resolve/main/4x_RealisticRescaler_100000_G.pth {u}",
+        f"https://huggingface.co/pantat88/ui/resolve/main/8x_RealESRGAN.pth {u}",
+        f"https://huggingface.co/pantat88/ui/resolve/main/4x_foolhardy_Remacri.pth {u}"
     ]
 
     line = scripts + upscalers
@@ -224,7 +249,7 @@ def webui_req(ui, WEBUI):
         download(item)
 
 
-def Extensions(ui, WEBUI):
+def Extensions(ui, WEBUI, MODELS):
     from nenen88 import clone, say, download
 
     if ui == 'ComfyUI':
@@ -234,8 +259,8 @@ def Extensions(ui, WEBUI):
         print()
 
         custom_nodes_models = [
-            f"https://github.com/sczhou/CodeFormer/releases/download/v0.1.0/codeformer.pth {WEBUI}/models/facerestore_models",
-            f"https://github.com/TencentARC/GFPGAN/releases/download/v1.3.4/GFPGANv1.4.pth {WEBUI}/models/facerestore_models"
+            f"https://github.com/sczhou/CodeFormer/releases/download/v0.1.0/codeformer.pth {MODELS}/facerestore_models",
+            f"https://github.com/TencentARC/GFPGAN/releases/download/v1.3.4/GFPGANv1.4.pth {MODELS}/facerestore_models"
         ]
 
         for item in custom_nodes_models:
@@ -248,9 +273,10 @@ def Extensions(ui, WEBUI):
         get_ipython().system("git clone -q https://github.com/gutris1/sd-encrypt-image")
 
 
-def installing_webui(ui, which_sd, WEBUI, EMB, VAE):
+def installing_webui(ui, which_sd, WEBUI, MODELS, EMB, VAE):
     from nenen88 import download
-    webui_req(ui, WEBUI)
+
+    webui_req(ui, WEBUI, MODELS)
 
     if which_sd == "1.5":
         embzip = f"{WEBUI}/embeddings.zip"
@@ -275,7 +301,8 @@ def installing_webui(ui, which_sd, WEBUI, EMB, VAE):
     if which_sd == "1.5":
         get_ipython().system(f"unzip -qo {embzip} -d {EMB} && rm {embzip}")
 
-    Extensions(ui, WEBUI)
+    if ui != 'SwarmUI':
+        Extensions(ui, WEBUI, MODELS)
 
 
 def webui_install(ui, which_sd):
@@ -301,8 +328,14 @@ def webui_install(ui, which_sd):
         repo = f'git clone -q https://github.com/Panchovix/stable-diffusion-webui-reForge ReForge'
         say("<b>【{red} Installing ReForge{d} 】{red}</b>")
 
-    EMB = f"{WEBUI}/models/embeddings" if ui == 'ComfyUI' else f"{WEBUI}/embeddings"
-    VAE = f"{WEBUI}/models/vae" if ui == 'ComfyUI' else f"{WEBUI}/models/VAE"
+    elif ui == 'SwarmUI':
+        WEBUI = HOME / 'SwarmUI'
+        repo = f"git clone https://github.com/mcmonkeyprojects/SwarmUI"
+        say("<b>【{red} Installing SwarmUI{d} 】{red}</b>")
+
+    MODELS = f"{WEBUI}/Models" if ui == 'SwarmUI' else f"{WEBUI}/models"
+    EMB = f"{MODELS}/Embeddings" if ui == 'SwarmUI' else (f"{MODELS}/embeddings" if ui == 'ComfyUI' else f"{WEBUI}/embeddings")
+    VAE = f"{MODELS}/vae" if ui == 'ComfyUI' else f"{MODELS}/VAE"
 
     req_list = [
         "curl -Lo /usr/bin/cl https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64",
@@ -316,7 +349,7 @@ def webui_install(ui, which_sd):
 
     get_ipython().system(f"{repo}")
     time.sleep(1)
-    installing_webui(ui, which_sd, WEBUI, EMB, VAE)
+    installing_webui(ui, which_sd, WEBUI, MODELS, EMB, VAE)
 
     get_ipython().run_line_magic('run', f'{MRK}')
     get_ipython().run_line_magic('run', f'{WEBUI}/venv.py')
@@ -362,7 +395,7 @@ def lets_go():
                     get_ipython().system(f"git pull origin {version}")
                     get_ipython().system("git fetch --tags")
 
-            elif ui == 'ComfyUI':
+            elif ui in ['ComfyUI', 'SwarmUI']:
                 get_ipython().system("git pull origin master")
                 get_ipython().system("git fetch --tags")
 
