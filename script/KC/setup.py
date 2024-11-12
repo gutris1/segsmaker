@@ -200,6 +200,8 @@ def sym_link(ui, WEBUI, MODELS):
 def webui_req(ui, WEBUI, MODELS):
     from nenen88 import pull, download
 
+    os.chdir(WEBUI)
+
     if ui == 'A1111':
         pull(f"https://github.com/gutris1/segsmaker a1111 {WEBUI}")
     elif ui == 'Forge':
@@ -219,11 +221,8 @@ def webui_req(ui, WEBUI, MODELS):
 
         dotnet = WEBUI / 'dotnet-install.sh'
         dotnet.chmod(0o755)
+        get_ipython().system("bash ./dotnet-install.sh --channel 8.0")
 
-        netdot = "bash ./dotnet-install.sh --channel 8.0"
-        subprocess.run(shlex.split(netdot), stdout=sys.stdout, stderr=sys.stdout, check=True)
-        
-    os.chdir(WEBUI)
     req = sym_link(ui, WEBUI, MODELS)
     for lines in req:
         subprocess.run(shlex.split(lines), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
@@ -279,7 +278,7 @@ def installing_webui(ui, which_sd, WEBUI, MODELS, EMB, VAE):
     webui_req(ui, WEBUI, MODELS)
 
     if which_sd == "1.5":
-        embzip = f"{WEBUI}/embeddings.zip"
+        embzip =  WEBUI / 'embeddings.zip'
         extras = [
             f"https://huggingface.co/pantat88/ui/resolve/main/embeddings.zip {WEBUI}",
             f"https://huggingface.co/stabilityai/sd-vae-ft-mse-original/resolve/main/vae-ft-mse-840000-ema-pruned.safetensors {VAE}"
@@ -333,9 +332,9 @@ def webui_install(ui, which_sd):
         repo = f"git clone https://github.com/mcmonkeyprojects/SwarmUI"
         say("<b>【{red} Installing SwarmUI{d} 】{red}</b>")
 
-    MODELS = f"{WEBUI}/Models" if ui == 'SwarmUI' else f"{WEBUI}/models"
-    EMB = f"{MODELS}/Embeddings" if ui == 'SwarmUI' else (f"{MODELS}/embeddings" if ui == 'ComfyUI' else f"{WEBUI}/embeddings")
-    VAE = f"{MODELS}/vae" if ui == 'ComfyUI' else f"{MODELS}/VAE"
+    MODELS = WEBUI / 'Models' if ui == 'SwarmUI' else WEBUI / 'models'
+    EMB = MODELS / 'Embeddings' if ui == 'SwarmUI' else (MODELS / 'embeddings' if ui == 'ComfyUI' else WEBUI / 'embeddings')
+    VAE = MODELS / 'vae' if ui == 'ComfyUI' else MODELS / 'VAE'
 
     req_list = [
         "curl -Lo /usr/bin/cl https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64",
@@ -351,8 +350,8 @@ def webui_install(ui, which_sd):
     time.sleep(1)
     installing_webui(ui, which_sd, WEBUI, MODELS, EMB, VAE)
 
-    get_ipython().run_line_magic('run', f'{MRK}')
-    get_ipython().run_line_magic('run', f'{WEBUI}/venv.py')
+    get_ipython().run_line_magic('run', str(MRK))
+    get_ipython().run_line_magic('run', str(WEBUI / 'venv.py'))
 
     say("<br><b>【{red} Done{d} 】{red}</b>")
 
