@@ -17,6 +17,7 @@ STP = HOME / '.conda/setup.py'
 tmp = Path('/tmp')
 vnv = tmp / 'venv'
 WEBUI = HOME / "ComfyUI"
+MODELS = WEBUI / 'models'
 
 os.chdir(HOME)
 
@@ -35,14 +36,15 @@ def tmp_cleaning():
 def req_list():
     return [
         f"rm -rf {HOME}/tmp {HOME}/.cache/*",
-        f"rm -rf {WEBUI}/models/checkpoints/tmp_ckpt",
-        f"rm -rf {WEBUI}/models/loras/tmp_lora {WEBUI}/models/controlnet {WEBUI}/models/clip",
+        f"rm -rf {MODELS}/checkpoints/tmp_ckpt",
+        f"rm -rf {MODELS}/loras/tmp_lora {MODELS}/controlnet {MODELS}/clip",
         f"ln -vs /tmp {HOME}/tmp",
-        f"ln -vs /tmp/ckpt {WEBUI}/models/checkpoints/tmp_ckpt",
-        f"ln -vs /tmp/lora {WEBUI}/models/loras/tmp_lora",
-        f"ln -vs /tmp/controlnet {WEBUI}/models/controlnet",
-        f"ln -vs /tmp/clip {WEBUI}/models/clip",
-        f"ln -vs {WEBUI}/models/checkpoints {WEBUI}/models/checkpoints_symlink"]
+        f"ln -vs /tmp/ckpt {MODELS}/checkpoints/tmp_ckpt",
+        f"ln -vs /tmp/lora {MODELS}/loras/tmp_lora",
+        f"ln -vs /tmp/controlnet {MODELS}/controlnet",
+        f"ln -vs /tmp/clip {MODELS}/clip",
+        f"ln -vs {MODELS}/checkpoints {MODELS}/checkpoints_symlink"
+    ]
 
 def webui_req():
     time.sleep(1)
@@ -52,7 +54,6 @@ def webui_req():
 
     os.chdir(WEBUI)
     req = req_list()
-
     for lines in req:
         subprocess.run(shlex.split(lines), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
@@ -60,15 +61,17 @@ def webui_req():
         f"https://github.com/gutris1/segsmaker/raw/main/script/SM/controlnet.py {WEBUI}/asd",
         f"https://github.com/gutris1/segsmaker/raw/main/script/SM/venv.py {WEBUI}",
         f"https://github.com/gutris1/segsmaker/raw/main/script/SM/Launcher.py {WEBUI}",
-        f"https://github.com/gutris1/segsmaker/raw/main/script/SM/segsmaker.py {WEBUI}"]
+        f"https://github.com/gutris1/segsmaker/raw/main/script/SM/segsmaker.py {WEBUI}"
+    ]
 
     upscalers = [
-        f"https://huggingface.co/pantat88/ui/resolve/main/4x-UltraSharp.pth {WEBUI}/models/upscale_models",
-        f"https://huggingface.co/pantat88/ui/resolve/main/4x-AnimeSharp.pth {WEBUI}/models/upscale_models",
-        f"https://huggingface.co/pantat88/ui/resolve/main/4x_NMKD-Superscale-SP_178000_G.pth {WEBUI}/models/upscale_models",
-        f"https://huggingface.co/pantat88/ui/resolve/main/4x_RealisticRescaler_100000_G.pth {WEBUI}/models/upscale_models",
-        f"https://huggingface.co/pantat88/ui/resolve/main/8x_RealESRGAN.pth {WEBUI}/models/upscale_models",
-        f"https://huggingface.co/pantat88/ui/resolve/main/4x_foolhardy_Remacri.pth {WEBUI}/models/upscale_models"]
+        f"https://huggingface.co/pantat88/ui/resolve/main/4x-UltraSharp.pth {MODELS}/upscale_models",
+        f"https://huggingface.co/pantat88/ui/resolve/main/4x-AnimeSharp.pth {MODELS}/upscale_models",
+        f"https://huggingface.co/pantat88/ui/resolve/main/4x_NMKD-Superscale-SP_178000_G.pth {MODELS}/upscale_models",
+        f"https://huggingface.co/pantat88/ui/resolve/main/4x_RealisticRescaler_100000_G.pth {MODELS}/upscale_models",
+        f"https://huggingface.co/pantat88/ui/resolve/main/8x_RealESRGAN.pth {MODELS}/upscale_models",
+        f"https://huggingface.co/pantat88/ui/resolve/main/4x_foolhardy_Remacri.pth {MODELS}/upscale_models"
+    ]
 
     line = scripts + upscalers
     for item in line:
@@ -84,9 +87,9 @@ def install_custom_nodes():
     print()
 
     custom_nodes_models = [
-        f"https://github.com/sczhou/CodeFormer/releases/download/v0.1.0/codeformer.pth {WEBUI}/models/facerestore_models",
-        f"https://github.com/TencentARC/GFPGAN/releases/download/v1.3.4/GFPGANv1.4.pth {WEBUI}/models/facerestore_models"]
-
+        f"https://github.com/sczhou/CodeFormer/releases/download/v0.1.0/codeformer.pth {MODELS}/facerestore_models",
+        f"https://github.com/TencentARC/GFPGAN/releases/download/v1.3.4/GFPGANv1.4.pth {MODELS}/facerestore_models"
+    ]
     for item in custom_nodes_models:
         download(item)
 
@@ -94,14 +97,14 @@ def sd_15():
     webui_req()
 
     extras = [
-        f"https://huggingface.co/pantat88/ui/resolve/main/embeddings.zip {WEBUI}/models",
-        f"https://huggingface.co/stabilityai/sd-vae-ft-mse-original/resolve/main/vae-ft-mse-840000-ema-pruned.safetensors {WEBUI}/models/vae"]
-
+        f"https://huggingface.co/pantat88/ui/resolve/main/embeddings.zip {MODELS}",
+        f"https://huggingface.co/stabilityai/sd-vae-ft-mse-original/resolve/main/vae-ft-mse-840000-ema-pruned.safetensors {MODELS}/vae"
+    ]
     for items in extras:
         download(items)
 
-    get_ipython().system(f"unzip -qo {WEBUI}/models/embeddings.zip -d {WEBUI}/models/embeddings")
-    get_ipython().system(f"rm {WEBUI}/models/embeddings.zip")
+    get_ipython().system(f"unzip -qo {MODELS}/embeddings.zip -d {MODELS}/embeddings")
+    get_ipython().system(f"rm {MODELS}/embeddings.zip")
 
     install_custom_nodes()
 
@@ -109,11 +112,11 @@ def sd_xl():
     webui_req()
 
     extras = [
-        f"https://civitai.com/api/download/models/403492 {WEBUI}/models/embeddings",
-        f"https://civitai.com/api/download/models/182974 {WEBUI}/models/embeddings",
-        f"https://civitai.com/api/download/models/159385 {WEBUI}/models/embeddings",
-        f"https://civitai.com/api/download/models/159184 {WEBUI}/models/embeddings",
-        f"https://huggingface.co/stabilityai/sdxl-vae/resolve/main/sdxl_vae.safetensors {WEBUI}/models/vae"
+        f"https://civitai.com/api/download/models/403492 {MODELS}/embeddings",
+        f"https://civitai.com/api/download/models/182974 {MODELS}/embeddings",
+        f"https://civitai.com/api/download/models/159385 {MODELS}/embeddings",
+        f"https://civitai.com/api/download/models/159184 {MODELS}/embeddings",
+        f"https://huggingface.co/stabilityai/sdxl-vae/resolve/main/sdxl_vae.safetensors {MODELS}/vae"
     ]
 
     for items in extras:
@@ -125,8 +128,7 @@ def marking(path, fn, ui):
     txt = path / fn
     values = {
         'ui': ui,
-        'launch_args1': '',
-        'launch_args2': '',
+        'launch_args': '',
         'zrok_token': '',
         'ngrok_token': '',
         'tunnel': ''
@@ -141,8 +143,7 @@ def marking(path, fn, ui):
 
     data.update({
         'ui': ui,
-        'launch_args1': '',
-        'launch_args2': '',
+        'launch_args': '',
         'tunnel': ''
     })
 
@@ -158,20 +159,21 @@ def webui_install(b):
 
     with webui_setup:
         say("<b>【{red} Installing ComfyUI{d} 】{red}</b>")
-        get_ipython().system(f"{repo}")
+        get_ipython().system(repo)
 
-        marking(SRC, 'marking.json', 'ComfyUI')
+        marking(SRC, 'marking.json', WEBUI.name)
 
         if b == 'button-15':
             sd_15()
         elif b == 'button-xl':
             sd_xl()
 
-        get_ipython().run_line_magic('run', f'{MARK}')
+        get_ipython().run_line_magic('run', str(MARK))
 
         with loading:
             loading.clear_output(wait=True)
-            get_ipython().run_line_magic('run', f'{WEBUI}/venv.py')
+            get_ipython().run_line_magic('run', str(WEBUI / 'venv.py'))
+
             os.chdir(HOME)
             loading.clear_output(wait=True)
             say("<b>【{red} Done{d} 】{red}</b>")
@@ -181,7 +183,7 @@ def go_back(b):
     clear_output()
 
     with webui_setup:
-        get_ipython().run_line_magic('run', f'{STP}')
+        get_ipython().run_line_magic('run', str(STP))
 
 loading = widgets.Output()
 webui_setup = widgets.Output()
@@ -208,7 +210,7 @@ panel.add_class("multi-panel")
 def check_webui(ui_name, path, mark):
     if path.exists():
         print(f'{ui_name} is installed, Uninstall first.')
-        get_ipython().run_line_magic('run', f'{mark}')
+        get_ipython().run_line_magic('run', str(mark))
         return True
     return False
 
@@ -239,7 +241,8 @@ def webui_widgets():
             ('Forge', HOME / 'Forge'),
             ('ReForge', HOME / 'ReForge'),
             ('FaceFusion', HOME / 'FaceFusion'),
-            ('SDTrainer', HOME / 'SDTrainer')
+            ('SDTrainer', HOME / 'SDTrainer'),
+            ('SwarmUI', HOME / 'SwarmUI')
         ]
         
         for ui_name, path in webui_list:
