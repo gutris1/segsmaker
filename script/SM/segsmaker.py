@@ -51,7 +51,7 @@ def load_config():
 
     cpu_cb.value = config.get('cpu_usage', False)
 
-    if ui in ['SDTrainer', 'FaceFusion'] or GPU_check():
+    if ui in ['SDTrainer', 'FaceFusion', 'SwarmUI'] or GPU_check():
         cpu_cb.layout.display = 'none'
     else:
         cpu_cb.layout.display = 'block'
