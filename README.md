@@ -14,8 +14,16 @@
 
 
 # Changelog
-### 2024-11-04
+### 2024-11-13
+- Added SwarmUI for Colab, Kaggle and Studio Lab notebook.<br>
+![Screenshot_1](https://github.com/user-attachments/assets/1b65ec70-a6d7-4a37-921d-2f5c7f71b0c3)
+
+
+<details><summary>2024-11-04</summary><br>
+
 - Notebook for colab and kaggle.
+</details>
+
 <details><summary>2024-10-05</summary><br>
 
 - <code>[SD-Trainer](https://github.com/Akegarasu/lora-scripts)</code> webui added.<br>

@@ -15,27 +15,19 @@ py = '/tmp/venv/bin/python3'
 
 def get_args(ui):
     args_line = {
-        'A1111': (
-            '--xformers --no-half-vae'
-        ),
-        'Forge': (
-            '--disable-xformers --opt-sdp-attention --cuda-stream --pin-shared-memory'
-        ),
-        'ComfyUI': (
-            '--dont-print-server --preview-method auto --use-pytorch-cross-attention'
-        ),
-        'ReForge': (
-            '--xformers --cuda-stream --pin-shared-memory'
-        ),
+        'A1111': ('--xformers --no-half-vae'),
+        'Forge': ('--disable-xformers --opt-sdp-attention --cuda-stream --pin-shared-memory'),
+        'ComfyUI': ('--dont-print-server --preview-method auto --use-pytorch-cross-attention'),
+        'ReForge': ('--xformers --cuda-stream --pin-shared-memory'),
         'FaceFusion': '',
-        'SDTrainer': ''
+        'SDTrainer': '',
+        'SwarmUI': ('--launch_mode none')
     }
 
     return args_line.get(ui, '')
 
 def GPU_check():
-    o = get_ipython().getoutput('nvidia-smi')
-    return not any("command not found" in ppai for ppai in o)
+    return Path("/proc/driver/nvidia").exists()
 
 def load_config():
     global ui
@@ -45,13 +37,11 @@ def load_config():
     zrok_token.value = config.get('zrok_token', '')
     ngrok_token.value = config.get('ngrok_token', '')
 
-    launch_argz1 = config.get('launch_args1')
-    if launch_argz1:
-        launch_args1.value = launch_argz1
+    arg = config.get('launch_args')
+    if arg:
+        launch_args.value = arg
     else:
-        launch_args1.value = get_args(ui)
-
-    launch_args2.value = config.get('launch_args2', '')
+        launch_args.value = get_args(ui)
 
     tunnell = config.get('tunnel')
     if tunnell in ['Pinggy', 'ZROK', 'NGROK']:
@@ -61,9 +51,7 @@ def load_config():
 
     cpu_cb.value = config.get('cpu_usage', False)
 
-    GPU = GPU_check()
-
-    if ui in ['SDTrainer', 'FaceFusion'] or not GPU:
+    if ui in ['SDTrainer', 'FaceFusion', 'SwarmUI'] or GPU_check():
         cpu_cb.layout.display = 'none'
     else:
         cpu_cb.layout.display = 'block'
@@ -80,8 +68,10 @@ def load_config():
         title.value = '<div class="title"><h1>Face Fusion</h1></div>'
     elif ui == 'SDTrainer':
         title.value = '<div class="title"><h1>SD Trainer</h1></div>'
+    elif ui == 'SwarmUI':
+        title.value = '<div class="title"><h1>SwarmUI</h1></div>'
 
-def save_config(zrok_token, ngrok_token, args1, args2, tunnel):
+def save_config(zrok_token, ngrok_token, launch_args, tunnel):
     config = {}
     if MARK.exists():
         with MARK.open('r') as file:
@@ -90,8 +80,7 @@ def save_config(zrok_token, ngrok_token, args1, args2, tunnel):
     config.update({
         "zrok_token": zrok_token,
         "ngrok_token": ngrok_token,
-        "launch_args1": args1,
-        "launch_args2": args2,
+        "launch_args": launch_args,
         "tunnel": tunnel,
         "cpu_usage": cpu_cb.value
     })
@@ -109,56 +98,69 @@ title = widgets.HTML()
 zrok_token = widgets.Text(placeholder='Your ZROK Token')
 ngrok_token = widgets.Text(placeholder='Your NGROK Token')
 
-launch_args1 = widgets.Text(placeholder='Launch Arguments List')
-launch_args2 = widgets.Text(placeholder='Add Launch Arguments List here')
-args_box = widgets.VBox([launch_args1, launch_args2], layout=widgets.Layout(
-    display='flex',
-    flex_flow='column',
-    justify_content='space-between'))
+launch_args = widgets.Text(placeholder='Launch Arguments List', layout=widgets.Layout(top='20px'))
 
 options = ["Pinggy", "ZROK", "NGROK"]
-tunnel = widgets.RadioButtons(options=options, layout=widgets.Layout(
-    display='flex',
-    flex_flow='row',
-    justify_content='space-between'))
+tunnel = widgets.RadioButtons(
+    options=options,
+    layout=widgets.Layout(
+        display='flex',
+        flex_flow='row',
+        justify_content='space-between'
+    )
+)
 
-tunnel_button = widgets.Box([tunnel])
-top = widgets.HBox([tunnel, title], layout=widgets.Layout(
-    display='flex',
-    flex_flow='row',
-    justify_content='space-between'))
+top = widgets.HBox(
+    [tunnel, title],
+    layout=widgets.Layout(
+        display='flex',
+        flex_flow='row',
+        justify_content='space-between'
+    )
+)
 
 launch_button = widgets.Button(description='Launch')
 exit_button = widgets.Button(description='Exit')
 cpu_cb = widgets.Checkbox(value=False, description='CPU', layout=widgets.Layout(left='10px'))
-button_box = widgets.HBox([launch_button, cpu_cb, exit_button], layout=widgets.Layout(
-    display='flex',
-    flex_flow='row',
-    align_items='center',
-    justify_content='space-between'))
+button_box = widgets.HBox(
+    [launch_button, cpu_cb, exit_button],
+    layout=widgets.Layout(
+        display='flex',
+        flex_flow='row',
+        align_items='center',
+        justify_content='space-between'
+    )
+)
 
-token_box = widgets.VBox([zrok_token, ngrok_token, args_box], layout=widgets.Layout(
-    width='auto',
-    height='auto',
-    flex_flow='column',
-    align_items='center',
-    justify_content='space-between',
-    padding='0px'))
+token_box = widgets.VBox(
+    [zrok_token, ngrok_token, launch_args],
+    layout=widgets.Layout(
+        width='auto',
+        height='auto',
+        flex_flow='column',
+        align_items='center',
+        justify_content='space-between',
+        padding='0px'
+    )
+)
 
-launch_panel = widgets.Box([top, token_box, button_box], layout=widgets.Layout(
-    width='700px',
-    height='350px',
-    display='flex',
-    flex_flow='column',
-    justify_content='space-between',
-    padding='20px'))
+launch_panel = widgets.Box(
+    [top, token_box, button_box],
+    layout=widgets.Layout(
+        width='700px',
+        height='300px',
+        display='flex',
+        flex_flow='column',
+        justify_content='space-between',
+        padding='20px'
+    )
+)
 
 cpu_cb.add_class('cpu-cbx')
 tunnel.add_class('tunnel')
 zrok_token.add_class('zrok')
 ngrok_token.add_class('ngrok')
-launch_args1.add_class('text-input')
-launch_args2.add_class('args2')
+launch_args.add_class('text-input')
 launch_button.add_class('buttons')
 exit_button.add_class('buttons')
 launch_panel.add_class('launch-panel')
@@ -224,7 +226,7 @@ def NGROK_auth():
 
 def launching(ui, skip_comfyui_check=False):
     global py
-    args = f'{launch_args1.value} {launch_args2.value}'
+    args = f'{launch_args.value}'
     tunnel_name = tunnel.value
 
     get_ipython().run_line_magic('run', 'venv.py')
@@ -237,11 +239,17 @@ def launching(ui, skip_comfyui_check=False):
         elif ui == 'ComfyUI':
             args += ' --cpu'
 
-    port = 28000 if ui == 'SDTrainer' else (8188 if ui == 'ComfyUI' else 7860)
-
-    if ui == 'ComfyUI' and not skip_comfyui_check:
-        get_ipython().system(f'{py} apotek.py')
-        clear_output(wait=True)
+    if ui == 'SDTrainer':
+        port = 28000
+    elif ui == 'SwarmUI':
+        port = 7801
+    elif ui == 'ComfyUI':
+        port = 8188
+        if not skip_comfyui_check:
+            get_ipython().system(f'{py} apotek.py')
+            clear_output(wait=True)
+    else:
+        port = 7860
 
     if ui in ['A1111', 'Forge', 'ReForge']:
         args += ' --enable-insecure-extension-access --disable-console-progressbars --theme dark'
@@ -306,14 +314,13 @@ def waiting(condition, is_ready):
     launching(ui, skip_comfyui_check=args.skip_comfyui_check)
 
 def launch(b):
-    global ui, zrok_token, ngrok_token, launch_args1, launch_args2, tunnel
+    global ui, zrok_token, ngrok_token, launch_args, tunnel
     launch_panel.close()
 
     save_config(
         zrok_token.value,
         ngrok_token.value,
-        launch_args1.value,
-        launch_args2.value,
+        launch_args.value,
         tunnel.value)
 
     with condition:

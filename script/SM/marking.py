@@ -40,14 +40,21 @@ def get_webui_paths():
         'ComfyUI': 'ComfyUI',
         'ReForge': 'ReForge',
         'FaceFusion': 'FaceFusion',
-        'SDTrainer': 'SDTrainer'
+        'SDTrainer': 'SDTrainer',
+        'SwarmUI': 'SwarmUI'
     }
+
     webui = HOME / webui_paths[ui] if ui in webui_paths else None
-    webui_output = (
-        webui / 'outputs' if ui in ('A1111', 'Forge', 'ReForge') else
-        webui / 'output' if ui in ('ComfyUI', 'SDTrainer') else
-        None
-    )
+
+    if ui in ['A1111', 'Forge', 'ReForge']:
+        webui_output = webui / 'outputs'
+    elif ui in ['ComfyUI', 'SDTrainer']:
+        webui_output = webui / 'output'
+    elif ui == 'SwarmUI':
+        webui_output = webui / 'Output'
+    else:
+        webui_output = None
+
     return webui, webui_output
 
 def set_paths(ui):
@@ -57,25 +64,39 @@ def set_paths(ui):
         'ComfyUI': ('ComfyUI', 'custom_nodes', 'embeddings', 'vae', 'checkpoints', 'loras', 'upscale_models'),
         'ReForge': ('ReForge', 'extensions', 'embeddings', 'VAE', 'Stable-diffusion', 'Lora', 'ESRGAN'),
         'FaceFusion': ('FaceFusion', None, None, None, None, None, None),
-        'SDTrainer': ('SDTrainer', None, None, 'VAE', 'sd-models', None, None)
+        'SDTrainer': ('SDTrainer', None, None, 'VAE', 'sd-models', None, None),
+        'SwarmUI': ('SwarmUI', 'Extensions', 'Embeddings', 'VAE', 'Stable-Diffusion', 'Lora', 'upscale_models')
     }
 
     if ui in webui_paths:
-        webui_name, ext, emb, v, c, l, upscalers = webui_paths[ui]
+        webui_name, ext, emb, v, c, l, u = webui_paths[ui]
         webui = HOME / webui_name if webui_name else None
 
-        models = webui if ui == 'SDTrainer' else (webui / 'models' if webui else None)
+        if ui == 'SDTrainer':
+            models = webui
+        elif ui == 'SwarmUI':
+            models = webui / 'Models'
+        else:
+            models = webui / 'models' if webui else None
 
-        webui_output = (
-            webui / 'outputs' if ui in ('A1111', 'Forge', 'ReForge') else
-            webui / 'output' if ui in ('ComfyUI', 'SDTrainer') else
+        if ui in ['A1111', 'Forge', 'ReForge']:
+            webui_output = webui / 'outputs'
+        elif ui in ['ComfyUI', 'SDTrainer']:
+            webui_output = webui / 'output'
+        elif ui == 'SwarmUI':
+            webui_output = webui / 'Output'
+        else:
+            webui_output = None
+
+        extensions = (
+            webui / 'src' / ext if ui == 'SwarmUI' and ext else
+            webui / ext if ext else
             None
         )
 
-        extensions = webui / ext if ext else None
         embeddings = (
-            models / emb if ui == 'ComfyUI' else
-            webui / emb if ui in ('A1111', 'Forge', 'ReForge') else
+            models / emb if ui in ['ComfyUI', 'SwarmUI'] else
+            webui / emb if ui in ['A1111', 'Forge', 'ReForge'] else
             None
         )
 
@@ -83,11 +104,9 @@ def set_paths(ui):
         ckpt = models / c if models and c else None
         lora = models / l if models and l else None
 
-        ups = (
-            models / upscalers if ui in ['A1111', 'Forge', 'ReForge', 'ComfyUI'] else None
-        )
+        upscale = models / u if ui not in ['FaceFusion', 'SDTrainer'] else None
 
-        return webui, models, webui_output, extensions, embeddings, vae, ckpt, lora, ups
+        return webui, models, webui_output, extensions, embeddings, vae, ckpt, lora, upscale
 
 if SM:
     @register_line_magic
