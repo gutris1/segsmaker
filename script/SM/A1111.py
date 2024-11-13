@@ -197,7 +197,7 @@ panel.add_class("multi-panel")
 def check_webui(ui_name, path, mark):
     if path.exists():
         print(f'{ui_name} is installed, Uninstall first.')
-        get_ipython().run_line_magic('run', f'{mark}')
+        get_ipython().run_line_magic('run', str(mark))
         return True
     return False
 
