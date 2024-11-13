@@ -30,8 +30,8 @@ if not ENVNAME:
 
 HOME = Path(ENVHOME)
 BASEPATH = Path(ENVBASE)
-tmp = BASEPATH / 'temp'
-vnv = BASEPATH / 'venv'
+TMP = BASEPATH / 'temp'
+VNV = BASEPATH / 'venv'
 
 SRC = HOME / 'gutris1'
 MRK = SRC / 'marking.py'
@@ -43,83 +43,63 @@ nenen = STR / "nenen88.py"
 pantat = STR / "pantat88.py"
 KANDANG = STR / 'KANDANG.py'
 
-tmp.mkdir(parents=True, exist_ok=True)
+TMP.mkdir(parents=True, exist_ok=True)
 SRC.mkdir(parents=True, exist_ok=True)
 
 VALID_WEBUI_OPTIONS = ["A1111", "Forge", "ComfyUI", "ReForge", "SwarmUI"]
 VALID_SD_OPTIONS = ["1.5", "xl"]
 
 def prevent_silly():
-    full_args = ' '.join(sys.argv)
-    hf_read_token = None
-    civitai_key = None
-
-    if '--webui' in full_args:
-        webui_value = full_args.split('--webui=')[1].split('--')[0].strip()
-        if ',' in webui_value:
-            print(f"{ERR} multiple values for --webui detected '{webui_value}'\nprovide only one valid option")
-            print(f"available webui options: {', '.join(VALID_WEBUI_OPTIONS)}")
-            return None, None, None
-
-    if '--sd' in full_args:
-        sd_value = full_args.split('--sd=')[1].split('--')[0].strip()
-        if ',' in sd_value:
-            print(f"{ERR} multiple values for --sd detected '{sd_value}'\nprovide only one valid option")
-            print(f"available sd options: {', '.join(VALID_SD_OPTIONS)}")
-            return None, None, None
-
-    if '--civitai_key' in full_args:
-        civitai_key = full_args.split('--civitai_key=')[1].split('--')[0].strip()
-        if not civitai_key:
-            print(f"{ERR} CivitAI API key is missing.")
-            return None, None, None
-        if re.search(r'\s+', civitai_key):
-            print(f"{ERR} civitAI API key contains spaces '{civitai_key}'\nnot allowed.")
-            return None, None, None
-        if len(civitai_key) < 32:
-            print(f"{ERR} CivitAI API key must be at least 32 characters long.")
-            return None, None, None
-
-    if '--hf_read_token' in full_args:
-        hf_read_token = full_args.split('--hf_read_token=')[1].split('--')[0].strip()
-        if re.search(r'\s', hf_read_token):
-            hf_read_token = ""
-
     parser = argparse.ArgumentParser(description="WebUI Installer Script for Kaggle and Google Colab")
-    parser.add_argument('--webui', required=True, help="available webui: A1111, Forge, ComfyUI, ReForge")
+    parser.add_argument('--webui', required=True, help="available webui: A1111, Forge, ComfyUI, ReForge, SwarmUI")
     parser.add_argument('--sd', required=True, help="available sd: 1.5, xl")
     parser.add_argument('--civitai_key', required=True, help="your CivitAI API key")
     parser.add_argument('--hf_read_token', default=None, help="your Huggingface READ Token (optional)")
 
     args = parser.parse_args()
 
-    webui_input = args.webui.lower()
-    sd_input = args.sd.lower()
-    civitai_key = args.civitai_key.strip()
-    hf_read_token = hf_read_token if hf_read_token else args.hf_read_token
+    arg1 = args.webui.lower()
+    arg2 = args.sd.lower()
+    arg3 = args.civitai_key.strip()
+    arg4 = args.hf_read_token.strip() if args.hf_read_token else ""
 
-    if not any(webui_input == option.lower() for option in VALID_WEBUI_OPTIONS):
-        print(f"invalid webui option: '{args.webui}'")
-        print(f"available webui options: {', '.join(VALID_WEBUI_OPTIONS)}")
+    if not any(arg1 == option.lower() for option in VALID_WEBUI_OPTIONS):
+        print(f"{ERR}: invalid webui option: '{args.webui}'")
+        print(f"Available webui options: {', '.join(VALID_WEBUI_OPTIONS)}")
         return None, None, None
 
-    if not any(sd_input == option.lower() for option in VALID_SD_OPTIONS):
-        print(f"invalid sd option: '{args.sd}'")
-        print(f"available sd options: {', '.join(VALID_SD_OPTIONS)}")
+    if not any(arg2 == option.lower() for option in VALID_SD_OPTIONS):
+        print(f"{ERR}: invalid sd option: '{args.sd}'")
+        print(f"Available sd options: {', '.join(VALID_SD_OPTIONS)}")
         return None, None, None
 
-    webui_webui = next(option for option in VALID_WEBUI_OPTIONS if webui_input == option.lower())
-    sd_sd = next(option for option in VALID_SD_OPTIONS if sd_input == option.lower())
+    if not arg3:
+        print(f"{ERR}: CivitAI API key is missing.")
+        return None, None, None
+    if re.search(r'\s+', arg3):
+        print(f"{ERR}: CivitAI API key contains spaces '{arg3}' - not allowed.")
+        return None, None, None
+    if len(arg3) < 32:
+        print(f"{ERR}: CivitAI API key must be at least 32 characters long.")
+        return None, None, None
 
-    return (webui_webui, sd_sd), civitai_key, hf_read_token
+    if not arg4:
+        arg4 = ""
+    if re.search(r'\s+', arg4):
+        arg4 = ""
+
+    webui_webui = next(option for option in VALID_WEBUI_OPTIONS if arg1 == option.lower())
+    sd_sd = next(option for option in VALID_SD_OPTIONS if arg2 == option.lower())
+
+    return (webui_webui, sd_sd), arg3, arg4
 
 
 def saving():
     j = {
         "ENVNAME": ENVNAME,
         "HOMEPATH": HOME,
-        "TEMPPATH": tmp,
-        "VENVPATH": vnv,
+        "TEMPPATH": TMP,
+        "VENVPATH": VNV,
         "BASEPATH": BASEPATH
     }
     
@@ -161,45 +141,45 @@ def key_inject(C, H):
 def sym_link(U, M):
     if U == 'A1111':
         return [
-            f"rm -rf {tmp}/* {M}/Stable-diffusion/tmp_ckpt",
-            f"rm -rf {M}/Lora/tmp_lora {M}/ControlNet",
+            f"rm -rf {TMP}/* {M}/Stable-diffusion/TMP_ckpt",
+            f"rm -rf {M}/Lora/TMP_lora {M}/ControlNet",
             f"mkdir -p {M}/Lora {M}/ESRGAN",
-            f"ln -vs {tmp}/ckpt {M}/Stable-diffusion/tmp_ckpt",
-            f"ln -vs {tmp}/lora {M}/Lora/tmp_lora",
-            f"ln -vs {tmp}/controlnet {M}/ControlNet"
+            f"ln -vs {TMP}/ckpt {M}/Stable-diffusion/TMP_ckpt",
+            f"ln -vs {TMP}/lora {M}/Lora/TMP_lora",
+            f"ln -vs {TMP}/controlnet {M}/ControlNet"
         ]
 
     elif U == 'ComfyUI':
         return [
-            f"rm -rf {tmp}/* {M}/controlnet {M}/clip",
-            f"rm -rf {M}/checkpoints/tmp_ckpt {M}/loras/tmp_lora",
-            f"ln -vs {tmp}/ckpt {M}/checkpoints/tmp_ckpt",
-            f"ln -vs {tmp}/lora {M}/loras/tmp_lora",
-            f"ln -vs {tmp}/controlnet {M}/controlnet",
-            f"ln -vs {tmp}/clip {M}/clip",
+            f"rm -rf {TMP}/* {M}/controlnet {M}/clip",
+            f"rm -rf {M}/checkpoints/TMP_ckpt {M}/loras/TMP_lora",
+            f"ln -vs {TMP}/ckpt {M}/checkpoints/TMP_ckpt",
+            f"ln -vs {TMP}/lora {M}/loras/TMP_lora",
+            f"ln -vs {TMP}/controlnet {M}/controlnet",
+            f"ln -vs {TMP}/clip {M}/clip",
             f"ln -vs {M}/checkpoints {M}/checkpoints_symlink"
         ]
 
     elif U in ['Forge', 'ReForge']:
         return [
-            f"rm -rf {tmp}/* {M}/ControlNet {M}/svd {M}/z123",
-            f"rm -rf {M}/Stable-diffusion/tmp_ckpt {M}/Lora/tmp_lora",
+            f"rm -rf {TMP}/* {M}/ControlNet {M}/svd {M}/z123",
+            f"rm -rf {M}/Stable-diffusion/TMP_ckpt {M}/Lora/TMP_lora",
             f"mkdir -p {M}/Lora {M}/ESRGAN",
-            f"ln -vs {tmp}/ckpt {M}/Stable-diffusion/tmp_ckpt",
-            f"ln -vs {tmp}/lora {M}/Lora/tmp_lora",
-            f"ln -vs {tmp}/controlnet {M}/ControlNet",
-            f"ln -vs {tmp}/z123 {M}/z123",
-            f"ln -vs {tmp}/svd {M}/svd"
+            f"ln -vs {TMP}/ckpt {M}/Stable-diffusion/TMP_ckpt",
+            f"ln -vs {TMP}/lora {M}/Lora/TMP_lora",
+            f"ln -vs {TMP}/controlnet {M}/ControlNet",
+            f"ln -vs {TMP}/z123 {M}/z123",
+            f"ln -vs {TMP}/svd {M}/svd"
         ]
 
     elif U == 'SwarmUI':
         return [
-            f"rm -rf {tmp}/* {M}/Stable-Diffusion/tmp_ckpt",
-            f"rm -rf {M}/Lora/tmp_lora {M}/controlnet {M}/clip",
-            f"ln -vs {tmp}/ckpt {M}/Stable-Diffusion/tmp_ckpt",
-            f"ln -vs {tmp}/lora {M}/Lora/tmp_lora",
-            f"ln -vs {tmp}/controlnet {M}/controlnet",
-            f"ln -vs {tmp}/clip {M}/clip"
+            f"rm -rf {TMP}/* {M}/Stable-Diffusion/TMP_ckpt",
+            f"rm -rf {M}/Lora/TMP_lora {M}/controlnet {M}/clip",
+            f"ln -vs {TMP}/ckpt {M}/Stable-Diffusion/TMP_ckpt",
+            f"ln -vs {TMP}/lora {M}/Lora/TMP_lora",
+            f"ln -vs {TMP}/controlnet {M}/controlnet",
+            f"ln -vs {TMP}/clip {M}/clip"
         ]
 
 
@@ -315,27 +295,27 @@ def webui_install(ui, which_sd):
 
     if ui == 'A1111':
         WEBUI = HOME / 'A1111'
-        repo = f'git clone -q -b {version} https://github.com/gutris1/A1111'
+        repo = f'git clone -b {version} https://github.com/gutris1/A1111'
         say("<b>【{red} Installing A1111{d} 】{red}</b>")
 
     elif ui == 'Forge':
         WEBUI = HOME / 'Forge'
-        repo = f'git clone -q https://github.com/lllyasviel/stable-diffusion-webui-forge Forge'
+        repo = 'git clone https://github.com/lllyasviel/stable-diffusion-webui-forge Forge'
         say("<b>【{red} Installing Forge{d} 】{red}</b>")
 
     elif ui == 'ComfyUI':
         WEBUI = HOME / 'ComfyUI'
-        repo = f'git clone -q https://github.com/comfyanonymous/ComfyUI'
+        repo = 'git clone https://github.com/comfyanonymous/ComfyUI'
         say("<b>【{red} Installing ComfyUI{d} 】{red}</b>")
 
     elif ui == 'ReForge':
         WEBUI = HOME / 'ReForge'
-        repo = f'git clone -q https://github.com/Panchovix/stable-diffusion-webui-reForge ReForge'
+        repo = 'git clone https://github.com/Panchovix/stable-diffusion-webui-reForge ReForge'
         say("<b>【{red} Installing ReForge{d} 】{red}</b>")
 
     elif ui == 'SwarmUI':
         WEBUI = HOME / 'SwarmUI'
-        repo = f"git clone https://github.com/mcmonkeyprojects/SwarmUI"
+        repo = 'git clone https://github.com/mcmonkeyprojects/SwarmUI'
         say("<b>【{red} Installing SwarmUI{d} 】{red}</b>")
 
     MODELS = WEBUI / 'Models' if ui == 'SwarmUI' else WEBUI / 'models'
@@ -352,7 +332,7 @@ def webui_install(ui, which_sd):
     for items in req_list:
         subprocess.run(shlex.split(items), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-    get_ipython().system(f"{repo}")
+    get_ipython().system(repo)
     time.sleep(1)
     installing_webui(ui, which_sd, WEBUI, MODELS, EMB, VAE)
 
@@ -411,8 +391,8 @@ def lets_go():
     else:
         display(Image(url=IMG))
         sys.path.append(str(STR))
-        get_ipython().run_line_magic('run', f'{nenen}')
-        get_ipython().run_line_magic('run', f'{KANDANG}')
+        get_ipython().run_line_magic('run', str(nenen))
+        get_ipython().run_line_magic('run', str(KANDANG))
 
         marking(SRC, MARKED, webui)
         key_inject(civitai_key, hf_read_token)
