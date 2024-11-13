@@ -44,7 +44,8 @@ def tmp_cleaning():
 def req_list():
     return [
         f"rm -rf {HOME}/tmp {HOME}/.cache/*",
-        f"ln -vs /tmp {HOME}/tmp"]
+        f"ln -vs /tmp {HOME}/tmp"
+    ]
 
 def webui_req():
     time.sleep(1)
@@ -69,8 +70,7 @@ def marking(path, fn, ui):
     txt = path / fn
     values = {
         'ui': ui,
-        'launch_args1': '',
-        'launch_args2': '',
+        'launch_args': '',
         'zrok_token': '',
         'ngrok_token': '',
         'tunnel': ''
@@ -85,8 +85,7 @@ def marking(path, fn, ui):
 
     data.update({
         'ui': ui,
-        'launch_args1': '',
-        'launch_args2': '',
+        'launch_args': '',
         'tunnel': ''
     })
 
@@ -99,17 +98,18 @@ def webui_install():
 
     with webui_setup:
         say("<b>【{red} Installing Face Fusion{d} 】{red}</b>")
-        get_ipython().system(f"{repo}")
+        get_ipython().system(repo)
 
         check_ffmpeg()
 
         marking(SRC, 'marking.json', 'FaceFusion')
         webui_req()
-        get_ipython().run_line_magic('run', f'{MARK}')
+        get_ipython().run_line_magic('run', str(MARK))
 
         with loading:
             loading.clear_output(wait=True)
-            get_ipython().run_line_magic('run', f'{WEBUI}/venv.py')
+            get_ipython().run_line_magic('run', str(WEBUI / 'venv.py'))
+
             os.chdir(HOME)
             loading.clear_output(wait=True)
             say("<b>【{red} Done{d} 】{red}</b>")
@@ -120,7 +120,7 @@ webui_setup = widgets.Output()
 def check_webui(ui_name, path, mark):
     if path.exists():
         print(f'{ui_name} is installed, Uninstall first.')
-        get_ipython().run_line_magic('run', f'{mark}')
+        get_ipython().run_line_magic('run', str(mark))
         return True
     return False
 
@@ -150,7 +150,8 @@ def webui_widgets():
             ('Forge', HOME / 'Forge'),
             ('ComfyUI', HOME / 'ComfyUI'),
             ('ReForge', HOME / 'ReForge'),
-            ('SDTrainer', HOME / 'SDTrainer')
+            ('SDTrainer', HOME / 'SDTrainer'),
+            ('SwarmUI', HOME / 'SwarmUI')
         ]
         
         for ui_name, path in webui_list:
