@@ -18,6 +18,7 @@ STP = HOME / '.conda/setup.py'
 tmp = Path('/tmp')
 vnv = tmp / 'venv'
 WEBUI = HOME / 'A1111'
+MODELS = WEBUI / 'models'
 
 os.chdir(HOME)
 
@@ -36,13 +37,13 @@ def tmp_cleaning():
 def req_list():
     return [
         f"rm -rf {HOME}/tmp {HOME}/.cache/*",
-        f"rm -rf {WEBUI}/models/Stable-diffusion/tmp_ckpt {WEBUI}/models/Lora/tmp_lora {WEBUI}/models/ControlNet",
-        f"mkdir -p {WEBUI}/models/Lora",
-        f"mkdir -p {WEBUI}/models/ESRGAN",
+        f"rm -rf {MODELS}/Stable-diffusion/tmp_ckpt {MODELS}/Lora/tmp_lora {MODELS}/ControlNet",
+        f"mkdir -p {MODELS}/Lora {MODELS}/ESRGAN",
         f"ln -vs /tmp {HOME}/tmp",
-        f"ln -vs /tmp/ckpt {WEBUI}/models/Stable-diffusion/tmp_ckpt",
-        f"ln -vs /tmp/lora {WEBUI}/models/Lora/tmp_lora",
-        f"ln -vs /tmp/controlnet {WEBUI}/models/ControlNet"]
+        f"ln -vs /tmp/ckpt {MODELS}/Stable-diffusion/tmp_ckpt",
+        f"ln -vs /tmp/lora {MODELS}/Lora/tmp_lora",
+        f"ln -vs /tmp/controlnet {MODELS}/ControlNet"
+    ]
 
 def webui_req():
     time.sleep(1)
@@ -52,7 +53,6 @@ def webui_req():
 
     os.chdir(WEBUI)
     req = req_list()
-
     for lines in req:
         subprocess.run(shlex.split(lines), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
@@ -64,12 +64,13 @@ def webui_req():
     ]
 
     upscalers = [
-        f"https://huggingface.co/pantat88/ui/resolve/main/4x-UltraSharp.pth {WEBUI}/models/ESRGAN",
-        f"https://huggingface.co/pantat88/ui/resolve/main/4x-AnimeSharp.pth {WEBUI}/models/ESRGAN",
-        f"https://huggingface.co/pantat88/ui/resolve/main/4x_NMKD-Superscale-SP_178000_G.pth {WEBUI}/models/ESRGAN",
-        f"https://huggingface.co/pantat88/ui/resolve/main/4x_RealisticRescaler_100000_G.pth {WEBUI}/models/ESRGAN",
-        f"https://huggingface.co/pantat88/ui/resolve/main/8x_RealESRGAN.pth {WEBUI}/models/ESRGAN",
-        f"https://huggingface.co/pantat88/ui/resolve/main/4x_foolhardy_Remacri.pth {WEBUI}/models/ESRGAN"]
+        f"https://huggingface.co/pantat88/ui/resolve/main/4x-UltraSharp.pth {MODELS}/ESRGAN",
+        f"https://huggingface.co/pantat88/ui/resolve/main/4x-AnimeSharp.pth {MODELS}/ESRGAN",
+        f"https://huggingface.co/pantat88/ui/resolve/main/4x_NMKD-Superscale-SP_178000_G.pth {MODELS}/ESRGAN",
+        f"https://huggingface.co/pantat88/ui/resolve/main/4x_RealisticRescaler_100000_G.pth {MODELS}/ESRGAN",
+        f"https://huggingface.co/pantat88/ui/resolve/main/8x_RealESRGAN.pth {MODELS}/ESRGAN",
+        f"https://huggingface.co/pantat88/ui/resolve/main/4x_foolhardy_Remacri.pth {MODELS}/ESRGAN"
+    ]
 
     line = scripts + upscalers
     for item in line:
@@ -87,7 +88,7 @@ def sd_15():
 
     extras = [
         f"https://huggingface.co/pantat88/ui/resolve/main/embeddings.zip {WEBUI}",
-        f"https://huggingface.co/stabilityai/sd-vae-ft-mse-original/resolve/main/vae-ft-mse-840000-ema-pruned.safetensors {WEBUI}/models/VAE"]
+        f"https://huggingface.co/stabilityai/sd-vae-ft-mse-original/resolve/main/vae-ft-mse-840000-ema-pruned.safetensors {MODELS}/VAE"]
 
     for items in extras:
         download(items)
@@ -103,7 +104,7 @@ def sd_xl():
         f"https://civitai.com/api/download/models/182974 {WEBUI}/embeddings",
         f"https://civitai.com/api/download/models/159385 {WEBUI}/embeddings",
         f"https://civitai.com/api/download/models/159184 {WEBUI}/embeddings",
-        f"https://huggingface.co/stabilityai/sdxl-vae/resolve/main/sdxl_vae.safetensors {WEBUI}/models/VAE"
+        f"https://huggingface.co/stabilityai/sdxl-vae/resolve/main/sdxl_vae.safetensors {MODELS}/VAE"
     ]
 
     for items in extras:
@@ -114,8 +115,7 @@ def marking(path, fn, ui):
     txt = path / fn
     values = {
         'ui': ui,
-        'launch_args1': '',
-        'launch_args2': '',
+        'launch_args': '',
         'zrok_token': '',
         'ngrok_token': '',
         'tunnel': ''
@@ -130,8 +130,7 @@ def marking(path, fn, ui):
 
     data.update({
         'ui': ui,
-        'launch_args1': '',
-        'launch_args2': '',
+        'launch_args': '',
         'tunnel': ''
     })
 
@@ -147,20 +146,21 @@ def webui_install(b):
 
     with webui_setup:
         say("<b>【{red} Installing Stable Diffusion{d} 】{red}</b>")
-        get_ipython().system(f"{repo}")
+        get_ipython().system(repo)
 
-        marking(SRC, 'marking.json', 'A1111')
+        marking(SRC, 'marking.json', WEBUI.name)
 
         if b == 'button-15':
             sd_15()
         elif b == 'button-xl':
             sd_xl()
 
-        get_ipython().run_line_magic('run', f'{MARK}')
+        get_ipython().run_line_magic('run', str(MARK))
 
         with loading:
             loading.clear_output(wait=True)
-            get_ipython().run_line_magic('run', f'{WEBUI}/venv.py')
+            get_ipython().run_line_magic('run', str(WEBUI / 'venv.py'))
+
             os.chdir(HOME)
             loading.clear_output(wait=True)
             say("<b>【{red} Done{d} 】{red}</b>")
@@ -170,7 +170,7 @@ def go_back(b):
     clear_output()
 
     with webui_setup:
-        get_ipython().run_line_magic('run', f'{STP}')
+        get_ipython().run_line_magic('run', str(STP))
 
 loading = widgets.Output()
 webui_setup = widgets.Output()
@@ -228,7 +228,8 @@ def webui_widgets():
             ('ComfyUI', HOME / 'ComfyUI'),
             ('ReForge', HOME / 'ReForge'),
             ('FaceFusion', HOME / 'FaceFusion'),
-            ('SDTrainer', HOME / 'SDTrainer')
+            ('SDTrainer', HOME / 'SDTrainer'),
+            ('SwarmUI', HOME / 'SwarmUI')
         ]
         
         for ui_name, path in webui_list:
