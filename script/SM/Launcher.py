@@ -1,7 +1,6 @@
 import subprocess, sys, os, time, shlex, json
 from pathlib import Path
 
-
 MARK = Path.home() / '.gutris1/marking.json'
 
 config = json.load(MARK.open('r'))
@@ -9,34 +8,32 @@ tunnel = config.get('tunnel')
 ui = config.get('ui')
 cwd = Path.cwd()
 
+os.environ['PYTHONWARNINGS'] = 'ignore'
 
-def launch():
+def Launch():
+    os.environ['PATH'] = '/tmp/venv/bin:' + os.environ['PATH']
     os.environ['LD_PRELOAD'] = '/home/studio-lab-user/.conda/envs/default/lib/libtcmalloc_minimal.so.4'
-    launcher = 'main.py' if ui == 'ComfyUI' else 'launch.py'
-    cmd = f'/tmp/venv/bin/python3 {launcher} ' + ' '.join(sys.argv[1:])
 
-    if ui in ['A1111', 'Forge', 'ReForge']:
-        if tunnel == 'Pinggy':
-            cwd = Path.cwd()
+    if ui == 'SwarmUI':
+        os.environ['LD_LIBRARY_PATH'] = '/tmp/venv/lib:/home/studio-lab-user/.conda/envs/default/lib:' + os.environ.get('LD_LIBRARY_PATH', '')
+        os.environ['SWARMPATH'] = str(cwd)
+        os.environ['SWARM_NO_VENV'] = 'true'
+
+        os.system('pip install -q rembg')
+        os.system('git pull -q')
+
+        cmd = 'bash ./launch-linux.sh ' + ' '.join(sys.argv[1:])
+    
+    else:
+        launcher = 'main.py' if ui == 'ComfyUI' else 'launch.py'
+
+        if ui in ['A1111', 'Forge', 'ReForge'] and tunnel == 'Pinggy':
             timer = cwd / "asd" / "pinggytimer.txt"
             end_time = int(time.time()) + 3600
             os.system(f"echo -n {end_time} > {timer}")
 
-    os.system(cmd)
+        cmd = f'python3 {launcher} ' + ' '.join(sys.argv[1:])
 
-
-def swarmui_launch():
-    os.environ['PATH'] = '/tmp/venv/bin:' + os.environ['PATH']
-    os.environ['LD_PRELOAD'] = '/home/studio-lab-user/.conda/envs/default/lib/libtcmalloc_minimal.so.4'
-    os.environ['LD_LIBRARY_PATH'] = '/tmp/venv/lib:/home/studio-lab-user/.conda/envs/default/lib:' + os.environ.get('LD_LIBRARY_PATH', '')
-
-    os.environ['SWARMPATH'] = str(cwd)
-    os.environ['SWARM_NO_VENV'] = 'true'
-
-    os.system('pip install -q rembg')
-    os.system('git pull -q')
-
-    cmd = "bash ./launch-linux.sh --launch_mode none"
     os.system(cmd)
 
 
@@ -45,7 +42,7 @@ def sdtrainer_launch():
     os.environ['LD_PRELOAD'] = '/home/studio-lab-user/.conda/envs/default/lib/libtcmalloc_minimal.so.4'
     import matplotlib
 
-    cmd = f'/tmp/venv-sd-trainer/bin/python3 gui.py ' + ' '.join(sys.argv[1:])
+    cmd = '/tmp/venv-sd-trainer/bin/python3 gui.py ' + ' '.join(sys.argv[1:])
     os.system(cmd)
 
 
@@ -78,9 +75,7 @@ if __name__ == '__main__':
             facefusion_launch()
         elif ui == 'SDTrainer':
             sdtrainer_launch()
-        elif ui == 'SwarmUI':
-            swarmui_launch()
         else:
-            launch()
+            Launch()
     except KeyboardInterrupt:
         pass
