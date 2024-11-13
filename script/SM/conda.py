@@ -25,9 +25,7 @@ GREEN = f"\033[38;5;35m{T}"
 Path(src).mkdir(parents=True, exist_ok=True)
 
 scripts = [
-    f"curl -sLo {pantat} https://github.com/gutris1/segsmaker/raw/main/script/SM/pantat88.py",
     f"curl -sLo {css} https://github.com/gutris1/segsmaker/raw/main/script/SM/pantat88.css",
-    f"curl -sLo {nenen} https://github.com/gutris1/segsmaker/raw/main/script/SM/nenen88.py",
     f"curl -sLo {startup}/00-startup.py https://github.com/gutris1/segsmaker/raw/main/script/SM/00-startup.py",
     f"curl -sLo {startup}/util.py https://github.com/gutris1/segsmaker/raw/main/script/SM/util.py",
     f"curl -sLo {img} https://github.com/gutris1/segsmaker/raw/main/script/SM/loading.png",
@@ -124,6 +122,14 @@ def load_css():
     display(HTML(f"<style>{panel}</style>"))
 
 def key_inject(civitai_key, hf_token):
+    sc = [
+        f"curl -sLo {pantat} https://github.com/gutris1/segsmaker/raw/main/script/SM/pantat88.py",
+        f"curl -sLo {nenen} https://github.com/gutris1/segsmaker/raw/main/script/SM/nenen88.py",
+    ]
+
+    for it in sc:
+        subprocess.run(shlex.split(it), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
     target = [pantat, nenen]
 
     for line in target:
