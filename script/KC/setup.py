@@ -141,20 +141,20 @@ def key_inject(C, H):
 def sym_link(U, M):
     if U == 'A1111':
         return [
-            f"rm -rf {TMP}/* {M}/Stable-diffusion/TMP_ckpt",
-            f"rm -rf {M}/Lora/TMP_lora {M}/ControlNet",
+            f"rm -rf {TMP}/* {M}/Stable-diffusion/tmp_ckpt",
+            f"rm -rf {M}/Lora/tmp_lora {M}/ControlNet",
             f"mkdir -p {M}/Lora {M}/ESRGAN",
-            f"ln -vs {TMP}/ckpt {M}/Stable-diffusion/TMP_ckpt",
-            f"ln -vs {TMP}/lora {M}/Lora/TMP_lora",
+            f"ln -vs {TMP}/ckpt {M}/Stable-diffusion/tmp_ckpt",
+            f"ln -vs {TMP}/lora {M}/Lora/tmp_lora",
             f"ln -vs {TMP}/controlnet {M}/ControlNet"
         ]
 
     elif U == 'ComfyUI':
         return [
             f"rm -rf {TMP}/* {M}/controlnet {M}/clip",
-            f"rm -rf {M}/checkpoints/TMP_ckpt {M}/loras/TMP_lora",
-            f"ln -vs {TMP}/ckpt {M}/checkpoints/TMP_ckpt",
-            f"ln -vs {TMP}/lora {M}/loras/TMP_lora",
+            f"rm -rf {M}/checkpoints/tmp_ckpt {M}/loras/tmp_lora",
+            f"ln -vs {TMP}/ckpt {M}/checkpoints/tmp_ckpt",
+            f"ln -vs {TMP}/lora {M}/loras/tmp_lora",
             f"ln -vs {TMP}/controlnet {M}/controlnet",
             f"ln -vs {TMP}/clip {M}/clip",
             f"ln -vs {M}/checkpoints {M}/checkpoints_symlink"
@@ -163,10 +163,10 @@ def sym_link(U, M):
     elif U in ['Forge', 'ReForge']:
         return [
             f"rm -rf {TMP}/* {M}/ControlNet {M}/svd {M}/z123",
-            f"rm -rf {M}/Stable-diffusion/TMP_ckpt {M}/Lora/TMP_lora",
+            f"rm -rf {M}/Stable-diffusion/tmp_ckpt {M}/Lora/tmp_lora",
             f"mkdir -p {M}/Lora {M}/ESRGAN",
-            f"ln -vs {TMP}/ckpt {M}/Stable-diffusion/TMP_ckpt",
-            f"ln -vs {TMP}/lora {M}/Lora/TMP_lora",
+            f"ln -vs {TMP}/ckpt {M}/Stable-diffusion/tmp_ckpt",
+            f"ln -vs {TMP}/lora {M}/Lora/tmp_lora",
             f"ln -vs {TMP}/controlnet {M}/ControlNet",
             f"ln -vs {TMP}/z123 {M}/z123",
             f"ln -vs {TMP}/svd {M}/svd"
@@ -174,10 +174,10 @@ def sym_link(U, M):
 
     elif U == 'SwarmUI':
         return [
-            f"rm -rf {TMP}/* {M}/Stable-Diffusion/TMP_ckpt",
-            f"rm -rf {M}/Lora/TMP_lora {M}/controlnet {M}/clip",
-            f"ln -vs {TMP}/ckpt {M}/Stable-Diffusion/TMP_ckpt",
-            f"ln -vs {TMP}/lora {M}/Lora/TMP_lora",
+            f"rm -rf {TMP}/* {M}/Stable-Diffusion/tmp_ckpt",
+            f"rm -rf {M}/Lora/tmp_lora {M}/controlnet {M}/clip",
+            f"ln -vs {TMP}/ckpt {M}/Stable-Diffusion/tmp_ckpt",
+            f"ln -vs {TMP}/lora {M}/Lora/tmp_lora",
             f"ln -vs {TMP}/controlnet {M}/controlnet",
             f"ln -vs {TMP}/clip {M}/clip"
         ]
@@ -378,15 +378,12 @@ def lets_go():
             if ui == 'A1111':
                 if commit_hash != version:
                     get_ipython().system(f"git pull origin {version}")
-                    get_ipython().system("git fetch --tags")
 
             elif ui in ['ComfyUI', 'SwarmUI']:
                 get_ipython().system("git pull origin master")
-                get_ipython().system("git fetch --tags")
 
             elif ui in ['Forge', 'ReForge']:
                 get_ipython().system("git pull origin main")
-                get_ipython().system("git fetch --tags")
 
     else:
         display(Image(url=IMG))
