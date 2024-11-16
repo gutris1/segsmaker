@@ -225,7 +225,7 @@ def installing_webui(U, S, W, M, E, V):
     for item in extras:
         download(item)
 
-    if S == "1.5":
+    if S == "button-15":
         get_ipython().system(f"unzip -qo {embzip} -d {E} && rm {embzip}")
 
     if U != 'SwarmUI':
