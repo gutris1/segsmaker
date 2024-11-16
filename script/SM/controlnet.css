@@ -66,7 +66,7 @@
     font-family: 'Times New Roman', serif;
     text-align: center;
     position: absolute;
-    bottom: 5px;
+    bottom: 0px;
     left: -10px;
     color: white;
     font-size: 40px;
@@ -90,28 +90,66 @@
     border-width: 0px;
 }
 
-.cn-xl {
-    border: 3px solid transparent;
-    border-radius: 15px;
-    padding: 10px;
-    margin: 0;
-    background: url('https://wallpapercave.com/dwp1x/wp5126154.jpg');
-    background-size: 110% 110%;
-    background-position: 50% 80%;
-    overflow: hidden;
-    animation: slide-blur-above-xl 1s, BorderPulse 15s infinite;
+@keyframes Undress15 {
+    0% {
+        max-height: 0;
+        opacity: 0;
+        filter: blur(10px);
+    }
+    100% {
+        max-height: 490px;
+        opacity: 1;
+        filter: blur(0px);
+    }
 }
 
-.cn-15 {
+@keyframes UndressXL {
+    0% {
+        max-height: 0;
+        opacity: 0;
+        filter: blur(10px);
+    }
+    100% {
+        max-height: 580px;
+        opacity: 1;
+        filter: blur(0px);
+    }
+}
+
+.cn-xl, .cn-15 {
+    position: relative;
     border: 3px solid transparent;
-    border-radius: 15px;
-    padding: 10px;
+    border-radius: 30px;
     margin: 0;
-    background: url('https://wallpapercave.com/dwp1x/wp5126154.jpg');
-    background-size: 110% 110%;
-    background-position: 50% 80%;
-    overflow: hidden;
-    animation: slide-blur-above-15 1s, BorderPulse 15s infinite;
+    max-height: 0;
+    background-color: transparent;
+    background-size: cover;
+    background-position: center;
+}
+
+.cn-xl { animation: UndressXL 1s forwards ease-out, BorderPulse 15s infinite; }
+.cn-15 { animation: Undress15 1s forwards ease-out, BorderPulse 15s infinite; }
+
+.cn-xl::before, .cn-15::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('https://i.imgur.com/5Mkdrpw.jpg');
+    background-size: cover;
+    background-position: center;
+    filter: blur(0px);
+    transition: all 0.5s ease;
+    border-radius: 28px;
+    z-index: -1;
+    background-color: rgba(0, 0, 0, 0.5); /* This adds a dark overlay */
+    mix-blend-mode: multiply;
+}
+
+.cn-xl:hover::before, .cn-15:hover::before {
+    filter: blur(10px);
 }
 
 .widget-container {
@@ -123,23 +161,31 @@
     position: relative;
 }
 
+.download-button-xl, .select-all-button-xl, .unselect-all-button-xl,
 .download-button-15, .select-all-button-15, .unselect-all-button-15 {
     position: relative;
     margin-top: 0px;
-    top: 415px;
+    background-color: transparent;
     font-family: 'Times New Roman', serif;
     text-align: center;
-    height: 40px;
     color: white;
-    border: 3px solid #2197f2;
-    background-color: transparent;
-    border-radius: 4px;
-    background-position: left bottom;
+    border: 3px solid transparent;
+    border-radius: 5px;
+    height: 40px;
     transition: all 0.5s ease-out;
     transform: scale(0.9);
     vertical-align: middle;
     font-size: 20px;
     z-index: 1;
+    animation: BorderPulse 15s infinite;
+}
+
+.download-button-15, .select-all-button-15, .unselect-all-button-15 {
+    top: 415px;
+}
+
+.download-button-xl, .select-all-button-xl, .unselect-all-button-xl {
+    top: 505px;
 }
 
 .download-button-15, .download-button-xl {
@@ -162,30 +208,10 @@
     margin-left: 0px;
 }
 
-.download-button-xl, .select-all-button-xl, .unselect-all-button-xl {
-    position: relative;
-    margin-top: 0px;
-    top: 505px;
-    font-family: 'Times New Roman', serif;
-    text-align: center;
-    height: 40px;
-    color: white;
-    border: 3px solid #2197f2;
-    background-color: transparent;
-    border-radius: 4px;
-    background-position: left bottom;
-    transition: all 0.5s ease-out;
-    transform: scale(0.9);
-    vertical-align: middle;
-    font-size: 20px;
-    z-index: 1;
-}
-
 .download-button-15:hover, .select-all-button-15:hover, .unselect-all-button-15:hover,
 .download-button-xl:hover, .select-all-button-xl:hover, .unselect-all-button-xl:hover {
     font-weight: bold;
     color: #212121;
-    border-radius: 4px;
     border: 3px solid transparent;
     background-image: var(--cn-gradient-bg);
     background-size: 800% 500%;
@@ -206,9 +232,8 @@
     height: 55px;
     border: 3px solid #ab22fe;
     border-radius: 30px;
-    background-color: #212121;
+    background-color: rgba(0, 0, 0, 0.8);
     padding: 0px;
-    cursor: pointer;
 }
 
 .bottom-box-15 {
@@ -284,7 +309,8 @@
     text-align: center;
     font-family: 'Roboto Mono', monospace;
     font-size: 12px;
-    color: white;
+    font-weight: bold;
+    color: black;
     margin-top: 0px;
     margin-right: -50px;
     margin-left: 0px;
@@ -298,12 +324,12 @@
     margin-bottom: -50px;
     margin-left: 0px;
     transform: translateY(0px) translateX(-12px);
-    border-radius: 10px;
+    border-radius: 1rem;
     padding-left: 10px;
     padding-right: 10px;
     padding-bottom: 0px;
-    color: #ab22fe;
-    background-color: #212121;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.6);
     border: 2px solid transparent;
     transition: border 0s;
     cursor: pointer;
@@ -316,30 +342,6 @@
     animation: slideBackground 10s linear infinite, BorderPulse 7s infinite;
     font-weight: bold;
     color: #212121;
-}
-
-@keyframes slide-blur-above-xl {
-    from {
-        height: 0px;
-        opacity: 0;
-        filter: blur(30px);
-    }
-    to {
-        height: 580px;
-        opacity: 1;
-        filter: blur(0px);}
-}
-
-@keyframes slide-blur-above-15 {
-    from {
-        height: 0px;
-        opacity: 0;
-        filter: blur(30px);
-    }
-    to {
-        height: 490px;
-        opacity: 1;
-        filter: blur(0px);}
 }
 
 @keyframes slideBackground {
