@@ -83,6 +83,22 @@ def trashing():
         cmd = f"find {path} -type d -name .ipynb_checkpoints -exec rm -rf {{}} +"
         subprocess.run(shlex.split(cmd), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
+def check_pv():
+    try:
+        subprocess.run(
+            shlex.split('pv -V'),
+            capture_output=True,
+            text=True, check=True
+        )
+
+    except FileNotFoundError:
+        subprocess.run(
+            shlex.split('conda install -qy pv'),
+            text=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL
+        )
+
 def venv_install(ui, url, need_space, fn):
     while True:
         if vnv.exists():
@@ -112,6 +128,8 @@ def venv_install(ui, url, need_space, fn):
         os.chdir(tmp)
         say('<b>【{red} Installing VENV{d} 】{red}</b>')
         download(url)
+
+        check_pv()
 
         get_ipython().system(f'pv {fn} | lz4 -d | tar xf -')
         Path(fn).unlink()
