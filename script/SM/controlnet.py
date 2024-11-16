@@ -4,15 +4,19 @@ from pathlib import Path
 from nenen88 import download, say, tempe
 import os
 
+SM = None
+
 try:
     from KANDANG import TEMPPATH, HOMEPATH
     TMPLORA = Path(TEMPPATH) / 'lora'
     TMPCN = Path(TEMPPATH) / 'controlnet'
     HOME = Path(HOMEPATH)
+    SM = False
 except ImportError:
     TMPLORA = '/tmp/lora'
     TMPCN = '/tmp/controlnet'
     HOME = Path.home()
+    SM = True
 
 SRCN = Path(__file__).parent
 CSSCN = SRCN / "controlnet.css"
@@ -290,6 +294,8 @@ def UnselectAll(b):
 def Download(b):
     cn15_panel.close()
     cnxl_panel.close()
+    tempe()
+
     with loading:
         display(Image(url=IMG))
 
@@ -315,23 +321,17 @@ def Download(b):
         loading.clear_output()
         os.chdir(HOME)
 
-def Controlnet_Widgets():
-    z = [(CSSCN, f"curl -sLo {CSSCN} https://github.com/gutris1/segsmaker/raw/main/script/SM/controlnet.css")]
-    try:
-        from KANDANG import TEMPPATH
-        for x, y in z:
-            if not Path(x).exists():
-                get_ipython().system(y)
-    except ImportError:
-        for _, y in z:
+z = [(CSSCN, f"curl -sLo {CSSCN} https://github.com/gutris1/segsmaker/raw/main/script/SM/controlnet.css")]
+for x, y in z:
+    if not SM:
+        if not Path(x).exists():
             get_ipython().system(y)
+    else:
+        get_ipython().system(y)
 
-    load_css()
-    cn_main_panel.children = buttons
-    display(cn_main_panel, cn15_panel, cnxl_panel, loading, output)
-
-tempe()
-Controlnet_Widgets()
+load_css()
+cn_main_panel.children = buttons
+display(cn_main_panel, cn15_panel, cnxl_panel, loading, output)
 
 select_all_button_15.on_click(SelectAll)
 unselect_all_button_15.on_click(UnselectAll)
