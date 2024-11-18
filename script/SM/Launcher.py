@@ -27,10 +27,11 @@ def Launch():
     else:
         launcher = 'main.py' if ui == 'ComfyUI' else 'launch.py'
 
-        if ui in ['A1111', 'Forge', 'ReForge'] and tunnel == 'Pinggy':
-            timer = cwd / "asd" / "pinggytimer.txt"
-            end_time = int(time.time()) + 3600
-            os.system(f"echo -n {end_time} > {timer}")
+        if ui in ['A1111', 'Forge', 'ReForge']:
+            if tunnel == 'Pinggy':
+                timer = cwd / "asd" / "pinggytimer.txt"
+                end_time = int(time.time()) + 3600
+                os.system(f"echo -n {end_time} > {timer}")
 
         cmd = f'python3 {launcher} ' + ' '.join(sys.argv[1:])
 
