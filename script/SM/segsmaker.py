@@ -49,7 +49,10 @@ def load_config():
     else:
         tunnel.value = 'Pinggy'
 
-    cpu_cb.value = config.get('cpu_usage', False)
+    if GPU_check():
+        cpu_cb.value = False
+    else:
+        cpu_cb.value = config.get('cpu_usage', False)
 
     if ui in ['SDTrainer', 'FaceFusion', 'SwarmUI'] or GPU_check():
         cpu_cb.layout.display = 'none'
