@@ -1,3 +1,4 @@
+
 from IPython.display import display, HTML, clear_output, Image
 from multiprocessing import Process, Condition, Value
 from IPython import get_ipython
@@ -48,6 +49,9 @@ def load_config():
         tunnel.value = tunnell
     else:
         tunnel.value = 'Pinggy'
+        config.update({"tunnel": tunnel.value})
+        with MARK.open('w') as file:
+            json.dump(config, file, indent=4)
 
     if GPU_check():
         cpu_cb.value = False
