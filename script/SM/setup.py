@@ -72,8 +72,7 @@ def marking(p, n, i):
 
     d.update({
         'ui': i,
-        'launch_args': '',
-        'tunnel': ''
+        'launch_args': ''
     })
 
     with open(t, 'w') as f:
