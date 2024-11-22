@@ -83,10 +83,13 @@ def venv_install():
         say('<br>【{red} Installing VENV{d} 】{red}')
         download(url)
 
+        z = []
         if ENVNAME == 'Colab':
             z = ["apt -y install python3.10-venv", "apt -y install lz4"]
-            for b in z:
-                subprocess.run(shlex.split(b), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        else:
+            z = ["pip install ipywidgets jupyterlab_widgets --upgrade"]
+        for b in z:
+            subprocess.run(shlex.split(b), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             
         get_ipython().system(f'pv {fn} | lz4 -d | tar xf -')
         Path(fn).unlink()
