@@ -213,20 +213,16 @@ def installing_webui(U, S, W, M, E, V):
         ]
 
     elif S == "button-xl":
-        embzip = None
+        embzip = W / 'embeddingsXL.zip'
         extras = [
-            f"https://civitai.com/api/download/models/403492 {E}",
-            f"https://civitai.com/api/download/models/182974 {E}",
-            f"https://civitai.com/api/download/models/159385 {E}",
-            f"https://civitai.com/api/download/models/159184 {E}",
+            f"https://huggingface.co/pantat88/ui/resolve/main/embeddingsXL.zip {W}",
             f"https://huggingface.co/stabilityai/sdxl-vae/resolve/main/sdxl_vae.safetensors {V}"
         ]
 
     for item in extras:
         download(item)
 
-    if S == "button-15":
-        get_ipython().system(f"unzip -qo {embzip} -d {E} && rm {embzip}")
+    get_ipython().system(f"unzip -qo {embzip} -d {E} && rm {embzip}")
 
     if U != 'SwarmUI':
         Extensions(U, W, M)
