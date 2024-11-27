@@ -172,6 +172,7 @@ def webui_req(U, W, M):
         f"https://huggingface.co/pantat88/ui/resolve/main/4x-UltraSharp.pth {u}",
         f"https://huggingface.co/pantat88/ui/resolve/main/4x-AnimeSharp.pth {u}",
         f"https://huggingface.co/pantat88/ui/resolve/main/4x_NMKD-Superscale-SP_178000_G.pth {u}",
+        f"https://huggingface.co/uwg/upscaler/resolve/main/ESRGAN/8x_NMKD-Superscale_150000_G.pth {u}",
         f"https://huggingface.co/pantat88/ui/resolve/main/4x_RealisticRescaler_100000_G.pth {u}",
         f"https://huggingface.co/pantat88/ui/resolve/main/8x_RealESRGAN.pth {u}",
         f"https://huggingface.co/pantat88/ui/resolve/main/4x_foolhardy_Remacri.pth {u}"
