@@ -24,8 +24,6 @@ TMP = Path('/tmp')
 
 SRC.mkdir(parents=True, exist_ok=True)
 
-version = "v1.10.1"
-
 def load_css():
     with open(CSS, "r") as f:
         d = f.read()
@@ -216,7 +214,7 @@ def installing_webui(U, S, W, M, E, V):
         embzip = W / 'embeddingsXL.zip'
         extras = [
             f"https://huggingface.co/pantat88/ui/resolve/main/embeddingsXL.zip {W}",
-            f"https://huggingface.co/stabilityai/sdxl-vae/resolve/main/sdxl_vae.safetensors {V}"
+            f"https://huggingface.co/madebyollin/sdxl-vae-fp16-fix/resolve/main/sdxl.vae.safetensors {V} sdxl_vae.safetensors"
         ]
 
     for item in extras:
@@ -232,35 +230,23 @@ def webui_install(ui, which_sd):
         display(Image(filename=str(IMG)))
 
     with output:
-        if ui == 'A1111':
-            WEBUI = HOME / 'A1111'
-            repo = f'git clone --depth 1 -q -b {version} https://github.com/gutris1/A1111'
-            say("<b>【{red} Installing A1111{d} 】{red}</b>")
-
-        elif ui == 'Forge':
-            WEBUI = HOME / 'Forge'
-            repo = 'git clone --depth 1 -q https://github.com/lllyasviel/stable-diffusion-webui-forge Forge'
-            say("<b>【{red} Installing Forge{d} 】{red}</b>")
-
-        elif ui == 'ComfyUI':
-            WEBUI = HOME / 'ComfyUI'
-            repo = 'git clone --depth 1 -q https://github.com/comfyanonymous/ComfyUI'
-            say("<b>【{red} Installing ComfyUI{d} 】{red}</b>")
-
-        elif ui == 'ReForge':
-            WEBUI = HOME / 'ReForge'
-            repo = 'git clone --depth 1 -q https://github.com/Panchovix/stable-diffusion-webui-reForge ReForge'
-            say("<b>【{red} Installing ReForge{d} 】{red}</b>")
-
-        elif ui == 'SwarmUI':
-            WEBUI = HOME / 'SwarmUI'
-            repo = 'git clone --depth 1 -q https://github.com/mcmonkeyprojects/SwarmUI'
-            say("<b>【{red} Installing SwarmUI{d} 】{red}</b>")
+        alist = {
+            'A1111': 'git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui A1111',
+            'Forge': 'git clone https://github.com/lllyasviel/stable-diffusion-webui-forge Forge',
+            'ComfyUI': 'git clone https://github.com/comfyanonymous/ComfyUI',
+            'ReForge': 'git clone https://github.com/Panchovix/stable-diffusion-webui-reForge ReForge',
+            'SwarmUI': 'git clone https://github.com/mcmonkeyprojects/SwarmUI'
+        }
+        
+        if ui in alist:
+            WEBUI = HOME / ui
+            repo = alist[ui]
 
         MODELS = WEBUI / 'Models' if ui == 'SwarmUI' else WEBUI / 'models'
         EMB = MODELS / 'Embeddings' if ui == 'SwarmUI' else (MODELS / 'embeddings' if ui == 'ComfyUI' else WEBUI / 'embeddings')
         VAE = MODELS / 'vae' if ui == 'ComfyUI' else MODELS / 'VAE'
 
+        say(f"<b>【{{red}} Installing {WEBUI.name}{{d}} 】{{red}}</b>")
         get_ipython().system(repo)
         time.sleep(1)
 
@@ -351,13 +337,7 @@ def oppai(btn, sd=None):
         if git_dir.exists():
             os.chdir(WEBUI)
             with output:
-                commit_hash = subprocess.check_output(['git', 'rev-parse', 'HEAD']).strip().decode('utf-8')
-
-                if ui == 'A1111':
-                    if commit_hash != version:
-                        get_ipython().system(f"git pull origin {version}")
-
-                elif ui in ['ComfyUI', 'SwarmUI', 'FaceFusion']:
+                if ui in ['A1111', 'ComfyUI', 'SwarmUI', 'FaceFusion']:
                     get_ipython().system("git pull origin master")
 
                 elif ui in ['Forge', 'ReForge', 'SDTrainer']:
