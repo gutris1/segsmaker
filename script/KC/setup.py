@@ -275,7 +275,7 @@ def installing_webui(U, S, W, M, E, V):
         embzip = W / 'embeddingsXL.zip'
         extras = [
             f"https://huggingface.co/pantat88/ui/resolve/main/embeddingsXL.zip {W}",
-            f"https://huggingface.co/stabilityai/sdxl-vae/resolve/main/sdxl_vae.safetensors {V}"
+            f"https://huggingface.co/madebyollin/sdxl-vae-fp16-fix/resolve/main/sdxl.vae.safetensors {V} sdxl_vae.safetensors"
         ]
 
     for item in extras:
