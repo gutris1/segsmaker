@@ -290,34 +290,24 @@ def installing_webui(U, S, W, M, E, V):
 def webui_install(ui, which_sd):
     from nenen88 import say, tempe
 
-    if ui == 'A1111':
-        WEBUI = HOME / 'A1111'
-        repo = f'git clone -b {version} https://github.com/gutris1/A1111'
-        say("<b>【{red} Installing A1111{d} 】{red}</b>")
-
-    elif ui == 'Forge':
-        WEBUI = HOME / 'Forge'
-        repo = 'git clone https://github.com/lllyasviel/stable-diffusion-webui-forge Forge'
-        say("<b>【{red} Installing Forge{d} 】{red}</b>")
-
-    elif ui == 'ComfyUI':
-        WEBUI = HOME / 'ComfyUI'
-        repo = 'git clone https://github.com/comfyanonymous/ComfyUI'
-        say("<b>【{red} Installing ComfyUI{d} 】{red}</b>")
-
-    elif ui == 'ReForge':
-        WEBUI = HOME / 'ReForge'
-        repo = 'git clone https://github.com/Panchovix/stable-diffusion-webui-reForge ReForge'
-        say("<b>【{red} Installing ReForge{d} 】{red}</b>")
-
-    elif ui == 'SwarmUI':
-        WEBUI = HOME / 'SwarmUI'
-        repo = 'git clone https://github.com/mcmonkeyprojects/SwarmUI'
-        say("<b>【{red} Installing SwarmUI{d} 】{red}</b>")
+    alist = {
+        'A1111': 'git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui A1111',
+        'Forge': 'git clone https://github.com/lllyasviel/stable-diffusion-webui-forge Forge',
+        'ComfyUI': 'git clone https://github.com/comfyanonymous/ComfyUI',
+        'ReForge': 'git clone https://github.com/Panchovix/stable-diffusion-webui-reForge ReForge',
+        'SwarmUI': 'git clone https://github.com/mcmonkeyprojects/SwarmUI'
+    }
+    
+    if ui in alist:
+        WEBUI = HOME / ui
+        repo = alist[ui]
 
     MODELS = WEBUI / 'Models' if ui == 'SwarmUI' else WEBUI / 'models'
     EMB = MODELS / 'Embeddings' if ui == 'SwarmUI' else (MODELS / 'embeddings' if ui == 'ComfyUI' else WEBUI / 'embeddings')
     VAE = MODELS / 'vae' if ui == 'ComfyUI' else MODELS / 'VAE'
+
+    say(f"<b>【{{red}} Installing {WEBUI.name}{{d}} 】{{red}}</b>")
+    get_ipython().system(repo)
 
     req_list = [
         "curl -Lo /usr/bin/cl https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64",
@@ -329,8 +319,6 @@ def webui_install(ui, which_sd):
     for items in req_list:
         subprocess.run(shlex.split(items), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-    get_ipython().system(repo)
-    time.sleep(1)
     installing_webui(ui, which_sd, WEBUI, MODELS, EMB, VAE)
 
     get_ipython().run_line_magic('run', str(MRK))
@@ -367,18 +355,10 @@ def lets_go():
 
     if WEBUI is not None and WEBUI.exists():
         git_dir = WEBUI / '.git'
-
         if git_dir.exists():
             os.chdir(WEBUI)
-            commit_hash = subprocess.check_output(['git', 'rev-parse', 'HEAD']).strip().decode('utf-8')
-
-            if ui == 'A1111':
-                if commit_hash != version:
-                    get_ipython().system(f"git pull origin {version}")
-
-            elif ui in ['ComfyUI', 'SwarmUI']:
+            if ui in ['A1111', 'ComfyUI', 'SwarmUI']:
                 get_ipython().system("git pull origin master")
-
             elif ui in ['Forge', 'ReForge']:
                 get_ipython().system("git pull origin main")
 
@@ -397,7 +377,6 @@ def lets_go():
             print("\nCanceled.")
 
 
-version = 'v1.10.1'
 os.chdir(HOME)
 saving()
 lets_go()
