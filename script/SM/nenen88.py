@@ -337,25 +337,32 @@ def ketsuno_ana(fc, fn):
         curlly(fc, fn)
 
 
-def clone(line):
-    path = Path(line).expanduser()
+def clone(i):
+    p = Path(i).expanduser()
 
-    if line.endswith('.txt') and path.is_file():
-        with open(path, 'r') as file:
-            lines = [line.strip() for line in file]
+    def processed(inputs):
+        inputs = inputs.strip()
+        if inputs.startswith("git clone"):
+            return inputs[len("git clone "):].strip()
+        return inputs
+
+    if i.endswith('.txt') and p.is_file():
+        with open(p, 'r') as file:
+            o = [f"git clone {processed(i)}" for i in file]
     else:
-        lines = line if isinstance(line, list) else [line]
+        o = [f"git clone {processed(i)}"] if isinstance(i, str) else [f"git clone {processed(l)}" for l in i]
 
-    cloning(lines)
+    cloning(o)
 
-def cloning(lines):
-    for line in lines:
-        line = line.strip()
-        if not line:
+def cloning(o):
+    for i in o:
+        i = i.strip()
+        if not i:
             continue
 
-        cmd = shlex.split(line)
+        cmd = shlex.split(i)
         url = None
+
         for repo in cmd:
             if re.match(r'https?://', repo):
                 url = repo
@@ -379,9 +386,9 @@ def cloning(lines):
                     print(f"{'':>2}{output}")
 
                 elif output.startswith("Cloning into"):
-                    lines = output.split("'")[1]
-                    names = "/".join(lines.split("/")[-3:])
-                    print(f"{'':>2}{names} => {url}")
+                    o = output.split("'")[1]
+                    names = "/".join(o.split("/")[-3:])
+                    print(f"{'':>2}{names} ▶ {url}")
 
         proc.wait()
 
