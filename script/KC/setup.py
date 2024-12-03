@@ -256,7 +256,9 @@ def Extensions(U, W, M):
         say("<br><b>【{red} Installing Extensions{d} 】{red}</b>")
         os.chdir(W / "extensions")
         clone(str(W / "asd/extension.txt"))
-        get_ipython().system("git clone -q https://github.com/gutris1/sd-encrypt-image")
+
+        if ENVNAME == 'Kaggle':
+            clone('git clone https://github.com/gutris1/sd-encrypt-image')
 
 
 def installing_webui(U, S, W, M, E, V):
