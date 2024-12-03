@@ -1,8 +1,12 @@
-import sys, subprocess
+R = "\033[31m"
+P = "\033[38;5;135m"
+RST = "\033[0m"
+ERR = f"{P}[{RST}{R}ERROR{RST}{P}]{RST}"
 
+import sys, subprocess
 python_version = subprocess.run(['python', '--version'], capture_output=True, text=True).stdout.split()[1]
 if tuple(map(int, python_version.split('.'))) < (3, 10, 6):
-    print(f"[ERROR]: Python version 3.10.6 or higher required, and you are using Python {python_version}\nExiting.")
+    print(f"{ERR}: Python version 3.10.6 or higher required, and you are using Python {python_version}")
     sys.exit()
 
 from IPython.display import display, HTML, clear_output, Image
