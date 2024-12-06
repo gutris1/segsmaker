@@ -235,7 +235,7 @@ def webui_req(U, W, M):
         download(item)
 
 
-def Extensions(U, W, M):
+def Extension(U, W, M):
     from nenen88 import clone, say, download
 
     if U == 'ComfyUI':
@@ -258,7 +258,7 @@ def Extensions(U, W, M):
         clone(str(W / "asd/extension.txt"))
 
         if ENVNAME == 'Kaggle':
-            clone('git clone https://github.com/gutris1/sd-encrypt-image')
+            clone('https://github.com/gutris1/sd-encrypt-image')
 
 
 def installing_webui(U, S, W, M, E, V):
@@ -266,18 +266,18 @@ def installing_webui(U, S, W, M, E, V):
 
     webui_req(U, W, M)
 
-    if S == "1.5":
-        embzip =  W / 'embeddings.zip'
-        extras = [
-            f"https://huggingface.co/pantat88/ui/resolve/main/embeddings.zip {W}",
-            f"https://huggingface.co/stabilityai/sd-vae-ft-mse-original/resolve/main/vae-ft-mse-840000-ema-pruned.safetensors {V}"
-        ]
-
-    elif S == "xl":
+    if S == "xl":
         embzip = W / 'embeddingsXL.zip'
         extras = [
             f"https://huggingface.co/pantat88/ui/resolve/main/embeddingsXL.zip {W}",
             f"https://huggingface.co/madebyollin/sdxl-vae-fp16-fix/resolve/main/sdxl.vae.safetensors {V} sdxl_vae.safetensors"
+        ]
+
+    else:
+        embzip =  W / 'embeddings.zip'
+        extras = [
+            f"https://huggingface.co/pantat88/ui/resolve/main/embeddings.zip {W}",
+            f"https://huggingface.co/stabilityai/sd-vae-ft-mse-original/resolve/main/vae-ft-mse-840000-ema-pruned.safetensors {V}"
         ]
 
     for item in extras:
@@ -286,7 +286,7 @@ def installing_webui(U, S, W, M, E, V):
     get_ipython().system(f"unzip -qo {embzip} -d {E} && rm {embzip}")
 
     if U != 'SwarmUI':
-        Extensions(U, W, M)
+        Extension(U, W, M)
 
 
 def webui_install(ui, which_sd):
@@ -323,14 +323,12 @@ def webui_install(ui, which_sd):
 
     installing_webui(ui, which_sd, WEBUI, MODELS, EMB, VAE)
 
-    get_ipython().run_line_magic('run', str(MRK))
     get_ipython().run_line_magic('run', str(WEBUI / 'venv.py'))
 
     say("<br><b>【{red} Done{d} 】{red}</b>")
 
     tempe()
     os.chdir(HOME)
-    get_ipython().kernel.do_shutdown(True)
 
 
 def lets_go():
@@ -366,12 +364,13 @@ def lets_go():
 
     else:
         display(Image(url=IMG))
-        sys.path.append(str(STR))
-        get_ipython().run_line_magic('run', str(nenen))
-        get_ipython().run_line_magic('run', str(KANDANG))
-
         marking(SRC, MARKED, webui)
         key_inject(civitai_key, hf_read_token)
+        sys.path.append(str(STR))
+
+        var = [nenen, pantat, KANDANG, MRK]
+        for scripts in var:
+            get_ipython().run_line_magic('run', str(scripts))
 
         try:
             webui_install(webui, sd)
