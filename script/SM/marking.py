@@ -132,7 +132,7 @@ if marked.exists():
     ui = get_name(marked)
     WebUI, Models, WebUI_Output, Extensions, Embeddings, VAE, CKPT, LORA, Upscalers = set_paths(ui)
 
-    Controlnet_Widget = (WebUI / 'asd' / 'controlnet.py') if (WebUI / 'asd').exists() else None
+    Controlnet_Widget = WebUI / 'asd/controlnet.py' if WebUI else None
     Forge_SVD = tmp / 'svd' if ui in ['Forge', 'ReForge'] else None
     TMP_CKPT = tmp / 'ckpt'
     TMP_LORA = tmp / 'lora'
