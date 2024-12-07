@@ -9,6 +9,6 @@ git clone --depth 1 https://github.com/IDEA-Research/DWPose
 git clone --depth 1 https://github.com/hako-mikan/sd-webui-regional-prompter
 git clone --depth 1 https://github.com/BlafKing/sd-civitai-browser-plus
 git clone --depth 1 https://github.com/gutris1/sd-hub
-git clone --depth 1 https://github.com/gutris1/sd-fast-pnginfo
+git clone --depth 1 https://github.com/gutris1/sd-image-info
 git clone --depth 1 https://github.com/gutris1/timer_timer
 git clone --depth 1 https://github.com/gutris1/Scroll-Bar
