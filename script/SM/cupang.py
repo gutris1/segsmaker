@@ -1,3 +1,17 @@
+"""
+Author: cupang-afk (https://github.com/cupang-afk)
+Repository: https://github.com/cupang-afk/subprocess-tunnel
+Description: Run multiple tunnel in Python
+
+License:
+This code is permitted directly by the author, cupang-afk, for its usage in 
+the repository https://github.com/gutris1/segsmaker, authored by gutris1. 
+Any other usage must comply with the terms of the original license provided 
+in the author's repository.
+
+Copyright (c) 2024 cupang-afk
+"""
+
 import sys, subprocess
 
 python_version = subprocess.run(['python', '--version'], capture_output=True, text=True).stdout.split()[1]
