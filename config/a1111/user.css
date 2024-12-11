@@ -46,11 +46,14 @@ div.compact {
     gap: 5px !important;
 }
 
-
 .tab-nav.scroll-hide.svelte-1g805jl {
     row-gap: 5px !important;
 }
 
 #txt2img_script_container > div, #img2img_script_container > div {
     margin-bottom: 10px;
+}
+
+#tabs > .tab-nav > button.selected {
+    color: var(--block-title-text-color);
 }
