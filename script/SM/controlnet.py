@@ -171,6 +171,9 @@ cnxl_list = {
     "IP Adapter Plus Face SDXL VIT-H": [
         "https://huggingface.co/h94/IP-Adapter/resolve/main/sdxl_models/ip-adapter-plus-face_sdxl_vit-h.safetensors \
         ip-adapter-plus-face_sdxl_vit-h.safetensors"],
+    "NoobAI IP Adapter SDXL": [
+        "https://huggingface.co/subby2006/noob-ipa/resolve/main/noobIPAMARK1_mark1.safetensors \
+        noobIPAMARK1_mark1.safetensors"],
 
     "IP Adapter FaceID SDXL": [
         "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid_sdxl.bin ip-adapter-faceid_sdxl.bin",
