@@ -21,6 +21,9 @@ def webui_launch(launch_args, skip_comfyui_check):
         launch_args += ' --enable-insecure-extension-access --disable-console-progressbars --theme dark'
         if ENVNAME == 'Kaggle':
             launch_args += f' --encrypt-pass={pw}'
+        else:
+            if '--share' not in launch_args:
+                launch_args += ' --share'
 
     if ui == 'ComfyUI' and not skip_comfyui_check:
         get_ipython().system(f'{py} apotek.py')
