@@ -214,7 +214,7 @@ def webui_req(U, W, M):
         subprocess.run(shlex.split(lines), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     scripts = [
-        f"https://github.com/subby2006/segsmaker/raw/main/script/SM/controlnet.py {W}/asd",
+        f"https://github.com/gutris1/segsmaker/raw/main/script/SM/controlnet.py {W}/asd",
         f"https://github.com/gutris1/segsmaker/raw/main/script/KC/venv.py {W}",
         f"https://github.com/gutris1/segsmaker/raw/main/script/KC/segsmaker.py {W}"
     ]
