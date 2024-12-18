@@ -57,3 +57,10 @@ div.compact {
 #tabs > .tab-nav > button.selected {
     color: var(--block-title-text-color);
 }
+
+.gradio-container {
+    padding-top: 0 !important;
+    padding-bottom: 5px !important;
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+}
