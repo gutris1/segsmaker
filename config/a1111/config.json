@@ -17,8 +17,8 @@
         "CLIP_stop_at_last_layers"
     ],
     "ui_tab_order": [
-        "Txt2img",
-        "Img2img",
+        "txt2img",
+        "img2img",
         "Extras",
         "Image Info",
         "HUB",
