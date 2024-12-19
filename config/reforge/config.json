@@ -1,9 +1,9 @@
 {
     "gradio_theme": "NoCrypt/miku",
     "lora_preferred_name": "Filename",
-	"samples_filename_pattern": "[datetime<%M%S>]",
-	"show_progressbar": true,
-	"show_progress_grid": true,
+    "samples_filename_pattern": "[datetime<%M%S>]",
+    "show_progressbar": true,
+    "show_progress_grid": true,
     "show_progress_every_n_steps": 2,
     "live_previews_enable": true,
     "live_previews_image_format": "webp",
@@ -21,6 +21,8 @@
         "img2img",
         "Extras",
         "Image Info",
+        "HUB",
+        "Infinite image browsing",
         "SuperMerger"
     ],
     "hidden_tabs": [

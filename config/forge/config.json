@@ -1,4 +1,18 @@
 {
     "gradio_theme": "NoCrypt/miku",
-    "samples_filename_pattern": "[datetime<%M%S>]"
+    "samples_filename_pattern": "[datetime<%M%S>]",
+    "ui_tab_order": [
+        "Txt2img",
+        "Img2img",
+        "Extras",
+        "Image Info",
+        "HUB",
+        "Infinite image browsing",
+        "SuperMerger"
+    ],
+    "hidden_tabs": [
+        "Spaces",
+        "PNG Info",
+        "Checkpoint Merger"
+    ]
 }

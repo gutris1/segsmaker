@@ -313,15 +313,20 @@ def webui_install(ui, which_sd):
     say(f"<b>【{{red}} Installing {WEBUI.name}{{d}} 】{{red}}</b>")
     get_ipython().system(repo)
 
-    req_list = [
+    abcd = [
         "curl -Lo /usr/bin/cl https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64",
-        "apt -y install pv",
+        "chmod +x /usr/bin/cl",
         "pip install -q gdown aria2",
-        "chmod +x /usr/bin/cl"
+        "apt -y install lz4 pv"
     ]
 
-    for items in req_list:
-        subprocess.run(shlex.split(items), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    if ENVNAME == "Colab":
+        abcd.append("apt -y install python3.10-venv")
+    else:
+        abcd.append("pip install ipywidgets jupyterlab_widgets --upgrade")
+
+    for efgh in abcd:
+        subprocess.run(shlex.split(efgh), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     installing_webui(ui, which_sd, WEBUI, MODELS, EMB, VAE)
 
