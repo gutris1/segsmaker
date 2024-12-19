@@ -315,7 +315,6 @@ def webui_install(ui, which_sd):
 
     req_list = [
         "curl -Lo /usr/bin/cl https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64",
-        "apt -y install pv",
         "pip install -q gdown aria2",
         "chmod +x /usr/bin/cl"
     ]
