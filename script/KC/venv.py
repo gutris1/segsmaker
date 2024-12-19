@@ -60,7 +60,7 @@ def she_bang():
                 if e.errno == 26:
                     pass
 
-def venv_install():
+def venv_prepare():
     while True:
         if vnv.exists():
             size = check_venv(vnv)
@@ -85,24 +85,30 @@ def venv_install():
 
         z = []
         if ENVNAME == 'Colab':
-            z = ["apt -y install python3.10-venv", "apt -y install lz4"]
+            z = ["apt -y install python3.10-venv"]
         else:
             z = ["pip install ipywidgets jupyterlab_widgets --upgrade"]
+
+        z.append("apt -y install lz4 pv")
+
         for b in z:
             subprocess.run(shlex.split(b), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-            
-        get_ipython().system(f'pv {fn} | lz4 -d | tar xf -')
-        Path(fn).unlink()
+        break
 
-        get_ipython().system(f'rm -rf {vnv}/bin/pip* {vnv}/bin/python*')
+def venv_install():
+    get_ipython().system(f'pv {fn} | lz4 -d | tar xf -')
+    Path(fn).unlink()
 
-        n = [f'python3 -m venv {vnv}', f'{vnv}/bin/python3 -m pip install -q -U --force-reinstall pip']
-        if ENVNAME == 'Colab':
-            n.append(f'{vnv}/bin/pip3 install -q ipykernel')
-        for p in n:
-            subprocess.run(shlex.split(p), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    get_ipython().system(f'rm -rf {vnv}/bin/pip* {vnv}/bin/python*')
+
+    n = [f'python3 -m venv {vnv}', f'{vnv}/bin/python3 -m pip install -q -U --force-reinstall pip']
+    if ENVNAME == 'Colab':
+        n.append(f'{vnv}/bin/pip3 install -q ipykernel')
+    for p in n:
+        subprocess.run(shlex.split(p), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 tempe()
+venv_prepare()
 venv_install()
 she_bang()
 os.chdir(HOME)
