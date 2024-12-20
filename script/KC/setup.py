@@ -184,8 +184,6 @@ def sym_link(U, M):
 
 
 def webui_req(U, W, M):
-    from nenen88 import pull, download
-
     os.chdir(W)
 
     if U == 'A1111':
@@ -237,9 +235,7 @@ def webui_req(U, W, M):
         download(item)
 
 
-def Extension(U, W, M):
-    from nenen88 import clone, say, download
-
+def webui_extension(U, W, M):
     if U == 'ComfyUI':
         say("<br><b>【{red} Installing Custom Nodes{d} 】{red}</b>")
         os.chdir(W / "custom_nodes")
@@ -263,9 +259,7 @@ def Extension(U, W, M):
             clone('https://github.com/gutris1/sd-encrypt-image')
 
 
-def installing_webui(U, S, W, M, E, V):
-    from nenen88 import download
-
+def webui_installation(U, S, W, M, E, V):
     webui_req(U, W, M)
 
     if S == "xl":
@@ -288,13 +282,11 @@ def installing_webui(U, S, W, M, E, V):
     get_ipython().system(f"unzip -qo {embzip} -d {E} && rm {embzip}")
 
     if U != 'SwarmUI':
-        Extension(U, W, M)
+        webui_extension(U, W, M)
 
 
-def webui_install(ui, which_sd):
-    from nenen88 import say, tempe
-
-    alist = {
+def webui_selection(ui, which_sd):
+    repo_url = {
         'A1111': 'git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui A1111',
         'Forge': 'git clone https://github.com/lllyasviel/stable-diffusion-webui-forge Forge',
         'ComfyUI': 'git clone https://github.com/comfyanonymous/ComfyUI',
@@ -302,9 +294,9 @@ def webui_install(ui, which_sd):
         'SwarmUI': 'git clone https://github.com/mcmonkeyprojects/SwarmUI'
     }
     
-    if ui in alist:
+    if ui in repo_url:
         WEBUI = HOME / ui
-        repo = alist[ui]
+        repo = repo_url[ui]
 
     MODELS = WEBUI / 'Models' if ui == 'SwarmUI' else WEBUI / 'models'
     EMB = MODELS / 'Embeddings' if ui == 'SwarmUI' else (MODELS / 'embeddings' if ui == 'ComfyUI' else WEBUI / 'embeddings')
@@ -314,9 +306,9 @@ def webui_install(ui, which_sd):
     get_ipython().system(repo)
 
     abcd = [
-        "curl -Lo /usr/bin/cl https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64",
+        "wget -O /usr/bin/cl https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64",
         "chmod +x /usr/bin/cl",
-        "pip install -q gdown aria2",
+        "pip install gdown aria2",
         "apt -y install lz4 pv"
     ]
 
@@ -328,7 +320,7 @@ def webui_install(ui, which_sd):
     for efgh in abcd:
         subprocess.run(shlex.split(efgh), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-    installing_webui(ui, which_sd, WEBUI, MODELS, EMB, VAE)
+    webui_installation(ui, which_sd, WEBUI, MODELS, EMB, VAE)
 
     get_ipython().run_line_magic('run', str(WEBUI / 'venv.py'))
 
@@ -338,24 +330,7 @@ def webui_install(ui, which_sd):
     os.chdir(HOME)
 
 
-def lets_go():
-    args, civitai_key, hf_read_token = prevent_silly()
-    if args is None or civitai_key is None:
-        return
-    webui, sd = args
-
-    z = [
-        (STR / '00-startup.py', f"curl -sLo {STR}/00-startup.py https://github.com/gutris1/segsmaker/raw/main/script/KC/00-startup.py"),
-        (pantat, f"curl -sLo {pantat} https://github.com/gutris1/segsmaker/raw/main/script/SM/pantat88.py"),
-        (nenen, f"curl -sLo {nenen} https://github.com/gutris1/segsmaker/raw/main/script/SM/nenen88.py"),
-        (STR / 'cupang.py', f"curl -sLo {STR}/cupang.py https://github.com/gutris1/segsmaker/raw/main/script/SM/cupang.py"),
-        (MRK, f"curl -sLo {MRK} https://github.com/gutris1/segsmaker/raw/main/script/SM/marking.py")
-    ]
-
-    for x, y in z:
-        if not Path(x).exists():
-            get_ipython().system(y)
-
+def webui_checker():
     config = json.load(MARKED.open('r')) if MARKED.exists() else {}
     ui = config.get('ui')
     WEBUI = HOME / ui if ui else None
@@ -371,20 +346,43 @@ def lets_go():
 
     else:
         display(Image(url=IMG))
-        marking(SRC, MARKED, webui)
-        key_inject(civitai_key, hf_read_token)
-        sys.path.append(str(STR))
-
-        var = [nenen, pantat, KANDANG, MRK]
-        for scripts in var:
-            get_ipython().run_line_magic('run', str(scripts))
 
         try:
-            webui_install(webui, sd)
+            webui_selection(webui, sd)
         except KeyboardInterrupt:
             print("\nCanceled.")
 
 
+def webui_misc():
+    z = [
+        (STR / '00-startup.py', f"wget -qO {STR}/00-startup.py https://github.com/gutris1/segsmaker/raw/main/script/KC/00-startup.py"),
+        (pantat, f"wget -qO {pantat} https://github.com/gutris1/segsmaker/raw/main/script/SM/pantat88.py"),
+        (nenen, f"wget -qO {nenen} https://github.com/gutris1/segsmaker/raw/main/script/SM/nenen88.py"),
+        (STR / 'cupang.py', f"wget -qO {STR}/cupang.py https://github.com/gutris1/segsmaker/raw/main/script/SM/cupang.py"),
+        (MRK, f"wget -qO {MRK} https://github.com/gutris1/segsmaker/raw/main/script/SM/marking.py")
+    ]
+
+    for x, y in z:
+        if not Path(x).exists():
+            get_ipython().system(y)
+
+
+selection, civitai_key, hf_read_token = prevent_silly()
+if selection is None or civitai_key is None:
+    exit()
+
+webui, sd = selection
+
 os.chdir(HOME)
+webui_misc()
 saving()
-lets_go()
+key_inject(civitai_key, hf_read_token)
+marking(SRC, MARKED, webui)
+sys.path.append(str(STR))
+
+var = [nenen, pantat, KANDANG, MRK]
+for scripts in var:
+    get_ipython().run_line_magic('run', str(scripts))
+
+from nenen88 import clone, say, download, tempe, pull
+webui_checker()
