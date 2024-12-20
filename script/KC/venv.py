@@ -60,7 +60,7 @@ def she_bang():
                 if e.errno == 26:
                     pass
 
-def venv_install():
+def venv_check():
     while True:
         if vnv.exists():
             size = check_venv(vnv)
@@ -78,23 +78,27 @@ def venv_install():
                 req_space -= removing(tmp / 'lora', req_space)
             if req_space > 0:
                 req_space -= removing(tmp / 'controlnet', req_space)
+        break
 
-        os.chdir(BASEPATH)
-        say('<br>【{red} Installing VENV{d} 】{red}')
-        download(url)
+def venv_install():
+    os.chdir(BASEPATH)
+    say('<br>【{red} Installing VENV{d} 】{red}')
+    download(url)
 
-        get_ipython().system(f'pv {fn} | lz4 -d | tar xf -')
-        Path(fn).unlink()
+    get_ipython().system(f'pv {fn} | lz4 -d | tar xf -')
+    Path(fn).unlink()
 
-        get_ipython().system(f'rm -rf {vnv}/bin/pip* {vnv}/bin/python*')
+    get_ipython().system(f'rm -rf {vnv}/bin/pip* {vnv}/bin/python*')
 
-        n = [f'python3 -m venv {vnv}', f'{vnv}/bin/python3 -m pip install -q -U --force-reinstall pip']
-        if ENVNAME == 'Colab':
-            n.append(f'{vnv}/bin/pip3 install -q ipykernel')
-        for p in n:
-            subprocess.run(shlex.split(p), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    n = [f'python3 -m venv {vnv}', f'{vnv}/bin/python3 -m pip install -U --force-reinstall pip']
+    if ENVNAME == 'Colab':
+        n.append(f'{vnv}/bin/pip3 install ipykernel')
+
+    for p in n:
+        subprocess.run(shlex.split(p), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 tempe()
+venv_check()
 venv_install()
 she_bang()
 os.chdir(HOME)
