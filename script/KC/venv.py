@@ -92,8 +92,8 @@ def venv_install():
 
     n = [
         f'python3 -m venv {vnv}',
-        f'{vnv}/bin/pip install -U --force-reinstall pip',
-        f'{vnv}/bin/pip install ipykernel'
+        f'{vnv}/bin/python3 -m pip install -U --force-reinstall pip',
+        f'{vnv}/bin/python3 -m pip install ipykernel'
     ]
 
     for p in n:
