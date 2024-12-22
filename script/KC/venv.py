@@ -90,9 +90,11 @@ def venv_install():
 
     get_ipython().system(f'rm -rf {vnv}/bin/pip* {vnv}/bin/python*')
 
-    n = [f'python3 -m venv {vnv}', f'{vnv}/bin/python3 -m pip install -U --force-reinstall pip']
-    if ENVNAME == 'Colab':
-        n.append(f'{vnv}/bin/pip3 install ipykernel')
+    n = [
+        f'python3 -m venv {vnv}',
+        f'{vnv}/bin/pip install -U --force-reinstall pip',
+        f'{vnv}/bin/pip install ipykernel'
+    ]
 
     for p in n:
         subprocess.run(shlex.split(p), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
