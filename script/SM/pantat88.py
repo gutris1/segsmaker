@@ -81,6 +81,19 @@ def strip_(url):
                 response = requests.get(f"https://civitai.com/api/v1/models/{model_id}")
 
             data = response.json()
+
+            early_access = data.get("earlyAccessConfig")
+            if early_access and early_access.get("chargeForDownload", False):
+                model_id = data.get("modelId")
+                version_id = data.get("id")
+                
+                if model_id and version_id:
+                    page = f"https://civitai.com/models/{model_id}?modelVersionId={version_id}"
+                    print(f"  -> {page}")
+                
+                print("  The model is in early access and requires payment for downloading.\n")
+                return None
+
             download_url = data["downloadUrl"] if "downloadUrl" in data else data["modelVersions"][0]["downloadUrl"]
             return f"{download_url}?token={toket}"
 
@@ -111,6 +124,9 @@ def netorare(line):
     path, fn = "", ""
     url = strip_(url)
     _dir = Path.cwd()
+
+    if not url:
+        return
 
     aria2c = (
         "aria2c --header='User-Agent: Mozilla/5.0' "
