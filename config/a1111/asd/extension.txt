@@ -14,4 +14,4 @@
 --depth 1 https://github.com/gutris1/sd-image-viewer
 --depth 1 https://github.com/gutris1/Scroll-Bar
 --depth 1 https://github.com/gutris1/timer_timer
---depth 1 https://github.com/gutris1/sd-simple-resolution-preset
+--depth 1 https://github.com/gutris1/sd-simple-dimension-preset
