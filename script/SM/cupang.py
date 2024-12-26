@@ -278,7 +278,7 @@ class Tunnel:
 
         self.stop_event.set()
         tunnel_names = ', '.join(tunnel["name"] for tunnel in self.tunnel_list)
-        log.info(f"\n{tunnel_names} Killed.")
+        log.info(f"\n{tunnel_names} Died.")
 
         for process in self.processes:
             log.debug(f"Stopping {process}")
@@ -544,10 +544,9 @@ class Tunnel:
                 for url, note, name in self.urls:
                     RST = '\033[0m'
                     ORG = '\033[38;5;208m'
-                    TNL = f'{ORG}▶{RST} {name} {ORG}:{RST}'
-
-                    print(f"\n{TNL} {url}\n")
-
+                    TNL = f'\n{ORG}▶{RST} {name} {ORG}:{RST}'
+                    print(f"{TNL} {url}")
+                print()
                 if self.callback:
                     try:
                         self.callback(self.urls)
