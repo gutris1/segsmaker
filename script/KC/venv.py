@@ -11,35 +11,6 @@ vnv = Path(VENVPATH)
 url = 'https://huggingface.co/pantat88/back_up/resolve/main/venv-torch241-cu121.tar.lz4'
 fn = Path(url).name
 
-need_space = 14 * 1024**3
-
-def check_venv(folder):
-    du = get_ipython().getoutput(f'du -s -b {folder}')
-    return int(du[0].split()[0]) if du else 0
-
-def check_tmp(path):
-    stats = os.statvfs(path)
-    return stats.f_frsize * stats.f_bavail
-
-def listing(directory):
-    return [(Path(root) / file, (Path(root) / file).stat().st_size) 
-            for root, _, files in os.walk(directory) for file in files]
-
-def removing(directory, req_space):
-    files = listing(directory)
-    files.sort(key=lambda x: x[1], reverse=True)
-    freed_space = 0
-
-    for file_path, size in files:
-        if freed_space >= req_space:
-            break
-
-        print(f'Removing {file_path}')
-        get_ipython().system(f'rm -rf {file_path}')
-        freed_space += size
-
-    return freed_space
-
 def she_bang():
     vnv_bin = vnv / 'bin'
     old_shebang = b'#!/home/studio-lab-user/tmp/venv/bin/python3\n'
@@ -60,27 +31,10 @@ def she_bang():
                 if e.errno == 26:
                     pass
 
-def venv_check():
-    while True:
-        if vnv.exists():
-            size = check_venv(vnv)
-            if size > 7 * 1024**3:
-                return
-            get_ipython().system(f'rm -rf {vnv}/* {vnv}')
-
-        free_space = check_tmp(tmp)
-        req_space = need_space - free_space
-
-        if req_space > 0:
-            print(f'Need space {req_space / 1024**3:.1f} GB for venv')
-            req_space -= removing(tmp / 'ckpt', req_space)
-            if req_space > 0:
-                req_space -= removing(tmp / 'lora', req_space)
-            if req_space > 0:
-                req_space -= removing(tmp / 'controlnet', req_space)
-        break
-
 def venv_install():
+    if vnv.exists():
+        get_ipython().system(f'rm -rf {vnv}/* {vnv}')
+
     os.chdir(BASEPATH)
     say('<br>【{red} Installing VENV{d} 】{red}')
     download(url)
@@ -100,7 +54,6 @@ def venv_install():
         subprocess.run(shlex.split(p), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 tempe()
-venv_check()
 venv_install()
 she_bang()
 os.chdir(HOME)
