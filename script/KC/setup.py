@@ -316,6 +316,7 @@ def webui_selection(ui, which_sd):
         abcd.append("apt -y install python3.10-venv")
     else:
         abcd.append("pip install ipywidgets jupyterlab_widgets --upgrade")
+        get_ipython().system('rm -f /usr/lib/python3.10/sitecustomize.py')
 
     for efgh in abcd:
         subprocess.run(shlex.split(efgh), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
