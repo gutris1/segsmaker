@@ -3,7 +3,7 @@ from IPython import get_ipython
 from pathlib import Path
 from KANDANG import HOMEPATH, VENVPATH, ENVNAME
 from cupang import Tunnel as Alice_Zuberg
-import json, logging, sys, argparse, os, time
+import json, logging, argparse, time, os, sys
 
 MD = Path(HOMEPATH) / 'gutris1/marking.json'
 py = Path(VENVPATH) / 'bin/python3'
@@ -34,7 +34,8 @@ def webui_launch(launch_args, skip_comfyui_check):
         get_ipython().system(f'{py} apotek.py')
         clear_output(wait=True)
 
-    os.environ['PATH'] = f'{VENVPATH}/bin:' + os.environ['PATH']
+    if f'{VENVPATH}/bin' not in os.environ['PATH']:
+        os.environ['PATH'] = f'{VENVPATH}/bin:' + os.environ['PATH']
     os.environ["PYTHONWARNINGS"] = "ignore"
 
     if ui == 'SwarmUI':
@@ -52,7 +53,8 @@ def webui_launch(launch_args, skip_comfyui_check):
     Alice_Synthesis_Thirty = Alice_Zuberg(port)
     Alice_Synthesis_Thirty.logger.setLevel(logging.DEBUG)
     Alice_Synthesis_Thirty.add_tunnel(command=cloudflared, name='Cloudflared', pattern=r"[\w-]+\.trycloudflare\.com")
-    Alice_Synthesis_Thirty.add_tunnel(command=pinggy, name='Pinggy', pattern=r"https://[\w-]+\.a\.free\.pinggy\.link")
+    if ENVNAME == 'Colab':
+        Alice_Synthesis_Thirty.add_tunnel(command=pinggy, name='Pinggy', pattern=r"https://[\w-]+\.a\.free\.pinggy\.link")
 
     with Alice_Synthesis_Thirty:
         get_ipython().system(cmd)
