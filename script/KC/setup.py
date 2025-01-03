@@ -49,6 +49,9 @@ SRC.mkdir(parents=True, exist_ok=True)
 VALID_WEBUI_OPTIONS = ["A1111", "Forge", "ComfyUI", "ReForge", "SwarmUI"]
 VALID_SD_OPTIONS = ["1.5", "xl"]
 
+SyS = get_ipython().system
+CD = os.chdir
+
 def prevent_silly():
     parser = argparse.ArgumentParser(description="WebUI Installer Script for Kaggle and Google Colab")
     parser.add_argument('--webui', required=True, help="available webui: A1111, Forge, ComfyUI, ReForge, SwarmUI")
@@ -184,7 +187,7 @@ def sym_link(U, M):
 
 
 def webui_req(U, W, M):
-    os.chdir(W)
+    CD(W)
 
     if U == 'A1111':
         pull(f"https://github.com/gutris1/segsmaker a1111 {W}")
@@ -205,7 +208,7 @@ def webui_req(U, W, M):
 
         dotnet = W / 'dotnet-install.sh'
         dotnet.chmod(0o755)
-        get_ipython().system("bash ./dotnet-install.sh --channel 8.0")
+        SyS("bash ./dotnet-install.sh --channel 8.0")
 
     req = sym_link(U, M)
     for lines in req:
@@ -234,11 +237,15 @@ def webui_req(U, W, M):
     for item in line:
         download(item)
 
+    if U not in ['SwarmUI', 'ComfyUI']:
+        SyS(f'rm -f {W}/html/card-no-preview.png')
+        download(f'https://huggingface.co/pantat88/ui/resolve/main/card-no-preview.png {W}/html')
+
 
 def webui_extension(U, W, M):
     if U == 'ComfyUI':
         say("<br><b>【{red} Installing Custom Nodes{d} 】{red}</b>")
-        os.chdir(W / "custom_nodes")
+        CD(W / "custom_nodes")
         clone(str(W / "asd/custom_nodes.txt"))
         print()
 
@@ -252,7 +259,7 @@ def webui_extension(U, W, M):
 
     else:
         say("<br><b>【{red} Installing Extensions{d} 】{red}</b>")
-        os.chdir(W / "extensions")
+        CD(W / "extensions")
         clone(str(W / "asd/extension.txt"))
 
         if ENVNAME == 'Kaggle':
@@ -279,7 +286,7 @@ def webui_installation(U, S, W, M, E, V):
     for item in extras:
         download(item)
 
-    get_ipython().system(f"unzip -qo {embzip} -d {E} && rm {embzip}")
+    SyS(f"unzip -qo {embzip} -d {E} && rm {embzip}")
 
     if U != 'SwarmUI':
         webui_extension(U, W, M)
@@ -287,13 +294,13 @@ def webui_installation(U, S, W, M, E, V):
 
 def webui_selection(ui, which_sd):
     repo_url = {
-        'A1111': 'git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui A1111',
-        'Forge': 'git clone https://github.com/lllyasviel/stable-diffusion-webui-forge Forge',
-        'ComfyUI': 'git clone https://github.com/comfyanonymous/ComfyUI',
-        'ReForge': 'git clone https://github.com/Panchovix/stable-diffusion-webui-reForge ReForge',
-        'SwarmUI': 'git clone https://github.com/mcmonkeyprojects/SwarmUI'
+        'A1111': 'https://github.com/AUTOMATIC1111/stable-diffusion-webui A1111',
+        'Forge': 'https://github.com/lllyasviel/stable-diffusion-webui-forge Forge',
+        'ComfyUI': 'https://github.com/comfyanonymous/ComfyUI',
+        'ReForge': 'https://github.com/Panchovix/stable-diffusion-webui-reForge ReForge',
+        'SwarmUI': 'https://github.com/mcmonkeyprojects/SwarmUI'
     }
-    
+
     if ui in repo_url:
         WEBUI = HOME / ui
         repo = repo_url[ui]
@@ -303,7 +310,7 @@ def webui_selection(ui, which_sd):
     VAE = MODELS / 'vae' if ui == 'ComfyUI' else MODELS / 'VAE'
 
     say(f"<b>【{{red}} Installing {WEBUI.name}{{d}} 】{{red}}</b>")
-    get_ipython().system(repo)
+    clone(repo)
 
     abcd = [
         "wget -O /usr/bin/cl https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64",
@@ -316,7 +323,7 @@ def webui_selection(ui, which_sd):
         abcd.append("apt -y install python3.10-venv")
     else:
         abcd.append("pip install ipywidgets jupyterlab_widgets --upgrade")
-        get_ipython().system('rm -f /usr/lib/python3.10/sitecustomize.py')
+        SyS('rm -f /usr/lib/python3.10/sitecustomize.py')
 
     for efgh in abcd:
         subprocess.run(shlex.split(efgh), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
@@ -328,7 +335,7 @@ def webui_selection(ui, which_sd):
     say("<br><b>【{red} Done{d} 】{red}</b>")
 
     tempe()
-    os.chdir(HOME)
+    CD(HOME)
 
 
 def webui_checker():
@@ -339,11 +346,11 @@ def webui_checker():
     if WEBUI is not None and WEBUI.exists():
         git_dir = WEBUI / '.git'
         if git_dir.exists():
-            os.chdir(WEBUI)
+            CD(WEBUI)
             if ui in ['A1111', 'ComfyUI', 'SwarmUI']:
-                get_ipython().system("git pull origin master")
+                SyS("git pull origin master")
             elif ui in ['Forge', 'ReForge']:
-                get_ipython().system("git pull origin main")
+                SyS("git pull origin main")
 
     else:
         display(Image(url=IMG))
@@ -365,7 +372,7 @@ def webui_misc():
 
     for x, y in z:
         if not Path(x).exists():
-            get_ipython().system(y)
+            SyS(y)
 
 
 selection, civitai_key, hf_read_token = prevent_silly()
@@ -374,7 +381,7 @@ if selection is None or civitai_key is None:
 
 webui, sd = selection
 
-os.chdir(HOME)
+CD(HOME)
 webui_misc()
 saving()
 key_inject(civitai_key, hf_read_token)
