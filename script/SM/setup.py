@@ -12,13 +12,15 @@ if tuple(map(int, python_version.split('.'))) < (3, 10, 6):
 from IPython.display import display, HTML, clear_output, Image
 from ipywidgets import widgets
 from pathlib import Path
-import time, os, shlex, json, shutil
 from IPython import get_ipython
 from nenen88 import pull, say, download, clone, tempe
+import time, os, shlex, json, shutil
 
+SyS = get_ipython().system
+CD = os.chdir
 
 HOME = Path.home()
-os.chdir(HOME)
+CD(HOME)
 SRC = HOME / '.gutris1'
 CSS = SRC / 'setup.css'
 IMG = SRC / 'loading.png'
@@ -135,7 +137,7 @@ def sym_link(U, M):
 def webui_req(U, W, M):
     vnv = TMP / 'venv'
     tmp_cleaning(vnv)
-    os.chdir(W)
+    CD(W)
 
     if U == 'A1111':
         pull(f"https://github.com/gutris1/segsmaker a1111 {W}")
@@ -156,7 +158,7 @@ def webui_req(U, W, M):
 
         dotnet = W / 'dotnet-install.sh'
         dotnet.chmod(0o755)
-        get_ipython().system("bash ./dotnet-install.sh --channel 8.0")
+        SyS("bash ./dotnet-install.sh --channel 8.0")
 
     req = sym_link(U, M)
     for lines in req:
@@ -184,10 +186,14 @@ def webui_req(U, W, M):
     for item in line:
         download(item)
 
-def Extensions(U, W, M):
+    if U not in ['SwarmUI', 'ComfyUI']:
+        SyS(f'rm -f {W}/html/card-no-preview.png')
+        download(f'https://huggingface.co/pantat88/ui/resolve/main/card-no-preview.png {W}/html')
+
+def WebUIExtensions(U, W, M):
     if U == 'ComfyUI':
         say("<br><b>【{red} Installing Custom Nodes{d} 】{red}</b>")
-        os.chdir(W / "custom_nodes")
+        CD(W / "custom_nodes")
         clone(str(W / "asd/custom_nodes.txt"))
         print()
 
@@ -201,7 +207,7 @@ def Extensions(U, W, M):
 
     else:
         say("<br><b>【{red} Installing Extensions{d} 】{red}</b>")
-        os.chdir(W / "extensions")
+        CD(W / "extensions")
         clone(str(W / "asd/extension.txt"))
 
 def installing_webui(U, S, W, M, E, V):
@@ -224,10 +230,10 @@ def installing_webui(U, S, W, M, E, V):
     for item in extras:
         download(item)
 
-    get_ipython().system(f"unzip -qo {embzip} -d {E} && rm {embzip}")
+    SyS(f"unzip -qo {embzip} -d {E} && rm {embzip}")
 
     if U != 'SwarmUI':
-        Extensions(U, W, M)
+        WebUIExtensions(U, W, M)
 
 def webui_install(ui, which_sd):
     with loading:
@@ -235,11 +241,11 @@ def webui_install(ui, which_sd):
 
     with output:
         alist = {
-            'A1111': 'git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui A1111',
-            'Forge': 'git clone https://github.com/lllyasviel/stable-diffusion-webui-forge Forge',
-            'ComfyUI': 'git clone https://github.com/comfyanonymous/ComfyUI',
-            'ReForge': 'git clone https://github.com/Panchovix/stable-diffusion-webui-reForge ReForge',
-            'SwarmUI': 'git clone https://github.com/mcmonkeyprojects/SwarmUI'
+            'A1111': 'https://github.com/AUTOMATIC1111/stable-diffusion-webui A1111',
+            'Forge': 'https://github.com/lllyasviel/stable-diffusion-webui-forge Forge',
+            'ComfyUI': 'https://github.com/comfyanonymous/ComfyUI',
+            'ReForge': 'https://github.com/Panchovix/stable-diffusion-webui-reForge ReForge',
+            'SwarmUI': 'https://github.com/mcmonkeyprojects/SwarmUI'
         }
         
         if ui in alist:
@@ -251,7 +257,7 @@ def webui_install(ui, which_sd):
         VAE = MODELS / 'vae' if ui == 'ComfyUI' else MODELS / 'VAE'
 
         say(f"<b>【{{red}} Installing {WEBUI.name}{{d}} 】{{red}}</b>")
-        get_ipython().system(repo)
+        clone(repo)
         time.sleep(1)
 
         marking(SRC, MARKED, ui)
@@ -263,47 +269,42 @@ def webui_install(ui, which_sd):
             get_ipython().run_line_magic('run', str(MRK))
             get_ipython().run_line_magic('run', str(WEBUI / 'venv.py'))
 
-            os.chdir(HOME)
+            CD(HOME)
             loading.clear_output(wait=True)
             say("<b>【{red} Done{d} 】{red}</b>")
 
 def facetrainer(ui):
     with loading:
         display(Image(filename=str(IMG)))
-    
-    with output:
-        if ui == 'FaceFusion':
-            WEBUI = HOME / 'FaceFusion'
-            vnv = TMP / 'venv-fusion'
-            repo = 'git clone --depth 1 https://github.com/LaoJiuYes/facefusion-lockless FaceFusion'
-            say("<b>【{red} Installing Face Fusion{d} 】{red}</b>")
 
-        elif ui == 'SDTrainer':
-            WEBUI = HOME / 'SDTrainer'
-            vnv = TMP / 'venv-sd-trainer'
-            repo = 'git clone --recurse-submodules https://github.com/Akegarasu/lora-scripts SDTrainer'
-            say("<b>【{red} Installing SD Trainer{d} 】{red}</b>")
-        
-        get_ipython().system(repo)
+    SDTFusion = {
+        'FaceFusion': ('--depth 1 https://github.com/LaoJiuYes/facefusion-lockless FaceFusion', TMP / 'venv-fusion'),
+        'SDTrainer': ('--recurse-submodules https://github.com/Akegarasu/lora-scripts SDTrainer', TMP / 'venv-sd-trainer'),
+    }
+
+    with output:
+        if ui in SDTFusion:
+            WEBUI = HOME / ui
+            repo, vnv = SDTFusion[ui]
+
+        say(f"<b>【{{red}} Installing {WEBUI.name}{{d}} 】{{red}}</b>")
+        clone(repo)
         time.sleep(1)
-        
+
         marking(SRC, MARKED, ui)
         tmp_cleaning(vnv)
 
         if ui == 'FaceFusion':
             check_ffmpeg()
             req = [
-                f"rm -rf {HOME}/tmp {HOME}/.cache/*",
-                f"ln -vs /tmp {HOME}/tmp"
+                f"rm -rf {HOME}/tmp {HOME}/.cache/*", f"ln -vs /tmp {HOME}/tmp"
             ]
         else:
             req = [
-                f"rm -rf {HOME}/tmp {HOME}/.cache/*",
-                f"mkdir -p {WEBUI}/dataset",
-                f"mkdir -p {WEBUI}/VAE",
-                f"ln -vs /tmp {HOME}/tmp"
+                f"rm -rf {HOME}/tmp {HOME}/.cache/*", f"mkdir -p {WEBUI}/dataset",
+                f"mkdir -p {WEBUI}/VAE", f"ln -vs /tmp {HOME}/tmp"
             ]
-            
+
         for lines in req:
             subprocess.run(shlex.split(lines), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
@@ -323,7 +324,7 @@ def facetrainer(ui):
             get_ipython().run_line_magic('run', str(MRK))
             get_ipython().run_line_magic('run', str(WEBUI / 'venv.py'))
 
-            os.chdir(HOME)
+            CD(HOME)
             loading.clear_output(wait=True)
             say("<b>【{red} Done{d} 】{red}</b>")
 
@@ -339,13 +340,13 @@ def oppai(btn, sd=None):
     if WEBUI and WEBUI.exists():
         git_dir = WEBUI / '.git'
         if git_dir.exists():
-            os.chdir(WEBUI)
+            CD(WEBUI)
             with output:
                 if ui in ['A1111', 'ComfyUI', 'SwarmUI', 'FaceFusion']:
-                    get_ipython().system("git pull origin master")
+                    SyS("git pull origin master")
 
                 elif ui in ['Forge', 'ReForge', 'SDTrainer']:
-                    get_ipython().system("git pull origin main")
+                    SyS("git pull origin main")
 
                 x = [
                     f"https://github.com/gutris1/segsmaker/raw/main/script/SM/venv.py {WEBUI}",
@@ -432,7 +433,7 @@ def multi_widgets():
         f"curl -sLo {MRK} https://github.com/gutris1/segsmaker/raw/main/script/SM/marking.py"
     ]
     for y in x:
-        get_ipython().system(y)
+        SyS(y)
 
     load_css()
     display(multi_panel, hbox, output, loading)
