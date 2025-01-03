@@ -139,19 +139,9 @@ def delete_everything(line):
                 del os.environ['LD_PRELOAD']
 
             folder_list = [
-                'tmp/*',
-                'tmp',
-                'asd',
-                'forge',
-                'ComfyUI',
-                '.cache/*',
-                '.config/*',
-                '.ssh',
-                '.zrok',
-                '.sagemaker',
-                '.nv',
-                '.conda',
-                '.ipython/profile_default/startup'
+                'A1111', 'Forge', 'ReForge', 'ComfyUI', 'SwarmUI', 'SDTrainer', 'FaceFusion',
+                'tmp/*', 'tmp', '.cache/*', '.config/*', '.ssh', '.zrok', '.sagemaker', '.nv',
+                '.conda/*', '.conda', '.ipython/profile_default/startup/*'
             ]
 
             cmd_list = [
