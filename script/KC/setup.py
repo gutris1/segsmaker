@@ -243,9 +243,11 @@ def webui_req(U, W, M):
 
 
 def webui_extension(U, W, M):
+    EXT = W / "custom_nodes" if U == 'ComfyUI' else W / "extensions"
+
     if U == 'ComfyUI':
         say("<br><b>【{red} Installing Custom Nodes{d} 】{red}</b>")
-        CD(W / "custom_nodes")
+        CD(EXT)
         clone(str(W / "asd/custom_nodes.txt"))
         print()
 
@@ -259,11 +261,15 @@ def webui_extension(U, W, M):
 
     else:
         say("<br><b>【{red} Installing Extensions{d} 】{red}</b>")
-        CD(W / "extensions")
+        CD(EXT)
         clone(str(W / "asd/extension.txt"))
 
         if ENVNAME == 'Kaggle':
-            clone('https://github.com/gutris1/sd-encrypt-image')
+            if U in ['A1111', 'ReForge']:
+                SyS(f'rm -rf {EXT}/sd-civitai-browser-plus')
+                clone('https://github.com/gutris1/sd-civitai-browser-plus-plus')
+            else:
+                clone('https://github.com/gutris1/sd-encrypt-image')
 
 
 def webui_installation(U, S, W, M, E, V):
@@ -312,18 +318,18 @@ def webui_selection(ui, which_sd):
     say(f"<b>【{{red}} Installing {WEBUI.name}{{d}} 】{{red}}</b>")
     clone(repo)
 
-    abcd = [
-        "wget -O /usr/bin/cl https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64",
+    if ENVNAME == "Colab":
+        abcd = ["apt -y install python3.10-venv"]
+    else:
+        abcd = ["pip install ipywidgets jupyterlab_widgets --upgrade"]
+        SyS('rm -f /usr/lib/python3.10/sitecustomize.py')
+
+    abcd.extend([
+        "wget -qO /usr/bin/cl https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64",
         "chmod +x /usr/bin/cl",
         "pip install gdown aria2",
         "apt -y install lz4 pv"
-    ]
-
-    if ENVNAME == "Colab":
-        abcd.append("apt -y install python3.10-venv")
-    else:
-        abcd.append("pip install ipywidgets jupyterlab_widgets --upgrade")
-        SyS('rm -f /usr/lib/python3.10/sitecustomize.py')
+    ])
 
     for efgh in abcd:
         subprocess.run(shlex.split(efgh), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
