@@ -3,7 +3,6 @@
 --depth 1 https://github.com/DominikDoom/a1111-sd-webui-tagcomplete
 --depth 1 https://github.com/IDEA-Research/DWPose
 --depth 1 https://github.com/lllyasviel/sd-forge-layerdiffuse
---depth 1 https://github.com/BlafKing/sd-civitai-browser-plus
 --depth 1 https://github.com/hako-mikan/sd-webui-supermerger
 --depth 1 https://github.com/gutris1/sd-hub
 --depth 1 https://github.com/gutris1/sd-image-viewer
