@@ -14,5 +14,7 @@
     "hidden_tabs": [
         "Spaces",
         "Checkpoint Merger"
-    ]
+    ],
+    "extra_networks_card_width": 200,
+    "extra_networks_card_height": 300
 }
