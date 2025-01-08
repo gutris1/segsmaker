@@ -16,5 +16,6 @@
         "Checkpoint Merger"
     ],
     "extra_networks_card_width": 200,
-    "extra_networks_card_height": 300
+    "extra_networks_card_height": 300,
+    "extra_networks_card_text_scale": 0.8
 }
