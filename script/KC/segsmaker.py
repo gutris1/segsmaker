@@ -53,8 +53,7 @@ def webui_launch(launch_args, skip_comfyui_check):
     Alice_Synthesis_Thirty = Alice_Zuberg(port)
     Alice_Synthesis_Thirty.logger.setLevel(logging.DEBUG)
     Alice_Synthesis_Thirty.add_tunnel(command=cloudflared, name='Cloudflared', pattern=r"[\w-]+\.trycloudflare\.com")
-    if ENVNAME == 'Colab':
-        Alice_Synthesis_Thirty.add_tunnel(command=pinggy, name='Pinggy', pattern=r"https://[\w-]+\.a\.free\.pinggy\.link")
+    Alice_Synthesis_Thirty.add_tunnel(command=pinggy, name='Pinggy', pattern=r"https://[\w-]+\.a\.free\.pinggy\.link")
 
     with Alice_Synthesis_Thirty:
         get_ipython().system(cmd)
