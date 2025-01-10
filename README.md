@@ -16,12 +16,14 @@
 # Changelog
 ### 2024-11-13
 - Added NGROK and ZROK tunnel for Colab and Kaggle.<br>
+
 ![1](https://github.com/user-attachments/assets/2acaf9bb-7414-4b8d-a121-1442c3a474bf)
 
 
 
 ### 2024-11-13
 - Added SwarmUI for Colab, Kaggle and Studio Lab notebook.<br>
+
 ![Screenshot_1](https://github.com/user-attachments/assets/1b65ec70-a6d7-4a37-921d-2f5c7f71b0c3)
 
 
@@ -133,8 +135,7 @@ Usage:
 
 # Preview
 <p align="center">
-  <img src="https://github.com/gutris1/segsmaker/assets/132797949/4ecc8360-a3ba-4564-8acc-64638acb3e35", widht=1000px>
-  <img src="https://github.com/gutris1/segsmaker/assets/132797949/e19cc982-67ea-447f-a505-4efc932c822a", widht=1000px>
-  <img src="https://github.com/gutris1/segsmaker/blob/main/script/preview/fastpnginfo.png", widht=1000px>
-  <img src="https://github.com/gutris1/segsmaker/blob/main/script/preview/cn.png", widht=1000px>
+  <img src="https://github.com/user-attachments/assets/e5c54a3a-69b4-4835-9d4b-cf9302b15b62", width=1000px>
+  <img src="https://github.com/gutris1/segsmaker/blob/main/script/preview/fastpnginfo.png", width=1000px>
+  <img src="https://github.com/gutris1/segsmaker/blob/main/script/preview/cn.png", width=1000px>
 </p>
