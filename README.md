@@ -14,7 +14,7 @@
 
 
 # Changelog
-### 2024-11-13
+### 2025-01-10
 - Added NGROK and ZROK tunnel for Colab and Kaggle.<br>
 
 ![1](https://github.com/user-attachments/assets/2acaf9bb-7414-4b8d-a121-1442c3a474bf)
