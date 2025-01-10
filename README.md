@@ -15,6 +15,12 @@
 
 # Changelog
 ### 2024-11-13
+- Added NGROK and ZROK tunnel for Colab and Kaggle.<br>
+![1](https://github.com/user-attachments/assets/2acaf9bb-7414-4b8d-a121-1442c3a474bf)
+
+
+
+### 2024-11-13
 - Added SwarmUI for Colab, Kaggle and Studio Lab notebook.<br>
 ![Screenshot_1](https://github.com/user-attachments/assets/1b65ec70-a6d7-4a37-921d-2f5c7f71b0c3)
 
