@@ -38,9 +38,10 @@ MRK = SRC / 'marking.py'
 KEY = SRC / 'api-key.json'
 MARKED = SRC / 'marking.json'
 
-STR = Path('/root/.ipython/profile_default/startup')
-nenen = STR / "nenen88.py"
-pantat = STR / "pantat88.py"
+USR = Path('/usr/bin')
+STR = Path.home() / '.ipython/profile_default/startup'
+nenen = STR / 'nenen88.py'
+pantat = STR / 'pantat88.py'
 KANDANG = STR / 'KANDANG.py'
 
 TMP.mkdir(parents=True, exist_ok=True)
@@ -95,6 +96,30 @@ def prevent_silly():
     sd_sd = next(option for option in VALID_SD_OPTIONS if arg2 == option.lower())
 
     return (webui_webui, sd_sd), arg3, arg4
+
+
+def ngrok_zrok():
+    bins = {
+        "zrok": {
+            "bin": USR / 'zrok',
+            "url": "https://github.com/openziti/zrok/releases/download/v0.4.44/zrok_0.4.44_linux_amd64.tar.gz"
+        },
+        "ngrok": {
+            "bin": USR / 'ngrok',
+            "url": "https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz"
+        }
+    }
+
+    for n, b in bins.items():
+        if b["bin"].exists():
+            continue
+
+        url = b["url"]
+        name = Path(url).name
+
+        SyS(f"wget -qO {name} {url}")
+        SyS(f"tar -xzf {name} -C {USR}")
+        SyS(f"rm -f {name}")
 
 
 def saving():
@@ -214,6 +239,8 @@ def webui_req(U, W, M):
     for lines in req:
         subprocess.run(shlex.split(lines), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
+    ngrok_zrok()
+
     scripts = [
         f"https://github.com/gutris1/segsmaker/raw/main/script/SM/controlnet.py {W}/asd",
         f"https://github.com/gutris1/segsmaker/raw/main/script/KC/venv.py {W}",
@@ -325,10 +352,8 @@ def webui_selection(ui, which_sd):
         SyS('rm -f /usr/lib/python3.10/sitecustomize.py')
 
     abcd.extend([
-        "wget -qO /usr/bin/cl https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64",
-        "chmod +x /usr/bin/cl",
-        "pip install gdown aria2",
-        "apt -y install lz4 pv"
+        f'wget -qO {USR}/cl https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64',
+        f'chmod +x {USR}/cl', 'pip install gdown aria2', 'apt -y install lz4 pv'
     ])
 
     for efgh in abcd:
@@ -337,6 +362,7 @@ def webui_selection(ui, which_sd):
     webui_installation(ui, which_sd, WEBUI, MODELS, EMB, VAE)
 
     get_ipython().run_line_magic('run', str(WEBUI / 'venv.py'))
+    SyS(f'{VNV}/bin/pip uninstall -qy ngrok')
 
     say("<br><b>【{red} Done{d} 】{red}</b>")
 
