@@ -79,8 +79,8 @@ def strip_(url):
 
             data = response.json()
 
-            early_access = data.get("earlyAccessConfig")
-            if early_access and early_access.get("chargeForDownload", False):
+            early_access = data.get("earlyAccessEndsAt", None)
+            if early_access:
                 model_id = data.get("modelId")
                 version_id = data.get("id")
                 
