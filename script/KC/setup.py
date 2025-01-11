@@ -362,7 +362,7 @@ def webui_selection(ui, which_sd):
     webui_installation(ui, which_sd, WEBUI, MODELS, EMB, VAE)
 
     get_ipython().run_line_magic('run', str(WEBUI / 'venv.py'))
-    SyS(f'{VNV}/bin/pip uninstall -qy ngrok')
+    SyS(f'{VNV}/bin/pip uninstall -qy ngrok pyngrok')
 
     say("<br><b>【{red} Done{d} 】{red}</b>")
 
