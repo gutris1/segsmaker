@@ -14,19 +14,22 @@ clear_output(wait=True)
 
 ENVNAME, ENVBASE, ENVHOME = None, None, None
 env_list = {
-    'Colab': ('/content', '/content', 'COLAB_JUPYTER_TRANSPORT'),
-    'Kaggle': ('/kaggle', '/kaggle/working', 'KAGGLE_DATA_PROXY_TOKEN')
+'Colab': ('/content', '/content', 'COLAB_JUPYTER_TRANSPORT'),
+'Kaggle': ('/kaggle', '/kaggle/working', 'KAGGLE_DATA_PROXY_TOKEN')
 }
 for envname, (envbase, envhome, envvar) in env_list.items():
-    if os.getenv(envvar):
-        ENVNAME = envname
-        ENVBASE = envbase
-        ENVHOME = envhome
-        break
+if os.getenv(envvar):
+ENVNAME = envname
+ENVBASE = envbase
+ENVHOME = envhome
+break
 
 if not ENVNAME:
-    print("You are not in Kaggle or Google Colab.\nExiting.")
-    sys.exit()
+# If no known environment is found, default to local values
+ENVNAME = "LOCAL"
+ENVBASE = str(Path.cwd())
+ENVHOME = str(Path.cwd())
+print("No Kaggle/Colab environment detected. Using local defaults.")
 
 HOME = Path(ENVHOME)
 BASEPATH = Path(ENVBASE)
