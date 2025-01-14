@@ -4,7 +4,7 @@ import sys, os
 
 ENVHOME = None
 env_list = {
-    'Colab': ('/content', '/content', 'COLAB_JUPYTER_IP'),
+    'Colab': ('/content', '/content', 'COLAB_JUPYTER_TOKEN'),
     'Kaggle': ('/kaggle', '/kaggle/working', 'KAGGLE_DATA_PROXY_TOKEN')
 }
 for envname, (envbase, envhome, envvar) in env_list.items():
