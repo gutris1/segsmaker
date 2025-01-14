@@ -414,13 +414,13 @@ def tempe():
     ENV = None
 
     env_list = {
-        'Colab': ('/content', 'COLAB_JUPYTER_TRANSPORT'),
+        'Colab': ('/content', 'COLAB_JUPYTER_TOKEN'),
         'Kaggle': ('/kaggle', 'KAGGLE_DATA_PROXY_TOKEN'),
         'SageMaker': ('/home/studio-lab-user', 'SAGEMAKER_INTERNAL_IMAGE_URI')
     }
 
     for env_name, (path, env_var) in env_list.items():
-        if os.getenv(env_var):
+        if env_var in os.environ:
             BASEPATH = path
             ENV = env_name
             break
