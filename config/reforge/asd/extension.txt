@@ -7,7 +7,6 @@
 --depth 1 https://github.com/Coyote-A/ultimate-upscale-for-automatic1111
 --depth 1 https://github.com/IDEA-Research/DWPose
 --depth 1 https://github.com/hako-mikan/sd-webui-regional-prompter
---depth 1 https://github.com/BlafKing/sd-civitai-browser-plus
 --depth 1 https://github.com/gutris1/sd-hub
 --depth 1 https://github.com/gutris1/sd-image-info
 --depth 1 https://github.com/gutris1/sd-image-viewer
