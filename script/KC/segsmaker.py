@@ -1,9 +1,16 @@
 from IPython.display import clear_output
 from IPython import get_ipython
 from pathlib import Path
-from KANDANG import HOMEPATH, VENVPATH, ENVNAME
+from KANDANG import HOMEPATH, VENVPATH, ENVNAME, TEMPPATH
 from cupang import Tunnel as Alice_Zuberg
-import json, logging, argparse, time, os, yaml
+import subprocess
+import argparse
+import logging
+import shlex
+import json
+import yaml
+import time
+import os
 
 MD = Path(HOMEPATH) / 'gutris1/marking.json'
 py = Path(VENVPATH) / 'bin/python3'
@@ -12,9 +19,32 @@ cd = Path.cwd()
 
 SyS = get_ipython().system
 
-if f'{VENVPATH}/bin' not in os.environ['PATH']:
-    os.environ['PATH'] = f'{VENVPATH}/bin:' + os.environ['PATH']
-os.environ["PYTHONWARNINGS"] = "ignore"
+def setENV(ui):
+    VENV = f'{VENVPATH}/bin:'
+    OS = os.environ['PATH']
+
+    if f'{VENVPATH}/bin' not in OS:
+        if ui in ['A1111', 'ReForge']:
+            os.environ['PATH'] = VENV + OS
+        else:
+            os.environ['PATH'] = OS + VENV
+
+    if ui == 'SwarmUI':
+        os.environ['SWARMPATH'] = str(cd)
+        os.environ['SWARM_NO_VENV'] = 'true'
+
+    os.environ["PYTHONWARNINGS"] = "ignore"
+
+def Trashing(ui):
+    run = lambda cmd: subprocess.run(shlex.split(cmd), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+    dirs1 = ["A1111", "Forge", "ComfyUI", "ReForge", "SwarmUI"]
+    dirs2 = ["ckpt", "lora", "controlnet", "svd", "z123"]
+    paths = [Path(HOMEPATH) / name for name in dirs1] + [Path(TEMPPATH) / name for name in dirs2]
+
+    for path in paths:
+        cmd = f"find {path} -type d -name .ipynb_checkpoints -exec rm -rf {{}} +"
+        run(cmd)
 
 def NGROK_auth(token):
     auth = f'ngrok config add-authtoken {token}'
@@ -55,6 +85,9 @@ def webui_launch(launch_args, skip_comfyui_check, ngrok_token=None, zrok_token=N
     config = json.load(MD.open('r'))
     ui = config.get('ui')
 
+    setENV(ui)
+    Trashing(ui)
+
     port = 7801 if ui == 'SwarmUI' else (8188 if ui == 'ComfyUI' else 7860)
     launcher = 'main.py' if ui == 'ComfyUI' else 'launch.py'
 
@@ -76,8 +109,6 @@ def webui_launch(launch_args, skip_comfyui_check, ngrok_token=None, zrok_token=N
         clear_output(wait=True)
 
     if ui == 'SwarmUI':
-        os.environ['SWARMPATH'] = str(cd)
-        os.environ['SWARM_NO_VENV'] = 'true'
         SyS('pip install -q rembg')
         SyS('git pull -q')
         cmd = f"bash ./launch-linux.sh {launch_args}"
