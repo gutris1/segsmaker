@@ -292,11 +292,9 @@ def webui_extension(U, W, M):
         clone(str(W / "asd/extension.txt"))
 
         if ENVNAME == 'Kaggle':
-            if U in ['A1111', 'ReForge']:
-                SyS(f'rm -rf {EXT}/sd-civitai-browser-plus')
-                clone('https://github.com/gutris1/sd-civitai-browser-plus-plus')
-            else:
-                clone('https://github.com/gutris1/sd-encrypt-image')
+            clone('https://github.com/gutris1/sd-civitai-browser-plus-plus')
+        else:
+            clone('https://github.com/BlafKing/sd-civitai-browser-plus')
 
 
 def webui_installation(U, S, W, M, E, V):
