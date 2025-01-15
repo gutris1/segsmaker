@@ -12,30 +12,26 @@ import yaml
 import time
 import os
 
+ROOT = Path.home()
 MD = Path(HOMEPATH) / 'gutris1/marking.json'
 py = Path(VENVPATH) / 'bin/python3'
 pw = '82a973c04367123ae98bd9abdf80d9eda9b910e2'
 cd = Path.cwd()
 
 SyS = get_ipython().system
+IRON = os.environ
 
 def setENV(ui):
-    VENV = f'{VENVPATH}/bin:'
-    OS = os.environ['PATH']
-
-    if f'{VENVPATH}/bin' not in OS:
-        if ui in ['A1111', 'ReForge']:
-            os.environ['PATH'] = VENV + OS
-        else:
-            os.environ['PATH'] = OS + VENV
+    if f'{VENVPATH}/bin' not in IRON['PATH']:
+        IRON['PATH'] = f'{VENVPATH}/bin:' + IRON['PATH']
 
     if ui == 'SwarmUI':
-        os.environ['SWARMPATH'] = str(cd)
-        os.environ['SWARM_NO_VENV'] = 'true'
+        IRON['SWARMPATH'] = str(cd)
+        IRON['SWARM_NO_VENV'] = 'true'
 
-    os.environ["PYTHONWARNINGS"] = "ignore"
+    IRON['PYTHONWARNINGS'] = 'ignore'
 
-def Trashing(ui):
+def Trashing():
     run = lambda cmd: subprocess.run(shlex.split(cmd), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     dirs1 = ["A1111", "Forge", "ComfyUI", "ReForge", "SwarmUI"]
@@ -47,38 +43,28 @@ def Trashing(ui):
         run(cmd)
 
 def NGROK_auth(token):
-    auth = f'ngrok config add-authtoken {token}'
-    yml = Path.home() / '.config/ngrok/ngrok.yml'
+    yml = ROOT / '.config/ngrok/ngrok.yml'
 
-    if yml.exists():
-        with open(yml, 'r') as f:
-            current_value = yaml.safe_load(f)
-            current_token = current_value.get('agent', {}).get('authtoken')
-        if current_token == token:
-            pass
-        else:
-            SyS(auth)
-            print()
-    else:
-        SyS(auth)
+    with open(yml, 'r') as f:
+        current_token = yaml.safe_load(f).get('agent', {}).get('authtoken') if yml.exists() else None
+
+    if current_token != token:
+        SyS(f'ngrok config add-authtoken {token}')
         print()
 
 def ZROK_enable(token):
-    enable = f'zrok enable {token}'
-    zrok_env = Path.home() / '.zrok/environment.json'
+    zrok_env = ROOT / '.zrok/environment.json'
 
     if zrok_env.exists():
         with open(zrok_env, 'r') as f:
-            current_value = json.load(f)
-            current_token = current_value.get('zrok_token')
-        if current_token == token:
-            pass
-        else:
+            current_token = json.load(f).get('zrok_token')
+
+        if current_token != token:
             SyS('zrok disable')
-            SyS(enable)
+            SyS(f'zrok enable {token}')
             print()
     else:
-        SyS(enable)
+        SyS(f'zrok enable {token}')
         print()
 
 def webui_launch(launch_args, skip_comfyui_check, ngrok_token=None, zrok_token=None):
@@ -86,7 +72,6 @@ def webui_launch(launch_args, skip_comfyui_check, ngrok_token=None, zrok_token=N
     ui = config.get('ui')
 
     setENV(ui)
-    Trashing(ui)
 
     port = 7801 if ui == 'SwarmUI' else (8188 if ui == 'ComfyUI' else 7860)
     launcher = 'main.py' if ui == 'ComfyUI' else 'launch.py'
@@ -148,6 +133,7 @@ if __name__ == '__main__':
     launch_args = ' '.join(unknown)
 
     try:
+        Trashing()
         webui_launch(launch_args, args.skip_comfyui_check, args.N, args.Z)
     except KeyboardInterrupt:
         pass
