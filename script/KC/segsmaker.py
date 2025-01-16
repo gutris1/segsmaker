@@ -45,8 +45,11 @@ def Trashing():
 def NGROK_auth(token):
     yml = ROOT / '.config/ngrok/ngrok.yml'
 
-    with open(yml, 'r') as f:
-        current_token = yaml.safe_load(f).get('agent', {}).get('authtoken') if yml.exists() else None
+    if yml.exists():
+        with open(yml, 'r') as f:
+            current_token = yaml.safe_load(f).get('agent', {}).get('authtoken')
+    else:
+        current_token = None
 
     if current_token != token:
         SyS(f'ngrok config add-authtoken {token}')
