@@ -22,11 +22,13 @@ if not ENVNAME:
     sys.exit()
 
 if ENVNAME == 'Colab':
-    SyS('sudo ln -sf /usr/bin/python3.10 /usr/local/bin/python')
-    SyS('sudo ln -sf /usr/bin/python3.10 /usr/bin/python3')
-    SyS('sudo rm -rf /usr/local/lib/python3.10')
-    SyS('sudo ln -sf /usr/local/lib/python3.11 /usr/local/lib/python3.10')
-
+    for blyat in [
+        'sudo ln -sf /usr/bin/python3.10 /usr/local/bin/python',
+        'sudo ln -sf /usr/bin/python3.10 /usr/bin/python3',
+        'sudo rm -rf /usr/local/lib/python3.10',
+        'sudo ln -sf /usr/local/lib/python3.11 /usr/local/lib/python3.10'
+    ]:
+        SyS(blyat)
 
 from IPython.display import display, Image, clear_output
 from IPython import get_ipython
