@@ -1,16 +1,9 @@
-from IPython.display import display, Image, clear_output
 from IPython import get_ipython
-from pathlib import Path
-import argparse, sys, json, os, subprocess, shlex, time, re
+import sys
+import os
 
-R = "\033[31m"
-P = "\033[38;5;135m"
-RST = "\033[0m"
-ERR = f"{P}[{RST}{R}ERROR{RST}{P}]{RST}"
-
-IMG = "https://github.com/gutris1/segsmaker/raw/main/script/SM/loading.png"
-display(Image(url=IMG))
-clear_output(wait=True)
+SyS = get_ipython().system
+CD = os.chdir
 
 ENVNAME, ENVBASE, ENVHOME = None, None, None
 env_list = {
@@ -27,6 +20,33 @@ for envname, (envbase, envhome, envvar) in env_list.items():
 if not ENVNAME:
     print("You are not in Kaggle or Google Colab.\nExiting.")
     sys.exit()
+
+if ENVNAME == 'Colab':
+    SyS('sudo ln -sf /usr/bin/python3.10 /usr/local/bin/python')
+    SyS('sudo ln -sf /usr/bin/python3.10 /usr/bin/python3')
+    SyS('sudo rm -rf /usr/local/lib/python3.10')
+    SyS('sudo ln -sf /usr/local/lib/python3.11 /usr/local/lib/python3.10')
+
+
+from IPython.display import display, Image, clear_output
+from IPython import get_ipython
+from pathlib import Path
+import subprocess
+import argparse
+import shlex
+import json
+import sys
+import os
+import re
+
+R = "\033[31m"
+P = "\033[38;5;135m"
+RST = "\033[0m"
+ERR = f"{P}[{RST}{R}ERROR{RST}{P}]{RST}"
+
+IMG = "https://github.com/gutris1/segsmaker/raw/main/script/SM/loading.png"
+display(Image(url=IMG))
+clear_output(wait=True)
 
 HOME = Path(ENVHOME)
 BASEPATH = Path(ENVBASE)
@@ -49,9 +69,6 @@ SRC.mkdir(parents=True, exist_ok=True)
 
 VALID_WEBUI_OPTIONS = ["A1111", "Forge", "ComfyUI", "ReForge", "SwarmUI"]
 VALID_SD_OPTIONS = ["1.5", "xl"]
-
-SyS = get_ipython().system
-CD = os.chdir
 
 def prevent_silly():
     parser = argparse.ArgumentParser(description="WebUI Installer Script for Kaggle and Google Colab")
@@ -404,7 +421,7 @@ def webui_misc():
 
 selection, civitai_key, hf_read_token = prevent_silly()
 if selection is None or civitai_key is None:
-    exit()
+    sys.exit()
 
 webui, sd = selection
 
