@@ -311,7 +311,7 @@ def webui_extension(U, W, M):
         clone(str(W / "asd/extension.txt"))
 
         if ENVNAME == 'Kaggle':
-            clone('https://github.com/gutris1/sd-civitai-browser-plus-plus')
+            clone('https://github.com/gutris1/sd-encrypt-image')
         else:
             clone('https://github.com/BlafKing/sd-civitai-browser-plus')
 
