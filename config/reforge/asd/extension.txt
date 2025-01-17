@@ -1,4 +1,3 @@
---depth 1 https://github.com/Gourieff/sd-webui-reactor 2-sd-webui-reactor
 --depth 1 https://github.com/gutris1/sd-webui-bmab 3-bmab
 --depth 1 https://github.com/Bing-su/adetailer 4-adetailer
 --depth 1 https://github.com/hako-mikan/sd-webui-supermerger
