@@ -477,7 +477,8 @@ def tempe(line):
             f"{BASEPATH}/temp/controlnet",
             f"{BASEPATH}/temp/svd",
             f"{BASEPATH}/temp/z123",
-            f"{BASEPATH}/temp/clip"
+            f"{BASEPATH}/temp/clip",
+            f"{BASEPATH}/temp/unet"
         ]
 
     else:
@@ -487,7 +488,8 @@ def tempe(line):
             "/tmp/controlnet",
             "/tmp/svd",
             "/tmp/z123",
-            "/tmp/clip"
+            "/tmp/clip",
+            "/tmp/unet"
         ]
 
     for paths in tmplist:

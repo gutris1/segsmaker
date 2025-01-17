@@ -10,11 +10,15 @@ if tuple(map(int, python_version.split('.'))) < (3, 10, 6):
     sys.exit()
 
 from IPython.display import display, HTML, clear_output, Image
+from IPython import get_ipython
 from ipywidgets import widgets
 from pathlib import Path
-from IPython import get_ipython
+import shutil
+import json
+import time
+import os
+
 from nenen88 import pull, say, download, clone, tempe
-import time, os, shlex, json, shutil
 
 SyS = get_ipython().system
 CD = os.chdir
@@ -55,7 +59,7 @@ def check_ffmpeg():
         for d, m in c:
             if m is not None:
                 print(m)
-            subprocess.run(shlex.split(d), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            SyS(f'{d} &> /dev/null')
 
 def marking(p, n, i):
     t = p / n
@@ -83,35 +87,44 @@ def marking(p, n, i):
         json.dump(d, f, indent=4)
 
 def sym_link(U, M):
-    if U == 'A1111':
-        return [
-            f"rm -rf {HOME}/tmp {HOME}/.cache/*",
-            f"rm -rf {M}/Stable-diffusion/tmp_ckpt",
-            f"rm -rf {M}/Lora/tmp_lora {M}/ControlNet",
+    links = {
+        'A1111': [
+            f"rm -rf {HOME}/tmp {HOME}/.cache/* {M}/Stable-diffusion/tmp_ckpt {M}/Lora/tmp_lora {M}/ControlNet",
             f"mkdir -p {M}/Lora {M}/ESRGAN",
             f"ln -vs {TMP} {HOME}/tmp",
             f"ln -vs {TMP}/ckpt {M}/Stable-diffusion/tmp_ckpt",
             f"ln -vs {TMP}/lora {M}/Lora/tmp_lora",
             f"ln -vs {TMP}/controlnet {M}/ControlNet"
-        ]
+        ],
 
-    elif U == 'ComfyUI':
-        return [
-            f"rm -rf {HOME}/tmp {HOME}/.cache/*",
-            f"rm -rf {M}/controlnet {M}/clip",
+        'ComfyUI': [
+            f"rm -rf {HOME}/tmp {HOME}/.cache/* {M}/controlnet {M}/clip {M}/unet",
             f"rm -rf {M}/checkpoints/tmp_ckpt {M}/loras/tmp_lora",
             f"ln -vs {TMP} {HOME}/tmp",
             f"ln -vs {TMP}/ckpt {M}/checkpoints/tmp_ckpt",
             f"ln -vs {TMP}/lora {M}/loras/tmp_lora",
             f"ln -vs {TMP}/controlnet {M}/controlnet",
             f"ln -vs {TMP}/clip {M}/clip",
+            f"ln -vs {TMP}/unet {M}/unet",
             f"ln -vs {M}/checkpoints {M}/checkpoints_symlink"
-        ]
+        ],
 
-    elif U in ['Forge', 'ReForge']:
-        return [
-            f"rm -rf {HOME}/tmp {HOME}/.cache/*",
-            f"rm -rf {M}/ControlNet {M}/svd {M}/z123",
+        'Forge': [
+            f"rm -rf {HOME}/tmp {HOME}/.cache/* {M}/ControlNet {M}/svd {M}/z123 {M}/clip {M}/unet",
+            f"rm -rf {M}/Stable-diffusion/tmp_ckpt {M}/Lora/tmp_lora",
+            f"mkdir -p {M}/Lora {M}/ESRGAN",
+            f"ln -vs {TMP} {HOME}/tmp",
+            f"ln -vs {TMP}/ckpt {M}/Stable-diffusion/tmp_ckpt",
+            f"ln -vs {TMP}/lora {M}/Lora/tmp_lora",
+            f"ln -vs {TMP}/controlnet {M}/ControlNet",
+            f"ln -vs {TMP}/z123 {M}/z123",
+            f"ln -vs {TMP}/svd {M}/svd",
+            f"ln -vs {TMP}/clip {M}/clip",
+            f"ln -vs {TMP}/unet {M}/unet"
+        ],
+
+        'ReForge': [
+            f"rm -rf {HOME}/tmp {HOME}/.cache/* {M}/ControlNet {M}/svd {M}/z123",
             f"rm -rf {M}/Stable-diffusion/tmp_ckpt {M}/Lora/tmp_lora",
             f"mkdir -p {M}/Lora {M}/ESRGAN",
             f"ln -vs {TMP} {HOME}/tmp",
@@ -120,49 +133,42 @@ def sym_link(U, M):
             f"ln -vs {TMP}/controlnet {M}/ControlNet",
             f"ln -vs {TMP}/z123 {M}/z123",
             f"ln -vs {TMP}/svd {M}/svd"
-        ]
+        ],
 
-    elif U == 'SwarmUI':
-        return [
-            f"rm -rf {HOME}/tmp {HOME}/.cache/*",
-            f"rm -rf {M}/Stable-Diffusion/tmp_ckpt",
-            f"rm -rf {M}/Lora/tmp_lora {M}/controlnet {M}/clip",
+        'SwarmUI': [
+            f"rm -rf {HOME}/tmp {HOME}/.cache/* {M}/Stable-Diffusion/tmp_ckpt",
+            f"rm -rf {M}/Lora/tmp_lora {M}/controlnet {M}/clip {M}/unet",
             f"ln -vs {TMP} {HOME}/tmp",
             f"ln -vs {TMP}/ckpt {M}/Stable-Diffusion/tmp_ckpt",
             f"ln -vs {TMP}/lora {M}/Lora/tmp_lora",
             f"ln -vs {TMP}/controlnet {M}/controlnet",
-            f"ln -vs {TMP}/clip {M}/clip"
+            f"ln -vs {TMP}/clip {M}/clip",
+            f"ln -vs {TMP}/unet {M}/unet"
         ]
+    }
+
+    return links.get(U, [])
 
 def webui_req(U, W, M):
     vnv = TMP / 'venv'
     tmp_cleaning(vnv)
     CD(W)
 
-    if U == 'A1111':
-        pull(f"https://github.com/gutris1/segsmaker a1111 {W}")
-    elif U == 'Forge':
-        pull(f"https://github.com/gutris1/segsmaker forge {W}")
-    elif U == 'ComfyUI':
-        pull(f"https://github.com/gutris1/segsmaker comfyui {W}")
-    elif U == 'ReForge':
-        pull(f"https://github.com/gutris1/segsmaker reforge {W}")
+    if U in ['A1111', 'Forge', 'ComfyUI', 'ReForge']:
+        pull(f"https://github.com/gutris1/segsmaker {U.lower()} {W}")
     elif U == 'SwarmUI':
         M.mkdir(parents=True, exist_ok=True)
-
-        dirs = ['Stable-Diffusion', 'Lora', 'Embeddings', 'VAE', 'upscale_models']
-        for sub in dirs:
+        for sub in ['Stable-Diffusion', 'Lora', 'Embeddings', 'VAE', 'upscale_models']:
             (M / sub).mkdir(parents=True, exist_ok=True)
 
         download(f"https://dot.net/v1/dotnet-install.sh {W}")
-
         dotnet = W / 'dotnet-install.sh'
         dotnet.chmod(0o755)
         SyS("bash ./dotnet-install.sh --channel 8.0")
 
     req = sym_link(U, M)
-    for lines in req:
-        subprocess.run(shlex.split(lines), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    for ln in req:
+        SyS(f'{ln} &> /dev/null')
 
     scripts = [
         f"https://github.com/gutris1/segsmaker/raw/main/script/SM/controlnet.py {W}/asd",
@@ -191,23 +197,22 @@ def webui_req(U, W, M):
         download(f'https://huggingface.co/pantat88/ui/resolve/main/card-no-preview.png {W}/html')
 
 def WebUIExtensions(U, W, M):
+    EXT = W / "custom_nodes" if U == 'ComfyUI' else W / "extensions"
+    CD(EXT)
+
     if U == 'ComfyUI':
         say("<br><b>【{red} Installing Custom Nodes{d} 】{red}</b>")
-        CD(W / "custom_nodes")
         clone(str(W / "asd/custom_nodes.txt"))
         print()
 
-        custom_nodes_models = [
+        for faces in [
             f"https://github.com/sczhou/CodeFormer/releases/download/v0.1.0/codeformer.pth {M}/facerestore_models",
             f"https://github.com/TencentARC/GFPGAN/releases/download/v1.3.4/GFPGANv1.4.pth {M}/facerestore_models"
-        ]
-
-        for item in custom_nodes_models:
-            download(item)
+        ]:
+            download(faces)
 
     else:
         say("<br><b>【{red} Installing Extensions{d} 】{red}</b>")
-        CD(W / "extensions")
         clone(str(W / "asd/extension.txt"))
 
 def installing_webui(U, S, W, M, E, V):
@@ -306,7 +311,7 @@ def facetrainer(ui):
             ]
 
         for lines in req:
-            subprocess.run(shlex.split(lines), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            SyS(f'{lines} &> /dev/null')
 
         scripts = [
             f"https://github.com/gutris1/segsmaker/raw/main/script/SM/venv.py {WEBUI}",
