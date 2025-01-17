@@ -197,24 +197,27 @@ def sym_link(U, M):
         ],
 
         'ComfyUI': [
-            f"rm -rf {TMP}/* {M}/controlnet {M}/clip",
+            f"rm -rf {TMP}/* {M}/controlnet {M}/clip {M}/unet",
             f"rm -rf {M}/checkpoints/tmp_ckpt {M}/loras/tmp_lora",
             f"ln -vs {TMP}/ckpt {M}/checkpoints/tmp_ckpt",
             f"ln -vs {TMP}/lora {M}/loras/tmp_lora",
             f"ln -vs {TMP}/controlnet {M}/controlnet",
             f"ln -vs {TMP}/clip {M}/clip",
+            f"ln -vs {TMP}/unet {M}/unet",
             f"ln -vs {M}/checkpoints {M}/checkpoints_symlink"
         ],
 
         'Forge': [
-            f"rm -rf {TMP}/* {M}/ControlNet {M}/svd {M}/z123",
+            f"rm -rf {TMP}/* {M}/ControlNet {M}/svd {M}/z123 {M}/clip {M}/unet",
             f"rm -rf {M}/Stable-diffusion/tmp_ckpt {M}/Lora/tmp_lora",
             f"mkdir -p {M}/Lora {M}/ESRGAN",
             f"ln -vs {TMP}/ckpt {M}/Stable-diffusion/tmp_ckpt",
             f"ln -vs {TMP}/lora {M}/Lora/tmp_lora",
             f"ln -vs {TMP}/controlnet {M}/ControlNet",
             f"ln -vs {TMP}/z123 {M}/z123",
-            f"ln -vs {TMP}/svd {M}/svd"
+            f"ln -vs {TMP}/svd {M}/svd",
+            f"ln -vs {TMP}/clip {M}/clip",
+            f"ln -vs {TMP}/unet {M}/unet"
         ],
 
         'ReForge': [
@@ -229,12 +232,13 @@ def sym_link(U, M):
         ],
 
         'SwarmUI': [
-            f"rm -rf {TMP}/* {M}/Stable-Diffusion/tmp_ckpt",
+            f"rm -rf {TMP}/* {M}/Stable-Diffusion/tmp_ckpt {M}/clip {M}/unet",
             f"rm -rf {M}/Lora/tmp_lora {M}/controlnet {M}/clip",
             f"ln -vs {TMP}/ckpt {M}/Stable-Diffusion/tmp_ckpt",
             f"ln -vs {TMP}/lora {M}/Lora/tmp_lora",
             f"ln -vs {TMP}/controlnet {M}/controlnet",
-            f"ln -vs {TMP}/clip {M}/clip"
+            f"ln -vs {TMP}/clip {M}/clip",
+            f"ln -vs {TMP}/unet {M}/unet"
         ]
     }
 
