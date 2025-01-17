@@ -33,9 +33,7 @@ if ENVNAME == 'Colab':
 from IPython.display import display, Image, clear_output
 from IPython import get_ipython
 from pathlib import Path
-import subprocess
 import argparse
-import shlex
 import json
 import sys
 import os
@@ -113,11 +111,13 @@ def prevent_silly():
 
     webui_webui = next(option for option in VALID_WEBUI_OPTIONS if arg1 == option.lower())
     sd_sd = next(option for option in VALID_SD_OPTIONS if arg2 == option.lower())
-
     return (webui_webui, sd_sd), arg3, arg4
 
 
-def ngrok_zrok():
+def install_tunnel():
+    SyS(f'wget -qO {USR}/cl https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64')
+    SyS(f'chmod +x {USR}/cl')
+
     bins = {
         "zrok": {
             "bin": USR / 'zrok',
@@ -186,18 +186,17 @@ def key_inject(C, H):
 
 
 def sym_link(U, M):
-    if U == 'A1111':
-        return [
+    links = {
+        'A1111': [
             f"rm -rf {TMP}/* {M}/Stable-diffusion/tmp_ckpt",
             f"rm -rf {M}/Lora/tmp_lora {M}/ControlNet",
             f"mkdir -p {M}/Lora {M}/ESRGAN",
             f"ln -vs {TMP}/ckpt {M}/Stable-diffusion/tmp_ckpt",
             f"ln -vs {TMP}/lora {M}/Lora/tmp_lora",
             f"ln -vs {TMP}/controlnet {M}/ControlNet"
-        ]
+        ],
 
-    elif U == 'ComfyUI':
-        return [
+        'ComfyUI': [
             f"rm -rf {TMP}/* {M}/controlnet {M}/clip",
             f"rm -rf {M}/checkpoints/tmp_ckpt {M}/loras/tmp_lora",
             f"ln -vs {TMP}/ckpt {M}/checkpoints/tmp_ckpt",
@@ -205,10 +204,9 @@ def sym_link(U, M):
             f"ln -vs {TMP}/controlnet {M}/controlnet",
             f"ln -vs {TMP}/clip {M}/clip",
             f"ln -vs {M}/checkpoints {M}/checkpoints_symlink"
-        ]
+        ],
 
-    elif U in ['Forge', 'ReForge']:
-        return [
+        'Forge': [
             f"rm -rf {TMP}/* {M}/ControlNet {M}/svd {M}/z123",
             f"rm -rf {M}/Stable-diffusion/tmp_ckpt {M}/Lora/tmp_lora",
             f"mkdir -p {M}/Lora {M}/ESRGAN",
@@ -217,10 +215,20 @@ def sym_link(U, M):
             f"ln -vs {TMP}/controlnet {M}/ControlNet",
             f"ln -vs {TMP}/z123 {M}/z123",
             f"ln -vs {TMP}/svd {M}/svd"
-        ]
+        ],
 
-    elif U == 'SwarmUI':
-        return [
+        'ReForge': [
+            f"rm -rf {TMP}/* {M}/ControlNet {M}/svd {M}/z123",
+            f"rm -rf {M}/Stable-diffusion/tmp_ckpt {M}/Lora/tmp_lora",
+            f"mkdir -p {M}/Lora {M}/ESRGAN",
+            f"ln -vs {TMP}/ckpt {M}/Stable-diffusion/tmp_ckpt",
+            f"ln -vs {TMP}/lora {M}/Lora/tmp_lora",
+            f"ln -vs {TMP}/controlnet {M}/ControlNet",
+            f"ln -vs {TMP}/z123 {M}/z123",
+            f"ln -vs {TMP}/svd {M}/svd"
+        ],
+
+        'SwarmUI': [
             f"rm -rf {TMP}/* {M}/Stable-Diffusion/tmp_ckpt",
             f"rm -rf {M}/Lora/tmp_lora {M}/controlnet {M}/clip",
             f"ln -vs {TMP}/ckpt {M}/Stable-Diffusion/tmp_ckpt",
@@ -228,37 +236,31 @@ def sym_link(U, M):
             f"ln -vs {TMP}/controlnet {M}/controlnet",
             f"ln -vs {TMP}/clip {M}/clip"
         ]
+    }
+
+    return links.get(U, [])
 
 
 def webui_req(U, W, M):
     CD(W)
 
-    if U == 'A1111':
-        pull(f"https://github.com/gutris1/segsmaker a1111 {W}")
-    elif U == 'Forge':
-        pull(f"https://github.com/gutris1/segsmaker forge {W}")
-    elif U == 'ComfyUI':
-        pull(f"https://github.com/gutris1/segsmaker comfyui {W}")
-    elif U == 'ReForge':
-        pull(f"https://github.com/gutris1/segsmaker reforge {W}")
+    if U in ['A1111', 'Forge', 'ComfyUI', 'ReForge']:
+        pull(f"https://github.com/gutris1/segsmaker {U.lower()} {W}")
     elif U == 'SwarmUI':
         M.mkdir(parents=True, exist_ok=True)
-
-        dirs = ['Stable-Diffusion', 'Lora', 'Embeddings', 'VAE', 'upscale_models']
-        for sub in dirs:
+        for sub in ['Stable-Diffusion', 'Lora', 'Embeddings', 'VAE', 'upscale_models']:
             (M / sub).mkdir(parents=True, exist_ok=True)
 
         download(f"https://dot.net/v1/dotnet-install.sh {W}")
-
         dotnet = W / 'dotnet-install.sh'
         dotnet.chmod(0o755)
         SyS("bash ./dotnet-install.sh --channel 8.0")
 
     req = sym_link(U, M)
-    for lines in req:
-        subprocess.run(shlex.split(lines), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    for ln in req:
+        SyS(f'{ln} &> /dev/null')
 
-    ngrok_zrok()
+    install_tunnel()
 
     scripts = [
         f"https://github.com/gutris1/segsmaker/raw/main/script/SM/controlnet.py {W}/asd",
@@ -290,28 +292,25 @@ def webui_req(U, W, M):
 
 def webui_extension(U, W, M):
     EXT = W / "custom_nodes" if U == 'ComfyUI' else W / "extensions"
+    CD(EXT)
 
     if U == 'ComfyUI':
         say("<br><b>【{red} Installing Custom Nodes{d} 】{red}</b>")
-        CD(EXT)
         clone(str(W / "asd/custom_nodes.txt"))
         print()
 
-        custom_nodes_models = [
+        for faces in [
             f"https://github.com/sczhou/CodeFormer/releases/download/v0.1.0/codeformer.pth {M}/facerestore_models",
             f"https://github.com/TencentARC/GFPGAN/releases/download/v1.3.4/GFPGANv1.4.pth {M}/facerestore_models"
-        ]
-
-        for item in custom_nodes_models:
-            download(item)
+        ]:
+            download(faces)
 
     else:
         say("<br><b>【{red} Installing Extensions{d} 】{red}</b>")
-        CD(EXT)
         clone(str(W / "asd/extension.txt"))
 
         if ENVNAME == 'Kaggle':
-            clone('https://github.com/gutris1/sd-encrypt-image')
+            clone('https://github.com/gutris1/sd-civitai-browser-plus-plus')
         else:
             clone('https://github.com/BlafKing/sd-civitai-browser-plus')
 
@@ -362,19 +361,13 @@ def webui_selection(ui, which_sd):
     say(f"<b>【{{red}} Installing {WEBUI.name}{{d}} 】{{red}}</b>")
     clone(repo)
 
-    if ENVNAME == "Colab":
-        abcd = ["apt -y install python3.10-venv"]
+    req = ['pip install gdown aria2', 'apt -y install lz4 pv']
+    if ENVNAME == "Kaggle":
+        req.extend(['pip install ipywidgets jupyterlab_widgets --upgrade', 'rm -f /usr/lib/python3.10/sitecustomize.py'])
     else:
-        abcd = ["pip install ipywidgets jupyterlab_widgets --upgrade"]
-        SyS('rm -f /usr/lib/python3.10/sitecustomize.py')
-
-    abcd.extend([
-        f'wget -qO {USR}/cl https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64',
-        f'chmod +x {USR}/cl', 'pip install gdown aria2', 'apt -y install lz4 pv'
-    ])
-
-    for efgh in abcd:
-        subprocess.run(shlex.split(efgh), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        req.append('apt -y install python3.10-venv')
+    for cmd in req:
+        SyS(f'{cmd} &> /dev/null')
 
     webui_installation(ui, which_sd, WEBUI, MODELS, EMB, VAE)
 
@@ -434,9 +427,8 @@ key_inject(civitai_key, hf_read_token)
 marking(SRC, MARKED, webui)
 sys.path.append(str(STR))
 
-var = [nenen, pantat, KANDANG, MRK]
-for scripts in var:
+for scripts in [nenen, pantat, KANDANG, MRK]:
     get_ipython().run_line_magic('run', str(scripts))
 
-from nenen88 import clone, say, download, tempe, pull
+from nenen88 import clone, say, download, tempe, pull # type: ignore
 webui_checker()
