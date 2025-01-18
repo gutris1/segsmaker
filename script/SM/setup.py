@@ -69,6 +69,32 @@ def marking(p, n, i):
     d.update({'ui': i, 'launch_args': ''})
     t.write_text(json.dumps(d, indent=4))
 
+def install_tunnel():
+    bins = {
+        'zrok': {
+            'bin': HOME / '.zrok/bin/zrok',
+            'url': 'https://github.com/openziti/zrok/releases/download/v0.4.44/zrok_0.4.44_linux_amd64.tar.gz'
+        },
+        'ngrok': {
+            'bin': HOME / '.ngrok/bin/ngrok',
+            'url': 'https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz'
+        }
+    }
+
+    for n, b in bins.items():
+        if b['bin'].exists():
+            continue
+
+        url = b['url']
+        name = Path(url).name
+        binDir = b['bin'].parent
+
+        binDir.mkdir(parents=True, exist_ok=True)
+
+        SyS(f'curl -sLo {binDir}/{name} {url}')
+        SyS(f'tar -xzf {binDir}/{name} -C {binDir} --wildcards *{n}')
+        SyS(f'rm -f {binDir}/{name}')
+
 def sym_link(U, M):
     configs = {
         'A1111': {
@@ -222,6 +248,7 @@ def WebUIExtensions(U, W, M):
 
 def installing_webui(U, S, W, M, E, V):
     webui_req(U, W, M)
+    install_tunnel()
 
     if S == "button-15":
         embzip =  W / 'embeddings.zip'
