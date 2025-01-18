@@ -16,6 +16,9 @@ vnv_FF = tmp / 'venv-fusion'
 vnv_SDT = tmp / 'venv-sd-trainer'
 vnv_D = tmp / 'venv'
 
+SyS = get_ipython().system
+CD = os.chdir
+
 def load_config():
     config = json.load(MARK.open('r')) if MARK.exists() else {}
     ui = config.get('ui')
@@ -30,7 +33,7 @@ def load_config():
         vnv = vnv_SDT
     else:
         url = 'https://huggingface.co/pantat88/back_up/resolve/main/venv-torch241-cu121.tar.lz4'
-        need_space = 14 * 1024**3
+        need_space = 15 * 1024**3
         vnv = vnv_D
 
     fn = Path(url).name
@@ -46,7 +49,7 @@ def unused_venv():
 
         if vnv_list:
             rmf = f'rm -rf {" ".join(f"{venv}/* {venv}" for venv in vnv_list)}'
-            get_ipython().system(rmf)
+            SyS(rmf)
 
 def check_venv(folder):
     du = get_ipython().getoutput(f'du -s -b {folder}')
@@ -70,7 +73,7 @@ def removing(directory, req_space):
             break
 
         print(f'Removing {file_path}')
-        get_ipython().system(f'rm -rf {file_path}')
+        SyS(f'rm -rf {file_path}')
         freed_space += size
 
     return freed_space
@@ -109,7 +112,7 @@ def venv_install(ui, url, need_space, fn):
             elif size > 7 * 1024**3:
                 return
 
-            get_ipython().system(f'rm -rf {vnv}/* {vnv}')
+            SyS(f'rm -rf {vnv}/* {vnv}')
 
         clear_output(wait=True)
         display(Image(filename=str(IMG)))
@@ -118,26 +121,33 @@ def venv_install(ui, url, need_space, fn):
         req_space = need_space - free_space
 
         if req_space > 0:
-            print(f'Need space {req_space / 1024**3:.1f} GB for venv')
-            req_space -= removing(tmp / 'ckpt', req_space)
-            if req_space > 0:
-                req_space -= removing(tmp / 'lora', req_space)
-            if req_space > 0:
-                req_space -= removing(tmp / 'controlnet', req_space)
+            print(f'Need space {req_space / 1024**3:.1f} GB for VENV')
+            for path in [tmp / 'ckpt', tmp / 'lora', tmp / 'controlnet', tmp / 'clip', tmp / 'unet']:
+                if req_space > 0:
+                    req_space -= removing(path, req_space)
 
-        os.chdir(tmp)
+        CD(tmp)
         say('<b>【{red} Installing VENV{d} 】{red}</b>')
         download(url)
 
         check_pv()
 
-        get_ipython().system(f'pv {fn} | lz4 -d | tar xf -')
+        SyS(f'pv {fn} | lz4 -d | tar xf -')
         Path(fn).unlink()
 
-        get_ipython().system(f'rm -rf {vnv}/bin/pip*')
-        get_ipython().system(f'rm -rf {vnv}/bin/python*')
-        get_ipython().system(f'python3 -m venv {vnv}')
-        get_ipython().system(f'{vnv}/bin/python3 -m pip install -q -U --force-reinstall pip')
+        cmds = [
+            f'rm -rf {vnv}/bin/pip* {vnv}/bin/python*',
+            f'python3 -m venv {vnv}',
+            f'{vnv}/bin/python3 -m pip install -U --force-reinstall pip',
+            f'{vnv}/bin/python3 -m pip install ipykernel',
+            f'{vnv}/bin/python3 -m pip uninstall -y ngrok pyngrok'
+        ]
+
+        if ui in ['ComfyUI', 'Forge', 'SwarmUI']:
+            cmds.append(f'{vnv}/bin/python3 -m pip uninstall -y transformers')
+
+        [SyS(f'{cmd} > /dev/null 2>&1') for cmd in cmds]
+
 
 print('checking venv...')
 ui, url, need_space, vnv, fn = load_config()
@@ -148,4 +158,4 @@ unused_venv()
 venv_install(ui, url, need_space, fn)
 
 clear_output(wait=True)
-os.chdir(cwd)
+CD(cwd)
