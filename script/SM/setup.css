@@ -19,539 +19,558 @@
 }
 
 .multi-panel {
-    border: 0px solid transparent;
-    border-radius: 3px;
-    margin: 0;
-    background-color: transparent;
-    max-height: 0;
-    overflow: hidden;
-    animation: Undress 1s forwards ease-out;
+  border: 0;
+  border-radius: 10px;
+  margin: 0;
+  background-color: #000;
+  max-height: 0;
+  overflow: hidden;
+  animation: Undress 1s forwards ease-out;
+  padding: 5px;
 }
 
 .a1111, .forge, .comfyui, .reforge,
 .swarmui, .facefusion, .sdtrainer,
 .button-15, .button-xl, .button-back {
-    background-color: transparent;
-    height: 250px;
-    cursor: pointer;
-    border: 0px solid transparent;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    border-radius: 5px;
-    position: relative;
-    overflow: hidden;
-    transition: all 0.5s ease;
-    -webkit-mask: linear-gradient(to left, transparent, #000 1px);
+  z-index: 99;
+  background-color: transparent;
+  height: 250px;
+  cursor: pointer;
+  border: 0px solid transparent;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 5px;
+  position: relative;
+  overflow: hidden;
 }
+
 .a1111, .forge, .comfyui, .reforge,
 .swarmui, .facefusion, .sdtrainer {
-    width: 69%;
-    filter: brightness(40%);
-    transition: 0.4s ease;
+  height: 250px;
 }
+
+.button-15, .button-xl, .button-back {
+  height: 400px;
+}
+
+.a1111, .forge, .comfyui, .reforge,
+.swarmui, .facefusion, .sdtrainer {
+  width: 69%;
+  filter: brightness(40%);
+  transition: 0.5s ease;
+}
+
 .button-15, .button-xl {
-    width: 70%;
-    filter: brightness(50%) blur(3px);
-    transition: 0.4s ease;
+  width: 70%;
+  filter: brightness(50%) blur(3px);
+  transition: 0.5s ease;
 }
 
 .a1111 {
-    background-image: url('https://i.imgur.com/qIYOTBp.jpg');
+  background-image: url('https://avatars.githubusercontent.com/u/20920490?v=4');
 }
 .forge {
-    background-image: url('https://i.imgur.com/XCCKSRW.png');
+  background-image: url('https://avatars.githubusercontent.com/u/19834515?v=4');
 }
 .comfyui {
-    background-image: url('https://raw.githubusercontent.com/comfyanonymous/ComfyUI/master/comfyui_screenshot.png');
+  background-image: url('https://avatars.githubusercontent.com/u/121283862?v=4');
 }
 .reforge {
-    background-image: url('https://i.imgur.com/95Afkbg.jpg');
+  background-image: url('https://i.imgur.com/95Afkbg.jpg');
 }
 .swarmui {
-    background-image: url('https://raw.githubusercontent.com/mcmonkeyprojects/SwarmUI/master/.github/images/swarmui.jpg');
+  background-image: url('https://avatars.githubusercontent.com/u/43497670?s=200&v=4');
 }
 
 .facefusion {
-    background-image: url('https://i.imgur.com/1R9rDO6.png');
+  background-image: url('https://i.imgur.com/1R9rDO6.png');
 }
 .sdtrainer {
-    background-image: url('https://i.imgur.com/Ga2GV5F.png');
+  background-image: url('https://i.imgur.com/Ga2GV5F.png');
 }
 
 .button-15 {
-    background-image: url('https://i.imgur.com/2jsyKzZ.jpg');
+  background-image: url('https://i.imgur.com/2jsyKzZ.jpg');
 }
 .button-xl {
-    background-image: url('https://i.imgur.com/2WFq4LL.png');
+  background-image: url('https://i.imgur.com/2WFq4LL.png');
 }
 
 .button-back {
-    background-image: url('https://icons.veryicon.com/png/System/Longhorn%20R2/Back%20Button.png');
-    border: 1px solid transparent;
-    background-color: transparent;
-    background-size: 80%;
-    cursor: pointer;
-    outline: none;
+  background-image: url('https://icons.veryicon.com/png/System/Longhorn%20R2/Back%20Button.png');
+  border: 1px solid transparent;
+  background-color: transparent;
+  background-size: 80%;
+  cursor: pointer;
+  outline: none;
+}
+
+.a1111:hover, .forge:hover, .comfyui:hover, .reforge:hover,
+.swarmui:hover, .facefusion:hover, .sdtrainer:hover,
+.button-15:hover, .button-xl:hover {
+  width: 100%;
+  filter: brightness(100%);
+  animation: glowing-shadow 0.4s infinite alternate forwards;
+}
+
+@keyframes glowing-shadow {
+  0% {
+    box-shadow: 0 0 1px 0.2em rgba(76, 227, 255, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 10px 0.5em rgba(76, 227, 255, 1);
+  }
 }
 
 .a1111::after, .forge::after, .comfyui::after, .reforge::after,
 .swarmui::after, .facefusion::after, .sdtrainer::after,
 .button-15::after, .button-xl::after {
-    font-family: 'Times New Roman', serif;
-    text-align: center;
-    position: absolute;
-    bottom: 0px;
-    left: -10px;
-    color: white;
-    background: rgba(0, 0, 0, 0.7);
-    transform: scale(1);
-    padding: 10px;
-    display: block;
-    border-radius: 1px;
-    width: 100%;
+  font-family: 'Times New Roman', serif;
+  text-align: center;
+  position: absolute;
+  bottom: 0px;
+  left: -10px;
+  color: white;
+  background: rgba(0, 0, 0, 0.7);
+  transform: scale(1);
+  padding: 10px;
+  display: block;
+  border-radius: 1px;
+  width: 100%;
 }
 
 .a1111::after {
-    content: 'A1111';
-    font-size: 35px;
+  content: 'A1111';
+  font-size: 35px;
 }
 .forge::after {
-    content: 'Forge';
-    font-size: 35px;
+  content: 'Forge';
+  font-size: 35px;
 }
 .comfyui::after {
-    content: 'ComfyUI';
-    font-size: 35px;
+  content: 'ComfyUI';
+  font-size: 35px;
 }
 .reforge::after {
-    content: 'ReForge';
-    font-size: 35px;
+  content: 'ReForge';
+  font-size: 35px;
 }
 .swarmui::after {
-    content: 'SwarmUI';
-    font-size: 35px;
+  content: 'SwarmUI';
+  font-size: 35px;
 }
 .facefusion::after {
     content: 'Face Fusion';
     font-size: 35px;
 }
 .sdtrainer::after {
-    content: 'SD Trainer';
-    font-size: 35px;
+  content: 'SD Trainer';
+  font-size: 35px;
 }
 
 .button-15::after {
-    content: 'SD 1.5';
-    font-size: 40px;
+  content: 'SD 1.5';
+  font-size: 40px;
 }
 .button-xl::after {
-    content: 'SD XL';
-    font-size: 40px;
-}
-
-.a1111:hover, .forge:hover, .comfyui:hover, .reforge:hover,
-.swarmui:hover, .facefusion:hover, .sdtrainer:hover,
-.button-15:hover, .button-xl:hover {
-    border-radius: 0px;
-    width: 100%;
-    border: 0px solid transparent;
-    filter: brightness(100%);
+  content: 'SD XL';
+  font-size: 40px;
 }
 
 .button-back:active,
 .button-back:focus,
 .button-back:hover {
-    background-color: transparent;
-    border-color: transparent;
+  background-color: transparent;
+  border-color: transparent;
 }
 .button-back {
-    width: 50%;
-    filter: brightness(50%);
+  width: 50%;
+  filter: brightness(50%);
 }
 .button-back:hover {
-    filter: brightness(100%);
+  filter: brightness(100%);
 }
 
 .launch-panel {
-    position: relative;
-    border: 3px solid transparent;
-    border-radius: 30px;
-    margin: 0;
-    max-height: 0;
-    background-color: transparent;
-    background-size: cover;
-    background-position: center;
-    animation: Undresslaunchpanel 1s forwards ease-out, BorderPulse 15s infinite;
+  position: relative;
+  border: 3px solid transparent;
+  border-radius: 30px;
+  margin: 0;
+  max-height: 0;
+  background-color: transparent;
+  background-size: cover;
+  background-position: center;
+  animation: Undresslaunchpanel 1s forwards ease-out, BorderPulse 15s infinite;
 }
 
 .launch-panel::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-image: url('https://i.imgur.com/5Mkdrpw.jpg');
-    background-size: cover;
-    background-position: center;
-    filter: brightness(80%);
-    filter: blur(0px);
-    transition: all 0.5s ease;
-    border-radius: 28px;
-    z-index: -1;
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url('https://i.imgur.com/5Mkdrpw.jpg');
+  background-size: cover;
+  background-position: center;
+  filter: brightness(80%);
+  filter: blur(0px);
+  transition: all 0.5s ease;
+  border-radius: 28px;
+  z-index: -1;
 }
 
 .launch-panel:hover::before {
-    filter: blur(5px);
+  filter: blur(5px);
 }
 .title {
-    font-family: 'Times New Roman', serif;
-    font-size: 25px;
-    top: -30px;
-    margin: 0;
-    position: relative;
-    color: transparent;
-    background-image: var(--multi-gradient-bg);
-    background-size: 800% 500%;
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    display: inline-block;
-    animation: slideBackground 20s linear infinite;
+  font-family: 'Times New Roman', serif;
+  font-size: 25px;
+  top: -30px;
+  margin: 0;
+  position: relative;
+  color: transparent;
+  background-image: var(--multi-gradient-bg);
+  background-size: 800% 500%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+  animation: slideBackground 20s linear infinite;
 }
 
 .widget-container {
-    margin-top: 0px;
-    margin-right: 0px;
-    margin-bottom: 0px;
-    margin-left: 0px;
-    position: relative;
-    overflow: visible;
+  margin-top: 0px;
+  margin-right: 0px;
+  margin-bottom: 0px;
+  margin-left: 0px;
+  position: relative;
+  overflow: visible;
 }
 
 .buttons {
-    font-family: 'Times New Roman', serif;
-    text-align: center;
-    margin-top: 0px;
-    margin-right: 0px;
-    margin-bottom: 0px;
-    margin-left: 0px;
-    font-size: 25px;
-    width: 130px;
-    height: 45px;
-    color: white;
-    border-radius: 10px;
-    border: 2px solid #2197f2;
-    background-color: rgba(0, 0, 0, 0.5);
-    transition: transform 0.5s ease;
+  font-family: 'Times New Roman', serif;
+  text-align: center;
+  margin-top: 0px;
+  margin-right: 0px;
+  margin-bottom: 0px;
+  margin-left: 0px;
+  font-size: 25px;
+  width: 130px;
+  height: 45px;
+  color: white;
+  border-radius: 10px;
+  border: 2px solid #2197f2;
+  background-color: rgba(0, 0, 0, 0.5);
+  transition: transform 0.5s ease;
 }
 
 .buttons:hover {
-    transform: scale(1.2);
-    color: black;
-    border-radius: 10px;
-    border: 3px solid transparent;
-    background-size: 800% 100%;
-    cursor: pointer;
-    background-image: var(--multi-gradient-bg);
-    animation: slideBackground 10s linear infinite, BorderPulse 7s infinite;
+  transform: scale(1.2);
+  color: black;
+  border-radius: 10px;
+  border: 3px solid transparent;
+  background-size: 800% 100%;
+  cursor: pointer;
+  background-image: var(--multi-gradient-bg);
+  animation: slideBackground 10s linear infinite, BorderPulse 7s infinite;
 }
 
 .zrok input[type="text"] {
-    font-family: 'Roboto Mono', monospace;
-    top: -129px;
-    left: -25px;
-    margin-top: 0px;
-    margin-right: 0px;
-    margin-bottom: 0px;
-    margin-left: 0px;
-    font-size: 10px;
-    height: 25px;
-    width: 100px;
-    color: white;
-    text-align: left;
-    position: absolute;
-    border-radius: 5px;
-    border: 1px solid #ab22fe;
-    background-color: rgba(33, 33, 33, 0.7);
-    transform: scale(125%);
-    transition: all 0.5s ease;
+  font-family: 'Roboto Mono', monospace;
+  top: -129px;
+  left: -25px;
+  margin-top: 0px;
+  margin-right: 0px;
+  margin-bottom: 0px;
+  margin-left: 0px;
+  font-size: 10px;
+  height: 25px;
+  width: 100px;
+  color: white;
+  text-align: left;
+  position: absolute;
+  border-radius: 5px;
+  border: 1px solid #ab22fe;
+  background-color: rgba(33, 33, 33, 0.7);
+  transform: scale(125%);
+  transition: all 0.5s ease;
 }
 
 .ngrok input[type="text"] {
-    font-family: 'Roboto Mono', monospace;
-    top: -83px;
-    margin-top: 0px;
-    margin-right: 0px;
-    margin-bottom: 0px;
-    margin-left: 0px;
-    font-size: 10px;
-    height: 25px;
-    width: 300px;
-    color: white;
-    text-align: left;
-    position: absolute;
-    border-radius: 5px;
-    border: 1px solid #ab22fe;
-    background-color: rgba(33, 33, 33, 0.7);
-    transform: scale(125%);
-    transition: all 0.5s ease;
+  font-family: 'Roboto Mono', monospace;
+  top: -83px;
+  margin-top: 0px;
+  margin-right: 0px;
+  margin-bottom: 0px;
+  margin-left: 0px;
+  font-size: 10px;
+  height: 25px;
+  width: 300px;
+  color: white;
+  text-align: left;
+  position: absolute;
+  border-radius: 5px;
+  border: 1px solid #ab22fe;
+  background-color: rgba(33, 33, 33, 0.7);
+  transform: scale(125%);
+  transition: all 0.5s ease;
 }
 
 .text-input input[type="text"] {
-    font-family: 'Roboto Mono', monospace;
-    white-space: pre-wrap;
-    word-break: break-word;
-    margin-top: -50px;
-    margin-right: 0px;
-    margin-bottom: 0px;
-    margin-left: -115px;
-    font-size: 10px;
-    height: 25px;
-    width: 530px;
-    color: white;
-    text-align: left;
-    position: absolute;
-    border-radius: 5px;
-    border: 1px solid #ab22fe;
-    background-color: rgba(33, 33, 33, 0.7);
-    transform: scale(125%);
-    transition: all 0.5s ease;
+  font-family: 'Roboto Mono', monospace;
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin-top: -50px;
+  margin-right: 0px;
+  margin-bottom: 0px;
+  margin-left: -115px;
+  font-size: 10px;
+  height: 25px;
+  width: 530px;
+  color: white;
+  text-align: left;
+  position: absolute;
+  border-radius: 5px;
+  border: 1px solid #ab22fe;
+  background-color: rgba(33, 33, 33, 0.7);
+  transform: scale(125%);
+  transition: all 0.5s ease;
 }
 
 .args2 input[type="text"] {
-    font-family: 'Roboto Mono', monospace;
-    white-space: pre-wrap;
-    word-break: break-word;
-    margin-top: -20px;
-    margin-right: 0px;
-    margin-bottom: 0px;
-    margin-left: -115px;
-    font-size: 10px;
-    height: 25px;
-    width: 530px;
-    color: white;
-    text-align: left;
-    position: absolute;
-    border-radius: 5px;
-    border: 1px solid #ab22fe;
-    background-color: rgba(33, 33, 33, 0.7);
-    transform: scale(125%);
-    transition: all 0.5s ease;
+  font-family: 'Roboto Mono', monospace;
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin-top: -20px;
+  margin-right: 0px;
+  margin-bottom: 0px;
+  margin-left: -115px;
+  font-size: 10px;
+  height: 25px;
+  width: 530px;
+  color: white;
+  text-align: left;
+  position: absolute;
+  border-radius: 5px;
+  border: 1px solid #ab22fe;
+  background-color: rgba(33, 33, 33, 0.7);
+  transform: scale(125%);
+  transition: all 0.5s ease;
 }
 
 .text-input input[type="text"]::placeholder,
 .args2 input[type="text"]::placeholder,
 .zrok input[type="text"]::placeholder,
 .ngrok input[type="text"]::placeholder {
-    color: grey;
+  color: grey;
 }
 
 .text-input input:focus, .args2 input:focus, .zrok input:focus, .ngrok input:focus {
-    background-color: rgba(33, 33, 33, 1);
-    border: 1px solid transparent;
-    animation: BorderPulse 10s infinite;
+  background-color: rgba(33, 33, 33, 1);
+  border: 1px solid transparent;
+  animation: BorderPulse 10s infinite;
 }
 
 .text-input input:hover, .args2 input:hover, .zrok input:hover, .ngrok input:hover {
-    border: 1px solid #2197f2;
-    background-color: rgba(33, 33, 33, 0.8);
+  border: 1px solid #2197f2;
+  background-color: rgba(33, 33, 33, 0.8);
 }
 
 .gradient-conda {
-    width: 200px;
-    height: 5px;
-    font-size: 0px;
-    background-image: var(--multi-gradient-bg);
-    background-size: 800% 500%;
-    border-radius: 2px;
-    border: 1px solid transparent;
-    display: inline-block;
-    animation: slideBackground 10s linear infinite, BorderPulse 7s infinite;
+  width: 200px;
+  height: 5px;
+  font-size: 0px;
+  background-image: var(--multi-gradient-bg);
+  background-size: 800% 500%;
+  border-radius: 2px;
+  border: 1px solid transparent;
+  display: inline-block;
+  animation: slideBackground 10s linear infinite, BorderPulse 7s infinite;
 }
 
 @keyframes Undresslaunchpanel {
-    0% {
-        max-height: 0;
-        opacity: 0;
-        filter: blur(10px);
-    }
-    100% {
-        max-height: 400px;
-        opacity: 1;
-        filter: blur(0px);
-    }
+  0% {
+    max-height: 0;
+    opacity: 0;
+    filter: blur(10px);
+  }
+  100% {
+    max-height: 400px;
+    opacity: 1;
+    filter: blur(0px);
+  }
 }
 
 @keyframes Undress {
-    0% {
-        max-height: 0;
-        opacity: 0;
-        filter: blur(10px);
-    }
-    100% {
-        max-height: 600px;
-        opacity: 1;
-        filter: blur(0px);
-    }
+  0% {
+    max-height: 0;
+    opacity: 0;
+    filter: blur(10px);
+  }
+  100% {
+    max-height: 600px;
+    opacity: 1;
+    filter: blur(0px);
+  }
 }
 
 @keyframes blurBlur {
-    from {
-        transform: scale(1);
-        opacity: 0;
-        filter: blur(50px);
-    }
-    to {
-        transform: scale(1);
-        opacity: 1;
-        filter: blur(0px);
-    }
+  from {
+    transform: scale(1);
+    opacity: 0;
+    filter: blur(50px);
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+    filter: blur(0px);
+  }
 }
 
 @keyframes slideBackground {
-    0% { background-position: 0% 50%; }
-    100% { background-position: -800% 50%; }
+  0% { background-position: 0% 50%; }
+  100% { background-position: -800% 50%; }
 }
 
 @keyframes slideAndBlurFromCenter {
-    from {
-        transform: scale(0.1);
-        opacity: 0;
-        filter: blur(1000px);}
-    to {
-        transform: scale(1);
-        opacity: 1;
-        filter: blur(0px);}
+  from {
+    transform: scale(0.1);
+    opacity: 0;
+    filter: blur(1000px);}
+  to {
+    transform: scale(1);
+    opacity: 1;
+    filter: blur(0px);}
 }
 
 @keyframes BorderPulse {
-    0% {border-color: rgba(255, 0, 0, 1);}
-    1.67% {border-color: rgba(255, 0, 25, 0.75);}
-    3.33% {border-color: rgba(255, 0, 50, 0.5);}
-    5.00% {border-color: rgba(255, 0, 75, 0.75);}
-    6.67% {border-color: rgba(255, 0, 100, 1);}
-    8.33% {border-color: rgba(255, 0, 125, 0.75);}
-    10.00% {border-color: rgba(255, 0, 150, 0.5);}
-    11.67% {border-color: rgba(255, 0, 175, 0.75);}
-    13.33% {border-color: rgba(255, 0, 200, 1);}
-    15.00% {border-color: rgba(255, 0, 225, 0.75);}
-    16.67% {border-color: rgba(255, 0, 255, 0.5);}
-    18.33% {border-color: rgba(225, 0, 255, 0.75);}
-    20.00% {border-color: rgba(200, 0, 255, 1);}
-    21.67% {border-color: rgba(175, 0, 255, 0.75);}
-    23.33% {border-color: rgba(150, 0, 255, 0.5);}
-    25.00% {border-color: rgba(125, 0, 255, 0.75);}
-    26.67% {border-color: rgba(100, 0, 255, 1);}
-    28.33% {border-color: rgba(75, 0, 255, 0.75);}
-    30.00% {border-color: rgba(50, 0, 255, 0.5);}
-    31.67% {border-color: rgba(25, 0, 255, 0.75);}
-    33.33% {border-color: rgba(0, 0, 255, 1);}
-    35.00% {border-color: rgba(0, 25, 255, 0.75);}
-    36.67% {border-color: rgba(0, 50, 255, 0.5);}
-    38.33% {border-color: rgba(0, 75, 255, 0.75);}
-    40.00% {border-color: rgba(0, 100, 255, 1);}
-    41.67% {border-color: rgba(0, 125, 255, 0.75);}
-    43.33% {border-color: rgba(0, 150, 255, 0.5);}
-    45.00% {border-color: rgba(0, 175, 255, 0.75);}
-    46.67% {border-color: rgba(0, 200, 255, 1);}
-    48.33% {border-color: rgba(0, 225, 255, 0.75);}
-    50.00% {border-color: rgba(0, 255, 255, 0.5);}
-    51.67% {border-color: rgba(0, 255, 225, 0.75);}
-    53.33% {border-color: rgba(0, 255, 200, 1);}
-    55.00% {border-color: rgba(0, 255, 175, 0.75);}
-    56.67% {border-color: rgba(0, 255, 150, 0.5);}
-    58.33% {border-color: rgba(0, 255, 125, 0.75);}
-    60.00% {border-color: rgba(0, 255, 100, 1);}
-    61.67% {border-color: rgba(0, 255, 75, 0.75);}
-    63.33% {border-color: rgba(0, 255, 50, 0.5);}
-    65.00% {border-color: rgba(0, 255, 25, 0.75);}
-    66.67% {border-color: rgba(0, 255, 0, 1);}
-    68.33% {border-color: rgba(25, 255, 0, 0.75);}
-    70.00% {border-color: rgba(50, 255, 0, 0.5);}
-    71.67% {border-color: rgba(75, 255, 0, 0.75);}
-    73.33% {border-color: rgba(100, 255, 0, 1);}
-    75.00% {border-color: rgba(125, 255, 0, 0.75);}
-    76.67% {border-color: rgba(150, 255, 0, 0.5);}
-    78.33% {border-color: rgba(175, 255, 0, 0.75);}
-    80.00% {border-color: rgba(200, 255, 0, 1);}
-    81.67% {border-color: rgba(225, 255, 0, 0.75);}
-    83.33% {border-color: rgba(255, 255, 0, 0.5);}
-    85.00% {border-color: rgba(255, 225, 0, 0.75);}
-    86.67% {border-color: rgba(255, 200, 0, 1);}
-    88.33% {border-color: rgba(255, 175, 0, 0.75);}
-    90.00% {border-color: rgba(255, 150, 0, 0.5);}
-    91.67% {border-color: rgba(255, 125, 0, 0.75);}
-    93.33% {border-color: rgba(255, 100, 0, 1);}
-    95.00% {border-color: rgba(255, 75, 0, 0.75);}
-    96.67% {border-color: rgba(255, 50, 0, 0.5);}
-    98.33% {border-color: rgba(255, 25, 0, 0.75);}
-    100% {border-color: rgba(255, 0, 0, 1);}
+  0% {border-color: rgba(255, 0, 0, 1);}
+  1.67% {border-color: rgba(255, 0, 25, 0.75);}
+  3.33% {border-color: rgba(255, 0, 50, 0.5);}
+  5.00% {border-color: rgba(255, 0, 75, 0.75);}
+  6.67% {border-color: rgba(255, 0, 100, 1);}
+  8.33% {border-color: rgba(255, 0, 125, 0.75);}
+  10.00% {border-color: rgba(255, 0, 150, 0.5);}
+  11.67% {border-color: rgba(255, 0, 175, 0.75);}
+  13.33% {border-color: rgba(255, 0, 200, 1);}
+  15.00% {border-color: rgba(255, 0, 225, 0.75);}
+  16.67% {border-color: rgba(255, 0, 255, 0.5);}
+  18.33% {border-color: rgba(225, 0, 255, 0.75);}
+  20.00% {border-color: rgba(200, 0, 255, 1);}
+  21.67% {border-color: rgba(175, 0, 255, 0.75);}
+  23.33% {border-color: rgba(150, 0, 255, 0.5);}
+  25.00% {border-color: rgba(125, 0, 255, 0.75);}
+  26.67% {border-color: rgba(100, 0, 255, 1);}
+  28.33% {border-color: rgba(75, 0, 255, 0.75);}
+  30.00% {border-color: rgba(50, 0, 255, 0.5);}
+  31.67% {border-color: rgba(25, 0, 255, 0.75);}
+  33.33% {border-color: rgba(0, 0, 255, 1);}
+  35.00% {border-color: rgba(0, 25, 255, 0.75);}
+  36.67% {border-color: rgba(0, 50, 255, 0.5);}
+  38.33% {border-color: rgba(0, 75, 255, 0.75);}
+  40.00% {border-color: rgba(0, 100, 255, 1);}
+  41.67% {border-color: rgba(0, 125, 255, 0.75);}
+  43.33% {border-color: rgba(0, 150, 255, 0.5);}
+  45.00% {border-color: rgba(0, 175, 255, 0.75);}
+  46.67% {border-color: rgba(0, 200, 255, 1);}
+  48.33% {border-color: rgba(0, 225, 255, 0.75);}
+  50.00% {border-color: rgba(0, 255, 255, 0.5);}
+  51.67% {border-color: rgba(0, 255, 225, 0.75);}
+  53.33% {border-color: rgba(0, 255, 200, 1);}
+  55.00% {border-color: rgba(0, 255, 175, 0.75);}
+  56.67% {border-color: rgba(0, 255, 150, 0.5);}
+  58.33% {border-color: rgba(0, 255, 125, 0.75);}
+  60.00% {border-color: rgba(0, 255, 100, 1);}
+  61.67% {border-color: rgba(0, 255, 75, 0.75);}
+  63.33% {border-color: rgba(0, 255, 50, 0.5);}
+  65.00% {border-color: rgba(0, 255, 25, 0.75);}
+  66.67% {border-color: rgba(0, 255, 0, 1);}
+  68.33% {border-color: rgba(25, 255, 0, 0.75);}
+  70.00% {border-color: rgba(50, 255, 0, 0.5);}
+  71.67% {border-color: rgba(75, 255, 0, 0.75);}
+  73.33% {border-color: rgba(100, 255, 0, 1);}
+  75.00% {border-color: rgba(125, 255, 0, 0.75);}
+  76.67% {border-color: rgba(150, 255, 0, 0.5);}
+  78.33% {border-color: rgba(175, 255, 0, 0.75);}
+  80.00% {border-color: rgba(200, 255, 0, 1);}
+  81.67% {border-color: rgba(225, 255, 0, 0.75);}
+  83.33% {border-color: rgba(255, 255, 0, 0.5);}
+  85.00% {border-color: rgba(255, 225, 0, 0.75);}
+  86.67% {border-color: rgba(255, 200, 0, 1);}
+  88.33% {border-color: rgba(255, 175, 0, 0.75);}
+  90.00% {border-color: rgba(255, 150, 0, 0.5);}
+  91.67% {border-color: rgba(255, 125, 0, 0.75);}
+  93.33% {border-color: rgba(255, 100, 0, 1);}
+  95.00% {border-color: rgba(255, 75, 0, 0.75);}
+  96.67% {border-color: rgba(255, 50, 0, 0.5);}
+  98.33% {border-color: rgba(255, 25, 0, 0.75);}
+  100% {border-color: rgba(255, 0, 0, 1);}
 }
 
 @keyframes colorChange {
-    0% {color: rgba(255, 0, 0, 1);}
-    1.67% {color: rgba(255, 0, 25, 0.75);}
-    3.33% {color: rgba(255, 0, 50, 0.5);}
-    5.00% {color: rgba(255, 0, 75, 0.75);}
-    6.67% {color: rgba(255, 0, 100, 1);}
-    8.33% {color: rgba(255, 0, 125, 0.75);}
-    10.00% {color: rgba(255, 0, 150, 0.5);}
-    11.67% {color: rgba(255, 0, 175, 0.75);}
-    13.33% {color: rgba(255, 0, 200, 1);}
-    15.00% {color: rgba(255, 0, 225, 0.75);}
-    16.67% {color: rgba(255, 0, 255, 0.5);}
-    18.33% {color: rgba(225, 0, 255, 0.75);}
-    20.00% {color: rgba(200, 0, 255, 1);}
-    21.67% {color: rgba(175, 0, 255, 0.75);}
-    23.33% {color: rgba(150, 0, 255, 0.5);}
-    25.00% {color: rgba(125, 0, 255, 0.75);}
-    26.67% {color: rgba(100, 0, 255, 1);}
-    28.33% {color: rgba(75, 0, 255, 0.75);}
-    30.00% {color: rgba(50, 0, 255, 0.5);}
-    31.67% {color: rgba(25, 0, 255, 0.75);}
-    33.33% {color: rgba(0, 0, 255, 1);}
-    35.00% {color: rgba(0, 25, 255, 0.75);}
-    36.67% {color: rgba(0, 50, 255, 0.5);}
-    38.33% {color: rgba(0, 75, 255, 0.75);}
-    40.00% {color: rgba(0, 100, 255, 1);}
-    41.67% {color: rgba(0, 125, 255, 0.75);}
-    43.33% {color: rgba(0, 150, 255, 0.5);}
-    45.00% {color: rgba(0, 175, 255, 0.75);}
-    46.67% {color: rgba(0, 200, 255, 1);}
-    48.33% {color: rgba(0, 225, 255, 0.75);}
-    50.00% {color: rgba(0, 255, 255, 0.5);}
-    51.67% {color: rgba(0, 255, 225, 0.75);}
-    53.33% {color: rgba(0, 255, 200, 1);}
-    55.00% {color: rgba(0, 255, 175, 0.75);}
-    56.67% {color: rgba(0, 255, 150, 0.5);}
-    58.33% {color: rgba(0, 255, 125, 0.75);}
-    60.00% {color: rgba(0, 255, 100, 1);}
-    61.67% {color: rgba(0, 255, 75, 0.75);}
-    63.33% {color: rgba(0, 255, 50, 0.5);}
-    65.00% {color: rgba(0, 255, 25, 0.75);}
-    66.67% {color: rgba(0, 255, 0, 1);}
-    68.33% {color: rgba(25, 255, 0, 0.75);}
-    70.00% {color: rgba(50, 255, 0, 0.5);}
-    71.67% {color: rgba(75, 255, 0, 0.75);}
-    73.33% {color: rgba(100, 255, 0, 1);}
-    75.00% {color: rgba(125, 255, 0, 0.75);}
-    76.67% {color: rgba(150, 255, 0, 0.5);}
-    78.33% {color: rgba(175, 255, 0, 0.75);}
-    80.00% {color: rgba(200, 255, 0, 1);}
-    81.67% {color: rgba(225, 255, 0, 0.75);}
-    83.33% {color: rgba(255, 255, 0, 0.5);}
-    85.00% {color: rgba(255, 225, 0, 0.75);}
-    86.67% {color: rgba(255, 200, 0, 1);}
-    88.33% {color: rgba(255, 175, 0, 0.75);}
-    90.00% {color: rgba(255, 150, 0, 0.5);}
-    91.67% {color: rgba(255, 125, 0, 0.75);}
-    93.33% {color: rgba(255, 100, 0, 1);}
-    95.00% {color: rgba(255, 75, 0, 0.75);}
-    96.67% {color: rgba(255, 50, 0, 0.5);}
-    98.33% {color: rgba(255, 25, 0, 0.75);}
-    100% {color: rgba(255, 0, 0, 1);}
+  0% {color: rgba(255, 0, 0, 1);}
+  1.67% {color: rgba(255, 0, 25, 0.75);}
+  3.33% {color: rgba(255, 0, 50, 0.5);}
+  5.00% {color: rgba(255, 0, 75, 0.75);}
+  6.67% {color: rgba(255, 0, 100, 1);}
+  8.33% {color: rgba(255, 0, 125, 0.75);}
+  10.00% {color: rgba(255, 0, 150, 0.5);}
+  11.67% {color: rgba(255, 0, 175, 0.75);}
+  13.33% {color: rgba(255, 0, 200, 1);}
+  15.00% {color: rgba(255, 0, 225, 0.75);}
+  16.67% {color: rgba(255, 0, 255, 0.5);}
+  18.33% {color: rgba(225, 0, 255, 0.75);}
+  20.00% {color: rgba(200, 0, 255, 1);}
+  21.67% {color: rgba(175, 0, 255, 0.75);}
+  23.33% {color: rgba(150, 0, 255, 0.5);}
+  25.00% {color: rgba(125, 0, 255, 0.75);}
+  26.67% {color: rgba(100, 0, 255, 1);}
+  28.33% {color: rgba(75, 0, 255, 0.75);}
+  30.00% {color: rgba(50, 0, 255, 0.5);}
+  31.67% {color: rgba(25, 0, 255, 0.75);}
+  33.33% {color: rgba(0, 0, 255, 1);}
+  35.00% {color: rgba(0, 25, 255, 0.75);}
+  36.67% {color: rgba(0, 50, 255, 0.5);}
+  38.33% {color: rgba(0, 75, 255, 0.75);}
+  40.00% {color: rgba(0, 100, 255, 1);}
+  41.67% {color: rgba(0, 125, 255, 0.75);}
+  43.33% {color: rgba(0, 150, 255, 0.5);}
+  45.00% {color: rgba(0, 175, 255, 0.75);}
+  46.67% {color: rgba(0, 200, 255, 1);}
+  48.33% {color: rgba(0, 225, 255, 0.75);}
+  50.00% {color: rgba(0, 255, 255, 0.5);}
+  51.67% {color: rgba(0, 255, 225, 0.75);}
+  53.33% {color: rgba(0, 255, 200, 1);}
+  55.00% {color: rgba(0, 255, 175, 0.75);}
+  56.67% {color: rgba(0, 255, 150, 0.5);}
+  58.33% {color: rgba(0, 255, 125, 0.75);}
+  60.00% {color: rgba(0, 255, 100, 1);}
+  61.67% {color: rgba(0, 255, 75, 0.75);}
+  63.33% {color: rgba(0, 255, 50, 0.5);}
+  65.00% {color: rgba(0, 255, 25, 0.75);}
+  66.67% {color: rgba(0, 255, 0, 1);}
+  68.33% {color: rgba(25, 255, 0, 0.75);}
+  70.00% {color: rgba(50, 255, 0, 0.5);}
+  71.67% {color: rgba(75, 255, 0, 0.75);}
+  73.33% {color: rgba(100, 255, 0, 1);}
+  75.00% {color: rgba(125, 255, 0, 0.75);}
+  76.67% {color: rgba(150, 255, 0, 0.5);}
+  78.33% {color: rgba(175, 255, 0, 0.75);}
+  80.00% {color: rgba(200, 255, 0, 1);}
+  81.67% {color: rgba(225, 255, 0, 0.75);}
+  83.33% {color: rgba(255, 255, 0, 0.5);}
+  85.00% {color: rgba(255, 225, 0, 0.75);}
+  86.67% {color: rgba(255, 200, 0, 1);}
+  88.33% {color: rgba(255, 175, 0, 0.75);}
+  90.00% {color: rgba(255, 150, 0, 0.5);}
+  91.67% {color: rgba(255, 125, 0, 0.75);}
+  93.33% {color: rgba(255, 100, 0, 1);}
+  95.00% {color: rgba(255, 75, 0, 0.75);}
+  96.67% {color: rgba(255, 50, 0, 0.5);}
+  98.33% {color: rgba(255, 25, 0, 0.75);}
+  100% {color: rgba(255, 0, 0, 1);}
 }
 
 @supports (-webkit-appearance: none) or (-moz-appearance: none) {

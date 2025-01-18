@@ -2,7 +2,8 @@ from IPython.display import display, HTML, clear_output, Image
 from IPython import get_ipython
 from ipywidgets import widgets
 from pathlib import Path
-import subprocess, json, shlex
+import subprocess
+import json
 
 home = Path.home()
 src = home / ".gutris1"
@@ -24,16 +25,7 @@ GREEN = f"\033[38;5;35m{T}"
 
 Path(src).mkdir(parents=True, exist_ok=True)
 
-scripts = [
-    f"curl -sLo {css} https://github.com/gutris1/segsmaker/raw/main/script/SM/pantat88.css",
-    f"curl -sLo {startup}/00-startup.py https://github.com/gutris1/segsmaker/raw/main/script/SM/00-startup.py",
-    f"curl -sLo {startup}/util.py https://github.com/gutris1/segsmaker/raw/main/script/SM/util.py",
-    f"curl -sLo {img} https://github.com/gutris1/segsmaker/raw/main/script/SM/loading.png",
-    f"curl -sLo {startup}/cupang.py https://github.com/gutris1/segsmaker/raw/main/script/SM/cupang.py"
-]
-
-for items in scripts:
-    subprocess.run(shlex.split(items), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+SyS = get_ipython().system
 
 main_output = widgets.Output()
 
@@ -47,44 +39,20 @@ hf_token_box = widgets.Text(placeholder='Huggingface READ Token (optional)', lay
 hf_token_box.add_class("api-input")
 
 input_widget = widgets.Box(
-    [civitai_key_box, hf_token_box, save_button], layout=widgets.Layout(
+    [civitai_key_box, hf_token_box, save_button], 
+    layout=widgets.Layout(
         width='500px',
         height='200px',
         display='flex',
         flex_flow='column',
         align_items='center',
         justify_content='space-around',
-        padding='10px'))
+        padding='10px'
+    )
+)
 input_widget.add_class("boxs")
 
-def zrok_install():
-    zrok = home / ".zrok/bin"
-    if zrok.exists():
-        return
-
-    zrok.mkdir(parents=True, exist_ok=True)
-    url = "https://github.com/openziti/zrok/releases/download/v0.4.44/zrok_0.4.44_linux_amd64.tar.gz"
-    name = zrok / Path(url).name
-
-    get_ipython().system(f"curl -sLo {name} {url}")
-    get_ipython().system(f"tar -xzf {name} -C {zrok} --wildcards *zrok")
-    get_ipython().system(f"rm -rf {home}/.cache/* {name}")
-
-def ngrok_install():
-    ngrokbin = home / ".ngrok/bin/ngrok"
-    if ngrokbin.exists():
-        return
-
-    ngrok = home / ".ngrok/bin"
-    ngrok.mkdir(parents=True, exist_ok=True)
-    url = "https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz"
-    name = ngrok / Path(url).name
-
-    get_ipython().system(f"curl -sLo {name} {url}")
-    get_ipython().system(f"tar -xzf {name} -C {ngrok} --wildcards *ngrok")
-    get_ipython().system(f"rm -rf {home}/.cache/* {name}")
-
-def conda_install():
+def CondaInstall():
     try:
         display(Image(filename=str(img)))
 
@@ -102,10 +70,7 @@ def conda_install():
         for cmd, msg in cmd_list:
             if msg is not None:
                 print(msg)
-            subprocess.run(shlex.split(cmd), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-
-        zrok_install()
-        ngrok_install()
+            SyS(f'{cmd} > /dev/null 2>&1')
 
         clear_output()
         print(f"{GREEN} Done")
@@ -116,24 +81,20 @@ def conda_install():
         clear_output()
         print("^ Canceled")
 
-def load_css():
-    with open(css, "r") as file:
-        panel = file.read()
-    display(HTML(f"<style>{panel}</style>"))
+def LoadCSS(): 
+    display(HTML(f"<style>{open(css).read()}</style>"))
 
-def key_inject(civitai_key, hf_token):
-    sc = [
-        f"curl -sLo {pantat} https://github.com/gutris1/segsmaker/raw/main/script/SM/pantat88.py",
-        f"curl -sLo {nenen} https://github.com/gutris1/segsmaker/raw/main/script/SM/nenen88.py",
-    ]
-
-    for it in sc:
-        subprocess.run(shlex.split(it), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+def KeyInject(civitai_key, hf_token):
+    for sc in [
+        f'curl -sLo {pantat} https://github.com/gutris1/segsmaker/raw/main/script/SM/pantat88.py',
+        f'curl -sLo {nenen} https://github.com/gutris1/segsmaker/raw/main/script/SM/nenen88.py'
+    ]:
+        SyS(f'{sc} > /dev/null 2>&1')
 
     target = [pantat, nenen]
 
     for line in target:
-        with open(line, "r") as file:
+        with open(line, 'r') as file:
             v = file.read()
 
         v = v.replace('toket = ""', f'toket = "{civitai_key}"')
@@ -142,11 +103,11 @@ def key_inject(civitai_key, hf_token):
         with open(line, "w") as file:
             file.write(v)
 
-def key_widget(civitai_key='', hf_token=''):
+def KeyWidget(civitai_key='', hf_token=''):
     civitai_key_box.value = civitai_key
     hf_token_box.value = hf_token
 
-    def key_input(b):
+    def KeyInputs(b):
         civitai_key = civitai_key_box.value.strip()
         hf_token = hf_token_box.value.strip()
 
@@ -166,7 +127,7 @@ def key_widget(civitai_key='', hf_token=''):
             with open(key_file, "w") as file:
                 json.dump(secrets, file, indent=4)
 
-        key_inject(civitai_key, hf_token)
+        KeyInject(civitai_key, hf_token)
 
         input_widget.close()
         main_output.clear_output()
@@ -177,14 +138,14 @@ def key_widget(civitai_key='', hf_token=''):
         
         with main_output:
             if mv < 24:
-                conda_install()
+                CondaInstall()
             else:
                 print(f"{GREEN} Done")
                 get_ipython().kernel.do_shutdown(True)
 
-    save_button.on_click(key_input)
+    save_button.on_click(KeyInputs)
 
-def key_check():
+def KeyCheck():
     if key_file.exists():
         with open(key_file, "r") as file:
             value = json.load(file)
@@ -194,14 +155,25 @@ def key_check():
 
         if not civitai_key or not hf_token:
             display(input_widget, main_output)
-            key_widget(civitai_key, hf_token)
+            KeyWidget(civitai_key, hf_token)
         else:
-            key_inject(civitai_key, hf_token)
+            KeyInject(civitai_key, hf_token)
             display(main_output)
-            conda_install()
+            CondaInstall()
     else:
         display(input_widget, main_output)
-        key_widget()
+        KeyWidget()
 
-load_css()
-key_check()
+def Scripts():
+    for scr in [
+        f'curl -sLo {css} https://github.com/gutris1/segsmaker/raw/main/script/SM/pantat88.css',
+        f'curl -sLo {startup}/00-startup.py https://github.com/gutris1/segsmaker/raw/main/script/SM/00-startup.py',
+        f'curl -sLo {startup}/util.py https://github.com/gutris1/segsmaker/raw/main/script/SM/util.py',
+        f'curl -sLo {img} https://github.com/gutris1/segsmaker/raw/main/script/SM/loading.png',
+        f'curl -sLo {startup}/cupang.py https://github.com/gutris1/segsmaker/raw/main/script/SM/cupang.py'
+    ]:
+        SyS(f'{scr} > /dev/null 2>&1')
+
+Scripts()
+LoadCSS()
+KeyCheck()

@@ -15,7 +15,6 @@ from ipywidgets import widgets
 from pathlib import Path
 import shutil
 import json
-import time
 import os
 
 from nenen88 import pull, say, download, clone, tempe
@@ -24,7 +23,6 @@ SyS = get_ipython().system
 CD = os.chdir
 
 HOME = Path.home()
-CD(HOME)
 SRC = HOME / '.gutris1'
 CSS = SRC / 'setup.css'
 IMG = SRC / 'loading.png'
@@ -35,9 +33,7 @@ TMP = Path('/tmp')
 SRC.mkdir(parents=True, exist_ok=True)
 
 def load_css():
-    with open(CSS, "r") as f:
-        d = f.read()
-    display(HTML(f"<style>{d}</style>"))
+    display(HTML(f"<style>{CSS.read_text()}</style>"))
 
 def tmp_cleaning(v):
     for i in TMP.iterdir():
@@ -59,95 +55,132 @@ def check_ffmpeg():
         for d, m in c:
             if m is not None:
                 print(m)
-            SyS(f'{d} &> /dev/null')
+            SyS(f'{d} > /dev/null 2>&1')
 
 def marking(p, n, i):
     t = p / n
-    v = {
-        'ui': i,
-        'launch_args': '',
-        'zrok_token': '',
-        'ngrok_token': '',
-        'tunnel': ''
+    if not t.exists():
+        t.write_text(json.dumps({
+            'ui': i, 'launch_args': '',
+            'zrok_token': '', 'ngrok_token': '',
+            'tunnel': ''
+        }, indent=4))
+    d = json.loads(t.read_text())
+    d.update({'ui': i, 'launch_args': ''})
+    t.write_text(json.dumps(d, indent=4))
+
+def install_tunnel():
+    bins = {
+        'zrok': {
+            'bin': HOME / '.zrok/bin/zrok',
+            'url': 'https://github.com/openziti/zrok/releases/download/v0.4.44/zrok_0.4.44_linux_amd64.tar.gz'
+        },
+        'ngrok': {
+            'bin': HOME / '.ngrok/bin/ngrok',
+            'url': 'https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz'
+        }
     }
 
-    if not t.exists():
-        with open(t, 'w') as f:
-            json.dump(v, f, indent=4)
+    for n, b in bins.items():
+        if b['bin'].exists():
+            continue
 
-    with open(t, 'r') as f:
-        d = json.load(f)
+        url = b['url']
+        name = Path(url).name
+        binDir = b['bin'].parent
 
-    d.update({
-        'ui': i,
-        'launch_args': ''
-    })
+        binDir.mkdir(parents=True, exist_ok=True)
 
-    with open(t, 'w') as f:
-        json.dump(d, f, indent=4)
+        SyS(f'curl -sLo {binDir}/{name} {url}')
+        SyS(f'tar -xzf {binDir}/{name} -C {binDir} --wildcards *{n}')
+        SyS(f'rm -f {binDir}/{name}')
 
 def sym_link(U, M):
-    links = {
-        'A1111': [
-            f"rm -rf {HOME}/tmp {HOME}/.cache/* {M}/Stable-diffusion/tmp_ckpt {M}/Lora/tmp_lora {M}/ControlNet",
-            f"mkdir -p {M}/Lora {M}/ESRGAN",
-            f"ln -vs {TMP} {HOME}/tmp",
-            f"ln -vs {TMP}/ckpt {M}/Stable-diffusion/tmp_ckpt",
-            f"ln -vs {TMP}/lora {M}/Lora/tmp_lora",
-            f"ln -vs {TMP}/controlnet {M}/ControlNet"
-        ],
+    configs = {
+        'A1111': {
+            'pre': [
+                f'rm -rf {M / "Stable-diffusion/tmp_ckpt"} {M / "Lora/tmp_lora"} {M / "ControlNet"}'
+            ],
+            'links': [
+                (TMP, HOME / "tmp"),
+                (TMP / "ckpt", M / "Stable-diffusion/tmp_ckpt"),
+                (TMP / "lora", M / "Lora/tmp_lora"),
+                (TMP / "controlnet", M / "ControlNet")
+            ]
+        },
 
-        'ComfyUI': [
-            f"rm -rf {HOME}/tmp {HOME}/.cache/* {M}/controlnet {M}/clip {M}/unet",
-            f"rm -rf {M}/checkpoints/tmp_ckpt {M}/loras/tmp_lora",
-            f"ln -vs {TMP} {HOME}/tmp",
-            f"ln -vs {TMP}/ckpt {M}/checkpoints/tmp_ckpt",
-            f"ln -vs {TMP}/lora {M}/loras/tmp_lora",
-            f"ln -vs {TMP}/controlnet {M}/controlnet",
-            f"ln -vs {TMP}/clip {M}/clip",
-            f"ln -vs {TMP}/unet {M}/unet",
-            f"ln -vs {M}/checkpoints {M}/checkpoints_symlink"
-        ],
+        'ReForge': {
+            'pre': [
+                f'rm -rf {M / "Stable-diffusion/tmp_ckpt"} {M / "Lora/tmp_lora"} {M / "ControlNet"}',
+                f'rm -rf {M / "svd"} {M / "z123"}'
+            ],
+            'links': [
+                (TMP, HOME / "tmp"),
+                (TMP / "ckpt", M / "Stable-diffusion/tmp_ckpt"),
+                (TMP / "lora", M / "Lora/tmp_lora"),
+                (TMP / "controlnet", M / "ControlNet"),
+                (TMP / "z123", M / "z123"),
+                (TMP / "svd", M / "svd")
+            ]
+        },
 
-        'Forge': [
-            f"rm -rf {HOME}/tmp {HOME}/.cache/* {M}/ControlNet {M}/svd {M}/z123 {M}/clip {M}/unet",
-            f"rm -rf {M}/Stable-diffusion/tmp_ckpt {M}/Lora/tmp_lora",
-            f"mkdir -p {M}/Lora {M}/ESRGAN",
-            f"ln -vs {TMP} {HOME}/tmp",
-            f"ln -vs {TMP}/ckpt {M}/Stable-diffusion/tmp_ckpt",
-            f"ln -vs {TMP}/lora {M}/Lora/tmp_lora",
-            f"ln -vs {TMP}/controlnet {M}/ControlNet",
-            f"ln -vs {TMP}/z123 {M}/z123",
-            f"ln -vs {TMP}/svd {M}/svd",
-            f"ln -vs {TMP}/clip {M}/clip",
-            f"ln -vs {TMP}/unet {M}/unet"
-        ],
+        'Forge': {
+            'pre': [
+                f'rm -rf {M / "Stable-diffusion/tmp_ckpt"} {M / "Lora/tmp_lora"} {M / "ControlNet"}',
+                f'rm -rf {M / "svd"} {M / "z123"} {M / "clip"} {M / "unet"}'
+            ],
+            'links': [
+                (TMP, HOME / "tmp"),
+                (TMP / "ckpt", M / "Stable-diffusion/tmp_ckpt"),
+                (TMP / "lora", M / "Lora/tmp_lora"),
+                (TMP / "controlnet", M / "ControlNet"),
+                (TMP / "z123", M / "z123"),
+                (TMP / "svd", M / "svd"),
+                (TMP / "clip", M / "clip"),
+                (TMP / "unet", M / "unet")
+            ]
+        },
 
-        'ReForge': [
-            f"rm -rf {HOME}/tmp {HOME}/.cache/* {M}/ControlNet {M}/svd {M}/z123",
-            f"rm -rf {M}/Stable-diffusion/tmp_ckpt {M}/Lora/tmp_lora",
-            f"mkdir -p {M}/Lora {M}/ESRGAN",
-            f"ln -vs {TMP} {HOME}/tmp",
-            f"ln -vs {TMP}/ckpt {M}/Stable-diffusion/tmp_ckpt",
-            f"ln -vs {TMP}/lora {M}/Lora/tmp_lora",
-            f"ln -vs {TMP}/controlnet {M}/ControlNet",
-            f"ln -vs {TMP}/z123 {M}/z123",
-            f"ln -vs {TMP}/svd {M}/svd"
-        ],
+        'ComfyUI': {
+            'pre': [
+                f'rm -rf {M / "checkpoints/tmp_ckpt"} {M / "loras/tmp_lora"} {M / "controlnet"}',
+                f'rm -rf {M / "clip"} {M / "unet"}'
+            ],
+            'links': [
+                (TMP, HOME / "tmp"),
+                (TMP / "ckpt", M / "checkpoints/tmp_ckpt"),
+                (TMP / "lora", M / "loras/tmp_lora"),
+                (TMP / "controlnet", M / "controlnet"),
+                (TMP / "clip", M / "clip"),
+                (TMP / "unet", M / "unet"),
+                (M / "checkpoints", M / "checkpoints_symlink")
+            ]
+        },
 
-        'SwarmUI': [
-            f"rm -rf {HOME}/tmp {HOME}/.cache/* {M}/Stable-Diffusion/tmp_ckpt",
-            f"rm -rf {M}/Lora/tmp_lora {M}/controlnet {M}/clip {M}/unet",
-            f"ln -vs {TMP} {HOME}/tmp",
-            f"ln -vs {TMP}/ckpt {M}/Stable-Diffusion/tmp_ckpt",
-            f"ln -vs {TMP}/lora {M}/Lora/tmp_lora",
-            f"ln -vs {TMP}/controlnet {M}/controlnet",
-            f"ln -vs {TMP}/clip {M}/clip",
-            f"ln -vs {TMP}/unet {M}/unet"
-        ]
+        'SwarmUI': {
+            'pre': [
+                f'rm -rf {M / "Stable-Diffusion/tmp_ckpt"} {M / "Lora/tmp_lora"} {M / "controlnet"}',
+                f'rm -rf {M / "clip"} {M / "unet"}'
+            ],
+            'links': [
+                (TMP, HOME / "tmp"),
+                (TMP / "ckpt", M / "Stable-Diffusion/tmp_ckpt"),
+                (TMP / "lora", M / "Lora/tmp_lora"),
+                (TMP / "controlnet", M / "controlnet"),
+                (TMP / "clip", M / "clip"),
+                (TMP / "unet", M / "unet")
+            ]
+        }
     }
 
-    return links.get(U, [])
+    cfg = configs.get(U)
+    SyS(f'rm -rf {HOME / "tmp"} {HOME / ".cache"}/*')
+    [SyS(f'{cmd}') for cmd in cfg['pre']]
+
+    if U in ['A1111', 'Forge', 'ReForge']:
+        [(M / d).mkdir(parents=True, exist_ok=True) for d in ["Lora", "ESRGAN"]]
+
+    [SyS(f'ln -s {src} {tg}') for src, tg in cfg['links']]
 
 def webui_req(U, W, M):
     vnv = TMP / 'venv'
@@ -166,9 +199,7 @@ def webui_req(U, W, M):
         dotnet.chmod(0o755)
         SyS("bash ./dotnet-install.sh --channel 8.0")
 
-    req = sym_link(U, M)
-    for ln in req:
-        SyS(f'{ln} &> /dev/null')
+    sym_link(U, M)
 
     scripts = [
         f"https://github.com/gutris1/segsmaker/raw/main/script/SM/controlnet.py {W}/asd",
@@ -217,6 +248,7 @@ def WebUIExtensions(U, W, M):
 
 def installing_webui(U, S, W, M, E, V):
     webui_req(U, W, M)
+    install_tunnel()
 
     if S == "button-15":
         embzip =  W / 'embeddings.zip'
@@ -252,7 +284,7 @@ def webui_install(ui, which_sd):
             'ReForge': 'https://github.com/Panchovix/stable-diffusion-webui-reForge ReForge',
             'SwarmUI': 'https://github.com/mcmonkeyprojects/SwarmUI'
         }
-        
+
         if ui in alist:
             WEBUI = HOME / ui
             repo = alist[ui]
@@ -263,7 +295,6 @@ def webui_install(ui, which_sd):
 
         say(f"<b>【{{red}} Installing {WEBUI.name}{{d}} 】{{red}}</b>")
         clone(repo)
-        time.sleep(1)
 
         marking(SRC, MARKED, ui)
         installing_webui(ui, which_sd, WEBUI, MODELS, EMB, VAE)
@@ -274,9 +305,9 @@ def webui_install(ui, which_sd):
             get_ipython().run_line_magic('run', str(MRK))
             get_ipython().run_line_magic('run', str(WEBUI / 'venv.py'))
 
-            CD(HOME)
             loading.clear_output(wait=True)
             say("<b>【{red} Done{d} 】{red}</b>")
+            CD(HOME)
 
 def facetrainer(ui):
     with loading:
@@ -294,7 +325,6 @@ def facetrainer(ui):
 
         say(f"<b>【{{red}} Installing {WEBUI.name}{{d}} 】{{red}}</b>")
         clone(repo)
-        time.sleep(1)
 
         marking(SRC, MARKED, ui)
         tmp_cleaning(vnv)
@@ -311,7 +341,7 @@ def facetrainer(ui):
             ]
 
         for lines in req:
-            SyS(f'{lines} &> /dev/null')
+            SyS(f'{lines} > /dev/null 2>&1')
 
         scripts = [
             f"https://github.com/gutris1/segsmaker/raw/main/script/SM/venv.py {WEBUI}",
@@ -329,9 +359,9 @@ def facetrainer(ui):
             get_ipython().run_line_magic('run', str(MRK))
             get_ipython().run_line_magic('run', str(WEBUI / 'venv.py'))
 
-            CD(HOME)
             loading.clear_output(wait=True)
             say("<b>【{red} Done{d} 】{red}</b>")
+            CD(HOME)
 
 def oppai(btn, sd=None):
     global ui, hbox
@@ -404,10 +434,12 @@ for button, btn in zip(buttons2, row2):
     button.add_class(btn.lower())
     button.on_click(lambda x, btn=btn: select_webui(btn))
 
-hbox1 = widgets.HBox(buttons1, layout=widgets.Layout(width='630px', height='250px'))
-hbox2 = widgets.HBox(buttons2, layout=widgets.Layout(width='630px', height='250px'))
-multi_panel = widgets.VBox([hbox1, hbox2], layout=widgets.Layout(width='600px', height='500px'))
+hbox1 = widgets.HBox(buttons1, layout=widgets.Layout(width='630px', height='255px'))
+hbox2 = widgets.HBox(buttons2, layout=widgets.Layout(width='630px', height='255px'))
+multi_panel = widgets.VBox([hbox1, hbox2], layout=widgets.Layout(width='640px', height='520px'))
 multi_panel.add_class('multi-panel')
+hbox1.add_class('hbox1')
+hbox2.add_class('hbox2')
 
 which_sd = ['button-15', 'button-back', 'button-xl']
 buttons3 = [widgets.Button(description='') for btn in which_sd]
@@ -418,7 +450,7 @@ for button, btn in zip(buttons3, which_sd):
     else:
         button.on_click(lambda x, btn=btn: select_sd(btn))
 
-hbox = widgets.HBox(buttons3, layout=widgets.Layout(width='450px', height='250px'))
+hbox = widgets.HBox(buttons3, layout=widgets.Layout(width='590px', height='415px'))
 hbox.add_class("multi-panel")
 hbox.layout.display = 'none'
 
@@ -426,21 +458,21 @@ def go_back(b):
     hbox.layout.display = 'none'
     clear_output()
     multi_panel.layout.display = 'block'
-    
+
     config = json.load(MARKED.open('r')) if MARKED.exists() else {}
     config['ui'] = None
     json.dump(config, MARKED.open('w'))
 
 def multi_widgets():
-    x = [
-        f"curl -sLo {CSS} https://github.com/gutris1/segsmaker/raw/main/script/SM/setup.css",
-        f"curl -sLo {IMG} https://github.com/gutris1/segsmaker/raw/main/script/SM/loading.png",
-        f"curl -sLo {MRK} https://github.com/gutris1/segsmaker/raw/main/script/SM/marking.py"
-    ]
-    for y in x:
-        SyS(y)
+    for cmd in [
+        f'curl -sLo {CSS} https://github.com/gutris1/segsmaker/raw/main/script/SM/setup.css',
+        f'curl -sLo {IMG} https://github.com/gutris1/segsmaker/raw/main/script/SM/loading.png',
+        f'curl -sLo {MRK} https://github.com/gutris1/segsmaker/raw/main/script/SM/marking.py'
+    ]:
+        SyS(cmd)
 
     load_css()
     display(multi_panel, hbox, output, loading)
 
+CD(HOME)
 multi_widgets()

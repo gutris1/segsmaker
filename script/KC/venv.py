@@ -68,7 +68,7 @@ def venv_install():
     SyS(f'rm -rf {VENV}/bin/pip* {VENV}/bin/python*')
 
     req = [
-        f'python3 -m venv {VENV}',
+        f'python3.10 -m venv {VENV}',
         f'{VENV}/bin/python3 -m pip install -U --force-reinstall pip',
         f'{VENV}/bin/python3 -m pip install ipykernel',
         f'{VENV}/bin/python3 -m pip uninstall -y ngrok pyngrok'

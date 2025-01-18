@@ -21,6 +21,7 @@ if not ENVNAME:
     print("You are not in Kaggle or Google Colab.\nExiting.")
     sys.exit()
 
+"""
 if ENVNAME == 'Colab':
     for blyat in [
         'sudo ln -sf /usr/bin/python3.10 /usr/local/bin/python',
@@ -29,6 +30,7 @@ if ENVNAME == 'Colab':
         'sudo ln -sf /usr/local/lib/python3.11 /usr/local/lib/python3.10'
     ]:
         SyS(blyat)
+"""
 
 from IPython.display import display, Image, clear_output
 from IPython import get_ipython
