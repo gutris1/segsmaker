@@ -1,14 +1,13 @@
-git clone --depth 1 --recursive https://github.com/ssitu/ComfyUI_UltimateSDUpscale
-git clone --depth 1 https://github.com/ltdrdata/ComfyUI-Manager
-git clone --depth 1 https://github.com/pythongosssss/ComfyUI-Custom-Scripts
-git clone --depth 1 https://github.com/city96/SD-Latent-Upscaler
-git clone --depth 1 https://github.com/jags111/efficiency-nodes-comfyui
-git clone --depth 1 https://github.com/BlenderNeko/ComfyUI_ADV_CLIP_emb
-git clone --depth 1 https://github.com/ssitu/ComfyUI_NestedNodeBuilder
-git clone --depth 1 https://github.com/Kosinkadink/ComfyUI-Advanced-ControlNet
-git clone --depth 1 https://github.com/Fannovel16/comfyui_controlnet_aux
-git clone --depth 1 https://github.com/SLAPaper/ComfyUI-Image-Selector
-git clone --depth 1 https://github.com/Derfuu/Derfuu_ComfyUI_ModdedNodes
-git clone --depth 1 https://github.com/FizzleDorf/ComfyUI_FizzNodes
-git clone --depth 1 https://github.com/WASasquatch/was-node-suite-comfyui
-git clone --depth 1 https://github.com/Gourieff/comfyui-reactor-node
+--depth 1 --recursive https://github.com/ssitu/ComfyUI_UltimateSDUpscale
+--depth 1 https://github.com/ltdrdata/ComfyUI-Manager
+--depth 1 https://github.com/pythongosssss/ComfyUI-Custom-Scripts
+--depth 1 https://github.com/city96/SD-Latent-Upscaler
+--depth 1 https://github.com/jags111/efficiency-nodes-comfyui
+--depth 1 https://github.com/BlenderNeko/ComfyUI_ADV_CLIP_emb
+--depth 1 https://github.com/ssitu/ComfyUI_NestedNodeBuilder
+--depth 1 https://github.com/Kosinkadink/ComfyUI-Advanced-ControlNet
+--depth 1 https://github.com/Fannovel16/comfyui_controlnet_aux
+--depth 1 https://github.com/SLAPaper/ComfyUI-Image-Selector
+--depth 1 https://github.com/Derfuu/Derfuu_ComfyUI_ModdedNodes
+--depth 1 https://github.com/FizzleDorf/ComfyUI_FizzNodes
+--depth 1 https://github.com/WASasquatch/was-node-suite-comfyui
