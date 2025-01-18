@@ -140,7 +140,7 @@ def delete_everything(line):
 
             folder_list = [
                 'A1111', 'Forge', 'ReForge', 'ComfyUI', 'SwarmUI', 'SDTrainer', 'FaceFusion',
-                'tmp/*', 'tmp', '.cache/*', '.config/*', '.ssh', '.zrok', '.sagemaker', '.nv',
+                'tmp/*', 'tmp', '.cache/*', '.config/*', '.ssh', '.zrok', '.ngrok', '.sagemaker',
                 '.conda/*', '.conda', '.ipython/profile_default/startup/*'
             ]
 
