@@ -58,25 +58,18 @@ def load_config():
     else:
         cpu_cb.value = config.get('cpu_usage', False)
 
-    if ui in ['SDTrainer', 'FaceFusion', 'SwarmUI'] or GPU_check():
-        cpu_cb.layout.display = 'none'
-    else:
-        cpu_cb.layout.display = 'block'
+    cpu_cb.layout.display = 'none' if ui in ['SDTrainer', 'FaceFusion', 'SwarmUI'] or GPU_check() else 'block'
 
-    if ui == 'A1111':
-        title.value = '<div class="title"><h1>A1111</h1></div>'
-    elif ui == 'Forge':
-        title.value = '<div class="title"><h1>Forge</h1></div>'
-    elif ui == 'ComfyUI':
-        title.value = '<div class="title"><h1>ComfyUI</h1></div>'
-    elif ui == 'ReForge':
-        title.value = '<div class="title"><h1>ReForge</h1></div>'
-    elif ui == 'FaceFusion':
-        title.value = '<div class="title"><h1>Face Fusion</h1></div>'
-    elif ui == 'SDTrainer':
-        title.value = '<div class="title"><h1>SD Trainer</h1></div>'
-    elif ui == 'SwarmUI':
-        title.value = '<div class="title"><h1>SwarmUI</h1></div>'
+    ui_titles = {
+        'A1111': 'A1111',
+        'Forge': 'Forge',
+        'ComfyUI': 'ComfyUI',
+        'ReForge': 'ReForge',
+        'FaceFusion': 'Face Fusion',
+        'SDTrainer': 'SD Trainer',
+        'SwarmUI': 'SwarmUI'
+    }
+    title.value = f'<div class="title"><h1>{ui_titles.get(ui, "Unknown UI")}</h1></div>'
 
 def save_config(zrok_token, ngrok_token, launch_args, tunnel):
     config = {}
@@ -96,10 +89,7 @@ def save_config(zrok_token, ngrok_token, launch_args, tunnel):
         json.dump(config, file, indent=4)
 
 def load_css():
-    with open(CSS, "r") as file:
-        data = file.read()
-
-    display(HTML(f"<style>{data}</style>"))
+    display(HTML(f"<style>{CSS.read_text()}</style>"))
 
 title = widgets.HTML()
 zrok_token = widgets.Text(placeholder='Your ZROK Token')
