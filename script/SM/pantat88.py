@@ -224,7 +224,7 @@ def gdrown(url, path=None, fn=None):
 
 def ariari(fc, fn):
     try:
-        qqqqq = subprocess.Popen(
+        Aria2Process = subprocess.Popen(
             shlex.split(fc),
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
@@ -240,15 +240,16 @@ def ariari(fc, fn):
         MAGENTA = "\033[35m"
         RED = "\033[31m"
         CYAN = "\033[36m"
-        GREEN = "\033[38;5;35m"
+        GREEN = "\033[38;5;46m"
         YELLOW = "\033[33m"
         BLUE = "\033[38;5;69m"
         PURPLE = "\033[38;5;135m"
+        ORANGE = "\033[38;5;208m"
         RESET = "\033[0m"
 
         while True:
-            lines = qqqqq.stderr.readline()
-            if lines == '' and qqqqq.poll() is not None:
+            lines = Aria2Process.stderr.readline()
+            if lines == '' and Aria2Process.poll() is not None:
                 break
 
             if lines:
@@ -259,15 +260,28 @@ def ariari(fc, fn):
                         code.append(outputs)
                     if '|' in outputs and 'ERR' in outputs:
                         outputs = re.sub(r'(\|\s*)(ERR)(\s*\|)', f'\\1{RED}\\2{RESET}\\3', outputs)
+                        first, _, last = outputs.rpartition('|')
+                        last = re.sub(r'[^/]+', f'{RED}\\g<0>{RESET}', last)
+                        last = re.sub(r'/', f'{CYAN}/{RESET}', last)
+                        outputs = f"{first}|{last}"
                         err.append(outputs)
 
                     if re.match(r'\[#\w{6}\s.*\]', outputs):
                         outputs = re.sub(r'\[', MAGENTA + '【' + RESET, outputs)
                         outputs = re.sub(r'\]', MAGENTA + '】' + RESET, outputs)
                         outputs = re.sub(r'(#)(\w+)', f'\\1{GREEN}\\2{RESET}', outputs)
-                        outputs = re.sub(r'(\(\d+%\))', f'{CYAN}\\1{RESET}', outputs)
-                        outputs = re.sub(r'(CN:)(\d+)', f"\\1{BLUE}\\2{RESET}", outputs)
-                        outputs = re.sub(r'(DL:)(\d+\w+)', f"\\1{PURPLE}\\2{RESET}", outputs)
+                        outputs = re.sub(
+                            r'(\d+(\.\d+)?)(\w+)(/)(\d+(\.\d+)?)(\w+)',
+                            f"{CYAN}\\1{RESET}{PURPLE}\\3{RESET}{MAGENTA}\\4{RESET}{CYAN}\\5{RESET}{PURPLE}\\7{RESET}",
+                            outputs
+                        )
+                        outputs = re.sub(
+                            r'(\()(\d+%)(\))',
+                            f'{MAGENTA}\\1{RESET}{CYAN}\\2{RESET}{MAGENTA}\\3{RESET}',
+                            outputs
+                        )
+                        outputs = re.sub(r'(CN:)(\d+)', f"\\1{ORANGE}\\2{RESET}", outputs)
+                        outputs = re.sub(r'(DL:)(\d+(\.\d+)?)(\w+)', f"\\1{CYAN}\\2{RESET}{PURPLE}\\4{RESET}", outputs)
                         outputs = re.sub(r'(ETA:)(\d+\w+)', f"\\1{YELLOW}\\2{RESET}", outputs)
                         lines = outputs.splitlines()
                         for line in lines:
@@ -288,9 +302,13 @@ def ariari(fc, fn):
             for lines in result[stripe:].splitlines():
                 if '|' in lines and 'OK' in lines:
                     lines = re.sub(r'(\|\s*)(OK)(\s*\|)', f'\\1{GREEN}\\2{RESET}\\3', lines)
+                    first, _, last = lines.rpartition('|')
+                    last = re.sub(r'[^/]+', f'{CYAN}\\g<0>{RESET}', last)
+                    last = re.sub(r'/', f'{ORANGE}/{RESET}', last)
+                    lines = f"{first}|{last}"
                     print(f"  {lines}")
 
-        qqqqq.wait()
+        Aria2Process.wait()
 
     except KeyboardInterrupt:
         print(f"\n{'':>2}^ Canceled")
