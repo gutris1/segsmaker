@@ -24,9 +24,12 @@ STR = ROOT / '.ipython/profile_default/startup'
 iRON = os.environ
 
 if ENVNAME == 'Colab':
-    bi = ROOT / 'GUTRIS1/bin'
-    iRON["PATH"] = str(bi) + ":" + iRON["PATH"]
-    iRON["PYTHONPATH"] = str(bi) + ":" + iRON.get("PYTHONPATH", "")
+    bi = str(ROOT / 'GUTRIS1/bin')
+    pkg = str(ROOT / 'GUTRIS1/lib/python3.10/site-packages')
+    if bi not in iRON.get("PATH", ""):
+        iRON["PATH"] = bi + ":" + iRON.get("PATH", "")
+    if pkg not in iRON.get("PYTHONPATH", ""):
+        iRON["PYTHONPATH"] = pkg + ":" + iRON.get("PYTHONPATH", "")
 
 sys.path.append(str(STR))
 
