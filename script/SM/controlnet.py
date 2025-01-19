@@ -195,9 +195,7 @@ cnxl_list = {
 }
 
 def load_css():
-    with open(CSSCN, "r") as f:
-        c = f.read()
-    display(HTML(f"<style>{c}</style>"))
+    display(HTML(f"<style>{open(CSSCN).read()}</style>"))
 
 loading = widgets.Output()
 output = widgets.Output()
