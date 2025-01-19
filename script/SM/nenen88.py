@@ -237,7 +237,7 @@ def ariari(fc, fn):
         MAGENTA = "\033[35m"
         RED = "\033[31m"
         CYAN = "\033[36m"
-        GREEN = "\033[38;5;46m"
+        GREEN = "\033[38;5;35m"
         YELLOW = "\033[33m"
         BLUE = "\033[38;5;69m"
         PURPLE = "\033[38;5;135m"
