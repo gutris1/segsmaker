@@ -299,7 +299,6 @@ def ariari(fc, fn):
                 if '|' in lines and 'OK' in lines:
                     lines = re.sub(r'(\|\s*)(OK)(\s*\|)', f'\\1{GREEN}\\2{RESET}\\3', lines)
                     first, _, last = lines.rpartition('|')
-                    last = re.sub(r'[^/]+', f'{CYAN}\\g<0>{RESET}', last)
                     last = re.sub(r'/', f'{ORANGE}/{RESET}', last)
                     lines = f"{first}|{last}"
                     print(f"  {lines}")
