@@ -258,7 +258,6 @@ def ariari(fc, fn):
                     if '|' in outputs and 'ERR' in outputs:
                         outputs = re.sub(r'(\|\s*)(ERR)(\s*\|)', f'\\1{RED}\\2{RESET}\\3', outputs)
                         first, _, last = outputs.rpartition('|')
-                        last = re.sub(r'[^/]+', f'{RED}\\g<0>{RESET}', last)
                         last = re.sub(r'/', f'{CYAN}/{RESET}', last)
                         outputs = f"{first}|{last}"
                         err.append(outputs)
@@ -266,20 +265,20 @@ def ariari(fc, fn):
                     if re.match(r'\[#\w{6}\s.*\]', outputs):
                         outputs = re.sub(r'\[', MAGENTA + '【' + RESET, outputs)
                         outputs = re.sub(r'\]', MAGENTA + '】' + RESET, outputs)
-                        outputs = re.sub(r'(#)(\w+)', f'\\1{GREEN}\\2{RESET}', outputs)
+                        outputs = re.sub(r'(#)(\w+)', f'{CYAN}\\1{RESET}{GREEN}\\2{RESET}', outputs)
                         outputs = re.sub(
                             r'(\d+(\.\d+)?)(\w+)(/)(\d+(\.\d+)?)(\w+)',
-                            f"{CYAN}\\1{RESET}{PURPLE}\\3{RESET}{MAGENTA}\\4{RESET}{CYAN}\\5{RESET}{PURPLE}\\7{RESET}",
+                            f"\\1{PURPLE}\\3{RESET}{MAGENTA}\\4{RESET}\\5{PURPLE}\\7{RESET}",
                             outputs
                         )
                         outputs = re.sub(
                             r'(\()(\d+%)(\))',
-                            f'{MAGENTA}\\1{RESET}{CYAN}\\2{RESET}{MAGENTA}\\3{RESET}',
+                            f'{MAGENTA}\\1{RESET}\\2{MAGENTA}\\3{RESET}',
                             outputs
                         )
-                        outputs = re.sub(r'(CN:)(\d+)', f"\\1{ORANGE}\\2{RESET}", outputs)
-                        outputs = re.sub(r'(DL:)(\d+(\.\d+)?)(\w+)', f"\\1{CYAN}\\2{RESET}{PURPLE}\\4{RESET}", outputs)
-                        outputs = re.sub(r'(ETA:)(\d+\w+)', f"\\1{YELLOW}\\2{RESET}", outputs)
+                        outputs = re.sub(r'(CN)(:)(\d+)', f"{CYAN}\\1{RESET}\\2{ORANGE}\\3{RESET}", outputs)
+                        outputs = re.sub(r'(DL)(:)(\d+(\.\d+)?)(\w+)', f"{CYAN}\\1{RESET}\\2\\3{PURPLE}\\5{RESET}", outputs)
+                        outputs = re.sub(r'(ETA)(:)(\d+\w+)', f"{CYAN}\\1{RESET}\\2{YELLOW}\\3{RESET}", outputs)
                         lines = outputs.splitlines()
                         for line in lines:
                             print(f"\r{' '*180}\r {line}", end="")
