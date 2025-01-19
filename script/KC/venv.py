@@ -1,15 +1,12 @@
 from IPython import get_ipython
 from pathlib import Path
 from nenen88 import tempe, say, download
-from KANDANG import HOMEPATH, VENVPATH, BASEPATH
+from KANDANG import HOMEPATH, VENVPATH, BASEPATH, ENVNAME
 import json
 import os
 
 HOME = Path(HOMEPATH)
 VENV = Path(VENVPATH)
-
-SyS = get_ipython().system
-CD = os.chdir
 
 def venv_check(ui):
     fp = Path(BASEPATH) / "vnv.json"
@@ -30,19 +27,19 @@ def venv_check(ui):
         json.dump(dt, f, indent=4)
 
 def she_bang():
-    old = b'#!/home/studio-lab-user/tmp/venv/bin/python3\n'
-    new = f"#!{VENV}/bin/python3\n"
+    o = b'#!/content/venv/bin/python3\n'
+    n = b'#!/kaggle/venv/bin/python3\n'
 
-    for script in (VENV / 'bin').glob('*'):
-        if script.is_file():
+    for s in (VENV / 'bin').glob('*'):
+        if s.is_file():
             try:
-                with open(script, 'r+b') as file:
-                    lines = file.readlines()
-                    if lines and lines[0] == old:
-                        lines[0] = new.encode('utf-8')
-                        file.seek(0)
-                        file.writelines(lines)
-                        file.truncate()
+                with open(s, 'r+b') as f:
+                    l = f.readlines()
+                    if l and l[0] == o:
+                        l[0] = n
+                        f.seek(0)
+                        f.writelines(l)
+                        f.truncate()
 
             except OSError as e:
                 if e.errno == 26:
@@ -55,7 +52,7 @@ def venv_install():
 
     venv_check(ui)
 
-    url = 'https://huggingface.co/pantat88/back_up/resolve/main/venv-torch241-cu121.tar.lz4'
+    url = 'https://huggingface.co/pantat88/back_up/resolve/main/venv-torch251-cu121.tar.lz4'
     fn = Path(url).name
 
     say('<br>【{red} Installing VENV{d} 】{red}')
@@ -65,22 +62,27 @@ def venv_install():
     SyS(f'pv {fn} | lz4 -d | tar xf -')
     Path(fn).unlink()
 
-    SyS(f'rm -rf {VENV}/bin/pip* {VENV}/bin/python*')
+    req = []
 
-    req = [
-        f'python3.10 -m venv {VENV}',
-        f'{VENV}/bin/python3 -m pip install -U --force-reinstall pip',
-        f'{VENV}/bin/python3 -m pip install ipykernel',
-        f'{VENV}/bin/python3 -m pip uninstall -y ngrok pyngrok'
-    ]
+    if ENVNAME == 'Kaggle':
+        req.extend([
+            f'rm -f {VENV}/bin/pip* {VENV}/bin/python*',
+            f'python3 -m venv {VENV}'
+        ])
+
+    req+=[f'{pip} install -U --force-reinstall pip']
 
     if ui in ['Forge', 'ComfyUI', 'SwarmUI']:
-        req.append(f'{VENV}/bin/python3 -m pip uninstall -y transformers')
+        req+=[f'{pip} uninstall -y transformers']
 
-    for cmd in req:
-        SyS(f'{cmd} &> /dev/null')
+    [SyS(f'{cmd}>/dev/null 2>&1') for cmd in req]
+
+
+pip = str(VENV / 'bin/python3 -m pip')
+SyS = get_ipython().system
+CD = os.chdir
 
 tempe()
 venv_install()
-she_bang()
+if ENVNAME == 'Kaggle': she_bang()
 CD(HOME)
