@@ -284,7 +284,7 @@ def ariari(fc, fn):
                         outputs = re.sub(r'(ETA)(:)(\d+\w+)', f"{CYAN}\\1{RESET}\\2{YELLOW}\\3{RESET}", outputs)
                         lines = outputs.splitlines()
                         for line in lines:
-                            print(f"\r{' '*200}\r {line}", end="")
+                            print(f"\r{' '*300}\r {line}", end="")
                             sys.stdout.flush()
                         br = True
                         break
