@@ -32,7 +32,7 @@ def load_config():
         need_space = 14 * 1024**3
         vnv = vnv_SDT
     else:
-        url = 'https://huggingface.co/pantat88/back_up/resolve/main/venv-torch241-cu121.tar.lz4'
+        url = 'https://huggingface.co/pantat88/back_up/resolve/main/venv-torch251-cu121.tar.lz4'
         need_space = 15 * 1024**3
         vnv = vnv_D
 
@@ -102,6 +102,25 @@ def check_pv():
             stderr=subprocess.DEVNULL
         )
 
+def she_bang():
+    o = b'#!/content/venv/bin/python3\n'
+    n = f'#!{vnv}/bin/python3\n'.encode()
+
+    for s in (vnv / 'bin').glob('*'):
+        if s.is_file():
+            try:
+                with open(s, 'r+b') as f:
+                    l = f.readlines()
+                    if l and l[0] == o:
+                        l[0] = n
+                        f.seek(0)
+                        f.writelines(l)
+                        f.truncate()
+
+            except OSError as e:
+                if e.errno == 26:
+                    pass
+
 def venv_install(ui, url, need_space, fn):
     while True:
         if vnv.exists():
@@ -135,27 +154,29 @@ def venv_install(ui, url, need_space, fn):
         SyS(f'pv {fn} | lz4 -d | tar xf -')
         Path(fn).unlink()
 
-        cmds = [
+        req = [
             f'rm -rf {vnv}/bin/pip* {vnv}/bin/python*',
             f'python3 -m venv {vnv}',
-            f'{vnv}/bin/python3 -m pip install -U --force-reinstall pip',
-            f'{vnv}/bin/python3 -m pip install ipykernel',
-            f'{vnv}/bin/python3 -m pip uninstall -y ngrok pyngrok'
+            f'{pip} install -U --force-reinstall pip',
+            f'{pip} install ipykernel',
+            f'{pip} uninstall -y ngrok pyngrok'
         ]
 
         if ui in ['ComfyUI', 'Forge', 'SwarmUI']:
-            cmds.append(f'{vnv}/bin/python3 -m pip uninstall -y transformers')
+            cmds.append(f'{pip} uninstall -y transformers')
 
-        [SyS(f'{cmd} > /dev/null 2>&1') for cmd in cmds]
+        [SyS(f'{cmd}>/dev/null 2>&1') for cmd in req]
 
 
 print('checking venv...')
 ui, url, need_space, vnv, fn = load_config()
+pip = str(vnv / 'bin/python3 -m pip')
 
 tempe()
 trashing()
 unused_venv()
 venv_install(ui, url, need_space, fn)
+she_bang()
 
 clear_output(wait=True)
 CD(cwd)
