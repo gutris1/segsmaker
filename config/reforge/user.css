@@ -81,10 +81,15 @@ span.svelte-s1r2yt {
   top: -1px;
 }
 
-.extra-network-pane .card, .standalone-card-preview.card {
+.extra-network-pane .card {
   transition: 0.4s ease;
+  text-align: center;
 }
 
 .extra-network-pane .card:hover {
-  box-shadow: 0 0 10px 0.4em rgb(0 255 231);
+  box-shadow: 0 0 10px 0.4em rgb(76 227 255);
+}
+
+.extra-network-pane .card .actions {
+  background: rgba(0, 0, 0, 0.7);
 }
