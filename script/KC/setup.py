@@ -1,9 +1,11 @@
 from IPython import get_ipython
+from pathlib import Path
 import sys
 import os
 
 SyS = get_ipython().system
 CD = os.chdir
+iRON = os.environ
 
 ENVNAME, ENVBASE, ENVHOME = None, None, None
 env_list = {
@@ -22,10 +24,23 @@ if not ENVNAME:
     sys.exit()
 
 if ENVNAME == 'Colab':
+    url = "https://github.com/indygreg/python-build-standalone/releases/download/20241016/cpython-3.10.15+20241016-x86_64-unknown-linux-gnu-install_only_stripped.tar.gz"
+    ROOT = Path.home()
+    fn = ROOT / Path(url).name
+    fp = ROOT / 'GUTRIS1'
+    bi = fp / 'bin'
+
+    fp.mkdir(exist_ok=True, parents=True)
+
     for blyat in [
-        'curl -Lo ',
+        f'curl -Lo {fn} {url}',
+        f'tar -xf {fn} -C {fp} --strip-components=1',
+        f'rm -f {fn}'
     ]:
         SyS(blyat)
+
+    iRON["PATH"] = str(bi) + ":" + iRON["PATH"]
+    iRON["PYTHONPATH"] = str(bi) + ":" + iRON.get("PYTHONPATH", "")
 
 from IPython.display import display, Image, clear_output
 from IPython import get_ipython
@@ -146,7 +161,7 @@ def saving():
         "VENVPATH": VNV,
         "BASEPATH": BASEPATH
     }
-    
+
     with open(KANDANG, 'w') as q:
         for k, v in j.items():
             q.write(f"{k} = '{v}'\n")
@@ -183,63 +198,85 @@ def key_inject(C, H):
 
 
 def sym_link(U, M):
-    links = {
-        'A1111': [
-            f"rm -rf {TMP}/* {M}/Stable-diffusion/tmp_ckpt",
-            f"rm -rf {M}/Lora/tmp_lora {M}/ControlNet",
-            f"mkdir -p {M}/Lora {M}/ESRGAN",
-            f"ln -vs {TMP}/ckpt {M}/Stable-diffusion/tmp_ckpt",
-            f"ln -vs {TMP}/lora {M}/Lora/tmp_lora",
-            f"ln -vs {TMP}/controlnet {M}/ControlNet"
-        ],
+    configs = {
+        'A1111': {
+            'pre': [
+                f'rm -rf {M / "Stable-diffusion/tmp_ckpt"} {M / "Lora/tmp_lora"} {M / "ControlNet"} {TMP}/*'
+            ],
+            'links': [
+                (TMP / "ckpt", M / "Stable-diffusion/tmp_ckpt"),
+                (TMP / "lora", M / "Lora/tmp_lora"),
+                (TMP / "controlnet", M / "ControlNet")
+            ]
+        },
 
-        'ComfyUI': [
-            f"rm -rf {TMP}/* {M}/controlnet {M}/clip {M}/unet",
-            f"rm -rf {M}/checkpoints/tmp_ckpt {M}/loras/tmp_lora",
-            f"ln -vs {TMP}/ckpt {M}/checkpoints/tmp_ckpt",
-            f"ln -vs {TMP}/lora {M}/loras/tmp_lora",
-            f"ln -vs {TMP}/controlnet {M}/controlnet",
-            f"ln -vs {TMP}/clip {M}/clip",
-            f"ln -vs {TMP}/unet {M}/unet",
-            f"ln -vs {M}/checkpoints {M}/checkpoints_symlink"
-        ],
+        'ReForge': {
+            'pre': [
+                f'rm -rf {M / "Stable-diffusion/tmp_ckpt"} {M / "Lora/tmp_lora"} {M / "ControlNet"}',
+                f'rm -rf {M / "svd"} {M / "z123"} {TMP}/*'
+            ],
+            'links': [
+                (TMP / "ckpt", M / "Stable-diffusion/tmp_ckpt"),
+                (TMP / "lora", M / "Lora/tmp_lora"),
+                (TMP / "controlnet", M / "ControlNet"),
+                (TMP / "z123", M / "z123"),
+                (TMP / "svd", M / "svd")
+            ]
+        },
 
-        'Forge': [
-            f"rm -rf {TMP}/* {M}/ControlNet {M}/svd {M}/z123 {M}/clip {M}/unet",
-            f"rm -rf {M}/Stable-diffusion/tmp_ckpt {M}/Lora/tmp_lora",
-            f"mkdir -p {M}/Lora {M}/ESRGAN",
-            f"ln -vs {TMP}/ckpt {M}/Stable-diffusion/tmp_ckpt",
-            f"ln -vs {TMP}/lora {M}/Lora/tmp_lora",
-            f"ln -vs {TMP}/controlnet {M}/ControlNet",
-            f"ln -vs {TMP}/z123 {M}/z123",
-            f"ln -vs {TMP}/svd {M}/svd",
-            f"ln -vs {TMP}/clip {M}/clip",
-            f"ln -vs {TMP}/unet {M}/unet"
-        ],
+        'Forge': {
+            'pre': [
+                f'rm -rf {M / "Stable-diffusion/tmp_ckpt"} {M / "Lora/tmp_lora"} {M / "ControlNet"}',
+                f'rm -rf {M / "svd"} {M / "z123"} {M / "clip"} {M / "unet"} {TMP}/*'
+            ],
+            'links': [
+                (TMP / "ckpt", M / "Stable-diffusion/tmp_ckpt"),
+                (TMP / "lora", M / "Lora/tmp_lora"),
+                (TMP / "controlnet", M / "ControlNet"),
+                (TMP / "z123", M / "z123"),
+                (TMP / "svd", M / "svd"),
+                (TMP / "clip", M / "clip"),
+                (TMP / "unet", M / "unet")
+            ]
+        },
 
-        'ReForge': [
-            f"rm -rf {TMP}/* {M}/ControlNet {M}/svd {M}/z123",
-            f"rm -rf {M}/Stable-diffusion/tmp_ckpt {M}/Lora/tmp_lora",
-            f"mkdir -p {M}/Lora {M}/ESRGAN",
-            f"ln -vs {TMP}/ckpt {M}/Stable-diffusion/tmp_ckpt",
-            f"ln -vs {TMP}/lora {M}/Lora/tmp_lora",
-            f"ln -vs {TMP}/controlnet {M}/ControlNet",
-            f"ln -vs {TMP}/z123 {M}/z123",
-            f"ln -vs {TMP}/svd {M}/svd"
-        ],
+        'ComfyUI': {
+            'pre': [
+                f'rm -rf {M / "checkpoints/tmp_ckpt"} {M / "loras/tmp_lora"} {M / "controlnet"}',
+                f'rm -rf {M / "clip"} {M / "unet"} {TMP}/*'
+            ],
+            'links': [
+                (TMP / "ckpt", M / "checkpoints/tmp_ckpt"),
+                (TMP / "lora", M / "loras/tmp_lora"),
+                (TMP / "controlnet", M / "controlnet"),
+                (TMP / "clip", M / "clip"),
+                (TMP / "unet", M / "unet"),
+                (M / "checkpoints", M / "checkpoints_symlink")
+            ]
+        },
 
-        'SwarmUI': [
-            f"rm -rf {TMP}/* {M}/Stable-Diffusion/tmp_ckpt {M}/clip {M}/unet",
-            f"rm -rf {M}/Lora/tmp_lora {M}/controlnet {M}/clip",
-            f"ln -vs {TMP}/ckpt {M}/Stable-Diffusion/tmp_ckpt",
-            f"ln -vs {TMP}/lora {M}/Lora/tmp_lora",
-            f"ln -vs {TMP}/controlnet {M}/controlnet",
-            f"ln -vs {TMP}/clip {M}/clip",
-            f"ln -vs {TMP}/unet {M}/unet"
-        ]
+        'SwarmUI': {
+            'pre': [
+                f'rm -rf {M / "Stable-Diffusion/tmp_ckpt"} {M / "Lora/tmp_lora"} {M / "controlnet"}',
+                f'rm -rf {M / "clip"} {M / "unet"} {TMP}/*'
+            ],
+            'links': [
+                (TMP / "ckpt", M / "Stable-Diffusion/tmp_ckpt"),
+                (TMP / "lora", M / "Lora/tmp_lora"),
+                (TMP / "controlnet", M / "controlnet"),
+                (TMP / "clip", M / "clip"),
+                (TMP / "unet", M / "unet")
+            ]
+        }
     }
 
-    return links.get(U, [])
+    cfg = configs.get(U)
+    [SyS(f'{cmd}') for cmd in cfg['pre']]
+
+    if U in ['A1111', 'Forge', 'ReForge']:
+        [(M / d).mkdir(parents=True, exist_ok=True) for d in ["Lora", "ESRGAN"]]
+
+    [SyS(f'ln -s {src} {tg}') for src, tg in cfg['links']]
 
 
 def webui_req(U, W, M):
@@ -257,10 +294,7 @@ def webui_req(U, W, M):
         dotnet.chmod(0o755)
         SyS("bash ./dotnet-install.sh --channel 8.0")
 
-    req = sym_link(U, M)
-    for ln in req:
-        SyS(f'{ln} &> /dev/null')
-
+    sym_link(U, M)
     install_tunnel()
 
     scripts = [
@@ -283,8 +317,7 @@ def webui_req(U, W, M):
     ]
 
     line = scripts + upscalers
-    for item in line:
-        download(item)
+    for item in line: download(item)
 
     if U not in ['SwarmUI', 'ComfyUI']:
         SyS(f'rm -f {W}/html/card-no-preview.png')
@@ -333,13 +366,11 @@ def webui_installation(U, S, W, M, E, V):
             f"https://huggingface.co/stabilityai/sd-vae-ft-mse-original/resolve/main/vae-ft-mse-840000-ema-pruned.safetensors {V}"
         ]
 
-    for item in extras:
-        download(item)
+    for item in extras: download(item)
 
     SyS(f"unzip -qo {embzip} -d {E} && rm {embzip}")
 
-    if U != 'SwarmUI':
-        webui_extension(U, W, M)
+    if U != 'SwarmUI': webui_extension(U, W, M)
 
 
 def webui_selection(ui, which_sd):
@@ -362,13 +393,15 @@ def webui_selection(ui, which_sd):
     say(f"<b>【{{red}} Installing {WEBUI.name}{{d}} 】{{red}}</b>")
     clone(repo)
 
-    req = ['pip install gdown aria2', 'apt -y install lz4 pv']
+    req = ['pip install gdown aria2', 'sudo apt -y install lz4 pv python3.10-venv']
+
     if ENVNAME == "Kaggle":
-        req.extend(['pip install ipywidgets jupyterlab_widgets --upgrade', 'rm -f /usr/lib/python3.10/sitecustomize.py'])
-    else:
-        req.append('apt -y install python3.10-venv')
-    for cmd in req:
-        SyS(f'{cmd} &> /dev/null')
+        req.extend([
+            'pip install ipywidgets jupyterlab_widgets --upgrade',
+            'rm -f /usr/lib/python3.10/sitecustomize.py',
+        ])
+
+    for cmd in req: SyS(f'{cmd}>/dev/null 2>&1')
 
     webui_installation(ui, which_sd, WEBUI, MODELS, EMB, VAE)
 
