@@ -439,3 +439,7 @@
     animation: slideBackground 20s linear infinite, BorderPulse 7s infinite;
     transition: all 0.3s ease-out;
 }
+
+.lm-Widget.lm-Panel {
+    top: 0px;
+}
