@@ -14,18 +14,29 @@
 
 
 # Changelog
-### 2025-01-10
+### 2077-01-35
+- Torch 2.5.1
+- Portable Python 3.10.15 for Colab.
+- Added $UNET and $CLIP variables %cd command for FLUX.
+- Fixed Controlnet Widget buggy display in Kaggle.
+- Recolor Aria2 downloader.
+- Fixed scripts.
+
+<details><summary>2025-01-10</summary><br>
+
 - Added NGROK and ZROK tunnel for Colab and Kaggle.<br>
 
 ![1](https://github.com/user-attachments/assets/2acaf9bb-7414-4b8d-a121-1442c3a474bf)
 
+</details>
 
+<details><summary>2024-11-13</summary><br>
 
-### 2024-11-13
 - Added SwarmUI for Colab, Kaggle and Studio Lab notebook.<br>
 
 ![Screenshot_1](https://github.com/user-attachments/assets/1b65ec70-a6d7-4a37-921d-2f5c7f71b0c3)
 
+</details>
 
 <details><summary>2024-11-04</summary><br>
 
