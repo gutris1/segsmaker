@@ -1,7 +1,11 @@
 from IPython.display import clear_output, Image, display
 from IPython import get_ipython
 from pathlib import Path
-import subprocess, os, shlex, json
+import subprocess
+import shlex
+import json
+import os
+
 from nenen88 import tempe, say, download
 
 HOME = Path.home()
@@ -19,6 +23,11 @@ vnv_D = tmp / 'venv'
 SyS = get_ipython().system
 CD = os.chdir
 
+def aDel():
+    for name in ['tempe', 'say', 'download']:
+        if name in globals():
+            del globals()[name]
+
 def load_config():
     config = json.load(MARK.open('r')) if MARK.exists() else {}
     ui = config.get('ui')
@@ -32,8 +41,8 @@ def load_config():
         need_space = 14 * 1024**3
         vnv = vnv_SDT
     else:
-        url = 'https://huggingface.co/pantat88/back_up/resolve/main/venv-torch251-cu121.tar.lz4'
-        need_space = 15 * 1024**3
+        url = 'https://huggingface.co/pantat88/back_up/resolve/main/venv-torch251-cu121-SSL.tar.lz4'
+        need_space = 14 * 1024**3
         vnv = vnv_D
 
     fn = Path(url).name
@@ -75,16 +84,16 @@ def removing(directory, req_space):
         print(f'Removing {file_path}')
         SyS(f'rm -rf {file_path}')
         freed_space += size
-
     return freed_space
 
 def trashing():
     dirs1 = ["A1111", "Forge", "ComfyUI", "ReForge", "FaceFusion", "SDTrainer", "SwarmUI"]
     dirs2 = ["ckpt", "lora", "controlnet", "svd", "z123"]
+
     paths = [HOME / name for name in dirs1] + [tmp / name for name in dirs2]
     for path in paths:
         cmd = f"find {path} -type d -name .ipynb_checkpoints -exec rm -rf {{}} +"
-        subprocess.run(shlex.split(cmd), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        SyS(f'{cmd}>/dev/null 2>&1')
 
 def check_pv():
     try:
@@ -102,70 +111,47 @@ def check_pv():
             stderr=subprocess.DEVNULL
         )
 
-def she_bang():
-    o = b'#!/content/venv/bin/python3\n'
-    n = f'#!{vnv}/bin/python3\n'.encode()
+def venv_exists(vnv, ui):
+    if vnv.exists():
+        size = check_venv(vnv)
+        if (ui == 'FaceFusion' and size < 7 * 1024**3) or size > 7 * 1024**3:
+            return True
+    return False
 
-    for s in (vnv / 'bin').glob('*'):
-        if s.is_file():
-            try:
-                with open(s, 'r+b') as f:
-                    l = f.readlines()
-                    if l and l[0] == o:
-                        l[0] = n
-                        f.seek(0)
-                        f.writelines(l)
-                        f.truncate()
+def install_venv(ui, url, need_space, fn):
+    clear_output(wait=True)
+    display(Image(filename=str(IMG)))
 
-            except OSError as e:
-                if e.errno == 26:
-                    pass
+    free_space = check_tmp(tmp)
+    req_space = need_space - free_space
 
-def venv_install(ui, url, need_space, fn):
-    while True:
-        if vnv.exists():
-            size = check_venv(vnv)
+    if req_space > 0:
+        print(f'Need space {req_space / 1024**3:.1f} GB for VENV')
+        for path in [tmp / 'ckpt', tmp / 'lora', tmp / 'controlnet', tmp / 'clip', tmp / 'unet']:
+            if req_space > 0:
+                req_space -= removing(path, req_space)
 
-            if ui == 'FaceFusion' and size < 7 * 1024**3:
-                return
-            elif size > 7 * 1024**3:
-                return
+    CD(tmp)
+    say('<b>【{red} Installing VENV{d} 】{red}</b>')
+    download(url)
 
-            SyS(f'rm -rf {vnv}/* {vnv}')
+    check_pv()
 
-        clear_output(wait=True)
-        display(Image(filename=str(IMG)))
+    SyS(f'pv {fn} | lz4 -d | tar xf -')
+    Path(fn).unlink()
 
-        free_space = check_tmp(tmp)
-        req_space = need_space - free_space
+    req = [
+        f'rm -f {vnv}/bin/pip* {vnv}/bin/python*',
+        f'python3 -m venv {vnv}',
+        f'{pip} install -U --force-reinstall pip',
+        f'{pip} install ipykernel',
+        f'{pip} uninstall -y ngrok pyngrok'
+    ]
 
-        if req_space > 0:
-            print(f'Need space {req_space / 1024**3:.1f} GB for VENV')
-            for path in [tmp / 'ckpt', tmp / 'lora', tmp / 'controlnet', tmp / 'clip', tmp / 'unet']:
-                if req_space > 0:
-                    req_space -= removing(path, req_space)
+    if ui == 'Forge':
+        req.append(f'{pip} uninstall -y transformers')
 
-        CD(tmp)
-        say('<b>【{red} Installing VENV{d} 】{red}</b>')
-        download(url)
-
-        check_pv()
-
-        SyS(f'pv {fn} | lz4 -d | tar xf -')
-        Path(fn).unlink()
-
-        req = [
-            f'rm -rf {vnv}/bin/pip* {vnv}/bin/python*',
-            f'python3 -m venv {vnv}',
-            f'{pip} install -U --force-reinstall pip',
-            f'{pip} install ipykernel',
-            f'{pip} uninstall -y ngrok pyngrok'
-        ]
-
-        if ui in ['ComfyUI', 'Forge', 'SwarmUI']:
-            cmds.append(f'{pip} uninstall -y transformers')
-
-        [SyS(f'{cmd}>/dev/null 2>&1') for cmd in req]
+    [SyS(f'{cmd}>/dev/null 2>&1') for cmd in req]
 
 
 print('checking venv...')
@@ -175,8 +161,10 @@ pip = str(vnv / 'bin/python3 -m pip')
 tempe()
 trashing()
 unused_venv()
-venv_install(ui, url, need_space, fn)
-she_bang()
 
+if not venv_exists(vnv, ui):
+    install_venv(ui, url, need_space, fn)
+
+aDel()
 clear_output(wait=True)
 CD(cwd)
