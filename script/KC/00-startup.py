@@ -16,20 +16,23 @@ for envname, (envbase, envhome, envvar) in env_list.items():
         break
 
 ROOT = Path.home()
-HOME = Path(ENVHOME)
-SRC = HOME / 'gutris1'
-MRK = SRC / 'marking.py'
-STR = ROOT / '.ipython/profile_default/startup'
+SRE = ROOT / 'GUTRIS1'
+BIN = str(SRE / 'bin')
+PKG = str(SRE / 'lib/python3.10/site-packages')
+
+MRK = Path(ENVHOME) / 'gutris1/marking.py'
+STR = str(ROOT / '.ipython/profile_default/startup')
 
 iRON = os.environ
 
-if ENVNAME == 'Colab':
-    bi = str(ROOT / 'GUTRIS1/bin')
-    pkg = str(ROOT / 'GUTRIS1/lib/python3.10/site-packages')
-    if bi not in iRON.get("PATH", ""):
-        iRON["PATH"] = bi + ":" + iRON.get("PATH", "")
+sys.path.append(STR)
 
-sys.path.append(str(STR))
+if SRE.exists():
+    if BIN not in iRON["PATH"]:
+        iRON["PATH"] = BIN + ":" + iRON["PATH"]
+
+    if PKG not in iRON["PYTHONPATH"]:
+        iRON["PYTHONPATH"] = PKG + ":" + iRON["PYTHONPATH"]
 
 if MRK.exists():
     get_ipython().run_line_magic('run', str(MRK))
