@@ -94,6 +94,7 @@ def install_tunnel():
         SyS(f'curl -sLo {binDir}/{name} {url}')
         SyS(f'tar -xzf {binDir}/{name} -C {binDir} --wildcards *{n}')
         SyS(f'rm -f {binDir}/{name}')
+        SyS(f'chmod +x {b["bin"]}')
 
 def sym_link(U, M):
     configs = {
