@@ -28,8 +28,6 @@ if ENVNAME == 'Colab':
     pkg = str(ROOT / 'GUTRIS1/lib/python3.10/site-packages')
     if bi not in iRON.get("PATH", ""):
         iRON["PATH"] = bi + ":" + iRON.get("PATH", "")
-    if pkg not in iRON.get("PYTHONPATH", ""):
-        iRON["PYTHONPATH"] = pkg + ":" + iRON.get("PYTHONPATH", "")
 
 sys.path.append(str(STR))
 
