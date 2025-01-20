@@ -72,7 +72,7 @@ def venv_install():
 
     req+=[f'{pip} install -U --force-reinstall pip']
 
-    if ui in ['Forge', 'ComfyUI', 'SwarmUI']:
+    if ui == 'Forge':
         req+=[f'{pip} uninstall -y transformers']
 
     [SyS(f'{cmd}>/dev/null 2>&1') for cmd in req]
