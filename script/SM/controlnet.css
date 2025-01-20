@@ -161,6 +161,11 @@
     position: relative;
 }
 
+.widget-container .checkbox_layout_15,
+.widget-container .checkbox_layout_xl {
+    top: -40px !important;
+}
+
 .download-button-xl, .select-all-button-xl, .unselect-all-button-xl,
 .download-button-15, .select-all-button-15, .unselect-all-button-15 {
     position: relative;
