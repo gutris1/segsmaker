@@ -16,7 +16,7 @@
 # Changelog
 ### 2077-01-35
 - Torch 2.5.1
-- Portable Python 3.10.15 for Colab.
+- Portable Python 3.10.15 for Colab and Kaggle.
 - Added $UNET and $CLIP variables %cd command for FLUX.
 - Fixed Controlnet Widget buggy display in Kaggle.
 - Recolor Aria2 downloader.
