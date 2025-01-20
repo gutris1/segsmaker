@@ -220,7 +220,7 @@ checkbox1_xl = widgets.VBox(
 checkbox2_xl = widgets.VBox(
     [widgets.Checkbox(value=False, description=name, style={'description_width': '0px'}) for name in rightside_xl],
     layout=widgets.Layout(left='20px'))
-checkbox_layout_xl = widgets.HBox([checkbox1_xl, checkbox2_xl], layout=widgets.Layout(top='-40px', align_items='flex-start'))
+checkbox_layout_xl = widgets.HBox([checkbox1_xl, checkbox2_xl], layout=widgets.Layout(align_items='flex-start'))
 download_button_xl = widgets.Button(description="Download", layout=widgets.Layout(left='130px'))
 select_all_button_xl = widgets.Button(description="Select All", layout=widgets.Layout(left='30px'))
 unselect_all_button_xl = widgets.Button(description="Unselect All", layout=widgets.Layout(left='35px'))
@@ -240,7 +240,7 @@ checkbox1_15 = widgets.VBox(
 checkbox2_15 = widgets.VBox(
     [widgets.Checkbox(value=False, description=name, style={'description_width': '0px'}) for name in rightside_15],
     layout=widgets.Layout(left='-60px'))
-checkbox_layout_15 = widgets.HBox([checkbox1_15, checkbox2_15], layout=widgets.Layout(top='-40px', align_items='flex-start'))
+checkbox_layout_15 = widgets.HBox([checkbox1_15, checkbox2_15], layout=widgets.Layout(align_items='flex-start'))
 download_button_15 = widgets.Button(description="Download", layout=widgets.Layout(width='130px', left='110px'))
 select_all_button_15 = widgets.Button(description="Select All", layout=widgets.Layout(width='130px', left='15px'))
 unselect_all_button_15 = widgets.Button(description="Unselect All", layout=widgets.Layout(width='130px', left='20px'))
@@ -254,6 +254,7 @@ cn15_panel = widgets.Box(
 cn_main_panel.add_class('cn-panel')
 
 cn15_panel.add_class("cn-15")
+checkbox_layout_15.add_class('checkbox_layout_15')
 checkbox1_15.add_class("checkbox")
 checkbox2_15.add_class("checkbox")
 select_all_button_15.add_class("select-all-button-15")
@@ -262,6 +263,7 @@ download_button_15.add_class("download-button-15")
 bottom_box_15.add_class("bottom-box-15")
 
 cnxl_panel.add_class("cn-xl")
+checkbox_layout_xl.add_class('checkbox_layout_xl')
 checkbox1_xl.add_class("checkbox")
 checkbox2_xl.add_class("checkbox")
 select_all_button_xl.add_class("select-all-button-xl")
