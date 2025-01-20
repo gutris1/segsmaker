@@ -40,7 +40,6 @@ if ENVNAME == 'Colab':
         SyS(blyat)
 
     iRON["PATH"] = str(bi) + ":" + iRON["PATH"]
-    iRON["PYTHONPATH"] = str(fp / 'lib/python3.10/site-packages') + ":" + iRON.get("PYTHONPATH", "")
 
 from IPython.display import display, Image, clear_output
 from IPython import get_ipython
