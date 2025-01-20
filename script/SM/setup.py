@@ -83,6 +83,7 @@ def install_tunnel():
 
     for n, b in bins.items():
         if b['bin'].exists():
+            SyS(f'chmod +x {b["bin"]}')
             continue
 
         url = b['url']
