@@ -282,8 +282,15 @@ def sym_link(U, M):
 def webui_req(U, W, M):
     CD(W)
 
-    if U in ['A1111', 'Forge', 'ComfyUI', 'ReForge']:
-        pull(f"https://github.com/gutris1/segsmaker {U.lower()} {W}")
+    uiConfigs = {
+        'A1111': 'a1111',
+        'Forge': 'forge',
+        'ComfyUI': 'comfyui',
+        'ReForge': 'reforge'
+    }
+    
+    if U in uiConfigs:
+        pull(f"https://github.com/gutris1/segsmaker {uiConfigs[U]} {W}")
     elif U == 'SwarmUI':
         M.mkdir(parents=True, exist_ok=True)
         for sub in ['Stable-Diffusion', 'Lora', 'Embeddings', 'VAE', 'upscale_models']:
