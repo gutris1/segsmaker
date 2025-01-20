@@ -1,7 +1,13 @@
+from IPython.display import display, Image, clear_output
 from IPython import get_ipython
 from pathlib import Path
+import subprocess
+import argparse
+import shlex
+import json
 import sys
 import os
+import re
 
 SyS = get_ipython().system
 CD = os.chdir
@@ -13,7 +19,7 @@ env_list = {
     'Kaggle': ('/kaggle', '/kaggle/working', 'KAGGLE_DATA_PROXY_TOKEN')
 }
 for envname, (envbase, envhome, envvar) in env_list.items():
-    if envvar in os.environ:
+    if envvar in iRON:
         ENVNAME = envname
         ENVBASE = envbase
         ENVHOME = envhome
@@ -23,41 +29,18 @@ if not ENVNAME:
     print("You are not in Kaggle or Google Colab.\nExiting.")
     sys.exit()
 
-if ENVNAME == 'Colab':
-    url = "https://github.com/indygreg/python-build-standalone/releases/download/20241016/cpython-3.10.15+20241016-x86_64-unknown-linux-gnu-install_only_stripped.tar.gz"
-    ROOT = Path.home()
-    fn = ROOT / Path(url).name
-    fp = ROOT / 'GUTRIS1'
-    bi = fp / 'bin'
-
-    fp.mkdir(exist_ok=True, parents=True)
-
-    for blyat in [
-        f'curl -Lo {fn} {url}',
-        f'tar -xf {fn} -C {fp} --strip-components=1',
-        f'rm -f {fn}'
-    ]:
-        SyS(blyat)
-
-    iRON["PATH"] = str(bi) + ":" + iRON["PATH"]
-
-from IPython.display import display, Image, clear_output
-from IPython import get_ipython
-from pathlib import Path
-import argparse
-import json
-import sys
-import os
-import re
-
+RST = "\033[0m"
 R = "\033[31m"
 P = "\033[38;5;135m"
-RST = "\033[0m"
+ORANGE = "\033[38;5;208m"
+AR = f'{ORANGE}▶{RST}'
 ERR = f"{P}[{RST}{R}ERROR{RST}{P}]{RST}"
-
 IMG = "https://github.com/gutris1/segsmaker/raw/main/script/SM/loading.png"
-display(Image(url=IMG))
-clear_output(wait=True)
+
+ROOT = Path.home()
+SRE = ROOT / 'GUTRIS1'
+BIN = str(SRE / 'bin')
+PKG = str(SRE / 'lib/python3.10/site-packages')
 
 HOME = Path(ENVHOME)
 BASEPATH = Path(ENVBASE)
@@ -70,7 +53,7 @@ KEY = SRC / 'api-key.json'
 MARKED = SRC / 'marking.json'
 
 USR = Path('/usr/bin')
-STR = Path.home() / '.ipython/profile_default/startup'
+STR = ROOT / '.ipython/profile_default/startup'
 nenen = STR / 'nenen88.py'
 pantat = STR / 'pantat88.py'
 KANDANG = STR / 'KANDANG.py'
@@ -123,6 +106,70 @@ def prevent_silly():
     webui_webui = next(option for option in VALID_WEBUI_OPTIONS if arg1 == option.lower())
     sd_sd = next(option for option in VALID_SD_OPTIONS if arg2 == option.lower())
     return (webui_webui, sd_sd), arg3, arg4
+
+
+def PythonPortable():
+    CD(ROOT)
+    SyS('sudo apt -y install aria2 pv lz4')
+
+    url = "https://huggingface.co/pantat88/back_up/resolve/main/python310-torch251-cu121.tar.lz4"
+    fn = Path(url).name
+
+    aria = f'aria2c --console-log-level=error --stderr=true -c -x16 -s16 -k1M -j5 {url} -o {fn}'
+    pv = f'pv {fn} | lz4 -d | tar -xf -'
+
+    Aria2Sub(aria)
+
+    if ENVNAME == "Kaggle":
+        for cmd in [
+            'pip install ipywidgets jupyterlab_widgets --upgrade',
+            'rm -f /usr/lib/python3.10/sitecustomize.py'
+        ]: SyS(f'{cmd}>/dev/null 2>&1')
+    else:
+        print(f'\n{AR} installing Python...')
+
+    SyS(pv)
+    Path(ROOT / fn).unlink()
+
+    if BIN not in iRON["PATH"]:
+        iRON["PATH"] = BIN + ":" + iRON["PATH"]
+
+    if PKG not in iRON["PYTHONPATH"]:
+        iRON["PYTHONPATH"] = PKG + ":" + iRON["PYTHONPATH"]
+
+
+def Aria2Sub(cmd):
+    Aria2Process = subprocess.Popen(
+        shlex.split(cmd),
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True
+    )
+    result = ""
+    print()
+    br = False
+    while True:
+        lines = Aria2Process.stderr.readline()
+        if lines == '' and Aria2Process.poll() is not None:
+            break
+        if lines:
+            result += lines
+            for outputs in lines.splitlines():
+                if re.match(r'\[#\w{6}\s.*\]', outputs):
+                    lines = outputs.splitlines()
+                    for line in lines:
+                        print(f"\r{' '*500}\r {line}", end="")
+                        sys.stdout.flush()
+                    br = True
+                    break
+    if br:
+        print()
+    stripe = result.find("======+====+===========")
+    if stripe:
+        for lines in result[stripe:].splitlines():
+            if '|' in lines and 'OK' in lines:
+                print(f"  {lines}")
+    Aria2Process.wait()
 
 
 def install_tunnel():
@@ -281,15 +328,8 @@ def sym_link(U, M):
 def webui_req(U, W, M):
     CD(W)
 
-    uiConfigs = {
-        'A1111': 'a1111',
-        'Forge': 'forge',
-        'ComfyUI': 'comfyui',
-        'ReForge': 'reforge'
-    }
-    
-    if U in uiConfigs:
-        pull(f"https://github.com/gutris1/segsmaker {uiConfigs[U]} {W}")
+    if U in ['A1111', 'Forge', 'ComfyUI', 'ReForge']:
+        pull(f"https://github.com/gutris1/segsmaker {U.lower()} {W}")
     elif U == 'SwarmUI':
         M.mkdir(parents=True, exist_ok=True)
         for sub in ['Stable-Diffusion', 'Lora', 'Embeddings', 'VAE', 'upscale_models']:
@@ -305,7 +345,6 @@ def webui_req(U, W, M):
 
     scripts = [
         f"https://github.com/gutris1/segsmaker/raw/main/script/SM/controlnet.py {W}/asd",
-        f"https://github.com/gutris1/segsmaker/raw/main/script/KC/venv.py {W}",
         f"https://github.com/gutris1/segsmaker/raw/main/script/KC/segsmaker.py {W}"
     ]
 
@@ -342,8 +381,7 @@ def webui_extension(U, W, M):
         for faces in [
             f"https://github.com/sczhou/CodeFormer/releases/download/v0.1.0/codeformer.pth {M}/facerestore_models",
             f"https://github.com/TencentARC/GFPGAN/releases/download/v1.3.4/GFPGANv1.4.pth {M}/facerestore_models"
-        ]:
-            download(faces)
+        ]: download(faces)
 
     else:
         say("<br><b>【{red} Installing Extensions{d} 】{red}</b>")
@@ -399,19 +437,8 @@ def webui_selection(ui, which_sd):
     say(f"<b>【{{red}} Installing {WEBUI.name}{{d}} 】{{red}}</b>")
     clone(repo)
 
-    req = ['pip install gdown aria2', 'sudo apt -y install lz4 pv python3.10-venv']
-
-    if ENVNAME == "Kaggle":
-        req.extend([
-            'pip install ipywidgets jupyterlab_widgets --upgrade',
-            'rm -f /usr/lib/python3.10/sitecustomize.py',
-        ])
-
-    for cmd in req: SyS(f'{cmd}>/dev/null 2>&1')
-
     webui_installation(ui, which_sd, WEBUI, MODELS, EMB, VAE)
 
-    get_ipython().run_line_magic('run', str(WEBUI / 'venv.py'))
     say("<br><b>【{red} Done{d} 】{red}</b>")
     tempe()
     CD(HOME)
@@ -459,6 +486,12 @@ if selection is None or civitai_key is None:
     sys.exit()
 
 webui, sd = selection
+
+if not SRE.exists():
+    PythonPortable()
+
+display(Image(url=IMG))
+clear_output(wait=True)
 
 CD(HOME)
 webui_misc()
