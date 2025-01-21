@@ -458,8 +458,6 @@ def webui_checker():
                 SyS("git pull origin main")
 
     else:
-        display(Image(url=IMG))
-
         try:
             webui_selection(webui, sd)
         except KeyboardInterrupt:
@@ -489,8 +487,8 @@ webui, sd = selection
 if not SRE.exists():
     PythonPortable()
 
+clear_output()
 display(Image(url=IMG))
-clear_output(wait=True)
 
 CD(HOME)
 webui_misc()
