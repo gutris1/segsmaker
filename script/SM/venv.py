@@ -100,13 +100,12 @@ def check_pv():
         subprocess.run(
             shlex.split('pv -V'),
             capture_output=True,
-            text=True, check=True
+            text=True,
+            check=True
         )
-
-    except FileNotFoundError:
+    except (subprocess.CalledProcessError, FileNotFoundError):
         subprocess.run(
             shlex.split('conda install -qy pv'),
-            text=True,
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL
         )
@@ -133,9 +132,8 @@ def install_venv(ui, url, need_space, fn):
 
     CD(tmp)
     say('<b>【{red} Installing VENV{d} 】{red}</b>')
-    download(url)
-
     check_pv()
+    download(url)
 
     SyS(f'pv {fn} | lz4 -d | tar xf -')
     Path(fn).unlink()
@@ -147,9 +145,6 @@ def install_venv(ui, url, need_space, fn):
         f'{pip} install ipykernel',
         f'{pip} uninstall -y ngrok pyngrok'
     ]
-
-    if ui == 'Forge':
-        req.append(f'{pip} uninstall -y transformers')
 
     [SyS(f'{cmd}>/dev/null 2>&1') for cmd in req]
 
