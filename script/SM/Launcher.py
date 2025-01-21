@@ -1,5 +1,4 @@
 from pathlib import Path
-import matplotlib
 import subprocess
 import shlex
 import json
@@ -59,14 +58,23 @@ def Launch():
             timer = cwd / "asd/pinggytimer.txt"
             end_time = int(time.time()) + 3600
             SyS(f"echo -n {end_time} > {timer}")
+
+            if ui == 'Forge':
+                FT = cwd / "FT.txt"
+                if not FT.exists():
+                    SyS('pip uninstall -qy transformers')
+                    FT.write_text("blyat")
+
         cmd = f'python3 {launcher} ' + ' '.join(sys.argv[1:])
     SyS(cmd)
 
 def sdtrainer_launch():
+    import matplotlib
     cmd = '/tmp/venv-sd-trainer/bin/python3 gui.py ' + ' '.join(sys.argv[1:])
     SyS(cmd)
 
 def facefusion_launch():
+    import matplotlib
     cmd = f"source activate default && /tmp/venv-fusion/bin/python3 facefusion.py run {' '.join(shlex.quote(arg) for arg in sys.argv[1:])}"
     webui = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=sys.stdout, text=True, shell=True, executable="/bin/bash")
 
