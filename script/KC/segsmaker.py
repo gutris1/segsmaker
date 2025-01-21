@@ -70,7 +70,6 @@ def webui_launch(launch_args, skip_comfyui_check, ngrok_token=None, zrok_token=N
     iRON['PYTHONWARNINGS'] = 'ignore'
 
     port = 7801 if ui == 'SwarmUI' else (8188 if ui == 'ComfyUI' else 7860)
-    launcher = 'main.py' if ui == 'ComfyUI' else 'launch.py'
 
     if ui in ['A1111', 'Forge', 'ReForge']:
         timer = CWD / "asd/pinggytimer.txt"
@@ -86,10 +85,13 @@ def webui_launch(launch_args, skip_comfyui_check, ngrok_token=None, zrok_token=N
                 launch_args += ' --share'
 
         if ui == 'Forge':
-            SyS('pip uninstall -qy transformers')
+            FT = CWD / "FT.txt"
+            if not FT.exists():
+                SyS('pip uninstall -qy transformers')
+                FT.write_text("blyat")
 
     if ui == 'ComfyUI' and not skip_comfyui_check:
-        SyS(f'python3 apotek.py')
+        SyS('python3 apotek.py')
         clear_output(wait=True)
 
     if ui == 'SwarmUI':
@@ -97,7 +99,7 @@ def webui_launch(launch_args, skip_comfyui_check, ngrok_token=None, zrok_token=N
         iRON['SWARM_NO_VENV'] = 'true'
         cmd = f"bash ./launch-linux.sh {launch_args}"
     else:
-        cmd = f'python3 {launcher} {launch_args}'
+        cmd = f"python3 {'main.py' if ui == 'ComfyUI' else 'launch.py'} {launch_args}"
 
     cloudflared = f'cl tunnel --url localhost:{port}'
     pinggy = f'ssh -o StrictHostKeyChecking=no -p 80 -R0:localhost:{port} a.pinggy.io'
