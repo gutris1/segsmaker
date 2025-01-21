@@ -222,8 +222,7 @@ def webui_req(U, W, M):
     ]
 
     line = scripts + upscalers
-    for item in line:
-        download(item)
+    for item in line: download(item)
 
     if U not in ['SwarmUI', 'ComfyUI']:
         SyS(f'rm -f {W}/html/card-no-preview.png')
@@ -241,12 +240,12 @@ def WebUIExtensions(U, W, M):
         for faces in [
             f"https://github.com/sczhou/CodeFormer/releases/download/v0.1.0/codeformer.pth {M}/facerestore_models",
             f"https://github.com/TencentARC/GFPGAN/releases/download/v1.3.4/GFPGANv1.4.pth {M}/facerestore_models"
-        ]:
-            download(faces)
+        ]: download(faces)
 
     else:
         say("<br><b>【{red} Installing Extensions{d} 】{red}</b>")
         clone(str(W / "asd/extension.txt"))
+        clone('https://github.com/BlafKing/sd-civitai-browser-plus')
 
 def installing_webui(U, S, W, M, E, V):
     webui_req(U, W, M)
@@ -266,13 +265,11 @@ def installing_webui(U, S, W, M, E, V):
             f"https://huggingface.co/madebyollin/sdxl-vae-fp16-fix/resolve/main/sdxl.vae.safetensors {V} sdxl_vae.safetensors"
         ]
 
-    for item in extras:
-        download(item)
+    for item in extras: download(item)
 
     SyS(f"unzip -qo {embzip} -d {E} && rm {embzip}")
 
-    if U != 'SwarmUI':
-        WebUIExtensions(U, W, M)
+    if U != 'SwarmUI': WebUIExtensions(U, W, M)
 
 def webui_install(ui, which_sd):
     with loading:
@@ -351,8 +348,7 @@ def facetrainer(ui):
             f"https://github.com/gutris1/segsmaker/raw/main/script/SM/segsmaker.py {WEBUI}"
         ]
 
-        for items in scripts:
-            download(items)
+        for items in scripts: download(items)
 
         tempe()
 
