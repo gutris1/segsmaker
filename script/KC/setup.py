@@ -110,7 +110,7 @@ def prevent_silly():
 
 def PythonPortable():
     CD(ROOT)
-    SyS('sudo apt -y install aria2 pv lz4')
+    SyS('sudo apt-get -qq -y install aria2 pv lz4')
 
     url = "https://huggingface.co/pantat88/back_up/resolve/main/python310-torch251-cu121.tar.lz4"
     fn = Path(url).name
@@ -146,7 +146,6 @@ def Aria2Sub(cmd):
         text=True
     )
     result = ""
-    print()
     br = False
     while True:
         lines = Aria2Process.stderr.readline()
