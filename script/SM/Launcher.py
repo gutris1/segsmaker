@@ -36,16 +36,16 @@ def setENV():
             iRON['LD_LIBRARY_PATH'] = '/home/studio-lab-user/.conda/envs/default/lib:' + iRON.get('LD_LIBRARY_PATH', '')
 
         else:
-            if 'LD_PRELOAD' not in iRON or TCM not in iRON['LD_PRELOAD']:
+            if 'LD_PRELOAD' not in iRON or TCM not in iRON.get('LD_PRELOAD', ''):
                 iRON['LD_PRELOAD'] = TCM
 
     else:
-        if 'LD_PRELOAD' not in iRON or TCM not in iRON['LD_PRELOAD']:
+        if 'LD_PRELOAD' not in iRON or TCM not in iRON.get('LD_PRELOAD', ''):
             iRON['LD_PRELOAD'] = TCM
-        if 'LD_LIBRARY_PATH' not in iRON or VENVLIB not in iRON['LD_LIBRARY_PATH']:
-            iRON['LD_LIBRARY_PATH'] = VENVLIB + ":" + iRON['LD_LIBRARY_PATH']
-        if VENVBIN not in iRON["PATH"]:
-            iRON["PATH"] = VENVBIN + ":" + iRON["PATH"]
+        if 'LD_LIBRARY_PATH' not in iRON or VENVLIB not in iRON.get('LD_LIBRARY_PATH', ''):
+            iRON['LD_LIBRARY_PATH'] = VENVLIB + ":" + iRON.get('LD_LIBRARY_PATH', '')
+        if VENVBIN not in iRON.get("PATH", ''):
+            iRON["PATH"] = VENVBIN + ":" + iRON.get("PATH", '')
 
         if ui == 'SwarmUI':
             iRON['SWARMPATH'] = str(cwd)
@@ -60,6 +60,7 @@ def Launch():
         SyS('pip install -q rembg')
         SyS('git pull -q')
         cmd = 'bash ./launch-linux.sh ' + ' '.join(sys.argv[1:])
+
     else:
         if ui in ['A1111', 'Forge', 'ReForge']:
             timer = cwd / "asd/pinggytimer.txt"
@@ -83,21 +84,19 @@ def sdtrainer_launch():
 def facefusion_launch():
     cmd = f"source activate default && /tmp/venv-fusion/bin/python3 facefusion.py run {' '.join(shlex.quote(arg) for arg in sys.argv[1:])}"
     webui = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=sys.stdout, text=True, shell=True, executable="/bin/bash")
-
     for line in webui.stdout:
         print(line, end='')
-
     webui.wait()
 
 if __name__ == '__main__':
     try:
         setENV()
 
-        if ui == 'FaceFusion':
-            facefusion_launch()
-        elif ui == 'SDTrainer':
-            sdtrainer_launch()
-        else:
-            Launch()
+        whichUI = {
+            'FaceFusion': facefusion_launch,
+            'SDTrainer': sdtrainer_launch
+        }
+
+        whichUI.get(ui, Launch)()
     except KeyboardInterrupt:
         pass
