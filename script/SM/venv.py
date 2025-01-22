@@ -97,18 +97,11 @@ def trashing():
 
 def check_pv():
     try:
-        subprocess.run(
-            shlex.split('pv -V'),
-            capture_output=True,
-            text=True,
-            check=True
-        )
+        cmd = 'pv -V'
+        subprocess.run(shlex.split(cmd), capture_output=True, text=True, check=True)
     except (subprocess.CalledProcessError, FileNotFoundError):
-        subprocess.run(
-            shlex.split('conda install -qy pv'),
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL
-        )
+        cmd = 'mamba install -y pv'
+        subprocess.run(shlex.split(cmd), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 def venv_exists(vnv, ui):
     if vnv.exists():
@@ -130,9 +123,10 @@ def install_venv(ui, url, need_space, fn):
             if req_space > 0:
                 req_space -= removing(path, req_space)
 
+    check_pv()
+
     CD(tmp)
     say('<b>【{red} Installing VENV{d} 】{red}</b>')
-    check_pv()
     download(url)
 
     SyS(f'pv {fn} | lz4 -d | tar xf -')
@@ -142,7 +136,7 @@ def install_venv(ui, url, need_space, fn):
         f'rm -f {vnv}/bin/pip* {vnv}/bin/python*',
         f'python3 -m venv {vnv}',
         f'{pip} install -U --force-reinstall pip',
-        f'{pip} install ipykernel',
+        f'{pip} install ipykernel matplotlib',
         f'{pip} uninstall -y ngrok pyngrok'
     ]
 
