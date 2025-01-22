@@ -111,6 +111,9 @@ def venv_exists(vnv, ui):
     return False
 
 def install_venv(ui, url, need_space, fn):
+    unused_venv()
+    check_pv()
+
     clear_output(wait=True)
     display(Image(filename=str(IMG)))
 
@@ -122,8 +125,6 @@ def install_venv(ui, url, need_space, fn):
         for path in [tmp / 'ckpt', tmp / 'lora', tmp / 'controlnet', tmp / 'clip', tmp / 'unet']:
             if req_space > 0:
                 req_space -= removing(path, req_space)
-
-    check_pv()
 
     CD(tmp)
     say('<b>【{red} Installing VENV{d} 】{red}</b>')
@@ -144,16 +145,14 @@ def install_venv(ui, url, need_space, fn):
 
 
 print('checking venv...')
+tempe()
 ui, url, need_space, vnv, fn = load_config()
 pip = str(vnv / 'bin/python3 -m pip')
-
-tempe()
-trashing()
-unused_venv()
 
 if not venv_exists(vnv, ui):
     install_venv(ui, url, need_space, fn)
 
+trashing()
 aDel()
 clear_output(wait=True)
 CD(cwd)
