@@ -31,6 +31,7 @@ MARKED = SRC / 'marking.json'
 TMP = Path('/tmp')
 
 SRC.mkdir(parents=True, exist_ok=True)
+iRON = os.environ
 
 def load_css():
     display(HTML(f"<style>{CSS.read_text()}</style>"))
@@ -46,16 +47,16 @@ def check_ffmpeg():
     i = get_ipython().getoutput('conda list ffmpeg')
     if not any('ffmpeg' in l for l in i):
         c = [
-            ('conda install -qy ffmpeg curl', '\ninstalling ffmpeg...'),
-            ('conda install -qy cuda-runtime=12.4.1', 'installing cuda-runtime=12.4.1...'),
-            ('conda install -qy cudnn=9.2.1.18', 'installing cudnn=9.2.1.18...'),
-            ('conda clean -qy --all', None)
+            ('mamba install -y ffmpeg curl', '\ninstalling ffmpeg...'),
+            ('mamba install -y cuda-runtime=12.4.1', 'installing cuda-runtime=12.4.1...'),
+            ('mamba install -y cudnn=9.2.1.18', 'installing cudnn=9.2.1.18...'),
+            ('conda clean -y --all', None)
         ]
 
         for d, m in c:
             if m is not None:
                 print(m)
-            SyS(f'{d} > /dev/null 2>&1')
+            subprocess.run(shlex.split(d), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 def marking(p, n, i):
     t = p / n
@@ -82,20 +83,24 @@ def install_tunnel():
     }
 
     for n, b in bins.items():
-        if b['bin'].exists():
-            SyS(f'chmod +x {b["bin"]}')
+        binPath = b['bin']
+        if binPath.exists():
             continue
 
         url = b['url']
         name = Path(url).name
-        binDir = b['bin'].parent
+        binDir = binPath.parent
 
         binDir.mkdir(parents=True, exist_ok=True)
 
         SyS(f'curl -sLo {binDir}/{name} {url}')
         SyS(f'tar -xzf {binDir}/{name} -C {binDir} --wildcards *{n}')
         SyS(f'rm -f {binDir}/{name}')
-        SyS(f'chmod +x {b["bin"]}')
+
+        if str(binDir) not in iRON.get('PATH', ''):
+            iRON['PATH'] += ':' + str(binDir)
+
+        binPath.chmod(0o755)
 
 def sym_link(U, M):
     configs = {
@@ -339,8 +344,7 @@ def facetrainer(ui):
                 f"mkdir -p {WEBUI}/VAE", f"ln -vs /tmp {HOME}/tmp"
             ]
 
-        for lines in req:
-            SyS(f'{lines} > /dev/null 2>&1')
+        for lines in req: SyS(f'{lines}>/dev/null 2>&1')
 
         scripts = [
             f"https://github.com/gutris1/segsmaker/raw/main/script/SM/venv.py {WEBUI}",
@@ -466,8 +470,7 @@ def multi_widgets():
         f'curl -sLo {CSS} https://github.com/gutris1/segsmaker/raw/main/script/SM/setup.css',
         f'curl -sLo {IMG} https://github.com/gutris1/segsmaker/raw/main/script/SM/loading.png',
         f'curl -sLo {MRK} https://github.com/gutris1/segsmaker/raw/main/script/SM/marking.py'
-    ]:
-        SyS(cmd)
+    ]: SyS(cmd)
 
     load_css()
     display(multi_panel, hbox, output, loading)
