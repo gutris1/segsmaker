@@ -90,6 +90,9 @@ def webui_launch(launch_args, skip_comfyui_check, ngrok_token=None, zrok_token=N
                 SyS('pip uninstall -qy transformers')
                 FT.write_text("blyat")
 
+        if 'IIB_ACCESS_CONTROL' not in iRON:
+            iRON['IIB_ACCESS_CONTROL'] = 'disable'
+
     if ui == 'ComfyUI' and not skip_comfyui_check:
         SyS('python3 apotek.py')
         clear_output(wait=True)
