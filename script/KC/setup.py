@@ -111,6 +111,7 @@ def prevent_silly():
 def PythonPortable():
     CD(ROOT)
     SyS('sudo apt-get -qq -y install aria2 pv lz4')
+    clear_output(wait=True)
 
     url = "https://huggingface.co/pantat88/back_up/resolve/main/python310-torch251-cu121.tar.lz4"
     fn = Path(url).name
