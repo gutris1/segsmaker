@@ -16,7 +16,7 @@ py = '/tmp/venv/bin/python3'
 
 def get_args(ui):
     args_line = {
-        'A1111': ('--xformers --no-half-vae'),
+        'A1111': ('--xformers'),
         'Forge': ('--disable-xformers --opt-sdp-attention --cuda-stream --pin-shared-memory'),
         'ComfyUI': ('--dont-print-server --preview-method auto --use-pytorch-cross-attention'),
         'ReForge': ('--xformers --cuda-stream --pin-shared-memory'),
