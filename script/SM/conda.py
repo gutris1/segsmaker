@@ -62,7 +62,7 @@ def CondaInstall():
             ('conda config --add channels conda-forge', None),
             ('conda install -qy mamba', f'{BLUE} Installing Anaconda'),
             ('mamba install -y conda', None),
-            ('mamba install -y python=3.10', f'{CYAN} Installing Python 3.10'),
+            ('mamba install -y python=3.10.13', f'{CYAN} Installing Python 3.10'),
             ('mamba install -y glib gperftools openssh pv gputil curl', f'{PURPLE} Installing Conda Packages'),
             ('pip install psutil aria2 gdown', f'{PINK} Installing Python Packages'),
             ('conda clean -qy --all', None)
