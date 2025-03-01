@@ -506,11 +506,12 @@ class Tunnel:
                 handler.close()
 
     def _print(self) -> None:
-        """
-        Print the tunnel URLs.
-        """
+        RST = '\033[0m'
+        ORG = '\033[38;5;208m'
+        YLW = '\033[33m'
+
         log = self.logger
-        D = ', '.join(tunnel["name"] for tunnel in self.tunnel_list)
+        Name = ', '.join(tunnel["name"] for tunnel in self.tunnel_list)
 
         if self.check_local_port:
             self.wait_for_condition(
@@ -518,41 +519,33 @@ class Tunnel:
                 interval=1,
                 timeout=None,
             )
-            if not self.stop_event.is_set():
-                pass
-              
-        if D == 'ZROK':
-            cwd = Path.cwd()
-            g = cwd / f'tunnel_{D}.log'
-            if g.exists():
-                time.sleep(1)
-                l = g.read_text()
-                if "ERROR" in l and "http://" not in l:
-                    print(f"\n{l.strip()}\n")
-                    sys.exit()
-                        
-        if not self.wait_for_condition(
-            lambda: len(self.urls) == len(self.tunnel_list) or self.stop_event.is_set(),
-            interval=1,
-            timeout=self.timeout,
-        ):
-            log.warning("Timeout while getting tunnel URLs, print available URLs")
 
-        if not self.stop_event.is_set():
+        if Name == 'ZROK' and (g := Path.cwd() / f'tunnel_{Name}.log').exists():
+            time.sleep(1)
+            if "ERROR" in (l := g.read_text()) and "http://" not in l:
+                print(f"\n{l.strip()}\n")
+                sys.exit()
 
+        URLs = set()
+        Tunnels = []
+
+        start_time = time.time()
+        while time.time() - start_time < 15 and not self.stop_event.is_set():
             with self.urls_lock:
                 for url, note, name in self.urls:
-                    RST = '\033[0m'
-                    ORG = '\033[38;5;208m'
-                    TNL = f'\n{ORG}▶{RST} {name} {ORG}:{RST}'
-                    print(f"{TNL} {url}")
-                print()
-                if self.callback:
-                    try:
-                        self.callback(self.urls)
-                    except Exception:
-                        log.error(
-                            "An error occurred while invoking URLs callback",
-                            exc_info=True,
-                        )
-            self.printed.set()
+                    if url not in URLs:
+                        Tunnels.append(f"\n🟢 {name} {ORG}:{RST} {url}")
+                        URLs.add(url)
+
+            if len(self.urls) == len(self.tunnel_list): break
+            time.sleep(1)
+
+        if Tunnels: print("\n".join(Tunnels), "\n")
+
+        working_tunnel = {name for _, _, name in self.urls}
+        error_tunnel = set(Name.split(', ')) - working_tunnel
+
+        if error_tunnel and not self.stop_event.is_set():
+            log.warning(f"⚠️ {YLW}Timeout while getting tunnel URLs for{RST} {', '.join(error_tunnel)}")
+
+        self.printed.set()

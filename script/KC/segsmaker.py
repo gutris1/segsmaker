@@ -1,8 +1,8 @@
+from KANDANG import HOMEPATH, ENVNAME, TEMPPATH
+from cupang import Tunnel as Alice_Zuberg
 from IPython.display import clear_output
 from IPython import get_ipython
 from pathlib import Path
-from KANDANG import HOMEPATH, ENVNAME, TEMPPATH
-from cupang import Tunnel as Alice_Zuberg
 import subprocess
 import argparse
 import logging
@@ -39,8 +39,7 @@ def NGROK_auth(token):
     yml = ROOT / '.config/ngrok/ngrok.yml'
 
     if yml.exists():
-        with open(yml, 'r') as f:
-            current_token = yaml.safe_load(f).get('agent', {}).get('authtoken')
+        current_token = yaml.safe_load(yml.read_text()).get('agent', {}).get('authtoken')
     else:
         current_token = None
 
@@ -52,8 +51,7 @@ def ZROK_enable(token):
     zrok_env = ROOT / '.zrok/environment.json'
 
     if zrok_env.exists():
-        with open(zrok_env, 'r') as f:
-            current_token = json.load(f).get('zrok_token')
+        current_token = json.loads(zrok_env.read_text()).get('zrok_token')
 
         if current_token != token:
             SyS('zrok disable')
@@ -69,40 +67,33 @@ def webui_launch(launch_args, skip_comfyui_check, ngrok_token=None, zrok_token=N
 
     iRON['PYTHONWARNINGS'] = 'ignore'
 
-    port = 7801 if ui == 'SwarmUI' else (8188 if ui == 'ComfyUI' else 7860)
-
     if ui in ['A1111', 'Forge', 'ReForge']:
-        timer = CWD / "asd/pinggytimer.txt"
-        end_time = int(time.time()) + 3600
-        SyS(f"echo -n {end_time} > {timer}")
-
+        port = 7860
+        SyS(f"echo -n {int(time.time()) + 3600} > {CWD / 'asd/pinggytimer.txt'}")
         launch_args += ' --enable-insecure-extension-access --disable-console-progressbars --theme dark'
 
-        if ENVNAME == 'Kaggle':
-            launch_args += f' --encrypt-pass={PW}'
-        else:
-            if '--share' not in launch_args:
-                launch_args += ' --share'
+        if '--share' not in launch_args: launch_args += ' --share'
+        if ENVNAME == 'Kaggle': launch_args += f' --encrypt-pass={PW}'
+        iRON.setdefault('IIB_ACCESS_CONTROL', 'disable')
 
-        if ui == 'Forge':
-            FT = CWD / "FT.txt"
-            if not FT.exists():
-                SyS('pip uninstall -qy transformers')
-                FT.write_text("blyat")
+        if ui == 'Forge' and not (CWD / "FT.txt").exists():
+            SyS('pip uninstall -qy transformers')
+            (CWD / "FT.txt").write_text("blyat")
 
-        if 'IIB_ACCESS_CONTROL' not in iRON:
-            iRON['IIB_ACCESS_CONTROL'] = 'disable'
+        cmd = f"python3 launch.py {launch_args}"
 
-    if ui == 'ComfyUI' and not skip_comfyui_check:
-        SyS('python3 apotek.py')
-        clear_output(wait=True)
+    elif ui == 'ComfyUI':
+        port = 8188
+        if not skip_comfyui_check:
+            SyS('python3 apotek.py')
+            clear_output(wait=True)
+        cmd = f"python3 main.py {launch_args}"
 
-    if ui == 'SwarmUI':
+    elif ui == 'SwarmUI':
+        port = 7801
         iRON['SWARMPATH'] = str(CWD)
         iRON['SWARM_NO_VENV'] = 'true'
         cmd = f"bash ./launch-linux.sh {launch_args}"
-    else:
-        cmd = f"python3 {'main.py' if ui == 'ComfyUI' else 'launch.py'} {launch_args}"
 
     cloudflared = f'cl tunnel --url localhost:{port}'
     pinggy = f'ssh -o StrictHostKeyChecking=no -p 80 -R0:localhost:{port} a.pinggy.io'
@@ -113,8 +104,8 @@ def webui_launch(launch_args, skip_comfyui_check, ngrok_token=None, zrok_token=N
     Alice_Synthesis_Thirty.logger.setLevel(logging.DEBUG)
 
     if not (ngrok_token or zrok_token):
-        Alice_Synthesis_Thirty.add_tunnel(command=cloudflared, name='Cloudflared', pattern=r"[\w-]+\.trycloudflare\.com")
         Alice_Synthesis_Thirty.add_tunnel(command=pinggy, name='Pinggy', pattern=r"https://[\w-]+\.a\.free\.pinggy\.link")
+        Alice_Synthesis_Thirty.add_tunnel(command=cloudflared, name='Cloudflared', pattern=r"[\w-]+\.trycloudflare\.com")
 
     if ngrok_token:
         NGROK_auth(ngrok_token)
