@@ -39,8 +39,6 @@ IMG = "https://github.com/gutris1/segsmaker/raw/main/script/SM/loading.png"
 
 ROOT = Path.home()
 SRE = ROOT / 'GUTRIS1'
-BIN = str(SRE / 'bin')
-PKG = str(SRE / 'lib/python3.10/site-packages')
 
 HOME = Path(ENVHOME)
 BASEPATH = Path(ENVBASE)
@@ -109,9 +107,12 @@ def prevent_silly():
 
 
 def PythonPortable():
+    display(Image(url=IMG))
+    BIN = str(SRE / 'bin')
+    PKG = str(SRE / 'lib/python3.10/site-packages')
+
     CD(ROOT)
-    SyS('sudo apt-get -qq -y install aria2 pv lz4')
-    clear_output(wait=True)
+    SyS('sudo apt-get -qq -y install aria2 pv lz4 >/dev/null 2>&1')
 
     url = "https://huggingface.co/pantat88/back_up/resolve/main/python310-torch251-cu121.tar.lz4"
     fn = Path(url).name
@@ -130,13 +131,12 @@ def PythonPortable():
         print(f'\n{AR} installing Python...')
 
     SyS(pv)
+    clear_output(wait=True)
+    display(Image(url=IMG))
     Path(ROOT / fn).unlink()
 
-    if BIN not in iRON["PATH"]:
-        iRON["PATH"] = BIN + ":" + iRON["PATH"]
-
-    if PKG not in iRON["PYTHONPATH"]:
-        iRON["PYTHONPATH"] = PKG + ":" + iRON["PYTHONPATH"]
+    if BIN not in iRON["PATH"]: iRON["PATH"] = BIN + ":" + iRON["PATH"]
+    if PKG not in iRON["PYTHONPATH"]: iRON["PYTHONPATH"] = PKG + ":" + iRON["PYTHONPATH"]
 
 
 def Aria2Sub(cmd):
@@ -208,39 +208,30 @@ def saving():
         "BASEPATH": BASEPATH
     }
 
-    with open(KANDANG, 'w') as q:
-        for k, v in j.items():
-            q.write(f"{k} = '{v}'\n")
+    text = "\n".join(f"{k} = '{v}'" for k, v in j.items())
+    Path(KANDANG).write_text(text)
 
 
 def marking(p, n, u):
     t = p / n
     v = {'ui': u, 'launch_args': '', 'tunnel': ''}
 
-    if not t.exists():
-        with open(t, 'w') as f:
-            json.dump(v, f, indent=4)
+    if not t.exists(): t.write_text(json.dumps(v, indent=4))
 
-    with open(t, 'r') as f:
-        d = json.load(f)
-
+    d = json.loads(t.read_text())
     d.update(v)
-    with open(t, 'w') as f:
-        json.dump(d, f, indent=4)
+    t.write_text(json.dumps(d, indent=4))
 
 
 def key_inject(C, H):
-    t = [pantat, nenen]
-
-    for l in t:
-        with open(l, "r") as w:
-            v = w.read()
+    for l in [pantat, nenen]:
+        p = Path(l)
+        v = p.read_text()
 
         v = v.replace('toket = ""', f'toket = "{C}"')
         v = v.replace('tobrut = ""', f'tobrut = "{H}"')
 
-        with open(l, "w") as b:
-            b.write(v)
+        p.write_text(v)
 
 
 def sym_link(U, M):
@@ -387,10 +378,8 @@ def webui_extension(U, W, M):
         say("<br><b>【{red} Installing Extensions{d} 】{red}</b>")
         clone(str(W / "asd/extension.txt"))
 
-        if ENVNAME == 'Kaggle':
-            clone('https://github.com/gutris1/sd-civitai-browser-plus-plus')
-        else:
-            clone('https://github.com/BlafKing/sd-civitai-browser-plus')
+        clone('https://github.com/gutris1/sd-civitai-browser-plus-plus' if ENVNAME == 'Kaggle'
+            else 'https://github.com/BlafKing/sd-civitai-browser-plus')
 
 
 def webui_installation(U, S, W, M, E, V):
@@ -411,9 +400,7 @@ def webui_installation(U, S, W, M, E, V):
         ]
 
     for item in extras: download(item)
-
     SyS(f"unzip -qo {embzip} -d {E} && rm {embzip}")
-
     if U != 'SwarmUI': webui_extension(U, W, M)
 
 
@@ -426,9 +413,7 @@ def webui_selection(ui, which_sd):
         'SwarmUI': 'https://github.com/mcmonkeyprojects/SwarmUI'
     }
 
-    if ui in repo_url:
-        WEBUI = HOME / ui
-        repo = repo_url[ui]
+    if ui in repo_url: (WEBUI, repo) = (HOME / ui, repo_url[ui])
 
     MODELS = WEBUI / 'Models' if ui == 'SwarmUI' else WEBUI / 'models'
     EMB = MODELS / 'Embeddings' if ui == 'SwarmUI' else (MODELS / 'embeddings' if ui == 'ComfyUI' else WEBUI / 'embeddings')
@@ -444,7 +429,8 @@ def webui_selection(ui, which_sd):
     CD(HOME)
 
 
-def webui_checker():
+def webui_installer():
+    CD(HOME)
     config = json.load(MARKED.open('r')) if MARKED.exists() else {}
     ui = config.get('ui')
     WEBUI = HOME / ui if ui else None
@@ -465,7 +451,7 @@ def webui_checker():
             print("\nCanceled.")
 
 
-def webui_misc():
+def notebook_scripts():
     z = [
         (STR / '00-startup.py', f"wget -qO {STR}/00-startup.py https://github.com/gutris1/segsmaker/raw/main/script/KC/00-startup.py"),
         (pantat, f"wget -qO {pantat} https://github.com/gutris1/segsmaker/raw/main/script/SM/pantat88.py"),
@@ -474,32 +460,21 @@ def webui_misc():
         (MRK, f"wget -qO {MRK} https://github.com/gutris1/segsmaker/raw/main/script/SM/marking.py")
     ]
 
-    for x, y in z:
-        if not Path(x).exists():
-            SyS(y)
+    [SyS(y) for x, y in z if not Path(x).exists()]
+
+    saving()
+    key_inject(civitai_key, hf_read_token)
+    marking(SRC, MARKED, webui)
+    sys.path.append(str(STR))
+
+    for scripts in [nenen, pantat, KANDANG, MRK]: get_ipython().run_line_magic('run', str(scripts))
 
 
 selection, civitai_key, hf_read_token = prevent_silly()
-if selection is None or civitai_key is None:
-    sys.exit()
-
+if selection is None or civitai_key is None: sys.exit()
 webui, sd = selection
 
-if not SRE.exists():
-    PythonPortable()
-
-clear_output()
-display(Image(url=IMG))
-
-CD(HOME)
-webui_misc()
-saving()
-key_inject(civitai_key, hf_read_token)
-marking(SRC, MARKED, webui)
-sys.path.append(str(STR))
-
-for scripts in [nenen, pantat, KANDANG, MRK]:
-    get_ipython().run_line_magic('run', str(scripts))
+if not SRE.exists(): (PythonPortable(), notebook_scripts())
 
 from nenen88 import clone, say, download, tempe, pull # type: ignore
-webui_checker()
+webui_installer()
