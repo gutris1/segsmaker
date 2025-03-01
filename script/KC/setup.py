@@ -43,7 +43,6 @@ SRE = ROOT / 'GUTRIS1'
 HOME = Path(ENVHOME)
 BASEPATH = Path(ENVBASE)
 TMP = BASEPATH / 'temp'
-VNV = BASEPATH / 'venv'
 
 SRC = HOME / 'gutris1'
 MRK = SRC / 'marking.py'
@@ -204,7 +203,6 @@ def saving():
         "ENVNAME": ENVNAME,
         "HOMEPATH": HOME,
         "TEMPPATH": TMP,
-        "VENVPATH": VNV,
         "BASEPATH": BASEPATH
     }
 
