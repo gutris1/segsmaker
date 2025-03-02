@@ -25,7 +25,7 @@
   background-color: #000;
   max-height: 0;
   overflow: hidden;
-  animation: Undress 1s forwards ease-out;
+  animation: UndressSetup 1s forwards ease-out;
   padding: 5px;
 }
 
@@ -398,6 +398,19 @@
   }
   100% {
     max-height: 400px;
+    opacity: 1;
+    filter: blur(0px);
+  }
+}
+
+@keyframes UndressSetup {
+  0% {
+    max-height: 0;
+    opacity: 0;
+    filter: blur(10px);
+  }
+  100% {
+    max-height: 600px;
     opacity: 1;
     filter: blur(0px);
   }
