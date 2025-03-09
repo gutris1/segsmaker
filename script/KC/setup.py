@@ -1,5 +1,6 @@
-from IPython.display import display, Image, clear_output
+from IPython.display import display, Image, HTML, clear_output
 from IPython import get_ipython
+from ipywidgets import widgets
 from pathlib import Path
 import subprocess
 import argparse
@@ -12,6 +13,9 @@ import re
 SyS = get_ipython().system
 CD = os.chdir
 iRON = os.environ
+
+output = widgets.Output()
+loading = widgets.Output()
 
 ENVNAME, ENVBASE, ENVHOME = None, None, None
 env_list = {
@@ -36,6 +40,15 @@ ORANGE = "\033[38;5;208m"
 AR = f'{ORANGE}▶{RST}'
 ERR = f"{P}[{RST}{R}ERROR{RST}{P}]{RST}"
 IMG = "https://github.com/gutris1/segsmaker/raw/main/script/SM/loading.png"
+
+Muzik = """
+<iframe width="0" height="0"
+  src="https://www.youtube.com/embed/kkY5u1LJZzw?autoplay=1"
+  frameborder="0"
+  referrerpolicy="strict-origin-when-cross-origin"
+  allowfullscreen>
+</iframe>
+"""
 
 ROOT = Path.home()
 SRE = ROOT / 'GUTRIS1'
@@ -106,7 +119,6 @@ def prevent_silly():
 
 
 def PythonPortable():
-    display(Image(url=IMG))
     BIN = str(SRE / 'bin')
     PKG = str(SRE / 'lib/python3.10/site-packages')
 
@@ -119,56 +131,25 @@ def PythonPortable():
     aria = f'aria2c --console-log-level=error --stderr=true -c -x16 -s16 -k1M -j5 {url} -o {fn}'
     pv = f'pv {fn} | lz4 -d | tar -xf -'
 
-    Aria2Sub(aria)
+    print(f'\n{AR} installing Python...')
+    Aria2(aria)
 
     if ENVNAME == "Kaggle":
         for cmd in [
             'pip install ipywidgets jupyterlab_widgets --upgrade',
             'rm -f /usr/lib/python3.10/sitecustomize.py'
         ]: SyS(f'{cmd}>/dev/null 2>&1')
-    else:
-        print(f'\n{AR} installing Python...')
 
     SyS(pv)
-    clear_output(wait=True)
-    display(Image(url=IMG))
     Path(ROOT / fn).unlink()
 
     if BIN not in iRON["PATH"]: iRON["PATH"] = BIN + ":" + iRON["PATH"]
     if PKG not in iRON["PYTHONPATH"]: iRON["PYTHONPATH"] = PKG + ":" + iRON["PYTHONPATH"]
 
 
-def Aria2Sub(cmd):
-    Aria2Process = subprocess.Popen(
-        shlex.split(cmd),
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True
-    )
-    result = ""
-    br = False
-    while True:
-        lines = Aria2Process.stderr.readline()
-        if lines == '' and Aria2Process.poll() is not None:
-            break
-        if lines:
-            result += lines
-            for outputs in lines.splitlines():
-                if re.match(r'\[#\w{6}\s.*\]', outputs):
-                    lines = outputs.splitlines()
-                    for line in lines:
-                        print(f"\r{' '*500}\r {line}", end="")
-                        sys.stdout.flush()
-                    br = True
-                    break
-    if br:
-        print()
-    stripe = result.find("======+====+===========")
-    if stripe:
-        for lines in result[stripe:].splitlines():
-            if '|' in lines and 'OK' in lines:
-                print(f"  {lines}")
-    Aria2Process.wait()
+def Aria2(cmd):
+    p = subprocess.Popen(shlex.split(cmd), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, text=True)
+    p.wait()
 
 
 def install_tunnel():
@@ -403,28 +384,32 @@ def webui_installation(U, S, W, M, E, V):
 
 
 def webui_selection(ui, which_sd):
-    repo_url = {
-        'A1111': 'https://github.com/AUTOMATIC1111/stable-diffusion-webui A1111',
-        'Forge': 'https://github.com/lllyasviel/stable-diffusion-webui-forge Forge',
-        'ComfyUI': 'https://github.com/comfyanonymous/ComfyUI',
-        'ReForge': 'https://github.com/Panchovix/stable-diffusion-webui-reForge ReForge',
-        'SwarmUI': 'https://github.com/mcmonkeyprojects/SwarmUI'
-    }
+    with output:
+        output.clear_output(wait=True)
+        repo_url = {
+            'A1111': 'https://github.com/AUTOMATIC1111/stable-diffusion-webui A1111',
+            'Forge': 'https://github.com/lllyasviel/stable-diffusion-webui-forge Forge',
+            'ComfyUI': 'https://github.com/comfyanonymous/ComfyUI',
+            'ReForge': 'https://github.com/Panchovix/stable-diffusion-webui-reForge ReForge',
+            'SwarmUI': 'https://github.com/mcmonkeyprojects/SwarmUI'
+        }
 
-    if ui in repo_url: (WEBUI, repo) = (HOME / ui, repo_url[ui])
+        if ui in repo_url: (WEBUI, repo) = (HOME / ui, repo_url[ui])
 
-    MODELS = WEBUI / 'Models' if ui == 'SwarmUI' else WEBUI / 'models'
-    EMB = MODELS / 'Embeddings' if ui == 'SwarmUI' else (MODELS / 'embeddings' if ui == 'ComfyUI' else WEBUI / 'embeddings')
-    VAE = MODELS / 'vae' if ui == 'ComfyUI' else MODELS / 'VAE'
+        MODELS = WEBUI / 'Models' if ui == 'SwarmUI' else WEBUI / 'models'
+        EMB = MODELS / 'Embeddings' if ui == 'SwarmUI' else (MODELS / 'embeddings' if ui == 'ComfyUI' else WEBUI / 'embeddings')
+        VAE = MODELS / 'vae' if ui == 'ComfyUI' else MODELS / 'VAE'
 
-    say(f"<b>【{{red}} Installing {WEBUI.name}{{d}} 】{{red}}</b>")
-    clone(repo)
+        say(f"<b>【{{red}} Installing {WEBUI.name}{{d}} 】{{red}}</b>")
+        clone(repo)
 
-    webui_installation(ui, which_sd, WEBUI, MODELS, EMB, VAE)
+        webui_installation(ui, which_sd, WEBUI, MODELS, EMB, VAE)
 
-    say("<br><b>【{red} Done{d} 】{red}</b>")
-    tempe()
-    CD(HOME)
+        with loading:
+            loading.clear_output(wait=True)
+            say("<br><b>【{red} Done{d} 】{red}</b>")
+            tempe()
+            CD(HOME)
 
 
 def webui_installer():
@@ -437,16 +422,19 @@ def webui_installer():
         git_dir = WEBUI / '.git'
         if git_dir.exists():
             CD(WEBUI)
-            if ui in ['A1111', 'ComfyUI', 'SwarmUI']:
-                SyS("git pull origin master")
-            elif ui in ['Forge', 'ReForge']:
-                SyS("git pull origin main")
+            with output:
+                output.clear_output(wait=True)
+                if ui in ['A1111', 'ComfyUI', 'SwarmUI']:
+                    SyS("git pull origin master")
+                elif ui in ['Forge', 'ReForge']:
+                    SyS("git pull origin main")
 
     else:
         try:
             webui_selection(webui, sd)
         except KeyboardInterrupt:
-            print("\nCanceled.")
+            with loading: loading.clear_output()
+            with output: print("\nCanceled.")
 
 
 def notebook_scripts():
@@ -472,7 +460,9 @@ selection, civitai_key, hf_read_token = prevent_silly()
 if selection is None or civitai_key is None: sys.exit()
 webui, sd = selection
 
-if not SRE.exists(): (PythonPortable(), notebook_scripts())
+display(output, loading)
+with loading: display(HTML(Muzik)); display(Image(url=IMG))
+with output: SRE.exists() or (PythonPortable(), notebook_scripts())
 
 from nenen88 import clone, say, download, tempe, pull # type: ignore
 webui_installer()
