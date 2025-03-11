@@ -424,13 +424,16 @@ def webui_installer():
                     SyS("git pull origin master")
                 elif ui in ['Forge', 'ReForge']:
                     SyS("git pull origin main")
-
+                with loading: loading.clear_output()
     else:
         try:
             webui_selection(webui, sd)
         except KeyboardInterrupt:
             with loading: loading.clear_output()
             with output: print("\nCanceled.")
+        except Exception as e:
+            with loading: loading.clear_output()
+            with output: print(f"\n{ERR}: {e}")
 
 
 def notebook_scripts():
