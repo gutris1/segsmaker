@@ -119,32 +119,32 @@ def prevent_silly():
 
 
 def PythonPortable():
+    CD(ROOT)
+    print(f'\n{AR} installing Python Portable 3.10.15')
+
     BIN = str(SRE / 'bin')
     PKG = str(SRE / 'lib/python3.10/site-packages')
-
-    CD(ROOT)
     SyS('sudo apt-get -qq -y install aria2 pv lz4 >/dev/null 2>&1')
 
-    url = "https://huggingface.co/pantat88/back_up/resolve/main/python310-torch251-cu121.tar.lz4"
+    url = 'https://huggingface.co/pantat88/back_up/resolve/main/python310-torch251-cu121.tar.lz4'
     fn = Path(url).name
 
     aria = f'aria2c --console-log-level=error --stderr=true -c -x16 -s16 -k1M -j5 {url} -o {fn}'
     pv = f'pv {fn} | lz4 -d | tar -xf -'
 
-    print(f'\n{AR} installing Python...')
     Aria2(aria)
 
-    if ENVNAME == "Kaggle":
+    if ENVNAME == 'Kaggle':
         for cmd in [
             'pip install ipywidgets jupyterlab_widgets --upgrade',
             'rm -f /usr/lib/python3.10/sitecustomize.py'
-        ]: SyS(f'{cmd}>/dev/null 2>&1')
+        ]: SyS(f'{cmd} >/dev/null 2>&1')
 
     SyS(pv)
     Path(ROOT / fn).unlink()
 
-    if BIN not in iRON["PATH"]: iRON["PATH"] = BIN + ":" + iRON["PATH"]
-    if PKG not in iRON["PYTHONPATH"]: iRON["PYTHONPATH"] = PKG + ":" + iRON["PYTHONPATH"]
+    if BIN not in iRON['PATH']: iRON['PATH'] = BIN + ':' + iRON['PATH']
+    if PKG not in iRON['PYTHONPATH']: iRON['PYTHONPATH'] = PKG + ':' + iRON['PYTHONPATH']
 
 
 def Aria2(cmd):
