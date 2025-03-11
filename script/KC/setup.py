@@ -132,7 +132,8 @@ def PythonPortable():
     aria = f'aria2c --console-log-level=error --stderr=true -c -x16 -s16 -k1M -j5 {url} -o {fn}'
     pv = f'pv {fn} | lz4 -d | tar -xf -'
 
-    Aria2(aria)
+    p = subprocess.Popen(shlex.split(aria), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    p.wait()
 
     if ENVNAME == 'Kaggle':
         for cmd in [
@@ -145,11 +146,6 @@ def PythonPortable():
 
     if BIN not in iRON['PATH']: iRON['PATH'] = BIN + ':' + iRON['PATH']
     if PKG not in iRON['PYTHONPATH']: iRON['PYTHONPATH'] = PKG + ':' + iRON['PYTHONPATH']
-
-
-def Aria2(cmd):
-    p = subprocess.Popen(shlex.split(cmd), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, text=True)
-    p.wait()
 
 
 def install_tunnel():
