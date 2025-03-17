@@ -33,15 +33,15 @@ def load_config():
     ui = config.get('ui')
 
     if ui == 'FaceFusion':
-        url = 'https://huggingface.co/pantat88/back_up/resolve/main/venv-fusion.tar.lz4'
+        url = 'https://huggingface.co/gutris1/webui/resolve/main/env/venv-fusion.tar.lz4'
         need_space = 13 * 1024**3
         vnv = vnv_FF
     elif ui == 'SDTrainer':
-        url = 'https://huggingface.co/pantat88/back_up/resolve/main/venv-sd-trainer.tar.lz4'
+        url = 'https://huggingface.co/gutris1/webui/resolve/main/env/venv-sd-trainer.tar.lz4'
         need_space = 14 * 1024**3
         vnv = vnv_SDT
     else:
-        url = 'https://huggingface.co/pantat88/back_up/resolve/main/venv-torch251-cu121-SSL.tar.lz4'
+        url = 'https://huggingface.co/gutris1/webui/resolve/main/env/venv-torch251-cu121-SSL.tar.lz4'
         need_space = 14 * 1024**3
         vnv = vnv_D
 
@@ -61,16 +61,13 @@ def unused_venv():
             SyS(rmf)
 
 def check_venv(folder):
-    du = get_ipython().getoutput(f'du -s -b {folder}')
-    return int(du[0].split()[0]) if du else 0
+    return int(du[0].split()[0]) if (du := get_ipython().getoutput(f'du -s -b {folder}')) else 0
 
 def check_tmp(path):
-    stats = os.statvfs(path)
-    return stats.f_frsize * stats.f_bavail
+    return (stats := os.statvfs(path)).f_frsize * stats.f_bavail
 
 def listing(directory):
-    return [(Path(root) / file, (Path(root) / file).stat().st_size) 
-            for root, _, files in os.walk(directory) for file in files]
+    return [(path := Path(root) / file, path.stat().st_size) for root, _, files in os.walk(directory) for file in files]
 
 def removing(directory, req_space):
     files = listing(directory)
@@ -93,7 +90,7 @@ def trashing():
     paths = [HOME / name for name in dirs1] + [tmp / name for name in dirs2]
     for path in paths:
         cmd = f"find {path} -type d -name .ipynb_checkpoints -exec rm -rf {{}} +"
-        SyS(f'{cmd}>/dev/null 2>&1')
+        SyS(f'{cmd} >/dev/null 2>&1')
 
 def check_pv():
     try:
@@ -123,8 +120,7 @@ def install_venv(ui, url, need_space, fn):
     if req_space > 0:
         print(f'Need space {req_space / 1024**3:.1f} GB for VENV')
         for path in [tmp / 'ckpt', tmp / 'lora', tmp / 'controlnet', tmp / 'clip', tmp / 'unet']:
-            if req_space > 0:
-                req_space -= removing(path, req_space)
+            if req_space > 0: req_space -= removing(path, req_space)
 
     CD(tmp)
     say('<b>【{red} Installing VENV{d} 】{red}</b>')
@@ -133,24 +129,20 @@ def install_venv(ui, url, need_space, fn):
     SyS(f'pv {fn} | lz4 -d | tar xf -')
     Path(fn).unlink()
 
-    req = [
+    for cmd in [
         f'rm -f {vnv}/bin/pip* {vnv}/bin/python*',
         f'python3 -m venv {vnv}',
         f'{pip} install -U --force-reinstall pip',
         f'{pip} install ipykernel matplotlib',
         f'{pip} uninstall -y ngrok pyngrok'
-    ]
-
-    [SyS(f'{cmd}>/dev/null 2>&1') for cmd in req]
-
+    ]: SyS(f'{cmd} >/dev/null 2>&1')
 
 print('checking venv...')
 tempe()
 ui, url, need_space, vnv, fn = load_config()
-pip = str(vnv / 'bin/python3 -m pip')
+pip = f'{vnv}/bin/python3 -m pip'
 
-if not venv_exists(vnv, ui):
-    install_venv(ui, url, need_space, fn)
+if not venv_exists(vnv, ui): install_venv(ui, url, need_space, fn)
 
 trashing()
 aDel()
