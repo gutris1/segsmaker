@@ -126,7 +126,7 @@ def PythonPortable():
     PKG = str(SRE / 'lib/python3.10/site-packages')
     SyS('sudo apt-get -qq -y install aria2 pv lz4 >/dev/null 2>&1')
 
-    url = 'https://huggingface.co/pantat88/back_up/resolve/main/python310-torch251-cu121.tar.lz4'
+    url = 'https://huggingface.co/gutris1/webui/resolve/main/env/python310-torch251-cu121.tar.lz4'
     fn = Path(url).name
 
     aria = f'aria2c --console-log-level=error --stderr=true -c -x16 -s16 -k1M -j5 {url} -o {fn}'
@@ -316,13 +316,13 @@ def webui_req(U, W, M):
 
     u = M / 'upscale_models' if U in ['ComfyUI', 'SwarmUI'] else M / 'ESRGAN'
     upscalers = [
-        f"https://huggingface.co/pantat88/ui/resolve/main/4x-UltraSharp.pth {u}",
-        f"https://huggingface.co/pantat88/ui/resolve/main/4x-AnimeSharp.pth {u}",
-        f"https://huggingface.co/pantat88/ui/resolve/main/4x_NMKD-Superscale-SP_178000_G.pth {u}",
+        f"https://huggingface.co/gutris1/webui/resolve/main/misc/4x-UltraSharp.pth {u}",
+        f"https://huggingface.co/gutris1/webui/resolve/main/misc/4x-AnimeSharp.pth {u}",
+        f"https://huggingface.co/gutris1/webui/resolve/main/misc/4x_NMKD-Superscale-SP_178000_G.pth {u}",
         f"https://huggingface.co/uwg/upscaler/resolve/main/ESRGAN/8x_NMKD-Superscale_150000_G.pth {u}",
-        f"https://huggingface.co/pantat88/ui/resolve/main/4x_RealisticRescaler_100000_G.pth {u}",
-        f"https://huggingface.co/pantat88/ui/resolve/main/8x_RealESRGAN.pth {u}",
-        f"https://huggingface.co/pantat88/ui/resolve/main/4x_foolhardy_Remacri.pth {u}",
+        f"https://huggingface.co/gutris1/webui/resolve/main/misc/4x_RealisticRescaler_100000_G.pth {u}",
+        f"https://huggingface.co/gutris1/webui/resolve/main/misc/8x_RealESRGAN.pth {u}",
+        f"https://huggingface.co/gutris1/webui/resolve/main/misc/4x_foolhardy_Remacri.pth {u}",
         f"https://huggingface.co/subby2006/NMKD-YandereNeoXL/resolve/main/4x_NMKD-YandereNeoXL_200k.pth {u}",
         f"https://huggingface.co/subby2006/NMKD-UltraYandere/resolve/main/4x_NMKD-UltraYandere_300k.pth {u}"
     ]
@@ -332,7 +332,7 @@ def webui_req(U, W, M):
 
     if U not in ['SwarmUI', 'ComfyUI']:
         SyS(f'rm -f {W}/html/card-no-preview.png')
-        download(f'https://huggingface.co/pantat88/ui/resolve/main/card-no-preview.png {W}/html')
+        download(f'https://huggingface.co/gutris1/webui/resolve/main/misc/card-no-preview.png {W}/html')
 
 
 def webui_extension(U, W, M):
@@ -363,14 +363,14 @@ def webui_installation(U, S, W, M, E, V):
     if S == "xl":
         embzip = W / 'embeddingsXL.zip'
         extras = [
-            f"https://huggingface.co/pantat88/ui/resolve/main/embeddingsXL.zip {W}",
+            f"https://huggingface.co/gutris1/webui/resolve/main/misc/embeddingsXL.zip {W}",
             f"https://huggingface.co/madebyollin/sdxl-vae-fp16-fix/resolve/main/sdxl.vae.safetensors {V} sdxl_vae.safetensors"
         ]
 
     else:
         embzip =  W / 'embeddings.zip'
         extras = [
-            f"https://huggingface.co/pantat88/ui/resolve/main/embeddings.zip {W}",
+            f"https://huggingface.co/gutris1/webui/resolve/main/misc/embeddings.zip {W}",
             f"https://huggingface.co/stabilityai/sd-vae-ft-mse-original/resolve/main/vae-ft-mse-840000-ema-pruned.safetensors {V}"
         ]
 
@@ -438,11 +438,11 @@ def webui_installer():
 
 def notebook_scripts():
     z = [
-        (STR / '00-startup.py', f"wget -qO {STR}/00-startup.py https://github.com/gutris1/segsmaker/raw/main/script/KC/00-startup.py"),
-        (pantat, f"wget -qO {pantat} https://github.com/gutris1/segsmaker/raw/main/script/SM/pantat88.py"),
-        (nenen, f"wget -qO {nenen} https://github.com/gutris1/segsmaker/raw/main/script/SM/nenen88.py"),
-        (STR / 'cupang.py', f"wget -qO {STR}/cupang.py https://github.com/gutris1/segsmaker/raw/main/script/SM/cupang.py"),
-        (MRK, f"wget -qO {MRK} https://github.com/gutris1/segsmaker/raw/main/script/SM/marking.py")
+        (STR / '00-startup.py', f'wget -qO {STR}/00-startup.py https://github.com/gutris1/segsmaker/raw/main/script/KC/00-startup.py'),
+        (pantat, f'wget -qO {pantat} https://github.com/gutris1/segsmaker/raw/main/script/SM/pantat88.py'),
+        (nenen, f'wget -qO {nenen} https://github.com/gutris1/segsmaker/raw/main/script/SM/nenen88.py'),
+        (STR / 'cupang.py', f'wget -qO {STR}/cupang.py https://github.com/gutris1/segsmaker/raw/main/script/SM/cupang.py'),
+        (MRK, f'wget -qO {MRK} https://github.com/gutris1/segsmaker/raw/main/script/SM/marking.py')
     ]
 
     [SyS(y) for x, y in z if not Path(x).exists()]
