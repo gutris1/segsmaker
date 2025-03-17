@@ -14,6 +14,7 @@ from IPython import get_ipython
 from ipywidgets import widgets
 from pathlib import Path
 import shutil
+import shlex
 import json
 import os
 
@@ -62,8 +63,10 @@ def marking(p, n, i):
     t = p / n
     if not t.exists():
         t.write_text(json.dumps({
-            'ui': i, 'launch_args': '',
-            'zrok_token': '', 'ngrok_token': '',
+            'ui': i,
+            'launch_args': '',
+            'zrok_token': '',
+            'ngrok_token': '',
             'tunnel': ''
         }, indent=4))
     d = json.loads(t.read_text())
@@ -217,13 +220,13 @@ def webui_req(U, W, M):
 
     u = M / 'upscale_models' if U in ['ComfyUI', 'SwarmUI'] else M / 'ESRGAN'
     upscalers = [
-        f"https://huggingface.co/pantat88/ui/resolve/main/4x-UltraSharp.pth {u}",
-        f"https://huggingface.co/pantat88/ui/resolve/main/4x-AnimeSharp.pth {u}",
-        f"https://huggingface.co/pantat88/ui/resolve/main/4x_NMKD-Superscale-SP_178000_G.pth {u}",
+        f"https://huggingface.co/gutris1/webui/resolve/main/misc/4x-UltraSharp.pth {u}",
+        f"https://huggingface.co/gutris1/webui/resolve/main/misc/4x-AnimeSharp.pth {u}",
+        f"https://huggingface.co/gutris1/webui/resolve/main/misc/4x_NMKD-Superscale-SP_178000_G.pth {u}",
         f"https://huggingface.co/uwg/upscaler/resolve/main/ESRGAN/8x_NMKD-Superscale_150000_G.pth {u}",
-        f"https://huggingface.co/pantat88/ui/resolve/main/4x_RealisticRescaler_100000_G.pth {u}",
-        f"https://huggingface.co/pantat88/ui/resolve/main/8x_RealESRGAN.pth {u}",
-        f"https://huggingface.co/pantat88/ui/resolve/main/4x_foolhardy_Remacri.pth {u}"
+        f"https://huggingface.co/gutris1/webui/resolve/main/misc/4x_RealisticRescaler_100000_G.pth {u}",
+        f"https://huggingface.co/gutris1/webui/resolve/main/misc/8x_RealESRGAN.pth {u}",
+        f"https://huggingface.co/gutris1/webui/resolve/main/misc/4x_foolhardy_Remacri.pth {u}"
     ]
 
     line = scripts + upscalers
@@ -231,7 +234,7 @@ def webui_req(U, W, M):
 
     if U not in ['SwarmUI', 'ComfyUI']:
         SyS(f'rm -f {W}/html/card-no-preview.png')
-        download(f'https://huggingface.co/pantat88/ui/resolve/main/card-no-preview.png {W}/html')
+        download(f'https://huggingface.co/gutris1/webui/resolve/main/misc/card-no-preview.png {W}/html')
 
 def WebUIExtensions(U, W, M):
     EXT = W / "custom_nodes" if U == 'ComfyUI' else W / "extensions"
@@ -259,14 +262,14 @@ def installing_webui(U, S, W, M, E, V):
     if S == "button-15":
         embzip =  W / 'embeddings.zip'
         extras = [
-            f"https://huggingface.co/pantat88/ui/resolve/main/embeddings.zip {W}",
+            f"https://huggingface.co/gutris1/webui/resolve/main/misc/embeddings.zip {W}",
             f"https://huggingface.co/stabilityai/sd-vae-ft-mse-original/resolve/main/vae-ft-mse-840000-ema-pruned.safetensors {V}"
         ]
 
     elif S == "button-xl":
         embzip = W / 'embeddingsXL.zip'
         extras = [
-            f"https://huggingface.co/pantat88/ui/resolve/main/embeddingsXL.zip {W}",
+            f"https://huggingface.co/gutris1/webui/resolve/main/misc/embeddingsXL.zip {W}",
             f"https://huggingface.co/madebyollin/sdxl-vae-fp16-fix/resolve/main/sdxl.vae.safetensors {V} sdxl_vae.safetensors"
         ]
 
