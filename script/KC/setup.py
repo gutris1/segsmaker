@@ -39,7 +39,7 @@ P = '\033[38;5;135m'
 ORANGE = '\033[38;5;208m'
 AR = f'{ORANGE}▶{RST}'
 ERR = f'{P}[{RST}{R}ERROR{RST}{P}]{RST}'
-IMG = 'https://github.com/gutris1/segsmaker/raw/dRivE/script/loading.png'
+IMG = 'https://github.com/gutris1/segsmaker/raw/main/script/loading.png'
 
 Muzik = """
 <iframe width="0" height="0"
@@ -317,7 +317,7 @@ def webui_req(U, W, M):
     install_tunnel()
 
     scripts = [
-        f'https://github.com/gutris1/segsmaker/raw/dRivE/script/controlnet.py {W}/asd',
+        f'https://github.com/gutris1/segsmaker/raw/main/script/controlnet.py {W}/asd',
         f'https://github.com/gutris1/segsmaker/raw/main/script/KC/segsmaker.py {W}'
     ]
 
@@ -452,9 +452,9 @@ def webui_installer():
 def notebook_scripts():
     z = [
         (STR / '00-startup.py', f'wget -qO {STR}/00-startup.py https://github.com/gutris1/segsmaker/raw/main/script/KC/00-startup.py'),
-        (nenen, f'wget -qO {nenen} https://github.com/gutris1/segsmaker/raw/dRivE/script/nenen88.py'),
-        (STR / 'cupang.py', f'wget -qO {STR}/cupang.py https://github.com/gutris1/segsmaker/raw/dRivE/script/cupang.py'),
-        (MRK, f'wget -qO {MRK} https://github.com/gutris1/segsmaker/raw/dRivE/script/marking.py')
+        (nenen, f'wget -qO {nenen} https://github.com/gutris1/segsmaker/raw/main/script/nenen88.py'),
+        (STR / 'cupang.py', f'wget -qO {STR}/cupang.py https://github.com/gutris1/segsmaker/raw/main/script/cupang.py'),
+        (MRK, f'wget -qO {MRK} https://github.com/gutris1/segsmaker/raw/main/script/marking.py')
     ]
 
     [SyS(y) for x, y in z if not Path(x).exists()]
