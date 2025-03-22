@@ -17,7 +17,7 @@ SyS = get_ipython().system
 
 home = Path.home()
 src = home / '.gutris1'
-css = src / 'pantat88.css'
+css = src / 'segsmaker.css'
 img = src / 'loading.png'
 startup = home / '.ipython/profile_default/startup'
 
