@@ -213,7 +213,7 @@ def key_inject(C, H):
 def sym_link(U, M):
     configs = {
         'A1111': {
-            'pre': [
+            'sym': [
                 f"rm -rf {M / 'Stable-diffusion/tmp_ckpt'} {M / 'Lora/tmp_lora'} {M / 'ControlNet'} {TMP}/*"
             ],
             'links': [
@@ -224,7 +224,7 @@ def sym_link(U, M):
         },
 
         'ReForge': {
-            'pre': [
+            'sym': [
                 f"rm -rf {M / 'Stable-diffusion/tmp_ckpt'} {M / 'Lora/tmp_lora'} {M / 'ControlNet'}",
                 f"rm -rf {M / 'svd'} {M / 'z123'} {TMP}/*"
             ],
@@ -238,9 +238,10 @@ def sym_link(U, M):
         },
 
         'Forge': {
-            'pre': [
+            'sym': [
                 f"rm -rf {M / 'Stable-diffusion/tmp_ckpt'} {M / 'Lora/tmp_lora'} {M / 'ControlNet'}",
-                f"rm -rf {M / 'svd'} {M / 'z123'} {M / 'clip'} {M / 'unet'} {TMP}/*"
+                f"rm -rf {M / 'svd'} {M / 'z123'} {M / 'clip'} {M / 'clip_vision'} {TMP}/*",
+                f"rm -rf {M / 'diffusers'} {M / 'diffusion_models'} {M / 'text_encoder'} {M / 'unet'} {TMP}/*"
             ],
             'links': [
                 (TMP / 'ckpt', M / 'Stable-diffusion/tmp_ckpt'),
@@ -249,27 +250,35 @@ def sym_link(U, M):
                 (TMP / 'z123', M / 'z123'),
                 (TMP / 'svd', M / 'svd'),
                 (TMP / 'clip', M / 'clip'),
+                (TMP / 'clip_vision', M / 'clip_vision'),
+                (TMP / 'diffusers', M / 'diffusers'),
+                (TMP / 'diffusion_models', M / 'diffusion_models'),
+                (TMP / 'text_encoders', M / 'text_encoder'),
                 (TMP / 'unet', M / 'unet')
             ]
         },
 
         'ComfyUI': {
-            'pre': [
+            'sym': [
                 f"rm -rf {M / 'checkpoints/tmp_ckpt'} {M / 'loras/tmp_lora'} {M / 'controlnet'}",
                 f"rm -rf {M / 'clip'} {M / 'unet'} {TMP}/*"
             ],
             'links': [
+                (M / 'checkpoints', M / 'checkpoints_symlink'),
                 (TMP / 'ckpt', M / 'checkpoints/tmp_ckpt'),
                 (TMP / 'lora', M / 'loras/tmp_lora'),
                 (TMP / 'controlnet', M / 'controlnet'),
                 (TMP / 'clip', M / 'clip'),
-                (TMP / 'unet', M / 'unet'),
-                (M / 'checkpoints', M / 'checkpoints_symlink')
+                (TMP / 'clip_vision', M / 'clip_vision'),
+                (TMP / 'diffusers', M / 'diffusers'),
+                (TMP / 'diffusion_models', M / 'diffusion_models'),
+                (TMP / 'text_encoders', M / 'text_encoders'),
+                (TMP / 'unet', M / 'unet')
             ]
         },
 
         'SwarmUI': {
-            'pre': [
+            'sym': [
                 f"rm -rf {M / 'Stable-Diffusion/tmp_ckpt'} {M / 'Lora/tmp_lora'} {M / 'controlnet'}",
                 f"rm -rf {M / 'clip'} {M / 'unet'} {TMP}/*"
             ],
@@ -284,7 +293,7 @@ def sym_link(U, M):
     }
 
     cfg = configs.get(U)
-    [SyS(f'{cmd}') for cmd in cfg['pre']]
+    [SyS(f'{cmd}') for cmd in cfg['sym']]
     if U in ['A1111', 'Forge', 'ReForge']: [(M / d).mkdir(parents=True, exist_ok=True) for d in ['Lora', 'ESRGAN']]
     [SyS(f'ln -s {src} {tg}') for src, tg in cfg['links']]
 
