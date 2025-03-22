@@ -39,7 +39,7 @@ P = "\033[38;5;135m"
 ORANGE = "\033[38;5;208m"
 AR = f'{ORANGE}▶{RST}'
 ERR = f"{P}[{RST}{R}ERROR{RST}{P}]{RST}"
-IMG = "https://github.com/gutris1/segsmaker/raw/main/script/SM/loading.png"
+IMG = "https://github.com/gutris1/segsmaker/raw/dRivE/script/SM/loading.png"
 
 Muzik = """
 <iframe width="0" height="0"
@@ -65,7 +65,6 @@ MARKED = SRC / 'marking.json'
 USR = Path('/usr/bin')
 STR = ROOT / '.ipython/profile_default/startup'
 nenen = STR / 'nenen88.py'
-pantat = STR / 'pantat88.py'
 KANDANG = STR / 'KANDANG.py'
 
 TMP.mkdir(parents=True, exist_ok=True)
@@ -119,7 +118,7 @@ def prevent_silly():
     SAVE_IN_DRIVE = False
 
     if arg5 == 'yes' and ENVNAME == 'Colab':
-        from google.colab import drive
+        from google.colab import drive  # type: ignore
         drive.mount('/content/drive')
         SAVE_IN_DRIVE = True
 
@@ -205,14 +204,13 @@ def marking(p, n, u):
     t.write_text(json.dumps(d, indent=4))
 
 def key_inject(C, H):
-    for l in [pantat, nenen]:
-        p = Path(l)
-        v = p.read_text()
+    p = Path(nenen)
+    v = p.read_text()
 
-        v = v.replace('toket = ""', f'toket = "{C}"')
-        v = v.replace('tobrut = ""', f'tobrut = "{H}"')
+    v = v.replace('TOKET = ""', f'TOKET = "{C}"')
+    v = v.replace('TOBRUT = ""', f'TOBRUT = "{H}"')
 
-        p.write_text(v)
+    p.write_text(v)
 
 def sym_link(U, M):
     configs = {
@@ -314,7 +312,7 @@ def webui_req(U, W, M):
     install_tunnel()
 
     scripts = [
-        f"https://github.com/gutris1/segsmaker/raw/main/script/SM/controlnet.py {W}/asd",
+        f"https://github.com/gutris1/segsmaker/raw/dRivE/script/controlnet.py {W}/asd",
         f"https://github.com/gutris1/segsmaker/raw/main/script/KC/segsmaker.py {W}"
     ]
 
@@ -444,10 +442,9 @@ def webui_installer():
 def notebook_scripts():
     z = [
         (STR / '00-startup.py', f'wget -qO {STR}/00-startup.py https://github.com/gutris1/segsmaker/raw/main/script/KC/00-startup.py'),
-        (pantat, f'wget -qO {pantat} https://github.com/gutris1/segsmaker/raw/main/script/SM/pantat88.py'),
-        (nenen, f'wget -qO {nenen} https://github.com/gutris1/segsmaker/raw/main/script/SM/nenen88.py'),
-        (STR / 'cupang.py', f'wget -qO {STR}/cupang.py https://github.com/gutris1/segsmaker/raw/main/script/SM/cupang.py'),
-        (MRK, f'wget -qO {MRK} https://github.com/gutris1/segsmaker/raw/main/script/SM/marking.py')
+        (nenen, f'wget -qO {nenen} https://github.com/gutris1/segsmaker/raw/dRivE/script/nenen88.py'),
+        (STR / 'cupang.py', f'wget -qO {STR}/cupang.py https://github.com/gutris1/segsmaker/raw/dRivE/script/cupang.py'),
+        (MRK, f'wget -qO {MRK} https://github.com/gutris1/segsmaker/raw/dRivE/script/marking.py')
     ]
 
     [SyS(y) for x, y in z if not Path(x).exists()]
@@ -457,7 +454,7 @@ def notebook_scripts():
     marking(SRC, MARKED, webui)
     sys.path.append(str(STR))
 
-    for scripts in [nenen, pantat, KANDANG, MRK]: get_ipython().run_line_magic('run', str(scripts))
+    for scripts in [nenen, KANDANG, MRK]: get_ipython().run_line_magic('run', str(scripts))
 
 selection, civitai_key, hf_read_token = prevent_silly()
 if selection is None or civitai_key is None: sys.exit()
