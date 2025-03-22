@@ -16,7 +16,7 @@ for envname, (envbase, envhome, envvar) in env_list.items():
         break
 
 ROOT = Path.home()
-SRE = ROOT / 'GUTRIS1'
+SRE = '/GUTRIS1'
 BIN = str(SRE / 'bin')
 PKG = str(SRE / 'lib/python3.10/site-packages')
 
