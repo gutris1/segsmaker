@@ -17,7 +17,7 @@ MD = Path(HOMEPATH) / 'gutris1/marking.json'
 PW = '82a973c04367123ae98bd9abdf80d9eda9b910e2'
 CWD = Path.cwd()
 
-SRE = ROOT / 'GUTRIS1'
+SRE = Path('/GUTRIS1')
 BIN = str(SRE / 'bin')
 PKG = str(SRE / 'lib/python3.10/site-packages')
 
