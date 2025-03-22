@@ -378,20 +378,11 @@ def pull(line):
 
 @register_line_magic
 def tempe(line=''):
-    BASEPATH = None
-    ENVNAME = None
-
-    env = {
-        'Colab': ('/content', 'COLAB_JUPYTER_TOKEN'),
-        'Kaggle': ('/kaggle', 'KAGGLE_DATA_PROXY_TOKEN'),
-        'SageMaker': ('/home/studio-lab-user', 'SAGEMAKER_INTERNAL_IMAGE_URI')
-    }
-
-    for name, (fp, var) in env.items():
-        if var in os.environ:
-            BASEPATH = fp
-            ENVNAME = name
-            break
+    try:
+        from KANDANG import TEMPPATH
+        TMP = Path(TEMPPATH)
+    except ImportError:
+        TMP = Path('/tmp')
 
     DIRS = [
         'ckpt',
@@ -407,5 +398,4 @@ def tempe(line=''):
         'unet'
     ]
 
-    TMP = f'{BASEPATH}/temp' if ENVNAME in ('Colab', 'Kaggle') else '/tmp'
     for SUB in DIRS: Path(f'{TMP}/{SUB}').mkdir(parents=True, exist_ok=True)
