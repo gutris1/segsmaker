@@ -30,16 +30,16 @@ for envname, (envbase, envhome, envvar) in env_list.items():
         break
 
 if not ENVNAME:
-    print("You are not in Kaggle or Google Colab.\nExiting.")
+    print('You are not in Kaggle or Google Colab.\nExiting.')
     sys.exit()
 
-RST = "\033[0m"
-R = "\033[31m"
-P = "\033[38;5;135m"
-ORANGE = "\033[38;5;208m"
+RST = '\033[0m'
+R = '\033[31m'
+P = '\033[38;5;135m'
+ORANGE = '\033[38;5;208m'
 AR = f'{ORANGE}▶{RST}'
-ERR = f"{P}[{RST}{R}ERROR{RST}{P}]{RST}"
-IMG = "https://github.com/gutris1/segsmaker/raw/dRivE/script/SM/loading.png"
+ERR = f'{P}[{RST}{R}ERROR{RST}{P}]{RST}'
+IMG = 'https://github.com/gutris1/segsmaker/raw/dRivE/script/SM/loading.png'
 
 Muzik = """
 <iframe width="0" height="0"
@@ -70,49 +70,49 @@ KANDANG = STR / 'KANDANG.py'
 TMP.mkdir(parents=True, exist_ok=True)
 SRC.mkdir(parents=True, exist_ok=True)
 
-VALID_WEBUI_OPTIONS = ["A1111", "Forge", "ComfyUI", "ReForge", "SwarmUI"]
-VALID_SD_OPTIONS = ["1.5", "xl"]
+VALID_WEBUI_OPTIONS = ['A1111', 'Forge', 'ComfyUI', 'ReForge', 'SwarmUI']
+VALID_SD_OPTIONS = ['1.5', 'xl']
 
 def prevent_silly():
-    parser = argparse.ArgumentParser(description="WebUI Installer Script for Kaggle and Google Colab")
-    parser.add_argument('--webui', required=True, help="available webui: A1111, Forge, ComfyUI, ReForge, SwarmUI")
-    parser.add_argument('--sd', required=True, help="available sd: 1.5, xl")
-    parser.add_argument('--civitai_key', required=True, help="your CivitAI API key")
-    parser.add_argument('--hf_read_token', default=None, help="your Huggingface READ Token (optional)")
-    parser.add_argument('--save_outputs_in_drive', default='no', help="Mount Google Drive")
+    parser = argparse.ArgumentParser(description='WebUI Installer Script for Kaggle and Google Colab')
+    parser.add_argument('--webui', required=True, help='available webui: A1111, Forge, ComfyUI, ReForge, SwarmUI')
+    parser.add_argument('--sd', required=True, help='available sd: 1.5, xl')
+    parser.add_argument('--civitai_key', required=True, help='your CivitAI API key')
+    parser.add_argument('--hf_read_token', default=None, help='your Huggingface READ Token (optional)')
+    parser.add_argument('--save_outputs_in_drive', default='no', help='Mount Google Drive')
 
     args = parser.parse_args()
 
     arg1 = args.webui.lower()
     arg2 = args.sd.lower()
     arg3 = args.civitai_key.strip()
-    arg4 = args.hf_read_token.strip() if args.hf_read_token else ""
+    arg4 = args.hf_read_token.strip() if args.hf_read_token else ''
     arg5 = args.save_outputs_in_drive.lower()
 
     if not any(arg1 == option.lower() for option in VALID_WEBUI_OPTIONS):
-        print(f"{ERR}: invalid webui option: '{args.webui}'")
-        print(f"Available webui options: {', '.join(VALID_WEBUI_OPTIONS)}")
+        print(f'{ERR}: invalid webui option: "{args.webui}"')
+        print(f'Available webui options: {", ".join(VALID_WEBUI_OPTIONS)}')
         return None, None, None
 
     if not any(arg2 == option.lower() for option in VALID_SD_OPTIONS):
-        print(f"{ERR}: invalid sd option: '{args.sd}'")
-        print(f"Available sd options: {', '.join(VALID_SD_OPTIONS)}")
+        print(f'{ERR}: invalid sd option: "{args.sd}"')
+        print(f'Available sd options: {", ".join(VALID_SD_OPTIONS)}')
         return None, None, None
 
     if not arg3:
-        print(f"{ERR}: CivitAI API key is missing.")
+        print(f'{ERR}: CivitAI API key is missing.')
         return None, None, None
     if re.search(r'\s+', arg3):
-        print(f"{ERR}: CivitAI API key contains spaces '{arg3}' - not allowed.")
+        print(f'{ERR}: CivitAI API key contains spaces "{arg3}" - not allowed.')
         return None, None, None
     if len(arg3) < 32:
-        print(f"{ERR}: CivitAI API key must be at least 32 characters long.")
+        print(f'{ERR}: CivitAI API key must be at least 32 characters long.')
         return None, None, None
 
     if not arg4:
-        arg4 = ""
+        arg4 = ''
     if re.search(r'\s+', arg4):
-        arg4 = ""
+        arg4 = ''
 
     global SAVE_IN_DRIVE
     SAVE_IN_DRIVE = False
@@ -161,36 +161,36 @@ def install_tunnel():
     SyS(f'chmod +x {USR}/cl')
 
     bins = {
-        "zrok": {
-            "bin": USR / 'zrok',
-            "url": "https://github.com/openziti/zrok/releases/download/v0.4.44/zrok_0.4.44_linux_amd64.tar.gz"
+        'zrok': {
+            'bin': USR / 'zrok',
+            'url': 'https://github.com/openziti/zrok/releases/download/v0.4.44/zrok_0.4.44_linux_amd64.tar.gz'
         },
-        "ngrok": {
-            "bin": USR / 'ngrok',
-            "url": "https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz"
+        'ngrok': {
+            'bin': USR / 'ngrok',
+            'url': 'https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz'
         }
     }
 
     for n, b in bins.items():
-        if b["bin"].exists():
+        if b['bin'].exists():
             continue
 
-        url = b["url"]
+        url = b['url']
         name = Path(url).name
 
-        SyS(f"wget -qO {name} {url}")
-        SyS(f"tar -xzf {name} -C {USR}")
-        SyS(f"rm -f {name}")
+        SyS(f'wget -qO {name} {url}')
+        SyS(f'tar -xzf {name} -C {USR}')
+        SyS(f'rm -f {name}')
 
 def saving():
     j = {
-        "ENVNAME": ENVNAME,
-        "HOMEPATH": HOME,
-        "TEMPPATH": TMP,
-        "BASEPATH": BASEPATH
+        'ENVNAME': ENVNAME,
+        'HOMEPATH': HOME,
+        'TEMPPATH': TMP,
+        'BASEPATH': BASEPATH
     }
 
-    text = "\n".join(f"{k} = '{v}'" for k, v in j.items())
+    text = '\n'.join(f"{k} = '{v}'" for k, v in j.items())
     Path(KANDANG).write_text(text)
 
 def marking(p, n, u):
@@ -206,127 +206,123 @@ def marking(p, n, u):
 def key_inject(C, H):
     p = Path(nenen)
     v = p.read_text()
-
-    v = v.replace('TOKET = ""', f'TOKET = "{C}"')
-    v = v.replace('TOBRUT = ""', f'TOBRUT = "{H}"')
-
+    v = v.replace("TOKET = ''", f"TOKET = '{C}'")
+    v = v.replace("TOBRUT = ''", f"TOBRUT = '{H}'")
     p.write_text(v)
 
 def sym_link(U, M):
     configs = {
         'A1111': {
             'pre': [
-                f'rm -rf {M / "Stable-diffusion/tmp_ckpt"} {M / "Lora/tmp_lora"} {M / "ControlNet"} {TMP}/*'
+                f"rm -rf {M / 'Stable-diffusion/tmp_ckpt'} {M / 'Lora/tmp_lora'} {M / 'ControlNet'} {TMP}/*"
             ],
             'links': [
-                (TMP / "ckpt", M / "Stable-diffusion/tmp_ckpt"),
-                (TMP / "lora", M / "Lora/tmp_lora"),
-                (TMP / "controlnet", M / "ControlNet")
+                (TMP / 'ckpt', M / 'Stable-diffusion/tmp_ckpt'),
+                (TMP / 'lora', M / 'Lora/tmp_lora'),
+                (TMP / 'controlnet', M / 'ControlNet')
             ]
         },
 
         'ReForge': {
             'pre': [
-                f'rm -rf {M / "Stable-diffusion/tmp_ckpt"} {M / "Lora/tmp_lora"} {M / "ControlNet"}',
-                f'rm -rf {M / "svd"} {M / "z123"} {TMP}/*'
+                f"rm -rf {M / 'Stable-diffusion/tmp_ckpt'} {M / 'Lora/tmp_lora'} {M / 'ControlNet'}",
+                f"rm -rf {M / 'svd'} {M / 'z123'} {TMP}/*"
             ],
             'links': [
-                (TMP / "ckpt", M / "Stable-diffusion/tmp_ckpt"),
-                (TMP / "lora", M / "Lora/tmp_lora"),
-                (TMP / "controlnet", M / "ControlNet"),
-                (TMP / "z123", M / "z123"),
-                (TMP / "svd", M / "svd")
+                (TMP / 'ckpt', M / 'Stable-diffusion/tmp_ckpt'),
+                (TMP / 'lora', M / 'Lora/tmp_lora'),
+                (TMP / 'controlnet', M / 'ControlNet'),
+                (TMP / 'z123', M / 'z123'),
+                (TMP / 'svd', M / 'svd')
             ]
         },
 
         'Forge': {
             'pre': [
-                f'rm -rf {M / "Stable-diffusion/tmp_ckpt"} {M / "Lora/tmp_lora"} {M / "ControlNet"}',
-                f'rm -rf {M / "svd"} {M / "z123"} {M / "clip"} {M / "unet"} {TMP}/*'
+                f"rm -rf {M / 'Stable-diffusion/tmp_ckpt'} {M / 'Lora/tmp_lora'} {M / 'ControlNet'}",
+                f"rm -rf {M / 'svd'} {M / 'z123'} {M / 'clip'} {M / 'unet'} {TMP}/*"
             ],
             'links': [
-                (TMP / "ckpt", M / "Stable-diffusion/tmp_ckpt"),
-                (TMP / "lora", M / "Lora/tmp_lora"),
-                (TMP / "controlnet", M / "ControlNet"),
-                (TMP / "z123", M / "z123"),
-                (TMP / "svd", M / "svd"),
-                (TMP / "clip", M / "clip"),
-                (TMP / "unet", M / "unet")
+                (TMP / 'ckpt', M / 'Stable-diffusion/tmp_ckpt'),
+                (TMP / 'lora', M / 'Lora/tmp_lora'),
+                (TMP / 'controlnet', M / 'ControlNet'),
+                (TMP / 'z123', M / 'z123'),
+                (TMP / 'svd', M / 'svd'),
+                (TMP / 'clip', M / 'clip'),
+                (TMP / 'unet', M / 'unet')
             ]
         },
 
         'ComfyUI': {
             'pre': [
-                f'rm -rf {M / "checkpoints/tmp_ckpt"} {M / "loras/tmp_lora"} {M / "controlnet"}',
-                f'rm -rf {M / "clip"} {M / "unet"} {TMP}/*'
+                f"rm -rf {M / 'checkpoints/tmp_ckpt'} {M / 'loras/tmp_lora'} {M / 'controlnet'}",
+                f"rm -rf {M / 'clip'} {M / 'unet'} {TMP}/*"
             ],
             'links': [
-                (TMP / "ckpt", M / "checkpoints/tmp_ckpt"),
-                (TMP / "lora", M / "loras/tmp_lora"),
-                (TMP / "controlnet", M / "controlnet"),
-                (TMP / "clip", M / "clip"),
-                (TMP / "unet", M / "unet"),
-                (M / "checkpoints", M / "checkpoints_symlink")
+                (TMP / 'ckpt', M / 'checkpoints/tmp_ckpt'),
+                (TMP / 'lora', M / 'loras/tmp_lora'),
+                (TMP / 'controlnet', M / 'controlnet'),
+                (TMP / 'clip', M / 'clip'),
+                (TMP / 'unet', M / 'unet'),
+                (M / 'checkpoints', M / 'checkpoints_symlink')
             ]
         },
 
         'SwarmUI': {
             'pre': [
-                f'rm -rf {M / "Stable-Diffusion/tmp_ckpt"} {M / "Lora/tmp_lora"} {M / "controlnet"}',
-                f'rm -rf {M / "clip"} {M / "unet"} {TMP}/*'
+                f"rm -rf {M / 'Stable-Diffusion/tmp_ckpt'} {M / 'Lora/tmp_lora'} {M / 'controlnet'}",
+                f"rm -rf {M / 'clip'} {M / 'unet'} {TMP}/*"
             ],
             'links': [
-                (TMP / "ckpt", M / "Stable-Diffusion/tmp_ckpt"),
-                (TMP / "lora", M / "Lora/tmp_lora"),
-                (TMP / "controlnet", M / "controlnet"),
-                (TMP / "clip", M / "clip"),
-                (TMP / "unet", M / "unet")
+                (TMP / 'ckpt', M / 'Stable-Diffusion/tmp_ckpt'),
+                (TMP / 'lora', M / 'Lora/tmp_lora'),
+                (TMP / 'controlnet', M / 'controlnet'),
+                (TMP / 'clip', M / 'clip'),
+                (TMP / 'unet', M / 'unet')
             ]
         }
     }
 
     cfg = configs.get(U)
     [SyS(f'{cmd}') for cmd in cfg['pre']]
-
-    if U in ['A1111', 'Forge', 'ReForge']:
-        [(M / d).mkdir(parents=True, exist_ok=True) for d in ["Lora", "ESRGAN"]]
-
+    if U in ['A1111', 'Forge', 'ReForge']: [(M / d).mkdir(parents=True, exist_ok=True) for d in ['Lora', 'ESRGAN']]
     [SyS(f'ln -s {src} {tg}') for src, tg in cfg['links']]
 
 def webui_req(U, W, M):
     CD(W)
 
     if U in ['A1111', 'Forge', 'ComfyUI', 'ReForge']:
-        pull(f"https://github.com/gutris1/segsmaker {U.lower()} {W}")
+        pull(f'https://github.com/gutris1/segsmaker {U.lower()} {W}')
     elif U == 'SwarmUI':
         M.mkdir(parents=True, exist_ok=True)
         for sub in ['Stable-Diffusion', 'Lora', 'Embeddings', 'VAE', 'upscale_models']:
             (M / sub).mkdir(parents=True, exist_ok=True)
 
-        download(f"https://dot.net/v1/dotnet-install.sh {W}")
+        download(f'https://dot.net/v1/dotnet-install.sh {W}')
         dotnet = W / 'dotnet-install.sh'
         dotnet.chmod(0o755)
-        SyS("bash ./dotnet-install.sh --channel 8.0")
+        SyS('bash ./dotnet-install.sh --channel 8.0')
 
     sym_link(U, M)
     install_tunnel()
 
     scripts = [
-        f"https://github.com/gutris1/segsmaker/raw/dRivE/script/controlnet.py {W}/asd",
-        f"https://github.com/gutris1/segsmaker/raw/main/script/KC/segsmaker.py {W}"
+        f'https://github.com/gutris1/segsmaker/raw/dRivE/script/controlnet.py {W}/asd',
+        f'https://github.com/gutris1/segsmaker/raw/main/script/KC/segsmaker.py {W}'
     ]
 
     u = M / 'upscale_models' if U in ['ComfyUI', 'SwarmUI'] else M / 'ESRGAN'
+
     upscalers = [
-        f"https://huggingface.co/gutris1/webui/resolve/main/misc/4x-UltraSharp.pth {u}",
-        f"https://huggingface.co/gutris1/webui/resolve/main/misc/4x-AnimeSharp.pth {u}",
-        f"https://huggingface.co/gutris1/webui/resolve/main/misc/4x_NMKD-Superscale-SP_178000_G.pth {u}",
-        f"https://huggingface.co/uwg/upscaler/resolve/main/ESRGAN/8x_NMKD-Superscale_150000_G.pth {u}",
-        f"https://huggingface.co/gutris1/webui/resolve/main/misc/4x_RealisticRescaler_100000_G.pth {u}",
-        f"https://huggingface.co/gutris1/webui/resolve/main/misc/8x_RealESRGAN.pth {u}",
-        f"https://huggingface.co/gutris1/webui/resolve/main/misc/4x_foolhardy_Remacri.pth {u}",
-        f"https://huggingface.co/subby2006/NMKD-YandereNeoXL/resolve/main/4x_NMKD-YandereNeoXL_200k.pth {u}",
-        f"https://huggingface.co/subby2006/NMKD-UltraYandere/resolve/main/4x_NMKD-UltraYandere_300k.pth {u}"
+        f'https://huggingface.co/gutris1/webui/resolve/main/misc/4x-UltraSharp.pth {u}',
+        f'https://huggingface.co/gutris1/webui/resolve/main/misc/4x-AnimeSharp.pth {u}',
+        f'https://huggingface.co/gutris1/webui/resolve/main/misc/4x_NMKD-Superscale-SP_178000_G.pth {u}',
+        f'https://huggingface.co/uwg/upscaler/resolve/main/ESRGAN/8x_NMKD-Superscale_150000_G.pth {u}',
+        f'https://huggingface.co/gutris1/webui/resolve/main/misc/4x_RealisticRescaler_100000_G.pth {u}',
+        f'https://huggingface.co/gutris1/webui/resolve/main/misc/8x_RealESRGAN.pth {u}',
+        f'https://huggingface.co/gutris1/webui/resolve/main/misc/4x_foolhardy_Remacri.pth {u}',
+        f'https://huggingface.co/subby2006/NMKD-YandereNeoXL/resolve/main/4x_NMKD-YandereNeoXL_200k.pth {u}',
+        f'https://huggingface.co/subby2006/NMKD-UltraYandere/resolve/main/4x_NMKD-UltraYandere_300k.pth {u}'
     ]
 
     line = scripts + upscalers
@@ -337,45 +333,48 @@ def webui_req(U, W, M):
         download(f'https://huggingface.co/gutris1/webui/resolve/main/misc/card-no-preview.png {W}/html')
 
 def webui_extension(U, W, M):
-    EXT = W / "custom_nodes" if U == 'ComfyUI' else W / "extensions"
+    EXT = W / 'custom_nodes' if U == 'ComfyUI' else W / 'extensions'
     CD(EXT)
 
     if U == 'ComfyUI':
-        say("<br><b>【{red} Installing Custom Nodes{d} 】{red}</b>")
-        clone(str(W / "asd/custom_nodes.txt"))
+        say('<br><b>【{red} Installing Custom Nodes{d} 】{red}</b>')
+        clone(str(W / 'asd/custom_nodes.txt'))
         print()
 
         for faces in [
-            f"https://github.com/sczhou/CodeFormer/releases/download/v0.1.0/codeformer.pth {M}/facerestore_models",
-            f"https://github.com/TencentARC/GFPGAN/releases/download/v1.3.4/GFPGANv1.4.pth {M}/facerestore_models"
+            f'https://github.com/sczhou/CodeFormer/releases/download/v0.1.0/codeformer.pth {M}/facerestore_models',
+            f'https://github.com/TencentARC/GFPGAN/releases/download/v1.3.4/GFPGANv1.4.pth {M}/facerestore_models'
         ]: download(faces)
 
     else:
-        say("<br><b>【{red} Installing Extensions{d} 】{red}</b>")
-        clone(str(W / "asd/extension.txt"))
+        say('<br><b>【{red} Installing Extensions{d} 】{red}</b>')
+        clone(str(W / 'asd/extension.txt'))
 
-        clone('https://github.com/gutris1/sd-civitai-browser-plus-plus' if ENVNAME == 'Kaggle'
-            else 'https://github.com/BlafKing/sd-civitai-browser-plus')
+        clone(
+            'https://github.com/gutris1/sd-civitai-browser-plus-plus'
+            if ENVNAME == 'Kaggle'
+            else 'https://github.com/BlafKing/sd-civitai-browser-plus'
+        )
 
 def webui_installation(U, S, W, M, E, V):
     webui_req(U, W, M)
 
-    if S == "xl":
+    if S == 'xl':
         embzip = W / 'embeddingsXL.zip'
         extras = [
-            f"https://huggingface.co/gutris1/webui/resolve/main/misc/embeddingsXL.zip {W}",
-            f"https://huggingface.co/madebyollin/sdxl-vae-fp16-fix/resolve/main/sdxl.vae.safetensors {V} sdxl_vae.safetensors"
+            f'https://huggingface.co/gutris1/webui/resolve/main/misc/embeddingsXL.zip {W}',
+            f'https://huggingface.co/madebyollin/sdxl-vae-fp16-fix/resolve/main/sdxl.vae.safetensors {V} sdxl_vae.safetensors'
         ]
 
     else:
         embzip =  W / 'embeddings.zip'
         extras = [
-            f"https://huggingface.co/gutris1/webui/resolve/main/misc/embeddings.zip {W}",
-            f"https://huggingface.co/stabilityai/sd-vae-ft-mse-original/resolve/main/vae-ft-mse-840000-ema-pruned.safetensors {V}"
+            f'https://huggingface.co/gutris1/webui/resolve/main/misc/embeddings.zip {W}',
+            f'https://huggingface.co/stabilityai/sd-vae-ft-mse-original/resolve/main/vae-ft-mse-840000-ema-pruned.safetensors {V}'
         ]
 
     for item in extras: download(item)
-    SyS(f"unzip -qo {embzip} -d {E} && rm {embzip}")
+    SyS(f'unzip -qo {embzip} -d {E} && rm {embzip}')
     if U != 'SwarmUI': webui_extension(U, W, M)
 
 def webui_selection(ui, which_sd):
@@ -395,7 +394,7 @@ def webui_selection(ui, which_sd):
         EMB = MODELS / 'Embeddings' if ui == 'SwarmUI' else (MODELS / 'embeddings' if ui == 'ComfyUI' else WEBUI / 'embeddings')
         VAE = MODELS / 'vae' if ui == 'ComfyUI' else MODELS / 'VAE'
 
-        say(f"<b>【{{red}} Installing {WEBUI.name}{{d}} 】{{red}}</b>")
+        say(f'<b>【{{red}} Installing {WEBUI.name}{{d}} 】{{red}}</b>')
         clone(repo)
 
         if SAVE_IN_DRIVE:
@@ -408,7 +407,7 @@ def webui_selection(ui, which_sd):
 
         with loading:
             loading.clear_output(wait=True)
-            say("<br><b>【{red} Done{d} 】{red}</b>")
+            say('<br><b>【{red} Done{d} 】{red}</b>')
             tempe()
             CD(HOME)
 
@@ -425,19 +424,19 @@ def webui_installer():
             with output:
                 output.clear_output(wait=True)
                 if ui in ['A1111', 'ComfyUI', 'SwarmUI']:
-                    SyS("git pull origin master")
+                    SyS('git pull origin master')
                 elif ui in ['Forge', 'ReForge']:
-                    SyS("git pull origin main")
+                    SyS('git pull origin main')
                 with loading: loading.clear_output()
     else:
         try:
             webui_selection(webui, sd)
         except KeyboardInterrupt:
             with loading: loading.clear_output()
-            with output: print("\nCanceled.")
+            with output: print('\nCanceled.')
         except Exception as e:
             with loading: loading.clear_output()
-            with output: print(f"\n{ERR}: {e}")
+            with output: print(f'\n{ERR}: {e}')
 
 def notebook_scripts():
     z = [
