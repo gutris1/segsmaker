@@ -110,15 +110,13 @@ def install_tunnel():
         SyS(f'tar -xzf {binDir}/{name} -C {binDir} --wildcards *{n}')
         SyS(f'rm -f {binDir}/{name}')
 
-        if str(binDir) not in iRON.get('PATH', ''):
-            iRON['PATH'] += ':' + str(binDir)
-
+        if str(binDir) not in iRON.get('PATH', ''): iRON['PATH'] += ':' + str(binDir)
         binPath.chmod(0o755)
 
 def sym_link(U, M):
     configs = {
         'A1111': {
-            'pre': [
+            'sym': [
                 f"rm -rf {M / 'Stable-diffusion/tmp_ckpt'} {M / 'Lora/tmp_lora'} {M / 'ControlNet'}"
             ],
             'links': [
@@ -130,7 +128,7 @@ def sym_link(U, M):
         },
 
         'ReForge': {
-            'pre': [
+            'sym': [
                 f"rm -rf {M / 'Stable-diffusion/tmp_ckpt'} {M / 'Lora/tmp_lora'} {M / 'ControlNet'}",
                 f"rm -rf {M / 'svd'} {M / 'z123'}"
             ],
@@ -145,9 +143,10 @@ def sym_link(U, M):
         },
 
         'Forge': {
-            'pre': [
+            'sym': [
                 f"rm -rf {M / 'Stable-diffusion/tmp_ckpt'} {M / 'Lora/tmp_lora'} {M / 'ControlNet'}",
-                f"rm -rf {M / 'svd'} {M / 'z123'} {M / 'clip'} {M / 'unet'}"
+                f"rm -rf {M / 'svd'} {M / 'z123'} {M / 'clip'} {M / 'clip_vision'} {M / 'diffusers'}",
+                f"rm -rf {M / 'diffusion_models'} {M / 'text_encoder'} {M / 'unet'}"
             ],
             'links': [
                 (TMP, HOME / 'tmp'),
@@ -157,28 +156,37 @@ def sym_link(U, M):
                 (TMP / 'z123', M / 'z123'),
                 (TMP / 'svd', M / 'svd'),
                 (TMP / 'clip', M / 'clip'),
+                (TMP / 'clip_vision', M / 'clip_vision'),
+                (TMP / 'diffusers', M / 'diffusers'),
+                (TMP / 'diffusion_models', M / 'diffusion_models'),
+                (TMP / 'text_encoders', M / 'text_encoder'),
                 (TMP / 'unet', M / 'unet')
             ]
         },
 
         'ComfyUI': {
-            'pre': [
+            'sym': [
                 f"rm -rf {M / 'checkpoints/tmp_ckpt'} {M / 'loras/tmp_lora'} {M / 'controlnet'}",
-                f"rm -rf {M / 'clip'} {M / 'unet'}"
+                f"rm -rf {M / 'clip'} {M / 'clip_vision'} {M / 'diffusers'} {M / 'diffusion_models'}",
+                f"rm -rf {M / 'text_encoders'} {M / 'unet'}"
             ],
             'links': [
+                (M / 'checkpoints', M / 'checkpoints_symlink'),
                 (TMP, HOME / 'tmp'),
                 (TMP / 'ckpt', M / 'checkpoints/tmp_ckpt'),
                 (TMP / 'lora', M / 'loras/tmp_lora'),
                 (TMP / 'controlnet', M / 'controlnet'),
                 (TMP / 'clip', M / 'clip'),
-                (TMP / 'unet', M / 'unet'),
-                (M / 'checkpoints', M / 'checkpoints_symlink')
+                (TMP / 'clip_vision', M / 'clip_vision'),
+                (TMP / 'diffusers', M / 'diffusers'),
+                (TMP / 'diffusion_models', M / 'diffusion_models'),
+                (TMP / 'text_encoders', M / 'text_encoders'),
+                (TMP / 'unet', M / 'unet')
             ]
         },
 
         'SwarmUI': {
-            'pre': [
+            'sym': [
                 f"rm -rf {M / 'Stable-Diffusion/tmp_ckpt'} {M / 'Lora/tmp_lora'} {M / 'controlnet'}",
                 f"rm -rf {M / 'clip'} {M / 'unet'}"
             ],
@@ -195,7 +203,7 @@ def sym_link(U, M):
 
     cfg = configs.get(U)
     SyS(f"rm -rf {HOME / 'tmp'} {HOME / '.cache'}/*")
-    [SyS(f'{cmd}') for cmd in cfg['pre']]
+    [SyS(f'{cmd}') for cmd in cfg['sym']]
     if U in ['A1111', 'Forge', 'ReForge']: [(M / d).mkdir(parents=True, exist_ok=True) for d in ['Lora', 'ESRGAN']]
     [SyS(f'ln -s {src} {tg}') for src, tg in cfg['links']]
 
@@ -339,16 +347,14 @@ def facetrainer(ui):
 
         if ui == 'FaceFusion':
             check_ffmpeg()
-            req = [
-                f'rm -rf {HOME}/tmp {HOME}/.cache/*', f'ln -vs /tmp {HOME}/tmp'
-            ]
+            req = [f'rm -rf {HOME}/tmp {HOME}/.cache/*', f'ln -vs /tmp {HOME}/tmp']
         else:
             req = [
                 f'rm -rf {HOME}/tmp {HOME}/.cache/*', f'mkdir -p {WEBUI}/dataset',
                 f'mkdir -p {WEBUI}/VAE', f'ln -vs /tmp {HOME}/tmp'
             ]
 
-        for lines in req: SyS(f'{lines}>/dev/null 2>&1')
+        for lines in req: SyS(f'{lines} >/dev/null 2>&1')
         for items in SM_Script(WEBUI): download(items)
         tempe()
 
