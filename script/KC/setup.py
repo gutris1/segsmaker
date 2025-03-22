@@ -80,6 +80,7 @@ def prevent_silly():
     parser.add_argument('--sd', required=True, help="available sd: 1.5, xl")
     parser.add_argument('--civitai_key', required=True, help="your CivitAI API key")
     parser.add_argument('--hf_read_token', default=None, help="your Huggingface READ Token (optional)")
+    parser.add_argument('--save_outputs_in_drive', default='no', help="Mount Google Drive")
 
     args = parser.parse_args()
 
@@ -87,6 +88,7 @@ def prevent_silly():
     arg2 = args.sd.lower()
     arg3 = args.civitai_key.strip()
     arg4 = args.hf_read_token.strip() if args.hf_read_token else ""
+    arg5 = args.save_outputs_in_drive.lower()
 
     if not any(arg1 == option.lower() for option in VALID_WEBUI_OPTIONS):
         print(f"{ERR}: invalid webui option: '{args.webui}'")
@@ -113,10 +115,18 @@ def prevent_silly():
     if re.search(r'\s+', arg4):
         arg4 = ""
 
+    global SAVE_IN_DRIVE
+    SAVE_IN_DRIVE = False
+
+    if arg5 == 'yes' and ENVNAME == 'Colab':
+        from google.colab import drive
+        drive.mount('/content/drive')
+        SAVE_IN_DRIVE = True
+
     webui_webui = next(option for option in VALID_WEBUI_OPTIONS if arg1 == option.lower())
     sd_sd = next(option for option in VALID_SD_OPTIONS if arg2 == option.lower())
-    return (webui_webui, sd_sd), arg3, arg4
 
+    return (webui_webui, sd_sd), arg3, arg4
 
 def PythonPortable():
     CD(ROOT)
@@ -147,7 +157,6 @@ def PythonPortable():
     if BIN not in iRON['PATH']: iRON['PATH'] = BIN + ':' + iRON['PATH']
     if PKG not in iRON['PYTHONPATH']: iRON['PYTHONPATH'] = PKG + ':' + iRON['PYTHONPATH']
 
-
 def install_tunnel():
     SyS(f'wget -qO {USR}/cl https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64')
     SyS(f'chmod +x {USR}/cl')
@@ -174,7 +183,6 @@ def install_tunnel():
         SyS(f"tar -xzf {name} -C {USR}")
         SyS(f"rm -f {name}")
 
-
 def saving():
     j = {
         "ENVNAME": ENVNAME,
@@ -186,7 +194,6 @@ def saving():
     text = "\n".join(f"{k} = '{v}'" for k, v in j.items())
     Path(KANDANG).write_text(text)
 
-
 def marking(p, n, u):
     t = p / n
     v = {'ui': u, 'launch_args': '', 'tunnel': ''}
@@ -197,7 +204,6 @@ def marking(p, n, u):
     d.update(v)
     t.write_text(json.dumps(d, indent=4))
 
-
 def key_inject(C, H):
     for l in [pantat, nenen]:
         p = Path(l)
@@ -207,7 +213,6 @@ def key_inject(C, H):
         v = v.replace('tobrut = ""', f'tobrut = "{H}"')
 
         p.write_text(v)
-
 
 def sym_link(U, M):
     configs = {
@@ -290,7 +295,6 @@ def sym_link(U, M):
 
     [SyS(f'ln -s {src} {tg}') for src, tg in cfg['links']]
 
-
 def webui_req(U, W, M):
     CD(W)
 
@@ -334,7 +338,6 @@ def webui_req(U, W, M):
         SyS(f'rm -f {W}/html/card-no-preview.png')
         download(f'https://huggingface.co/gutris1/webui/resolve/main/misc/card-no-preview.png {W}/html')
 
-
 def webui_extension(U, W, M):
     EXT = W / "custom_nodes" if U == 'ComfyUI' else W / "extensions"
     CD(EXT)
@@ -355,7 +358,6 @@ def webui_extension(U, W, M):
 
         clone('https://github.com/gutris1/sd-civitai-browser-plus-plus' if ENVNAME == 'Kaggle'
             else 'https://github.com/BlafKing/sd-civitai-browser-plus')
-
 
 def webui_installation(U, S, W, M, E, V):
     webui_req(U, W, M)
@@ -378,7 +380,6 @@ def webui_installation(U, S, W, M, E, V):
     SyS(f"unzip -qo {embzip} -d {E} && rm {embzip}")
     if U != 'SwarmUI': webui_extension(U, W, M)
 
-
 def webui_selection(ui, which_sd):
     with output:
         output.clear_output(wait=True)
@@ -399,6 +400,12 @@ def webui_selection(ui, which_sd):
         say(f"<b>【{{red}} Installing {WEBUI.name}{{d}} 】{{red}}</b>")
         clone(repo)
 
+        if SAVE_IN_DRIVE:
+            outputs = WEBUI / ('Output' if ui == 'SwarmUI' else 'output' if ui == 'ComfyUI' else 'outputs')
+            driveOutputs = Path('/content/drive/MyDrive/OUTPUTS') / ui
+            driveOutputs.mkdir(parents=True, exist_ok=True)
+            outputs.symlink_to(driveOutputs)
+
         webui_installation(ui, which_sd, WEBUI, MODELS, EMB, VAE)
 
         with loading:
@@ -406,7 +413,6 @@ def webui_selection(ui, which_sd):
             say("<br><b>【{red} Done{d} 】{red}</b>")
             tempe()
             CD(HOME)
-
 
 def webui_installer():
     CD(HOME)
@@ -435,7 +441,6 @@ def webui_installer():
             with loading: loading.clear_output()
             with output: print(f"\n{ERR}: {e}")
 
-
 def notebook_scripts():
     z = [
         (STR / '00-startup.py', f'wget -qO {STR}/00-startup.py https://github.com/gutris1/segsmaker/raw/main/script/KC/00-startup.py'),
@@ -453,7 +458,6 @@ def notebook_scripts():
     sys.path.append(str(STR))
 
     for scripts in [nenen, pantat, KANDANG, MRK]: get_ipython().run_line_magic('run', str(scripts))
-
 
 selection, civitai_key, hf_read_token = prevent_silly()
 if selection is None or civitai_key is None: sys.exit()
