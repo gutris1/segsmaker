@@ -377,7 +377,7 @@ def pull(line):
     subs(shlex.split(cmd5), cwd=str(fp), **opts)
 
 @register_line_magic
-def tempe(line):
+def tempe(line=''):
     BASEPATH = None
     ENVNAME = None
 
