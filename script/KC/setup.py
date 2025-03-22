@@ -39,7 +39,7 @@ P = '\033[38;5;135m'
 ORANGE = '\033[38;5;208m'
 AR = f'{ORANGE}▶{RST}'
 ERR = f'{P}[{RST}{R}ERROR{RST}{P}]{RST}'
-IMG = 'https://github.com/gutris1/segsmaker/raw/dRivE/script/SM/loading.png'
+IMG = 'https://github.com/gutris1/segsmaker/raw/main/script/loading.png'
 
 Muzik = """
 <iframe width="0" height="0"
