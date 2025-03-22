@@ -51,7 +51,7 @@ Muzik = """
 """
 
 ROOT = Path.home()
-SRE = '/GUTRIS1'
+SRE = Path('/GUTRIS1')
 
 HOME = Path(ENVHOME)
 BASEPATH = Path(ENVBASE)
