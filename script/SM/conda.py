@@ -8,7 +8,7 @@ import json
 
 home = Path.home()
 src = home / '.gutris1'
-css = src / 'pantat88.css'
+css = src / 'segsmaker.css'
 startup = home / '.ipython/profile_default/startup'
 nenen = startup / 'nenen88.py'
 key_file = src / 'api-key.json'
@@ -90,10 +90,8 @@ def KeyInject(civitai_key, hf_token):
 
     p = Path(nenen)
     v = p.read_text()
-
-    v = v.replace('TOKET = ""', f'TOKET = "{civitai_key}"')
-    v = v.replace('TOBRUT = ""', f'TOBRUT = "{hf_token}"')
-
+    v = v.replace("TOKET = ''", f"TOKET = '{civitai_key}'")
+    v = v.replace("TOBRUT = ''", f"TOBRUT = '{hf_token}'")
     p.write_text(v)
 
 def KeyWidget(civitai_key='', hf_token=''):
@@ -159,7 +157,7 @@ def KeyCheck():
 
 def CondaMisc():
     for scr in [
-        f'curl -sLo {css} https://github.com/gutris1/segsmaker/raw/main/script/SM/pantat88.css',
+        f'curl -sLo {css} https://github.com/gutris1/segsmaker/raw/main/script/SM/segsmaker.css',
         f'curl -sLo {startup}/00-startup.py https://github.com/gutris1/segsmaker/raw/main/script/SM/00-startup.py',
         f'curl -sLo {startup}/util.py https://github.com/gutris1/segsmaker/raw/main/script/SM/util.py',
         f'curl -sLo {img} https://github.com/gutris1/segsmaker/raw/main/script/loading.png',
