@@ -240,8 +240,8 @@ def sym_link(U, M):
         'Forge': {
             'sym': [
                 f"rm -rf {M / 'Stable-diffusion/tmp_ckpt'} {M / 'Lora/tmp_lora'} {M / 'ControlNet'}",
-                f"rm -rf {M / 'svd'} {M / 'z123'} {M / 'clip'} {M / 'clip_vision'} {TMP}/*",
-                f"rm -rf {M / 'diffusers'} {M / 'diffusion_models'} {M / 'text_encoder'} {M / 'unet'} {TMP}/*"
+                f"rm -rf {M / 'svd'} {M / 'z123'} {M / 'clip'} {M / 'clip_vision'} {M / 'diffusers'}",
+                f"rm -rf {M / 'diffusion_models'} {M / 'text_encoder'} {M / 'unet'} {TMP}/*"
             ],
             'links': [
                 (TMP / 'ckpt', M / 'Stable-diffusion/tmp_ckpt'),
@@ -261,7 +261,8 @@ def sym_link(U, M):
         'ComfyUI': {
             'sym': [
                 f"rm -rf {M / 'checkpoints/tmp_ckpt'} {M / 'loras/tmp_lora'} {M / 'controlnet'}",
-                f"rm -rf {M / 'clip'} {M / 'unet'} {TMP}/*"
+                f"rm -rf {M / 'clip'} {M / 'clip_vision'} {M / 'diffusers'} {M / 'diffusion_models'}",
+                f"rm -rf {M / 'text_encoders'} {M / 'unet'} {TMP}/*"
             ],
             'links': [
                 (M / 'checkpoints', M / 'checkpoints_symlink'),
