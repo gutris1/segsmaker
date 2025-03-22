@@ -28,16 +28,9 @@ Path(src).mkdir(parents=True, exist_ok=True)
 SyS = get_ipython().system
 
 main_output = widgets.Output()
-
 save_button = widgets.Button(description='Save')
-save_button.add_class('save-button')
-
 civitai_key_box = widgets.Text(placeholder='Enter Your Civitai API Key Here', layout=widgets.Layout(width='350px'))
-civitai_key_box.add_class('api-input')
-
 hf_token_box = widgets.Text(placeholder='Huggingface READ Token (optional)', layout=widgets.Layout(width='350px'))
-hf_token_box.add_class('api-input')
-
 input_widget = widgets.Box(
     [civitai_key_box, hf_token_box, save_button], 
     layout=widgets.Layout(
@@ -50,6 +43,10 @@ input_widget = widgets.Box(
         padding='10px'
     )
 )
+
+save_button.add_class('save-button')
+civitai_key_box.add_class('api-input')
+hf_token_box.add_class('api-input')
 input_widget.add_class('boxs')
 
 def CondaInstall():
@@ -68,8 +65,7 @@ def CondaInstall():
         ]
 
         for cmd, msg in cmd_list:
-            if msg is not None:
-                print(msg)
+            if msg is not None: print(msg)
             subprocess.run(shlex.split(cmd), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
         SyS(f'rm -rf {home}/.cache/* {home}/.condarc')
@@ -115,8 +111,7 @@ def KeyWidget(civitai_key='', hf_token=''):
             hf_token_value = {'huggingface-read-token': hf_token}
 
             secrets = {**civitai_key_value, **hf_token_value}
-            with open(key_file, 'w') as file:
-                json.dump(secrets, file, indent=4)
+            key_file.write_text(json.dumps(secrets, indent=4))
 
         KeyInject(civitai_key, hf_token)
 
@@ -138,11 +133,10 @@ def KeyWidget(civitai_key='', hf_token=''):
 
 def KeyCheck():
     if key_file.exists():
-        with open(key_file, 'r') as file:
-            value = json.load(file)
+        v = json.loads(key_file.read_text())
 
-        civitai_key = value.get('civitai-api-key', '')
-        hf_token = value.get('huggingface-read-token', '')
+        civitai_key = v.get('civitai-api-key', '')
+        hf_token = v.get('huggingface-read-token', '')
 
         if not civitai_key or not hf_token:
             display(input_widget, main_output)
