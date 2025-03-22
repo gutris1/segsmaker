@@ -410,6 +410,7 @@ def webui_selection(ui, which_sd):
             outputs = WEBUI / ('Output' if ui == 'SwarmUI' else 'output' if ui == 'ComfyUI' else 'outputs')
             driveOutputs = Path('/content/drive/MyDrive/OUTPUTS') / ui
             driveOutputs.mkdir(parents=True, exist_ok=True)
+            if outputs.exists(): SyS(f'rm -rf {outputs}')
             outputs.symlink_to(driveOutputs)
 
         webui_installation(ui, which_sd, WEBUI, MODELS, EMB, VAE)
