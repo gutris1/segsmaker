@@ -39,7 +39,7 @@ P = '\033[38;5;135m'
 ORANGE = '\033[38;5;208m'
 AR = f'{ORANGE}▶{RST}'
 ERR = f'{P}[{RST}{R}ERROR{RST}{P}]{RST}'
-IMG = 'https://github.com/gutris1/segsmaker/raw/main/script/loading.png'
+IMG = 'https://github.com/gutris1/segsmaker/raw/dRivE/script/loading.png'
 
 Muzik = """
 <iframe width="0" height="0"
@@ -51,7 +51,7 @@ Muzik = """
 """
 
 ROOT = Path.home()
-SRE = ROOT / 'GUTRIS1'
+SRE = '/GUTRIS1'
 
 HOME = Path(ENVHOME)
 BASEPATH = Path(ENVBASE)
@@ -118,8 +118,6 @@ def prevent_silly():
     SAVE_IN_DRIVE = False
 
     if arg5 == 'yes' and ENVNAME == 'Colab':
-        from google.colab import drive  # type: ignore
-        drive.mount('/content/drive')
         SAVE_IN_DRIVE = True
 
     webui_webui = next(option for option in VALID_WEBUI_OPTIONS if arg1 == option.lower())
@@ -128,7 +126,11 @@ def prevent_silly():
     return (webui_webui, sd_sd), arg3, arg4
 
 def PythonPortable():
-    CD(ROOT)
+    if SAVE_IN_DRIVE:
+        from google.colab import drive  # type: ignore
+        drive.mount('/content/drive')
+
+    CD('/')
     print(f'\n{AR} installing Python Portable 3.10.15')
 
     BIN = str(SRE / 'bin')
@@ -151,7 +153,7 @@ def PythonPortable():
         ]: SyS(f'{cmd} >/dev/null 2>&1')
 
     SyS(pv)
-    Path(ROOT / fn).unlink()
+    Path("/" / fn).unlink()
 
     if BIN not in iRON['PATH']: iRON['PATH'] = BIN + ':' + iRON['PATH']
     if PKG not in iRON['PYTHONPATH']: iRON['PYTHONPATH'] = PKG + ':' + iRON['PYTHONPATH']
@@ -471,7 +473,8 @@ webui, sd = selection
 
 display(output, loading)
 with loading: display(HTML(Muzik)); display(Image(url=IMG))
-with output: SRE.exists() or (PythonPortable(), notebook_scripts())
+with output: SRE.exists() or PythonPortable()
+notebook_scripts()
 
 from nenen88 import clone, say, download, tempe, pull # type: ignore
 webui_installer()
