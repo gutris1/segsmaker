@@ -332,7 +332,7 @@ def clone(i):
                 if 'fatal' in output:
                     print(f'  {output}')
                 elif output.startswith('Cloning into'):
-                    repo_name = '/'.join(output.split('"')[1].split('/')[-3:])
+                    repo_name = "/".join(output.split("'")[1].split("/")[-3:])
                     print(f'  {repo_name} ▶ {url}')
 
         p.wait()
