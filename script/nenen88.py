@@ -252,7 +252,7 @@ def ariari(cmd, fn):
         p.wait()
 
     except KeyboardInterrupt:
-        print(f'\n{'':>2}^ Canceled')
+        print(f'\n{"":>2}^ Canceled')
 
 def curlly(cmd, fn):
     try:
