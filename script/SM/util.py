@@ -123,15 +123,14 @@ def delete_everything(line):
             padding='10px'
         )
     )
-    
+
     ask.add_class('del')
     yes.add_class('save-button')
     no.add_class('save-button')
     boxs.add_class('boxs')
 
     def load_css(css):
-        panel = Path(css).read_text()
-        display(HTML(f'<style>{panel}</style>'))
+        display(HTML(f'<style>{Path(css).read_text()}</style>'))
 
     def oh_no(b):
         boxs.close()
@@ -324,7 +323,7 @@ def change_key(line):
     new_hf_token = widgets.Text(placeholder='New Huggingface READ Token (optional)', layout=widgets.Layout(left='6px', width='340px'))
     current_civitai_key = widgets.Text(placeholder='', disabled=True, layout=widgets.Layout(left='-3px', top='0px'))
     current_hf_token = widgets.Text(placeholder='', disabled=True, layout=widgets.Layout(top='0px'))
-    
+
     buttons = widgets.HBox(
         [cancel_button, save_button],
         layout=widgets.Layout(
@@ -349,7 +348,7 @@ def change_key(line):
             align_items='baseline'
         )
     )
-    
+
     new_box = widgets.Box(
         [new_civitai_key, new_hf_token],
         layout=widgets.Layout(
@@ -388,8 +387,7 @@ def change_key(line):
     input_widget.add_class('input-widget')
 
     def load_css(css):
-        panel = Path(css).read_text()
-        display(HTML(f'<style>{panel}</style>'))
+        display(HTML(f'<style>{Path(css).read_text()}</style>'))
 
     def key_inject(civitai_key, hf_token):
         SyS(f'curl -sLo {nenen} https://github.com/gutris1/segsmaker/raw/main/script/nenen88.py')
@@ -514,8 +512,7 @@ def zrok_register(line):
         SyS(f'rm -rf {home}/.cache/* {zrok_tar}')
 
     def load_css(css):
-        zrok_panel = Path(css).read_text()
-        display(HTML(f'<style>{zrok_panel}</style>'))
+        display(HTML(f'<style>{Path(css).read_text()}</style>'))
 
     def register(b):
         import pexpect
@@ -551,9 +548,7 @@ def zrok_register(line):
             time.sleep(2)
             child.close()
 
-            print(f'Invitation sent to {E}\n'
-                  f'Be sure to check your SPAM folder if you do not receive the invitation email.')
-
+            print(f'Invitation sent to {E}\n Be sure to check your SPAM folder if you do not receive the invitation email.')
             zrok_txt.unlink()
 
     def exit(b):
@@ -564,6 +559,6 @@ def zrok_register(line):
 
     register_button.on_click(register)
     exit_button.on_click(exit)
-    
+
     zrok_install()
     SyS('pip install -q pexpect')
