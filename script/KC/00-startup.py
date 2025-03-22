@@ -23,10 +23,10 @@ MRK = Path(ENVHOME) / 'gutris1/marking.py'
 STR = str(ROOT / '.ipython/profile_default/startup')
 
 iRON = os.environ
-
 sys.path.append(STR)
 
 if SRE.exists():
+    sys.path.insert(0, str(SRE / 'lib/python3.10/site-packages'))
     if BIN not in iRON["PATH"]: iRON["PATH"] = BIN + ":" + iRON["PATH"]
     if PKG not in iRON["PYTHONPATH"]: iRON["PYTHONPATH"] = PKG + ":" + iRON["PYTHONPATH"]
 
