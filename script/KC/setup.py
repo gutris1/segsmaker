@@ -50,20 +50,18 @@ Muzik = """
 </iframe>
 """
 
-ROOT = Path.home()
-SRE = Path('/GUTRIS1')
-
 HOME = Path(ENVHOME)
 BASEPATH = Path(ENVBASE)
 TMP = BASEPATH / 'temp'
 
+PY = Path('/GUTRIS1')
 SRC = HOME / 'gutris1'
 MRK = SRC / 'marking.py'
 KEY = SRC / 'api-key.json'
 MARKED = SRC / 'marking.json'
 
 USR = Path('/usr/bin')
-STR = ROOT / '.ipython/profile_default/startup'
+STR = Path.home() / '.ipython/profile_default/startup'
 nenen = STR / 'nenen88.py'
 KANDANG = STR / 'KANDANG.py'
 
@@ -126,37 +124,37 @@ def prevent_silly():
     return (webui_webui, sd_sd), arg3, arg4
 
 def PythonPortable():
+    BIN = str(PY / 'bin')
+    PKG = str(PY / 'lib/python3.10/site-packages')
+
+    url = 'https://huggingface.co/gutris1/webui/resolve/main/env/python310-torch251-cu121-2.tar.lz4'
+    fn = Path(url).name
+
     if SAVE_IN_DRIVE:
         from google.colab import drive  # type: ignore
         drive.mount('/content/drive')
 
     CD('/')
     print(f'\n{AR} installing Python Portable 3.10.15')
-
-    BIN = str(SRE / 'bin')
-    PKG = str(SRE / 'lib/python3.10/site-packages')
     SyS('sudo apt-get -qq -y install aria2 pv lz4 >/dev/null 2>&1')
-
-    url = 'https://huggingface.co/gutris1/webui/resolve/main/env/python310-torch251-cu121.tar.lz4'
-    fn = Path(url).name
-
     aria = f'aria2c --console-log-level=error --stderr=true -c -x16 -s16 -k1M -j5 {url} -o {fn}'
     pv = f'pv {fn} | lz4 -d | tar -xf -'
 
     p = subprocess.Popen(shlex.split(aria), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     p.wait()
 
+    SyS(pv)
+    Path(f'/{fn}').unlink()
+
+    sys.path.insert(0, PKG)
+    if BIN not in iRON['PATH']: iRON['PATH'] = BIN + ':' + iRON['PATH']
+    if PKG not in iRON['PYTHONPATH']: iRON['PYTHONPATH'] = PKG + ':' + iRON['PYTHONPATH']
+
     if ENVNAME == 'Kaggle':
         for cmd in [
             'pip install ipywidgets jupyterlab_widgets --upgrade',
             'rm -f /usr/lib/python3.10/sitecustomize.py'
         ]: SyS(f'{cmd} >/dev/null 2>&1')
-
-    SyS(pv)
-    Path("/" / fn).unlink()
-
-    if BIN not in iRON['PATH']: iRON['PATH'] = BIN + ':' + iRON['PATH']
-    if PKG not in iRON['PYTHONPATH']: iRON['PYTHONPATH'] = PKG + ':' + iRON['PYTHONPATH']
 
 def install_tunnel():
     SyS(f'wget -qO {USR}/cl https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64')
@@ -473,7 +471,7 @@ webui, sd = selection
 
 display(output, loading)
 with loading: display(HTML(Muzik)); display(Image(url=IMG))
-with output: SRE.exists() or PythonPortable()
+with output: PY.exists() or PythonPortable()
 notebook_scripts()
 
 from nenen88 import clone, say, download, tempe, pull # type: ignore
