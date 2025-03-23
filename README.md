@@ -12,6 +12,11 @@
 
 <br />
 
+# Preview
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/e5c54a3a-69b4-4835-9d4b-cf9302b15b62", max-width=1000px>
+  <img src="https://github.com/user-attachments/assets/e8a6168a-04cd-4aff-b81d-daed71e6bfb3", max-width=1000px>
+</p>
 
 # Changelog
 ### 2077-01-35
@@ -143,10 +148,3 @@ Usage:
   <img src="https://github.com/gutris1/segsmaker/assets/132797949/d3fa05b6-4cdd-4ffc-9a50-43bf550de627" width="367" height="169">
 - Don't worry, you only need to do that once. next time you reinstall Conda, you will not be prompted again.
 </details>
-
-# Preview
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/e5c54a3a-69b4-4835-9d4b-cf9302b15b62", width=1000px>
-  <img src="https://github.com/gutris1/segsmaker/blob/main/script/preview/fastpnginfo.png", width=1000px>
-  <img src="https://github.com/gutris1/segsmaker/blob/main/script/preview/cn.png", width=1000px>
-</p>
