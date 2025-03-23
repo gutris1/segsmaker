@@ -19,13 +19,22 @@
 </p>
 
 # Changelog
-### 2077-01-35
+### 2025-03-23
+- Added an argument exclusive to Google Colab for saving outputs to Google Drive.
+- Redirected paths for <code>clip_vision</code> <code>diffusers</code> <code>diffusion_models</code> and <code>text_encoders</code> to TMP for ComfyUI.
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/569b1e60-75ef-4e88-ae77-941dabf1f165", max-width=1000px>
+</p>
+
+<details><summary>2025-01-30</summary><br>
+
 - Torch 2.5.1
 - Portable Python 3.10.15 for Colab and Kaggle.
 - Added $UNET and $CLIP variables %cd command for FLUX.
 - Fixed Controlnet Widget buggy display in Kaggle.
 - Recolor Aria2 downloader.
 - Fixed scripts.
+</details>
 
 <details><summary>2025-01-10</summary><br>
 
