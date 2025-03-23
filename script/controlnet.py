@@ -1,14 +1,13 @@
-from IPython.display import display, HTML, clear_output, Image
+from IPython.display import display, HTML
 from nenen88 import download, tempe
 from IPython import get_ipython
 from ipywidgets import widgets
 from pathlib import Path
 import os
 
-SRCN = Path(__file__).parent
-CSSCN = SRCN / 'controlnet.css'
-IMG = 'https://github.com/gutris1/segsmaker/raw/dRivE/script/loading.png'
-
+CSSCN = Path(__file__).parent / 'controlnet.css'
+SyS = get_ipython().system
+CD = os.chdir
 SM = None
 
 try:
@@ -195,21 +194,6 @@ CN_XL_List = {
         'https://huggingface.co/xinsir/controlnet-union-sdxl-1.0/resolve/main/diffusion_pytorch_model_promax.safetensors controlnet-union-sdxl-promax.safetensors']
 }
 
-def Controlnet_CSS():
-    z = [(CSSCN, f'curl -sLo {CSSCN} https://github.com/gutris1/segsmaker/raw/dRivE/script/controlnet.css')]
-    for x, y in z:
-        if not SM:
-            if not Path(x).exists():
-                get_ipython().system(y)
-        else:
-            get_ipython().system(y)
-
-def Load_CSS():
-    display(HTML(f'<style>{open(CSSCN).read()}</style>'))
-
-loading = widgets.Output()
-output = widgets.Output()
-
 options = ['btn-cn-15', 'btn-cn-xl']
 buttons = []
 
@@ -309,9 +293,6 @@ def Download_Controlnet(b):
     cnxl_panel.close()
     tempe()
 
-    with loading:
-        display(Image(url=IMG))
-
     download_list = []
 
     if cn15_panel.layout.display == 'flex':
@@ -326,18 +307,20 @@ def Download_Controlnet(b):
             if check.value:
                 download_list.extend(CN_XL_List[key])
 
-    with output:
-        os.chdir(TMPCN)
-        for url in download_list:
-            download(url)
+    CD(TMPCN)
+    for url in download_list:
+        download(url)
 
-        loading.clear_output()
-        os.chdir(HOME)
+    CD(HOME)
 
-Controlnet_CSS()
+def Load_CSS():
+    dl = f'curl -sLo {CSSCN} https://github.com/gutris1/segsmaker/raw/main/script/controlnet.css'
+    SyS(dl) if SM or not Path(CSSCN).exists() else None
+    display(HTML(f'<style>{CSSCN.read_text()}</style>'))
+
 Load_CSS()
 cn_main_panel.children = buttons
-display(cn_main_panel, cn15_panel, cnxl_panel, loading, output)
+display(cn_main_panel, cn15_panel, cnxl_panel)
 
 select_all_button_15.on_click(SelectAll)
 unselect_all_button_15.on_click(UnselectAll)
