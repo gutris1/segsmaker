@@ -130,14 +130,14 @@ def strip_(url):
             version_id = url.split('?modelVersionId=')[1] if '?modelVersionId=' in url else None
             model_id = url.split('/models/')[1].split('/')[0] if not version_id else None
             api_url = f'https://civitai.com/api/v1/model-versions/{version_id}' if version_id else f'https://civitai.com/api/v1/models/{model_id}'
-
             data = requests.get(api_url).json()
+
             if data.get('earlyAccessEndsAt'):
                 print("\n  The model is in early access and requires payment for downloading.\n"
                       f"  -> https://civitai.com/models/{data.get('modelId')}?modelVersionId={data.get('id')}\n")
                 return None
 
-            return f"{data.get('downloadUrl', data['modelVersions'][0]['downloadUrl'])}?token={TOKET}"
+            return f"{data.get('downloadUrl') or data.get('modelVersions', [{}])[0].get('downloadUrl')}?token={TOKET}"
 
     elif any(domain in url for domain in ['huggingface.co', 'github.com']):
         url = url.replace('/blob/', '/resolve/' if "huggingface.co" in url else '/raw/')
