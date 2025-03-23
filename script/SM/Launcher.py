@@ -7,7 +7,7 @@ import sys
 import os
 
 MARK = Path.home() / '.gutris1/marking.json'
-config = json.load(MARK.open('r'))
+config = json.loads(MARK.read_text())
 tunnel = config.get('tunnel')
 ui = config.get('ui')
 cwd = Path.cwd()
@@ -82,7 +82,8 @@ def sdtrainer_launch():
     SyS(cmd)
 
 def facefusion_launch():
-    cmd = f"source activate default && /tmp/venv-fusion/bin/python3 facefusion.py run {' '.join(shlex.quote(arg) for arg in sys.argv[1:])}"
+    dmc = 'source activate default && /tmp/venv-fusion/bin/python3 facefusion.py run'
+    cmd = f"{dmc} {' '.join(shlex.quote(arg) for arg in sys.argv[1:])}"
     webui = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=sys.stdout, text=True, shell=True, executable="/bin/bash")
     for line in webui.stdout:
         print(line, end='')
@@ -91,12 +92,7 @@ def facefusion_launch():
 if __name__ == '__main__':
     try:
         setENV()
-
-        whichUI = {
-            'FaceFusion': facefusion_launch,
-            'SDTrainer': sdtrainer_launch
-        }
-
+        whichUI = {'FaceFusion': facefusion_launch, 'SDTrainer': sdtrainer_launch}
         whichUI.get(ui, Launch)()
     except KeyboardInterrupt:
         pass

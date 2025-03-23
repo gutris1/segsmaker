@@ -1,18 +1,22 @@
-
-from IPython.display import display, HTML, clear_output, Image
+from IPython.display import display, HTML, clear_output
 from multiprocessing import Process, Condition, Value
 from IPython import get_ipython
 from ipywidgets import widgets
 from pathlib import Path
-import json, argparse, sys, logging, yaml
+import argparse
+import logging
+import json
+import yaml
+import sys
 
 HOME = Path.home()
 SRC = HOME / '.gutris1'
 CSS = SRC / 'setup.css'
 MARK = SRC / 'marking.json'
-IMG = SRC / "loading.png"
+IMG = SRC / 'loading.png'
 
-py = '/tmp/venv/bin/python3'
+PY = '/tmp/venv/bin/python3'
+SyS = get_ipython().system
 
 def get_args(ui):
     args_line = {
@@ -32,32 +36,27 @@ def GPU_check():
 
 def load_config():
     global ui
-    config = json.load(MARK.open('r')) if MARK.exists() else {}
+    config = json.loads(MARK.read_text()) if MARK.exists() else {}
 
     ui = config.get('ui', None)
+    arg = config.get('launch_args')
+    tunnell = config.get('tunnel')
     zrok_token.value = config.get('zrok_token', '')
     ngrok_token.value = config.get('ngrok_token', '')
 
-    arg = config.get('launch_args')
     if arg:
         launch_args.value = arg
     else:
         launch_args.value = get_args(ui)
 
-    tunnell = config.get('tunnel')
     if tunnell in ['Pinggy', 'ZROK', 'NGROK']:
         tunnel.value = tunnell
     else:
         tunnel.value = 'Pinggy'
         config.update({"tunnel": tunnel.value})
-        with MARK.open('w') as file:
-            json.dump(config, file, indent=4)
+        MARK.write_text(json.dumps(config, indent=4))
 
-    if GPU_check():
-        cpu_cb.value = False
-    else:
-        cpu_cb.value = config.get('cpu_usage', False)
-
+    cpu_cb.value = False if GPU_check() else config.get('cpu_usage', False)
     cpu_cb.layout.display = 'none' if ui in ['SDTrainer', 'FaceFusion', 'SwarmUI'] or GPU_check() else 'block'
 
     ui_titles = {
@@ -69,13 +68,11 @@ def load_config():
         'SDTrainer': 'SD Trainer',
         'SwarmUI': 'SwarmUI'
     }
+
     title.value = f'<div class="title"><h1>{ui_titles.get(ui, "Unknown UI")}</h1></div>'
 
 def save_config(zrok_token, ngrok_token, launch_args, tunnel):
-    config = {}
-    if MARK.exists():
-        with MARK.open('r') as file:
-            config = json.load(file)
+    config = json.loads(MARK.read_text()) if MARK.exists() else {}
 
     config.update({
         "zrok_token": zrok_token,
@@ -85,19 +82,16 @@ def save_config(zrok_token, ngrok_token, launch_args, tunnel):
         "cpu_usage": cpu_cb.value
     })
 
-    with MARK.open('w') as file:
-        json.dump(config, file, indent=4)
+    MARK.write_text(json.dumps(config, indent=4))
 
 def load_css():
     display(HTML(f"<style>{CSS.read_text()}</style>"))
 
+options = ["Pinggy", "ZROK", "NGROK"]
 title = widgets.HTML()
 zrok_token = widgets.Text(placeholder='Your ZROK Token')
 ngrok_token = widgets.Text(placeholder='Your NGROK Token')
-
 launch_args = widgets.Text(placeholder='Launch Arguments List', layout=widgets.Layout(top='20px'))
-
-options = ["Pinggy", "ZROK", "NGROK"]
 tunnel = widgets.RadioButtons(
     options=options,
     layout=widgets.Layout(
@@ -171,58 +165,46 @@ condition = Condition()
 is_ready = Value('b', False)
 
 def ZROK_enable():
-    if not zrok_token.value:
-        print("[ERROR]: ZROK Token is empty")
-        sys.exit()
-
     zrokbin = HOME / '.zrok/bin/zrok'
-    if not zrokbin.exists():
-        print("[ERROR]: ZROK is not installed")
-        sys.exit()
+    not zrok_token.value or (print("[ERROR]: ZROK Token is empty"), sys.exit())
+    zrokbin.exists() or (print("[ERROR]: ZROK is not installed"), sys.exit())
 
     zrok_env = HOME / '.zrok/environment.json'
     if zrok_env.exists():
-        with open(zrok_env, 'r') as f:
-            current_value = json.load(f)
-            current_token = current_value.get('zrok_token')
+        current_value = json.loads(zrok_env.read_text())
+        current_token = current_value.get('zrok_token')
 
         if current_token == zrok_token.value:
             pass
         else:
-            get_ipython().system('zrok disable')
-            get_ipython().system(f'zrok enable {zrok_token.value}')
+            SyS('zrok disable')
+            SyS(f'zrok enable {zrok_token.value}')
             print()
     else:
-        get_ipython().system(f'zrok enable {zrok_token.value}')
+        SyS(f'zrok enable {zrok_token.value}')
         print()
 
 def NGROK_auth():
-    if not ngrok_token.value:
-        print("[ERROR]: NGROK Token is empty")
-        sys.exit()
-
     ngrokbin = HOME / '.ngrok/bin/ngrok'
-    if not ngrokbin.exists():
-        print("[ERROR]: NGROK is not installed")
-        sys.exit()
+    not ngrok_token.value or (print("[ERROR]: NGROK Token is empty"), sys.exit())
+    ngrokbin.exists() or (print("[ERROR]: NGROK is not installed"), sys.exit())
 
     ngrok_yml = HOME / '.config/ngrok/ngrok.yml'
     if ngrok_yml.exists():
-        with open(ngrok_yml, 'r') as f:
-            current_value = yaml.safe_load(f)
-            current_token = current_value.get('agent', {}).get('authtoken')
+        current_value = yaml.safe_load(ngrok_yml.read_text())
+        current_token = current_value.get('agent', {}).get('authtoken')
 
         if current_token == ngrok_token.value:
             pass
         else:
-            get_ipython().system(f'ngrok config add-authtoken {ngrok_token.value}')
+            SyS(f'ngrok config add-authtoken {ngrok_token.value}')
             print()
     else:
-        get_ipython().system(f'ngrok config add-authtoken {ngrok_token.value}')
+        SyS(f'ngrok config add-authtoken {ngrok_token.value}')
         print()
 
 def launching(ui, skip_comfyui_check=False):
-    global py
+    global PY
     args = f'{launch_args.value}'
     tunnel_name = tunnel.value
 
@@ -243,7 +225,7 @@ def launching(ui, skip_comfyui_check=False):
     elif ui == 'ComfyUI':
         port = 8188
         if not skip_comfyui_check:
-            get_ipython().system(f'{py} apotek.py')
+            SyS(f'{PY} apotek.py')
             clear_output(wait=True)
     else:
         port = 7860
@@ -251,9 +233,9 @@ def launching(ui, skip_comfyui_check=False):
     if ui in ['A1111', 'Forge', 'ReForge']:
         args += ' --enable-insecure-extension-access --disable-console-progressbars --theme dark'
     elif ui == 'FaceFusion':
-        py = '/tmp/venv-fusion/bin/python3'
+        PY = '/tmp/venv-fusion/bin/python3'
     elif ui == 'SDTrainer':
-        py = 'HF_HOME=huggingface /tmp/venv-sd-trainer/bin/python3'
+        PY = 'HF_HOME=huggingface /tmp/venv-sd-trainer/bin/python3'
 
     tunnel_config = {
         'Pinggy': {
@@ -273,7 +255,7 @@ def launching(ui, skip_comfyui_check=False):
         }
     }
 
-    c = f'{py} Launcher.py {args}'
+    c = f'{PY} Launcher.py {args}'
     cmd = {key: c for key in ['Pinggy', 'ZROK', 'NGROK']}.get(tunnel_name)
     configs = tunnel_config.get(tunnel_name)
 
@@ -281,19 +263,14 @@ def launching(ui, skip_comfyui_check=False):
         try:
             from cupang import Tunnel as Alice_Zuberg
 
-            if tunnel_name == 'ZROK':
-                ZROK_enable()
-
-            if tunnel_name == 'NGROK':
-                NGROK_auth()
+            if tunnel_name == 'ZROK': ZROK_enable()
+            if tunnel_name == 'NGROK': NGROK_auth()
 
             Alice_Synthesis_Thirty = Alice_Zuberg(port)
             Alice_Synthesis_Thirty.logger.setLevel(logging.DEBUG)
             Alice_Synthesis_Thirty.add_tunnel(command=configs['command'], name=configs['name'], pattern=configs['pattern'])
 
-            with Alice_Synthesis_Thirty:
-                get_ipython().system(cmd)
-
+            with Alice_Synthesis_Thirty: SyS(cmd)
         except KeyboardInterrupt:
             pass
 
@@ -313,13 +290,7 @@ def waiting(condition, is_ready):
 def launch(b):
     global ui, zrok_token, ngrok_token, launch_args, tunnel
     launch_panel.close()
-
-    save_config(
-        zrok_token.value,
-        ngrok_token.value,
-        launch_args.value,
-        tunnel.value)
-
+    save_config(zrok_token.value, ngrok_token.value, launch_args.value, tunnel.value)
     with condition:
         is_ready.value = True
         condition.notify()
@@ -331,7 +302,6 @@ def display_widgets():
     load_config()
     load_css()
     display(launch_panel)
-
     launch_button.on_click(launch)
     exit_button.on_click(exit)
 

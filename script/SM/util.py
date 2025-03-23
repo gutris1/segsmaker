@@ -3,46 +3,53 @@ from IPython.display import display, HTML, clear_output, Image
 from IPython import get_ipython
 import ipywidgets as widgets
 from pathlib import Path
-from tqdm import tqdm
 from nenen88 import say
-import subprocess, time, zipfile, sys, os, json, psutil
+from tqdm import tqdm
+import subprocess
+import zipfile
+import psutil
+import time
+import json
+import sys
+import os
 
+SyS = get_ipython().system
 
 home = Path.home()
-src_src = home / '.gutris1'
-css = src_src / "pantat88.css"
-img = src_src / "loading.png"
-startup = home / ".ipython/profile_default/startup"
+src = home / '.gutris1'
+css = src / 'segsmaker.css'
+img = src / 'loading.png'
+startup = home / '.ipython/profile_default/startup'
 
 @register_line_magic
 def storage(line):
-    get_ipython().system(f"rm -rf {home}/.cache/*")
-    paths = [str(home), "/tmp"]
+    SyS(f'rm -rf {home}/.cache/*')
+    paths = [str(home), '/tmp']
 
     def size1(size, dcml=1):
         if size == 0:
-            return "0 KB"
+            return '0 KB'
 
         for unit in ['B', 'KB', 'MB', 'GB', 'TB']:
             if size < 1024.0:
                 if unit in ['B', 'KB']:
-                    return f"{size:.0f} {unit}"
+                    return f'{size:.0f} {unit}'
                 else:
-                    return f"{size:.{dcml}f} {unit}"
+                    return f'{size:.{dcml}f} {unit}'
             size /= 1024.0
 
     def size2(size_in_kb):
         if size_in_kb == 0:
-            return "0 KB"
+            return '0 KB'
 
         base = 1024
         size_in_bytes = size_in_kb * base
         for unit in ['B', 'KB', 'MB', 'GB', 'TB']:
             if size_in_bytes < base:
                 if unit in ['B', 'KB']:
-                    return f"{size_in_bytes:.0f} {unit}"
+                    return f'{size_in_bytes:.0f} {unit}'
                 else:
-                    return f"{size_in_bytes:.1f} {unit}"
+                    return f'{size_in_bytes:.1f} {unit}'
             size_in_bytes /= base
 
     for path_str in paths:
@@ -54,15 +61,15 @@ def storage(line):
         free_str = size1(usage.free, dcml=1)
 
         if path_str == str(home):
-            storage_type = "Persistent Storage"
-        elif path_str == "/tmp":
-            storage_type = "Temporary Storage"
+            storage_type = 'Persistent Storage'
+        elif path_str == '/tmp':
+            storage_type = 'Temporary Storage'
 
-        display(HTML(f"{storage_type}"))
+        display(HTML(f'{storage_type}'))
 
-        print(f" Size = {size_str:>8}")
-        print(f" Used = {used_str:>8} | {usage.percent:.1f}%")
-        print(f" Free = {free_str:>8} | {100 - usage.percent:.1f}%")
+        print(f' Size = {size_str:>8}')
+        print(f' Used = {used_str:>8} | {usage.percent:.1f}%')
+        print(f' Free = {free_str:>8} | {100 - usage.percent:.1f}%')
         print()
 
     du_process = subprocess.Popen(['du', '-h', '-k', '--max-depth=1', str(home)], stdout=subprocess.PIPE)
@@ -82,47 +89,48 @@ def storage(line):
 
     if subdirectories:
         for base_path, formatted_size in subdirectories:
-            padding = " " * max(0, 9 - len(formatted_size))
-            print(f"/{base_path:<30} {padding}{formatted_size}")
+            padding = ' ' * max(0, 9 - len(formatted_size))
+            print(f'/{base_path:<30} {padding}{formatted_size}')
 
 @register_line_magic
 def delete_everything(line):    
     main_output = widgets.Output()
-    
-    ask = widgets.Label("Delete?")
-    ask.add_class("del")
-
-    yes = widgets.Button(description="Yes")
-    yes.add_class("save-button")
-
-    no = widgets.Button(description="No")
-    no.add_class("save-button")
+    ask = widgets.Label('Delete?')
+    yes = widgets.Button(description='Yes')
+    no = widgets.Button(description='No')
 
     button = widgets.HBox(
-        [no, yes], layout=widgets.Layout(
+        [no, yes],
+        layout=widgets.Layout(
             display='flex',
             flex_flow='row',
             align_items='center',
             top='35px',
             justify_content='space-around',
-            width='100%'))
+            width='100%'
+        )
+    )
 
     boxs = widgets.VBox(
-        [ask, button], layout=widgets.Layout(
+        [ask, button],
+        layout=widgets.Layout(
             width='450px',
             height='150px',
             display='flex',
             flex_flow='column',
             align_items='center',
             justify_content='space-around',
-            padding='10px'))
-    boxs.add_class("boxs")
+            padding='10px'
+        )
+    )
+
+    ask.add_class('del')
+    yes.add_class('save-button')
+    no.add_class('save-button')
+    boxs.add_class('boxs')
 
     def load_css(css):
-        with open(css, "r") as file:
-            panel = file.read()
-
-        display(HTML(f"<style>{panel}</style>"))
+        display(HTML(f'<style>{Path(css).read_text()}</style>'))
 
     def oh_no(b):
         boxs.close()
@@ -135,8 +143,7 @@ def delete_everything(line):
 
             display(Image(filename=str(img)))
 
-            if 'LD_PRELOAD' in os.environ:
-                del os.environ['LD_PRELOAD']
+            if 'LD_PRELOAD' in os.environ: del os.environ['LD_PRELOAD']
 
             folder_list = [
                 'A1111', 'Forge', 'ReForge', 'ComfyUI', 'SwarmUI', 'SDTrainer', 'FaceFusion',
@@ -148,8 +155,7 @@ def delete_everything(line):
                 f"rm -rf {' '.join([str(home / folder) for folder in folder_list])}",
             ]
 
-            for deleting in cmd_list:
-                get_ipython().system(deleting)
+            for deleting in cmd_list: SyS(deleting)
 
             is_nb = False
             try:
@@ -166,7 +172,7 @@ def delete_everything(line):
 
             if is_nb:
                 main_output.clear_output(wait=True)
-                say("Now, Please Restart JupyterLab")
+                say('Restart JupyterLab Now!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
 
     no.on_click(oh_no)
     yes.on_click(oh_yes)
@@ -176,23 +182,17 @@ def delete_everything(line):
 
 def nb_clear(nb_path):
     try:
-        with open(nb_path, 'r') as f:
-            nb_contents = json.load(f)
+        nb_file = Path(nb_path)
+        nb_contents = json.loads(nb_file.read_text())
 
         nb_contents['metadata'] = {
-            "language_info": {
-                "name": ""
-            },
-            "kernelspec": {
-                "name": "",
-                "display_name": ""
-            }
+            'language_info': {'name': ''},
+            'kernelspec': {'name': '', 'display_name': ''}
         }
-        
-        with open(nb_path, 'w') as f:
-            json.dump(nb_contents, f, indent=1, sort_keys=True)
 
-    except:
+        nb_file.write_text(json.dumps(nb_contents, indent=1, sort_keys=True))
+
+    except Exception:
         pass
 
 @register_cell_magic
@@ -208,7 +208,7 @@ def zipping(line, cell):
 
         if len(soup) == 2:
             arg_name = soup[0].strip()
-            arg_value = soup[1].strip().strip("'")
+            arg_value = soup[1].strip().strip('"')
 
             if '$HOME' in arg_value or '$home' in arg_value:
                 arg_value = arg_value.replace('$HOME', str(Path.home())).replace('$home', str(Path.home()))
@@ -218,7 +218,7 @@ def zipping(line, cell):
                 if var_name in globals():
                     arg_value = str(globals()[var_name])
                 else:
-                    print(f"[ERROR]: {var_name} is not defined.")
+                    print(f'[ERROR]: {var_name} is not defined.')
                     return
 
             if arg_name == 'inputs':
@@ -231,7 +231,7 @@ def zipping(line, cell):
                 custom_name = arg_value
 
     if not input_path.exists():
-        print(f"[ERROR]: {input_path} does not exist.")
+        print(f'[ERROR]: {input_path} does not exist.')
         return
 
     if not output_path.exists():
@@ -257,21 +257,21 @@ def zipping(line, cell):
                 if file_path.suffix.lower() not in skip_extensions:
                     all_files.append(file_path)
                 else:
-                    print(f"{file_path.name} skipped")
+                    print(f'{file_path.name} skipped')
 
         zip_number = 1
         current_zip_size = 0
 
         if custom_name:
-            current_zip_name = output_path / f"{custom_name}_{zip_number}.zip"
+            current_zip_name = output_path / f'{custom_name}_{zip_number}.zip'
         else:
-            current_zip_name = output_path / f"part_{zip_number}.zip"
+            current_zip_name = output_path / f'part_{zip_number}.zip'
 
         with tqdm(
             total=len(all_files),
             desc='zipping : ',
             bar_format='{desc}[{bar:26}] [{n_fmt}/{total_fmt}]',
-            ascii="▷▶",
+            ascii='▷▶',
             file=sys.stdout) as pbar:
 
             with zipfile.ZipFile(
@@ -288,20 +288,22 @@ def zipping(line, cell):
                         zip_number += 1
 
                         if custom_name:
-                            current_zip_name = output_path / f"{custom_name}_{zip_number}.zip"
+                            current_zip_name = output_path / f'{custom_name}_{zip_number}.zip'
                         else:
-                            current_zip_name = output_path / f"part_{zip_number}.zip"
+                            current_zip_name = output_path / f'part_{zip_number}.zip'
 
                         current_zip = zipfile.ZipFile(
                             current_zip_name,
                             'w',
-                            compression=zipfile.ZIP_DEFLATED)
+                            compression=zipfile.ZIP_DEFLATED
+                        )
 
                         current_zip_size = 0
 
                     current_zip.write(
                         file_path,
-                        file_path.relative_to(input_path))
+                        file_path.relative_to(input_path)
+                    )
 
                     current_zip_size += file_size
                     pbar.update(1)
@@ -311,36 +313,16 @@ def zipping(line, cell):
 
 @register_line_magic
 def change_key(line):
-    nenen = startup / "nenen88.py"
-    pantat = startup / "pantat88.py"
-    key_file = src_src / "api-key.json"
+    nenen = startup / 'nenen88.py'
+    key_file = src / 'api-key.json'
 
     main_output = widgets.Output()
-    save_button = widgets.Button(description="Save")
-    save_button.add_class("save")
-
-    cancel_button = widgets.Button(description="Cancel")
-    cancel_button.add_class("cancel")
-
+    save_button = widgets.Button(description='Save')
+    cancel_button = widgets.Button(description='Cancel')
     new_civitai_key = widgets.Text(placeholder='New Civitai API KEY')
-    new_civitai_key.add_class("key-input")
-
-    new_hf_token = widgets.Text(
-        placeholder='New Huggingface READ Token (optional)',
-        layout=widgets.Layout(left='6px', width='340px'))
-    new_hf_token.add_class("key-hf")
-    
-    current_civitai_key = widgets.Text(
-        placeholder='',
-        disabled=True,
-        layout=widgets.Layout(left='-3px', top='0px'))
-    current_civitai_key.add_class("current-key")
-
-    current_hf_token = widgets.Text(
-        placeholder='',
-        disabled=True,
-        layout=widgets.Layout(top='0px'))
-    current_hf_token.add_class("current-hf")
+    new_hf_token = widgets.Text(placeholder='New Huggingface READ Token (optional)', layout=widgets.Layout(left='6px', width='340px'))
+    current_civitai_key = widgets.Text(placeholder='', disabled=True, layout=widgets.Layout(left='-3px', top='0px'))
+    current_hf_token = widgets.Text(placeholder='', disabled=True, layout=widgets.Layout(top='0px'))
 
     buttons = widgets.HBox(
         [cancel_button, save_button],
@@ -350,7 +332,9 @@ def change_key(line):
             flex_flow='row',
             align_items='center',
             justify_content='space-around',
-            padding='0px'))
+            padding='0px'
+        )
+    )
 
     current_box = widgets.Box(
         [current_civitai_key, current_hf_token],
@@ -361,8 +345,10 @@ def change_key(line):
             display='flex',
             flex_flow='column',
             justify_content='space-around',
-            align_items='baseline'))
-    
+            align_items='baseline'
+        )
+    )
+
     new_box = widgets.Box(
         [new_civitai_key, new_hf_token],
         layout=widgets.Layout(
@@ -372,49 +358,45 @@ def change_key(line):
             display='flex',
             flex_flow='column',
             justify_content='space-around',
-            align_items='flex-end'))
+            align_items='flex-end'
+        )
+    )
 
     key_box = widgets.HBox([current_box, new_box])
 
     input_widget = widgets.VBox(
         [key_box, buttons],
         layout=widgets.Layout(
-            position='absolute', 
-            width='700px',
-            height='180px',
-            display='flex',
-            flex_flow='column',
-            align_items='center',
-            justify_content='space-around',
-            padding='20px'))
-    input_widget.add_class("input-widget")
+            position="absolute",
+            width="700px",
+            height="180px",
+            display="flex",
+            flex_flow="column",
+            align_items="center",
+            justify_content="space-around",
+            padding="20px",
+        )
+    )
+
+    save_button.add_class('save')
+    cancel_button.add_class('cancel')
+    new_civitai_key.add_class('key-input')
+    new_hf_token.add_class('key-hf')
+    current_civitai_key.add_class('current-key')
+    current_hf_token.add_class('current-hf')
+    input_widget.add_class('input-widget')
 
     def load_css(css):
-        with open(css, "r") as file:
-            panel = file.read()
-
-        display(HTML(f"<style>{panel}</style>"))
+        display(HTML(f'<style>{Path(css).read_text()}</style>'))
 
     def key_inject(civitai_key, hf_token):
-        x = [
-            f"curl -sLo {pantat} https://github.com/gutris1/segsmaker/raw/main/script/SM/pantat88.py",
-            f"curl -sLo {nenen} https://github.com/gutris1/segsmaker/raw/main/script/SM/nenen88.py"
-        ]
+        SyS(f'curl -sLo {nenen} https://github.com/gutris1/segsmaker/raw/main/script/nenen88.py')
 
-        for y in x:
-            get_ipython().system(y)
-
-        target = [pantat, nenen]
-
-        for line in target:
-            with open(line, "r") as file:
-                v = file.read()
-
-            v = v.replace('toket = ""', f'toket = "{civitai_key}"')
-            v = v.replace('tobrut = ""', f'tobrut = "{hf_token}"')
-
-            with open(line, "w") as file:
-                file.write(v)
+        p = Path(nenen)
+        v = p.read_text()
+        v = v.replace("TOKET = ''", f"TOKET = '{civitai_key}'")
+        v = v.replace("TOBRUT = ''", f"TOBRUT = '{hf_token}'")
+        p.write_text(v)
 
     def key_widget(current_civitai_key_value='', current_hf_token_value=''):
         current_civitai_key.value = current_civitai_key_value
@@ -426,34 +408,33 @@ def change_key(line):
 
             with main_output:
                 if not civitai_key:
-                    print("Please enter your CivitAI API Key")
+                    print('Please enter your CivitAI API Key')
                     return
 
                 if len(civitai_key) < 32:
-                    print("API key must be at least 32 characters long")
+                    print('API key must be at least 32 characters long')
                     return
 
-                civitai_ke = {"civitai-api-key": civitai_key}
-                hf_toke = {"huggingface-read-token": hf_token}
+                civitai_ke = {'civitai-api-key': civitai_key}
+                hf_toke = {'huggingface-read-token': hf_token}
 
                 secrets = {**civitai_ke, **hf_toke}
-                with open(key_file, "w") as file:
-                    json.dump(secrets, file, indent=4)
+                Path(key_file).write_text(json.dumps(secrets, indent=4))
 
             with main_output:
                 input_widget.close()
                 main_output.clear_output(wait=True)
-                say("Saving...")
+                say('Saving...')
                 key_inject(civitai_key, hf_token)
 
                 main_output.clear_output(wait=True)
                 get_ipython().kernel.do_shutdown(True)
                 time.sleep(2)
-                say("Kernel restarting...")
+                say('Kernel restarting...')
 
                 main_output.clear_output(wait=True)
                 time.sleep(3)
-                say("Done")
+                say('Done')
 
         def cancel_key(b):
             new_civitai_key.value = ''
@@ -462,75 +443,76 @@ def change_key(line):
             with main_output:
                 input_widget.close()
                 main_output.clear_output(wait=True)
-                say("^ Canceled")
+                say('^ Canceled')
 
         save_button.on_click(save_key)
         cancel_button.on_click(cancel_key)
 
     def key_check():
         if key_file.exists():
-            with open(key_file, "r") as file:
-                value = json.load(file)
+            v = json.loads(key_file.read_text())
 
-            civitai_key = value.get("civitai-api-key", "")
-            hf_token = value.get("huggingface-read-token", "")
+            civitai_key = v.get('civitai-api-key', '')
+            hf_token = v.get('huggingface-read-token', '')
             key_widget(civitai_key, hf_token)
             display(input_widget, main_output)
         else:
-            say("API Key does not exist")
+            say('API Key does not exist')
 
     load_css(css)
     key_check()
 
-zrok_bin = home / '.zrok/bin'
-zrok_cmd = zrok_bin / 'zrok invite'
-zrok_txt = zrok_bin / 'zrok_log.txt'
-
 @register_line_magic
 def zrok_register(line):
+    zrok_bin = home / '.zrok/bin'
+    zrok_cmd = zrok_bin / 'zrok invite'
+    zrok_txt = zrok_bin / 'zrok_log.txt'
+
     zrok_output = widgets.Output()
-
-    register_button = widgets.Button(description="Register", layout=widgets.Layout(left= '-45%'))
-    register_button.add_class("zrok-btn")
-
-    exit_button = widgets.Button(description="Exit", layout=widgets.Layout(left= '45%'))
-    exit_button.add_class("zrok-btn")
-
+    register_button = widgets.Button(description='Register', layout=widgets.Layout(left= '-45%'))
+    exit_button = widgets.Button(description='Exit', layout=widgets.Layout(left= '45%'))
     email_input = widgets.Text(placeholder='Enter Your Valid Email Address', layout=widgets.Layout(width= '75%'))
-    email_input.add_class("email-input")
 
-    zrok_button = widgets.HBox([register_button, exit_button], layout=widgets.Layout(
-        display='flex',
-        flex_flow='row',
-        justify_content='space-between'))
+    zrok_button = widgets.HBox(
+        [register_button, exit_button],
+        layout=widgets.Layout(
+            display='flex',
+            flex_flow='row',
+            justify_content='space-between'
+        )
+    )
 
-    zrok_widget = widgets.VBox([email_input, zrok_button], layout=widgets.Layout(
-        height='160px',
-        width= '550px',
-        display='flex',
-        flex_flow='column',
-        align_items='center',
-        justify_content='space-around',
-        padding='20px'))
-    zrok_widget.add_class("zrok-widget")
+    zrok_widget = widgets.VBox(
+        [email_input, zrok_button],
+        layout=widgets.Layout(
+            height='160px',
+            width= '550px',
+            display='flex',
+            flex_flow='column',
+            align_items='center',
+            justify_content='space-around',
+            padding='20px'
+        )
+    )
+
+    register_button.add_class('zrok-btn')
+    exit_button.add_class('zrok-btn')
+    email_input.add_class('email-input')
+    zrok_widget.add_class('zrok-widget')
 
     def zrok_install():    
-        if zrok_bin.exists():
-            return
+        if zrok_bin.exists(): return
 
         zrok_bin.mkdir(parents=True, exist_ok=True)
-        zrok_url = "https://github.com/openziti/zrok/releases/download/v0.4.44/zrok_0.4.44_linux_amd64.tar.gz"
+        zrok_url = 'https://github.com/openziti/zrok/releases/download/v0.4.44/zrok_0.4.44_linux_amd64.tar.gz'
         zrok_tar = zrok_bin / Path(zrok_url).name
 
-        get_ipython().system(f"curl -sLo {zrok_tar} {zrok_url}")
-        get_ipython().system(f"tar -xzf {zrok_tar} -C {zrok_bin} --wildcards *zrok")
-        get_ipython().system(f"rm -rf {home}/.cache/* {zrok_tar}")
+        SyS(f'curl -sLo {zrok_tar} {zrok_url}')
+        SyS(f'tar -xzf {zrok_tar} -C {zrok_bin} --wildcards *zrok')
+        SyS(f'rm -rf {home}/.cache/* {zrok_tar}')
 
     def load_css(css):
-        with open(css, "r") as file:
-            zrok_panel = file.read()
-
-        display(HTML(f"<style>{zrok_panel}</style>"))
+        display(HTML(f'<style>{Path(css).read_text()}</style>'))
 
     def register(b):
         import pexpect
@@ -566,9 +548,7 @@ def zrok_register(line):
             time.sleep(2)
             child.close()
 
-            print(f'Invitation sent to {E}\n'
-                  f'Be sure to check your SPAM folder if you do not receive the invitation email.')
-
+            print(f'Invitation sent to {E}\n Be sure to check your SPAM folder if you do not receive the invitation email.')
             zrok_txt.unlink()
 
     def exit(b):
@@ -579,6 +559,6 @@ def zrok_register(line):
 
     register_button.on_click(register)
     exit_button.on_click(exit)
-    
+
     zrok_install()
-    get_ipython().system('pip install -q pexpect')
+    SyS('pip install -q pexpect')

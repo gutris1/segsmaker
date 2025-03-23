@@ -12,15 +12,29 @@
 
 <br />
 
+# Preview
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/e5c54a3a-69b4-4835-9d4b-cf9302b15b62", max-width=1000px>
+  <img src="https://github.com/user-attachments/assets/e8a6168a-04cd-4aff-b81d-daed71e6bfb3", max-width=1000px>
+</p>
 
 # Changelog
-### 2077-01-35
+### 2025-03-23
+- Added an argument exclusive to Google Colab for saving outputs to Google Drive.
+- Redirected paths for <code>clip_vision</code> <code>diffusers</code> <code>diffusion_models</code> and <code>text_encoders</code> to TMP for ComfyUI.
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/569b1e60-75ef-4e88-ae77-941dabf1f165", max-width=1000px>
+</p>
+
+<details><summary>2025-01-30</summary><br>
+
 - Torch 2.5.1
 - Portable Python 3.10.15 for Colab and Kaggle.
 - Added $UNET and $CLIP variables %cd command for FLUX.
 - Fixed Controlnet Widget buggy display in Kaggle.
 - Recolor Aria2 downloader.
 - Fixed scripts.
+</details>
 
 <details><summary>2025-01-10</summary><br>
 
@@ -143,10 +157,3 @@ Usage:
   <img src="https://github.com/gutris1/segsmaker/assets/132797949/d3fa05b6-4cdd-4ffc-9a50-43bf550de627" width="367" height="169">
 - Don't worry, you only need to do that once. next time you reinstall Conda, you will not be prompted again.
 </details>
-
-# Preview
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/e5c54a3a-69b4-4835-9d4b-cf9302b15b62", width=1000px>
-  <img src="https://github.com/gutris1/segsmaker/blob/main/script/preview/fastpnginfo.png", width=1000px>
-  <img src="https://github.com/gutris1/segsmaker/blob/main/script/preview/cn.png", width=1000px>
-</p>
