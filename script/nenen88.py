@@ -103,11 +103,11 @@ def netorare(line):
                 fp = Path(arg).expanduser()
                 fp.mkdir(parents=True, exist_ok=True)
                 CD(fp)
-                fn = get_fn(url) if CHG else Path(urlparse(url).fp).name
+                fn = get_fn(url) if CHG else Path(urlparse(url).path).name
             else:
                 fn = arg
         else:
-            fn = get_fn(url) if CHG else Path(urlparse(url).fp).name
+            fn = get_fn(url) if CHG else Path(urlparse(url).path).name
 
         if CHG:
             cmd = f"{aria2c} '{url}'" + (f" -o '{fn}'" if 'civitai.com' not in url or fn is not None else "")
