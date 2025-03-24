@@ -18,6 +18,11 @@ IMG = SRC / 'loading.png'
 PY = '/tmp/venv/bin/python3'
 SyS = get_ipython().system
 
+R = '\033[31m'
+P = '\033[38;5;135m'
+RST = '\033[0m'
+ERR = f'{P}[{RST}{R}ERROR{RST}{P}]{RST}'
+
 def get_args(ui):
     args_line = {
         'A1111': ('--xformers'),
@@ -164,44 +169,42 @@ args, unknown = parser.parse_known_args()
 condition = Condition()
 is_ready = Value('b', False)
 
-def ZROK_enable():
-    zrokbin = HOME / '.zrok/bin/zrok'
-    not zrok_token.value or (print("[ERROR]: ZROK Token is empty"), sys.exit())
-    zrokbin.exists() or (print("[ERROR]: ZROK is not installed"), sys.exit())
+def NGROK_ZROK(T):
+    P = {
+        'zrok': {
+            'B': HOME / '.zrok/bin/zrok',
+            'C': HOME / '.zrok/environment.json',
+            't': zrok_token.value
+        },
+        'ngrok': {
+            'B': HOME / '.ngrok/bin/ngrok',
+            'C': HOME / '.config/ngrok/ngrok.yml',
+            't': ngrok_token.value
+        }
+    }
 
-    zrok_env = HOME / '.zrok/environment.json'
-    if zrok_env.exists():
-        current_value = json.loads(zrok_env.read_text())
-        current_token = current_value.get('zrok_token')
+    B, C, t = P[T]['B'], P[T]['C'], P[T]['t']
 
-        if current_token == zrok_token.value:
-            pass
-        else:
-            SyS('zrok disable')
-            SyS(f'zrok enable {zrok_token.value}')
-            print()
+    if not t:
+        print(f'{ERR}: {T.upper()} Token is empty'); sys.exit()
+    if not B.exists():
+        print(f'{ERR}: {T.upper()} is not installed'); sys.exit()
+
+    E = f'{T} enable {t}' if T == 'zrok' else f'{T} config add-authtoken {t}'
+
+    if C.exists():
+        ct = None
+        if T == 'zrok':
+            ct = json.loads(C.read_text()).get('zrok_token')
+        elif T == 'ngrok':
+            ct = yaml.safe_load(C.read_text()).get('agent', {}).get('authtoken')
+
+        if ct != t:
+            if T == 'zrok':
+                SyS(f'{T} disable')
+            SyS(E); print()
     else:
-        SyS(f'zrok enable {zrok_token.value}')
-        print()
-
-def NGROK_auth():
-    ngrokbin = HOME / '.ngrok/bin/ngrok'
-    not ngrok_token.value or (print("[ERROR]: NGROK Token is empty"), sys.exit())
-    ngrokbin.exists() or (print("[ERROR]: NGROK is not installed"), sys.exit())
-
-    ngrok_yml = HOME / '.config/ngrok/ngrok.yml'
-    if ngrok_yml.exists():
-        current_value = yaml.safe_load(ngrok_yml.read_text())
-        current_token = current_value.get('agent', {}).get('authtoken')
-
-        if current_token == ngrok_token.value:
-            pass
-        else:
-            SyS(f'ngrok config add-authtoken {ngrok_token.value}')
-            print()
-    else:
-        SyS(f'ngrok config add-authtoken {ngrok_token.value}')
-        print()
+        SyS(E); print()
 
 def launching(ui, skip_comfyui_check=False):
     global PY
@@ -263,8 +266,8 @@ def launching(ui, skip_comfyui_check=False):
         try:
             from cupang import Tunnel as Alice_Zuberg
 
-            if tunnel_name == 'ZROK': ZROK_enable()
-            if tunnel_name == 'NGROK': NGROK_auth()
+            if tunnel_name == 'ZROK': NGROK_ZROK('zrok')
+            if tunnel_name == 'NGROK': NGROK_ZROK('ngrok')
 
             Alice_Synthesis_Thirty = Alice_Zuberg(port)
             Alice_Synthesis_Thirty.logger.setLevel(logging.DEBUG)
