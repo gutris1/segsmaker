@@ -41,15 +41,6 @@ AR = f'{ORANGE}▶{RST}'
 ERR = f'{P}[{RST}{R}ERROR{RST}{P}]{RST}'
 IMG = 'https://github.com/gutris1/segsmaker/raw/main/script/loading.png'
 
-Muzik = """
-<iframe width="0" height="0"
-  src="https://www.youtube.com/embed/kkY5u1LJZzw?autoplay=1"
-  frameborder="0"
-  referrerpolicy="strict-origin-when-cross-origin"
-  allowfullscreen>
-</iframe>
-"""
-
 HOME = Path(ENVHOME)
 BASEPATH = Path(ENVBASE)
 TMP = BASEPATH / 'temp'
@@ -78,6 +69,7 @@ def prevent_silly():
     parser.add_argument('--civitai_key', required=True, help='your CivitAI API key')
     parser.add_argument('--hf_read_token', default=None, help='your Huggingface READ Token (optional)')
     parser.add_argument('--save_outputs_in_drive', default='no', help='Mount Google Drive')
+    parser.add_argument('--bgm', default='dQw4w9WgXcQ', help='play youtube video on jupyter cell')
 
     args = parser.parse_args()
 
@@ -86,6 +78,7 @@ def prevent_silly():
     arg3 = args.civitai_key.strip()
     arg4 = args.hf_read_token.strip() if args.hf_read_token else ''
     arg5 = args.save_outputs_in_drive.lower()
+    arg6 = args.bgm.strip() if args.bgm else ''
 
     if not any(arg1 == option.lower() for option in VALID_WEBUI_OPTIONS):
         print(f'{ERR}: invalid webui option: "{args.webui}"')
@@ -118,10 +111,25 @@ def prevent_silly():
     if arg5 == 'yes' and ENVNAME == 'Colab':
         SAVE_IN_DRIVE = True
 
+    rr = 'dQw4w9WgXcQ'
+    if not arg6:
+        arg6 = rr
+    if re.search(r'\s+', arg6):
+        arg6 = rr
+
+    Muzik = f"""
+    <iframe width="640" height="360"
+      src="https://www.youtube.com/embed/{arg6}?autoplay=1"
+      frameborder="0"
+      referrerpolicy="strict-origin-when-cross-origin"
+      allowfullscreen>
+    </iframe>
+    """
+
     webui_webui = next(option for option in VALID_WEBUI_OPTIONS if arg1 == option.lower())
     sd_sd = next(option for option in VALID_SD_OPTIONS if arg2 == option.lower())
 
-    return (webui_webui, sd_sd), arg3, arg4
+    return (webui_webui, sd_sd), arg3, arg4, Muzik
 
 def PythonPortable():
     BIN = str(PY / 'bin')
@@ -466,12 +474,12 @@ def notebook_scripts():
 
     for scripts in [nenen, KANDANG, MRK]: get_ipython().run_line_magic('run', str(scripts))
 
-selection, civitai_key, hf_read_token = prevent_silly()
+selection, civitai_key, hf_read_token, bgm = prevent_silly()
 if selection is None or civitai_key is None: sys.exit()
 webui, sd = selection
 
 display(output, loading)
-with loading: display(HTML(Muzik)); display(Image(url=IMG))
+with loading: display(HTML(bgm)); display(Image(url=IMG))
 with output: PY.exists() or PythonPortable()
 notebook_scripts()
 
