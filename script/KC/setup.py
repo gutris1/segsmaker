@@ -135,11 +135,15 @@ def PythonPortable():
     BIN = str(PY / 'bin')
     PKG = str(PY / 'lib/python3.10/site-packages')
 
-    url = 'https://huggingface.co/gutris1/webui/resolve/main/env/python310-torch251-cu121-2.tar.lz4'
+    if webui == 'ComfyUI':
+        url = 'https://huggingface.co/gutris1/webui/resolve/main/env/ComfyUI-python310-torch251-cu121.tar.lz4'
+    else:
+        url = 'https://huggingface.co/gutris1/webui/resolve/main/env/python310-torch251-cu121.tar.lz4'
+
     fn = Path(url).name
 
     if SAVE_IN_DRIVE:
-        from google.colab import drive  # type: ignore
+        from google.colab import drive
         drive.mount('/content/drive')
 
     CD('/')
@@ -483,5 +487,5 @@ with loading: display(HTML(bgm)); display(Image(url=IMG))
 with output: PY.exists() or PythonPortable()
 notebook_scripts()
 
-from nenen88 import clone, say, download, tempe, pull # type: ignore
+from nenen88 import clone, say, download, tempe, pull
 webui_installer()
