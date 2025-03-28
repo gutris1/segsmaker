@@ -226,10 +226,10 @@ def launching(ui, skip_comfyui_check=False):
     elif ui == 'SwarmUI':
         port = 7801
     elif ui == 'ComfyUI':
+        PY = '/tmp/venv-comfyui/bin/python3'
         port = 8188
-        if not skip_comfyui_check:
-            SyS(f'{PY} apotek.py')
-            clear_output(wait=True)
+        skip_comfyui_check or (SyS(f'{PY} apotek.py'), clear_output(wait=True))
+
     else:
         port = 7860
 
