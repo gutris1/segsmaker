@@ -19,7 +19,7 @@ def GetsAll(path):
         try:
             fp = base / subdir
             if fp.is_dir() and not subdir.endswith('.disabled') and not subdir.startswith('.') and subdir != '__pycache__':
-                print(f'Checking dependencies for >> {CYAN}{subdir}{RESET}')
+                print(f'Checking > {CYAN}{subdir}{RESET}')
                 reqs = fp / 'requirements.txt'
                 scripts = fp / 'install.py'
 
@@ -28,6 +28,7 @@ def GetsAll(path):
         except Exception as e:
             print(f'EXCEPTION during dependencies check on {RED}{subdir}{RESET}:\n{e}')
 
+    print()
     return subdirs
 
 def Get_git_pkg_name(git_url):
@@ -110,7 +111,7 @@ def installing(fp):
                 if line and not line.startswith('#'):
                     action = CheckGit(line) if 'git+' in line else CheckPYPI(line)
                     if action == 'install':
-                        print(f'Installing package: {ORANGE}{line}{RESET}')
+                        print(f'Installing : {ORANGE}{line}{RESET}')
                         subprocess.run([sys.executable, '-m', 'pip', 'install', '-q', line], check=True)
 
 def Run(fp):
