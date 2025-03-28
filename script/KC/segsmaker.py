@@ -58,10 +58,9 @@ def ZROK_enable(token):
         print()
 
 def webui_launch(launch_args, skip_comfyui_check, ngrok_token=None, zrok_token=None):
+    iRON['PYTHONWARNINGS'] = 'ignore'
     config = json.load(MD.open('r'))
     ui = config.get('ui')
-
-    iRON['PYTHONWARNINGS'] = 'ignore'
 
     if ui in ['A1111', 'Forge', 'ReForge']:
         port = 7860
@@ -79,9 +78,6 @@ def webui_launch(launch_args, skip_comfyui_check, ngrok_token=None, zrok_token=N
         cmd = f'python3 launch.py {launch_args}'
 
     elif ui in ['ComfyUI', 'SwarmUI']:
-        import matplotlib
-        iRON['MPLBACKEND'] = 'gtk3agg'
-
         if ui == 'ComfyUI':
             port = 8188
             skip_comfyui_check or (SyS('python3 apotek.py'), clear_output(wait=True))
@@ -124,7 +120,6 @@ if __name__ == '__main__':
 
     args, unknown = parser.parse_known_args()
     launch_args = ' '.join(unknown)
-
     try:
         Trashing()
         webui_launch(launch_args, args.skip_comfyui_check, args.N, args.Z)
