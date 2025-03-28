@@ -23,12 +23,12 @@ iRON = os.environ
 def Trashing():
     run = lambda cmd: subprocess.run(shlex.split(cmd), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-    dirs1 = ["A1111", "Forge", "ComfyUI", "ReForge", "SwarmUI"]
-    dirs2 = ["ckpt", "lora", "controlnet", "svd", "z123"]
+    dirs1 = ['A1111', 'Forge', 'ComfyUI', 'ReForge', 'SwarmUI']
+    dirs2 = ['ckpt', 'lora', 'controlnet', 'svd', 'z123']
 
     paths = [Path(HOMEPATH) / name for name in dirs1] + [Path(TEMPPATH) / name for name in dirs2]
     for path in paths:
-        cmd = f"find {path} -type d -name .ipynb_checkpoints -exec rm -rf {{}} +"
+        cmd = f'find {path} -type d -name .ipynb_checkpoints -exec rm -rf {{}} +'
         run(cmd)
 
 def NGROK_auth(token):
@@ -58,10 +58,9 @@ def ZROK_enable(token):
         print()
 
 def webui_launch(launch_args, skip_comfyui_check, ngrok_token=None, zrok_token=None):
+    iRON['PYTHONWARNINGS'] = 'ignore'
     config = json.load(MD.open('r'))
     ui = config.get('ui')
-
-    iRON['PYTHONWARNINGS'] = 'ignore'
 
     if ui in ['A1111', 'Forge', 'ReForge']:
         port = 7860
@@ -72,24 +71,23 @@ def webui_launch(launch_args, skip_comfyui_check, ngrok_token=None, zrok_token=N
         if ENVNAME == 'Kaggle': launch_args += f' --encrypt-pass={PW}'
         iRON.setdefault('IIB_ACCESS_CONTROL', 'disable')
 
-        if ui == 'Forge' and not (CWD / "FT.txt").exists():
+        if ui == 'Forge' and not (CWD / 'FT.txt').exists():
             SyS('pip uninstall -qy transformers')
-            (CWD / "FT.txt").write_text("blyat")
+            (CWD / 'FT.txt').write_text('blyat')
 
-        cmd = f"python3 launch.py {launch_args}"
+        cmd = f'python3 launch.py {launch_args}'
 
-    elif ui == 'ComfyUI':
-        port = 8188
-        if not skip_comfyui_check:
-            SyS('python3 apotek.py')
-            clear_output(wait=True)
-        cmd = f"python3 main.py {launch_args}"
+    elif ui in ['ComfyUI', 'SwarmUI']:
+        if ui == 'ComfyUI':
+            port = 8188
+            skip_comfyui_check or (SyS('python3 apotek.py'), clear_output(wait=True))
+            cmd = f'python3 main.py {launch_args}'
 
-    elif ui == 'SwarmUI':
-        port = 7801
-        iRON['SWARMPATH'] = str(CWD)
-        iRON['SWARM_NO_VENV'] = 'true'
-        cmd = f"bash ./launch-linux.sh {launch_args}"
+        elif ui == 'SwarmUI':
+            port = 7801
+            iRON['SWARMPATH'] = str(CWD)
+            iRON['SWARM_NO_VENV'] = 'true'
+            cmd = f'bash ./launch-linux.sh {launch_args}'
 
     cloudflared = f'cl tunnel --url localhost:{port}'
     pinggy = f'ssh -o StrictHostKeyChecking=no -p 80 -R0:localhost:{port} a.pinggy.io'
@@ -100,16 +98,16 @@ def webui_launch(launch_args, skip_comfyui_check, ngrok_token=None, zrok_token=N
     Alice_Synthesis_Thirty.logger.setLevel(logging.DEBUG)
 
     if not (ngrok_token or zrok_token):
-        Alice_Synthesis_Thirty.add_tunnel(command=pinggy, name='Pinggy', pattern=r"https://[\w-]+\.a\.free\.pinggy\.link")
-        Alice_Synthesis_Thirty.add_tunnel(command=cloudflared, name='Cloudflared', pattern=r"[\w-]+\.trycloudflare\.com")
+        Alice_Synthesis_Thirty.add_tunnel(command=pinggy, name='Pinggy', pattern=r'https://[\w-]+\.a\.free\.pinggy\.link')
+        Alice_Synthesis_Thirty.add_tunnel(command=cloudflared, name='Cloudflared', pattern=r'[\w-]+\.trycloudflare\.com')
 
     if ngrok_token:
         NGROK_auth(ngrok_token)
-        Alice_Synthesis_Thirty.add_tunnel(command=ngrok, name='NGROK', pattern=r"https://[\w-]+\.ngrok-free\.app")
+        Alice_Synthesis_Thirty.add_tunnel(command=ngrok, name='NGROK', pattern=r'https://[\w-]+\.ngrok-free\.app')
 
     if zrok_token:
         ZROK_enable(zrok_token)
-        Alice_Synthesis_Thirty.add_tunnel(command=zrok, name='ZROK', pattern=r"https://[\w-]+\.share\.zrok\.io")
+        Alice_Synthesis_Thirty.add_tunnel(command=zrok, name='ZROK', pattern=r'https://[\w-]+\.share\.zrok\.io')
 
     with Alice_Synthesis_Thirty:
         SyS(cmd)
@@ -122,7 +120,6 @@ if __name__ == '__main__':
 
     args, unknown = parser.parse_known_args()
     launch_args = ' '.join(unknown)
-
     try:
         Trashing()
         webui_launch(launch_args, args.skip_comfyui_check, args.N, args.Z)

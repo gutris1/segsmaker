@@ -18,6 +18,7 @@ cwd = Path.cwd()
 
 vnv_FF = tmp / 'venv-fusion'
 vnv_SDT = tmp / 'venv-sd-trainer'
+vnv_C = tmp / 'venv-comfyui'
 vnv_D = tmp / 'venv'
 
 SyS = get_ipython().system
@@ -40,6 +41,10 @@ def load_config():
         url = 'https://huggingface.co/gutris1/webui/resolve/main/env/venv-sd-trainer.tar.lz4'
         need_space = 14 * 1024**3
         vnv = vnv_SDT
+    elif ui == 'ComfyUI':
+        url = 'https://huggingface.co/gutris1/webui/resolve/main/env/venv-comfyui.tar.lz4'
+        need_space = 14 * 1024**3
+        vnv = vnv_C
     else:
         url = 'https://huggingface.co/gutris1/webui/resolve/main/env/venv-torch251-cu121-SSL.tar.lz4'
         need_space = 14 * 1024**3
@@ -51,9 +56,10 @@ def load_config():
 def unused_venv():
     if any(venv.exists() for venv in [vnv_FF, vnv_SDT, vnv_D]):
         vnv_list = {
-            vnv_FF: [vnv_SDT, vnv_D],
-            vnv_SDT: [vnv_FF, vnv_D],
-            vnv_D: [vnv_FF, vnv_SDT]
+            vnv_FF: [vnv_SDT, vnv_D, vnv_C],
+            vnv_SDT: [vnv_FF, vnv_D, vnv_C],
+            vnv_C: [vnv_FF, vnv_D, vnv_SDT],
+            vnv_D: [vnv_FF, vnv_SDT, vnv_C]
         }.get(vnv)
 
         if vnv_list:
@@ -84,12 +90,12 @@ def removing(directory, req_space):
     return freed_space
 
 def trashing():
-    dirs1 = ["A1111", "Forge", "ComfyUI", "ReForge", "FaceFusion", "SDTrainer", "SwarmUI"]
-    dirs2 = ["ckpt", "lora", "controlnet", "svd", "z123"]
+    dirs1 = ['A1111', 'Forge', 'ComfyUI', 'ReForge', 'FaceFusion', 'SDTrainer', 'SwarmUI']
+    dirs2 = ['ckpt', 'lora', 'controlnet', 'svd', 'z123']
 
     paths = [HOME / name for name in dirs1] + [tmp / name for name in dirs2]
     for path in paths:
-        cmd = f"find {path} -type d -name .ipynb_checkpoints -exec rm -rf {{}} +"
+        cmd = f'find {path} -type d -name .ipynb_checkpoints -exec rm -rf {{}} +'
         SyS(f'{cmd} >/dev/null 2>&1')
 
 def check_pv():
