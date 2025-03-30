@@ -291,18 +291,15 @@
   height: 15px;
   right: 0px;
   border-radius: 0;
-  margin-top: -3px;
+  margin-top: -3px !important;
   margin-right: 10px !important;
-  margin-bottom: 0px;
-  margin-left: 0px;
+  margin-bottom: 0 !important;
+  margin-left: 0 !important;
   vertical-align: middle;
   cursor: pointer;
   border: 0;
   background-color: rgba(0, 0, 0, 0.5);
-  transition:
-    background-color 0.3s ease,
-    filter 0.3s ease,
-    box-shadow 0.3s ease;
+  transition: background-color 0.3s ease, filter 0.3s ease, box-shadow 0.3s ease;
   position: relative;
   transform: rotate(45deg);
 }
@@ -312,7 +309,7 @@
   background-color: #275EFE;
   background-image: radial-gradient(circle, white 30%, transparent 40%);
   filter: drop-shadow(0 0 10px #275EFE);
-  box-shadow: 0 0 10px 1px #275EFE;
+  box-shadow: 0 0 1px 1px #000, 0 0 10px 1px #275EFE;
 }
 
 .checkbox input:checked:hover {
@@ -333,7 +330,7 @@
   position: absolute;
   text-align: left;
   font-family: 'Roboto Mono', monospace;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: bold;
   color: black;
   vertical-align: middle;
