@@ -22,7 +22,7 @@ except ImportError:
     HOME = Path.home()
     SM = True
 
-CN_15_List = {
+controlnet_15_list = {
     'Openpose': [
         'https://huggingface.co/ckpt/ControlNet-v1-1/resolve/main/control_v11p_sd15_openpose_fp16.safetensors openpose.safetensors',
         'https://huggingface.co/ckpt/ControlNet-v1-1/raw/main/control_v11p_sd15_openpose_fp16.yaml openpose.yaml'],
@@ -95,7 +95,7 @@ CN_15_List = {
         'https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-portrait_sd15.bin']
 }
 
-CN_XL_List = {
+controlnet_xl_list = {
     'Diffusers XL Canny Mid': [
         'https://huggingface.co/lllyasviel/sd_control_collection/resolve/main/diffusers_xl_canny_mid.safetensors \
         diffusers_xl_canny_mid.safetensors'],
@@ -194,6 +194,8 @@ CN_XL_List = {
         'https://huggingface.co/xinsir/controlnet-union-sdxl-1.0/resolve/main/diffusion_pytorch_model_promax.safetensors controlnet-union-sdxl-promax.safetensors']
 }
 
+output = widgets.Output()
+
 options = ['btn-cn-15', 'btn-cn-xl']
 buttons = []
 
@@ -205,45 +207,31 @@ for btn in options:
 
 cn_main_panel = widgets.HBox(layout=widgets.Layout(width='460px', height='405px'))
 
-halflist_xl = len(CN_XL_List) // 2
-leftside_xl = dict(list(CN_XL_List.items())[:halflist_xl])
-rightside_xl = dict(list(CN_XL_List.items())[halflist_xl:])
-checkbox1_xl = widgets.VBox(
-    [widgets.Checkbox(value=False, description=name, style={'description_width': '0px'}) for name in leftside_xl],
-    layout=widgets.Layout(left='0px'))
-checkbox2_xl = widgets.VBox(
-    [widgets.Checkbox(value=False, description=name, style={'description_width': '0px'}) for name in rightside_xl],
-    layout=widgets.Layout(left='20px'))
+half_xl = len(controlnet_xl_list) // 2
+left_xl = dict(list(controlnet_xl_list.items())[:half_xl])
+right_xl = dict(list(controlnet_xl_list.items())[half_xl:])
+checkbox1_xl = widgets.VBox([widgets.Checkbox(value=False, description=name, style={'description_width': '0px'}) for name in left_xl], layout=widgets.Layout(left='0px'))
+checkbox2_xl = widgets.VBox([widgets.Checkbox(value=False, description=name, style={'description_width': '0px'}) for name in right_xl], layout=widgets.Layout(left='20px'))
 checkbox_layout_xl = widgets.HBox([checkbox1_xl, checkbox2_xl], layout=widgets.Layout(align_items='flex-start'))
 download_button_xl = widgets.Button(description='Download', layout=widgets.Layout(left='130px'))
 select_all_button_xl = widgets.Button(description='Select All', layout=widgets.Layout(left='30px'))
 unselect_all_button_xl = widgets.Button(description='Unselect All', layout=widgets.Layout(left='35px'))
 bottom_box_xl = widgets.Button(description='', disabled=True)
 button_layout_xl = widgets.HBox([select_all_button_xl, unselect_all_button_xl, download_button_xl, bottom_box_xl])
-cnxl_panel = widgets.Box(
-    [button_layout_xl, checkbox_layout_xl],
-    layout=widgets.Layout(display='none', flex_flow='column', width='660px', height='580px', padding='15px')
-)
+cnxl_panel = widgets.Box([button_layout_xl, checkbox_layout_xl], layout=widgets.Layout(display='none', flex_flow='column', width='660px', height='580px', padding='15px'))
 
-halflist_15 = len(CN_15_List) // 2
-leftside_15 = dict(list(CN_15_List.items())[:halflist_15])
-rightside_15 = dict(list(CN_15_List.items())[halflist_15:])
-checkbox1_15 = widgets.VBox(
-    [widgets.Checkbox(value=False, description=name, style={'description_width': '0px'}) for name in leftside_15],
-    layout=widgets.Layout(left='10px'))
-checkbox2_15 = widgets.VBox(
-    [widgets.Checkbox(value=False, description=name, style={'description_width': '0px'}) for name in rightside_15],
-    layout=widgets.Layout(left='-60px'))
+half_15 = len(controlnet_15_list) // 2
+left_15 = dict(list(controlnet_15_list.items())[:half_15])
+right_15 = dict(list(controlnet_15_list.items())[half_15:])
+checkbox1_15 = widgets.VBox([widgets.Checkbox(value=False, description=name, style={'description_width': '0px'}) for name in left_15], layout=widgets.Layout(left='10px'))
+checkbox2_15 = widgets.VBox([widgets.Checkbox(value=False, description=name, style={'description_width': '0px'}) for name in right_15], layout=widgets.Layout(left='-60px'))
 checkbox_layout_15 = widgets.HBox([checkbox1_15, checkbox2_15], layout=widgets.Layout(align_items='flex-start'))
 download_button_15 = widgets.Button(description='Download', layout=widgets.Layout(width='130px', left='110px'))
 select_all_button_15 = widgets.Button(description='Select All', layout=widgets.Layout(width='130px', left='15px'))
 unselect_all_button_15 = widgets.Button(description='Unselect All', layout=widgets.Layout(width='130px', left='20px'))
 bottom_box_15 = widgets.Button(description='', disabled=True)
 button_layout_15 = widgets.HBox([select_all_button_15, unselect_all_button_15, download_button_15, bottom_box_15])
-cn15_panel = widgets.Box(
-    [button_layout_15, checkbox_layout_15],
-    layout=widgets.Layout(display='none', flex_flow='column', width='550px', height='490px', padding='15px')
-)
+cn15_panel = widgets.Box([button_layout_15, checkbox_layout_15], layout=widgets.Layout(display='none', flex_flow='column', width='550px', height='490px', padding='15px'))
 
 cn_main_panel.add_class('cn-panel')
 
@@ -267,28 +255,22 @@ bottom_box_xl.add_class('bottom-box-xl')
 
 def Controlnet_Buttons(btn):
     cn_main_panel.close()
-    if btn == 'btn-cn-15':
-        cn15_panel.layout.display = 'flex'
-    elif btn == 'btn-cn-xl':
-        cnxl_panel.layout.display = 'flex'
+    if btn == 'btn-cn-15': cn15_panel.layout.display = 'flex'
+    elif btn == 'btn-cn-xl': cnxl_panel.layout.display = 'flex'
 
 def SelectAll(b):
     if cn15_panel.layout.display == 'flex':
-        for check in checkbox1_15.children + checkbox2_15.children:
-            check.value = True
+        for check in checkbox1_15.children + checkbox2_15.children: check.value = True
     elif cnxl_panel.layout.display == 'flex':
-        for check in checkbox1_xl.children + checkbox2_xl.children:
-            check.value = True
+        for check in checkbox1_xl.children + checkbox2_xl.children: check.value = True
 
 def UnselectAll(b):
     if cn15_panel.layout.display == 'flex':
-        for check in checkbox1_15.children + checkbox2_15.children:
-            check.value = False
+        for check in checkbox1_15.children + checkbox2_15.children: check.value = False
     elif cnxl_panel.layout.display == 'flex':
-        for check in checkbox1_xl.children + checkbox2_xl.children:
-            check.value = False
+        for check in checkbox1_xl.children + checkbox2_xl.children: check.value = False
 
-def Download_Controlnet(b):
+def Download_Model(b):
     cn15_panel.close()
     cnxl_panel.close()
     tempe()
@@ -297,34 +279,30 @@ def Download_Controlnet(b):
 
     if cn15_panel.layout.display == 'flex':
         cn15_panel.layout.display = 'none'
-        for check, key in zip(checkbox1_15.children + checkbox2_15.children, list(CN_15_List.keys())):
-            if check.value:
-                download_list.extend(CN_15_List[key])
+        for check, key in zip(checkbox1_15.children + checkbox2_15.children, list(controlnet_15_list.keys())):
+            if check.value: download_list.extend(controlnet_15_list[key])
 
     elif cnxl_panel.layout.display == 'flex':
         cnxl_panel.layout.display = 'none'
-        for check, key in zip(checkbox1_xl.children + checkbox2_xl.children, list(CN_XL_List.keys())):
-            if check.value:
-                download_list.extend(CN_XL_List[key])
+        for check, key in zip(checkbox1_xl.children + checkbox2_xl.children, list(controlnet_xl_list.keys())):
+            if check.value: download_list.extend(controlnet_xl_list[key])
 
-    CD(TMPCN)
-    for url in download_list:
-        download(url)
+    with output:
+        CD(TMPCN)
+        for url in download_list: download(url)
+        CD(HOME)
 
-    CD(HOME)
+def load_css():
+    if SM or not Path(CSSCN).exists(): SyS(f'curl -sLo {CSSCN} https://github.com/gutris1/segsmaker/raw/main/script/controlnet.css')
+    display(HTML(f'<style>{Path(CSSCN).read_text()}</style>'))
 
-def Load_CSS():
-    dl = f'curl -sLo {CSSCN} https://github.com/gutris1/segsmaker/raw/main/script/controlnet.css'
-    SyS(dl) if SM or not Path(CSSCN).exists() else None
-    display(HTML(f'<style>{CSSCN.read_text()}</style>'))
-
-Load_CSS()
+load_css()
 cn_main_panel.children = buttons
-display(cn_main_panel, cn15_panel, cnxl_panel)
+display(cn_main_panel, cn15_panel, cnxl_panel, output)
 
 select_all_button_15.on_click(SelectAll)
 unselect_all_button_15.on_click(UnselectAll)
-download_button_15.on_click(Download_Controlnet)
+download_button_15.on_click(Download_Model)
 select_all_button_xl.on_click(SelectAll)
 unselect_all_button_xl.on_click(UnselectAll)
-download_button_xl.on_click(Download_Controlnet)
+download_button_xl.on_click(Download_Model)
