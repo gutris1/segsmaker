@@ -87,7 +87,7 @@ def install_tunnel():
     bins = {
         'zrok': {
             'bin': HOME / '.zrok/bin/zrok',
-            'url': 'https://github.com/openziti/zrok/releases/download/v0.4.44/zrok_0.4.44_linux_amd64.tar.gz'
+            'url': 'https://github.com/openziti/zrok/releases/download/v1.0.2/zrok_1.0.2_linux_amd64.tar.gz'
         },
         'ngrok': {
             'bin': HOME / '.ngrok/bin/ngrok',
