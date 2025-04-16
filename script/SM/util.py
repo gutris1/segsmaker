@@ -504,7 +504,7 @@ def zrok_register(line):
         if zrok_bin.exists(): return
 
         zrok_bin.mkdir(parents=True, exist_ok=True)
-        zrok_url = 'https://github.com/openziti/zrok/releases/download/v0.4.44/zrok_0.4.44_linux_amd64.tar.gz'
+        zrok_url = 'https://github.com/openziti/zrok/releases/download/v1.0.2/zrok_1.0.2_linux_amd64.tar.gz'
         zrok_tar = zrok_bin / Path(zrok_url).name
 
         SyS(f'curl -sLo {zrok_tar} {zrok_url}')
