@@ -59,77 +59,68 @@ KANDANG = STR / 'KANDANG.py'
 TMP.mkdir(parents=True, exist_ok=True)
 SRC.mkdir(parents=True, exist_ok=True)
 
-VALID_WEBUI_OPTIONS = ['A1111', 'Forge', 'ComfyUI', 'ReForge', 'SwarmUI']
-VALID_SD_OPTIONS = ['1.5', 'xl']
+WEBUI_LIST = ['A1111', 'Forge', 'ComfyUI', 'ReForge', 'SwarmUI']
 
 def prevent_silly():
     parser = argparse.ArgumentParser(description='WebUI Installer Script for Kaggle and Google Colab')
     parser.add_argument('--webui', required=True, help='available webui: A1111, Forge, ComfyUI, ReForge, SwarmUI')
-    parser.add_argument('--sd', required=True, help='available sd: 1.5, xl')
     parser.add_argument('--civitai_key', required=True, help='your CivitAI API key')
     parser.add_argument('--hf_read_token', default=None, help='your Huggingface READ Token (optional)')
     parser.add_argument('--save_outputs_in_drive', default='no', help='Mount Google Drive')
     parser.add_argument('--bgm', default='dQw4w9WgXcQ', help='play youtube video on jupyter cell')
 
-    args = parser.parse_args()
+    args, unknown = parser.parse_known_args()
 
     arg1 = args.webui.lower()
-    arg2 = args.sd.lower()
-    arg3 = args.civitai_key.strip()
-    arg4 = args.hf_read_token.strip() if args.hf_read_token else ''
-    arg5 = args.save_outputs_in_drive.lower()
-    arg6 = args.bgm.strip() if args.bgm else ''
+    arg2 = args.civitai_key.strip()
+    arg3 = args.hf_read_token.strip() if args.hf_read_token else ''
+    arg4 = args.save_outputs_in_drive.lower()
+    arg5 = args.bgm.strip() if args.bgm else ''
 
-    if not any(arg1 == option.lower() for option in VALID_WEBUI_OPTIONS):
+    if not any(arg1 == option.lower() for option in WEBUI_LIST):
         print(f'{ERR}: invalid webui option: "{args.webui}"')
-        print(f'Available webui options: {", ".join(VALID_WEBUI_OPTIONS)}')
+        print(f'Available webui options: {", ".join(WEBUI_LIST)}')
         return None, None, None
 
-    if not any(arg2 == option.lower() for option in VALID_SD_OPTIONS):
-        print(f'{ERR}: invalid sd option: "{args.sd}"')
-        print(f'Available sd options: {", ".join(VALID_SD_OPTIONS)}')
-        return None, None, None
-
-    if not arg3:
+    if not arg2:
         print(f'{ERR}: CivitAI API key is missing.')
         return None, None, None
-    if re.search(r'\s+', arg3):
-        print(f'{ERR}: CivitAI API key contains spaces "{arg3}" - not allowed.')
+    if re.search(r'\s+', arg2):
+        print(f'{ERR}: CivitAI API key contains spaces "{arg2}" - not allowed.')
         return None, None, None
-    if len(arg3) < 32:
+    if len(arg2) < 32:
         print(f'{ERR}: CivitAI API key must be at least 32 characters long.')
         return None, None, None
 
-    if not arg4:
-        arg4 = ''
-    if re.search(r'\s+', arg4):
-        arg4 = ''
+    if not arg3:
+        arg3 = ''
+    if re.search(r'\s+', arg3):
+        arg3 = ''
 
     global SAVE_IN_DRIVE
     SAVE_IN_DRIVE = False
 
-    if arg5 == 'yes' and ENVNAME == 'Colab':
+    if arg4 == 'yes' and ENVNAME == 'Colab':
         SAVE_IN_DRIVE = True
 
     rr = 'dQw4w9WgXcQ'
-    if not arg6:
-        arg6 = rr
-    if re.search(r'\s+', arg6):
-        arg6 = rr
+    if not arg5:
+        arg5 = rr
+    if re.search(r'\s+', arg5):
+        arg5 = rr
 
     Muzik = f"""
     <iframe width="640" height="360"
-      src="https://www.youtube.com/embed/{arg6}?autoplay=1"
+      src="https://www.youtube.com/embed/{arg5}?autoplay=1"
       frameborder="0"
       referrerpolicy="strict-origin-when-cross-origin"
       allowfullscreen>
     </iframe>
     """
 
-    webui_webui = next(option for option in VALID_WEBUI_OPTIONS if arg1 == option.lower())
-    sd_sd = next(option for option in VALID_SD_OPTIONS if arg2 == option.lower())
+    webui_webui = next(option for option in WEBUI_LIST if arg1 == option.lower())
 
-    return (webui_webui, sd_sd), arg3, arg4, Muzik
+    return webui_webui, arg2, arg3, Muzik
 
 def PythonPortable():
     BIN = str(PY / 'bin')
@@ -171,6 +162,9 @@ def PythonPortable():
 def install_tunnel():
     SyS(f'wget -qO {USR}/cl https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64')
     SyS(f'chmod +x {USR}/cl')
+
+    path = PY / 'lib/python3.10/site-packages/gradio_tunneling/main.py'
+    SyS(f'pip install -q gradio-tunneling && wget -qO {path} https://github.com/gutris1/segsmaker/raw/main/script/gradio-tunnel.py')
 
     bins = {
         'zrok': {
@@ -315,6 +309,7 @@ def webui_req(U, W, M):
 
     if U in ['A1111', 'Forge', 'ComfyUI', 'ReForge']:
         pull(f'https://github.com/gutris1/segsmaker {U.lower()} {W}')
+
     elif U == 'SwarmUI':
         M.mkdir(parents=True, exist_ok=True)
         for sub in ['Stable-Diffusion', 'Lora', 'Embeddings', 'VAE', 'upscale_models']:
@@ -378,28 +373,23 @@ def webui_extension(U, W, M):
             else 'https://github.com/BlafKing/sd-civitai-browser-plus'
         )
 
-def webui_installation(U, S, W, M, E, V):
+def webui_installation(U, W, M, E, V):
     webui_req(U, W, M)
 
-    if S == 'xl':
-        embzip = W / 'embeddingsXL.zip'
-        extras = [
-            f'https://huggingface.co/gutris1/webui/resolve/main/misc/embeddingsXL.zip {W}',
-            f'https://huggingface.co/madebyollin/sdxl-vae-fp16-fix/resolve/main/sdxl.vae.safetensors {V} sdxl_vae.safetensors'
-        ]
+    extras = [
+        f'https://huggingface.co/gutris1/webui/resolve/main/misc/embeddings.zip {W}',
+        f'https://huggingface.co/stabilityai/sd-vae-ft-mse-original/resolve/main/vae-ft-mse-840000-ema-pruned.safetensors {V}',
+        f'https://huggingface.co/gutris1/webui/resolve/main/misc/embeddingsXL.zip {W}',
+        f'https://huggingface.co/madebyollin/sdxl-vae-fp16-fix/resolve/main/sdxl.vae.safetensors {V} sdxl_vae.safetensors'
+    ]
 
-    else:
-        embzip =  W / 'embeddings.zip'
-        extras = [
-            f'https://huggingface.co/gutris1/webui/resolve/main/misc/embeddings.zip {W}',
-            f'https://huggingface.co/stabilityai/sd-vae-ft-mse-original/resolve/main/vae-ft-mse-840000-ema-pruned.safetensors {V}'
-        ]
+    for i in extras: download(i)
+    SyS(f'unzip -qo {W / "embeddings.zip"} -d {E} && rm {W / "embeddings.zip"}')
+    SyS(f'unzip -qo {W / "embeddingsXL.zip"} -d {E} && rm {W / "embeddingsXL.zip"}')
 
-    for item in extras: download(item)
-    SyS(f'unzip -qo {embzip} -d {E} && rm {embzip}')
     if U != 'SwarmUI': webui_extension(U, W, M)
 
-def webui_selection(ui, which_sd):
+def webui_selection(ui):
     with output:
         output.clear_output(wait=True)
         repo_url = {
@@ -426,7 +416,7 @@ def webui_selection(ui, which_sd):
             if outputs.exists(): SyS(f'rm -rf {outputs}')
             outputs.symlink_to(driveOutputs)
 
-        webui_installation(ui, which_sd, WEBUI, MODELS, EMB, VAE)
+        webui_installation(ui, WEBUI, MODELS, EMB, VAE)
 
         with loading:
             loading.clear_output(wait=True)
@@ -453,7 +443,7 @@ def webui_installer():
                 with loading: loading.clear_output()
     else:
         try:
-            webui_selection(webui, sd)
+            webui_selection(webui)
         except KeyboardInterrupt:
             with loading: loading.clear_output()
             with output: print('\nCanceled.')
@@ -478,9 +468,8 @@ def notebook_scripts():
 
     for scripts in [nenen, KANDANG, MRK]: get_ipython().run_line_magic('run', str(scripts))
 
-selection, civitai_key, hf_read_token, bgm = prevent_silly()
-if selection is None or civitai_key is None: sys.exit()
-webui, sd = selection
+webui, civitai_key, hf_read_token, bgm = prevent_silly()
+if civitai_key is None: sys.exit()
 
 display(output, loading)
 with loading: display(HTML(bgm)); display(Image(url=IMG))
