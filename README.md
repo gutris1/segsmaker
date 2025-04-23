@@ -19,12 +19,25 @@
 </p>
 
 # Changelog
-### 2025-03-23
+### 2025-04-24
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/09660301-8839-460e-9426-4d0ab6f3f81a", max-width=1000px>
+</p>
+
+- <code>(Colab)</code> Updated Google Drive support to also create and link Checkpoint, LoRA, VAE, and Embeddings as subfolders of the main models directory.
+- <code>(Colab)</code> Unified A1111, ReForge, and Forge outputs into one output folder in Google Drive (if mounted).
+- <code>(Colab)</code> Separated outputs into comfyui-output for ComfyUI and swarmui-output for SwarmUI in Google Drive (if mounted).
+- <code>(Colab/Kaggle)</code> Removed SD 1.5 and XL selection.
+- <code>(Colab/Kaggle)</code> Added Gradio Tunnel as the default tunnel alongside Pinggy and Cloudflared for ComfyUI and SwarmUI.
+
+<details><summary>2025-03-23</summary><br>
+
 - Added an argument exclusive to Google Colab for saving outputs to Google Drive.
 - Redirected paths for <code>clip_vision</code> <code>diffusers</code> <code>diffusion_models</code> and <code>text_encoders</code> to TMP for ComfyUI.
 <p align="center">
   <img src="https://github.com/user-attachments/assets/569b1e60-75ef-4e88-ae77-941dabf1f165", max-width=1000px>
 </p>
+</details>
 
 <details><summary>2025-01-30</summary><br>
 
