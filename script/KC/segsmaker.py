@@ -13,12 +13,13 @@ import time
 import os
 
 ROOT = Path.home()
-MD = Path(HOMEPATH) / 'gutris1/marking.json'
-PW = '82a973c04367123ae98bd9abdf80d9eda9b910e2'
 CWD = Path.cwd()
+PW = '82a973c04367123ae98bd9abdf80d9eda9b910e2'
 
 SyS = get_ipython().system
 iRON = os.environ
+
+iRON['PYTHONWARNINGS'] = 'ignore'
 
 def Trashing():
     run = lambda cmd: subprocess.run(shlex.split(cmd), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
@@ -58,9 +59,7 @@ def ZROK_enable(token):
         print()
 
 def webui_launch(launch_args, skip_comfyui_check, ngrok_token=None, zrok_token=None):
-    iRON['PYTHONWARNINGS'] = 'ignore'
-    config = json.load(MD.open('r'))
-    ui = config.get('ui')
+    ui = json.load((Path(HOMEPATH) / 'gutris1/marking.json').open('r')).get('ui')
 
     if ui in ['A1111', 'Forge', 'ReForge']:
         port = 7860
@@ -93,21 +92,26 @@ def webui_launch(launch_args, skip_comfyui_check, ngrok_token=None, zrok_token=N
     pinggy = f'ssh -o StrictHostKeyChecking=no -p 80 -R0:localhost:{port} a.pinggy.io'
     ngrok = f'ngrok http http://localhost:{port} --log stdout'
     zrok = f'zrok share public localhost:{port} --headless'
+    gradio = f'gradio-tun {port}'
 
     Alice_Synthesis_Thirty = Alice_Zuberg(port)
     Alice_Synthesis_Thirty.logger.setLevel(logging.DEBUG)
+    Add = lambda command, name, pattern: Alice_Synthesis_Thirty.add_tunnel(command=command, name=name, pattern=pattern)
 
     if not (ngrok_token or zrok_token):
-        Alice_Synthesis_Thirty.add_tunnel(command=pinggy, name='Pinggy', pattern=r'https://[\w-]+\.a\.free\.pinggy\.link')
-        Alice_Synthesis_Thirty.add_tunnel(command=cloudflared, name='Cloudflared', pattern=r'[\w-]+\.trycloudflare\.com')
+        Add(pinggy, 'Pinggy', r'https://[\w-]+\.a\.free\.pinggy\.link')
+        Add(cloudflared, 'Cloudflared', r'[\w-]+\.trycloudflare\.com')
+
+        if ui in ['ComfyUI', 'SwarmUI']:
+            Add(gradio, 'Gradio', r'https://[\w-]+\.gradio\.live')
 
     if ngrok_token:
         NGROK_auth(ngrok_token)
-        Alice_Synthesis_Thirty.add_tunnel(command=ngrok, name='NGROK', pattern=r'https://[\w-]+\.ngrok-free\.app')
+        Add(ngrok, 'NGROK', r'https://[\w-]+\.ngrok-free\.app')
 
     if zrok_token:
         ZROK_enable(zrok_token)
-        Alice_Synthesis_Thirty.add_tunnel(command=zrok, name='ZROK', pattern=r'https://[\w-]+\.share\.zrok\.io')
+        Add(zrok, 'ZROK', r'https://[\w-]+\.share\.zrok\.io')
 
     with Alice_Synthesis_Thirty:
         SyS(cmd)
@@ -115,11 +119,12 @@ def webui_launch(launch_args, skip_comfyui_check, ngrok_token=None, zrok_token=N
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='nothing to read here')
     parser.add_argument('--skip-comfyui-check', action='store_true', help='Skip checking custom node dependencies for ComfyUI')
-    parser.add_argument('--N', type=str, help='NGROK tunnel (pass a token or leave empty)', default=None)
-    parser.add_argument('--Z', type=str, help='ZROK tunnel (pass a token or leave empty)', default=None)
+    parser.add_argument('--N', type=str, help='NGROK tunnel (pass a token or do nothing)', default=None)
+    parser.add_argument('--Z', type=str, help='ZROK tunnel (pass a token or do nothing)', default=None)
 
     args, unknown = parser.parse_known_args()
     launch_args = ' '.join(unknown)
+
     try:
         Trashing()
         webui_launch(launch_args, args.skip_comfyui_check, args.N, args.Z)
