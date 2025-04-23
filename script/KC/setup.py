@@ -66,7 +66,6 @@ def prevent_silly():
     parser.add_argument('--webui', required=True, help='available webui: A1111, Forge, ComfyUI, ReForge, SwarmUI')
     parser.add_argument('--civitai_key', required=True, help='your CivitAI API key')
     parser.add_argument('--hf_read_token', default=None, help='your Huggingface READ Token (optional)')
-    parser.add_argument('--save_outputs_in_drive', default='no', help='Mount Google Drive')
     parser.add_argument('--bgm', default='dQw4w9WgXcQ', help='play youtube video on jupyter cell')
 
     args, unknown = parser.parse_known_args()
@@ -74,8 +73,7 @@ def prevent_silly():
     arg1 = args.webui.lower()
     arg2 = args.civitai_key.strip()
     arg3 = args.hf_read_token.strip() if args.hf_read_token else ''
-    arg4 = args.save_outputs_in_drive.lower()
-    arg5 = args.bgm.strip() if args.bgm else ''
+    arg4 = args.bgm.strip() if args.bgm else ''
 
     if not any(arg1 == option.lower() for option in WEBUI_LIST):
         print(f'{ERR}: invalid webui option: "{args.webui}"')
@@ -92,26 +90,16 @@ def prevent_silly():
         print(f'{ERR}: CivitAI API key must be at least 32 characters long.')
         return None, None, None
 
-    if not arg3:
-        arg3 = ''
-    if re.search(r'\s+', arg3):
-        arg3 = ''
-
-    global SAVE_IN_DRIVE
-    SAVE_IN_DRIVE = False
-
-    if arg4 == 'yes' and ENVNAME == 'Colab':
-        SAVE_IN_DRIVE = True
+    if not arg3: arg3 = ''
+    if re.search(r'\s+', arg3): arg3 = ''
 
     rr = 'dQw4w9WgXcQ'
-    if not arg5:
-        arg5 = rr
-    if re.search(r'\s+', arg5):
-        arg5 = rr
+    if not arg4: arg4 = rr
+    if re.search(r'\s+', arg4): arg4 = rr
 
     Muzik = f"""
     <iframe width="640" height="360"
-      src="https://www.youtube.com/embed/{arg5}?autoplay=1"
+      src="https://www.youtube.com/embed/{arg4}?autoplay=1"
       frameborder="0"
       referrerpolicy="strict-origin-when-cross-origin"
       allowfullscreen>
@@ -119,7 +107,6 @@ def prevent_silly():
     """
 
     webui_webui = next(option for option in WEBUI_LIST if arg1 == option.lower())
-
     return webui_webui, arg2, arg3, Muzik
 
 def PythonPortable():
@@ -132,10 +119,6 @@ def PythonPortable():
         url = 'https://huggingface.co/gutris1/webui/resolve/main/env/python310-torch251-cu121.tar.lz4'
 
     fn = Path(url).name
-
-    if SAVE_IN_DRIVE:
-        from google.colab import drive
-        drive.mount('/content/drive')
 
     CD('/')
     print(f'\n{AR} installing Python Portable 3.10.15')
@@ -271,7 +254,6 @@ def sym_link(U, M):
                 f"rm -rf {M / 'text_encoders'} {M / 'unet'} {TMP}/*"
             ],
             'links': [
-                (M / 'checkpoints', M / 'checkpoints_symlink'),
                 (TMP / 'ckpt', M / 'checkpoints/tmp_ckpt'),
                 (TMP / 'lora', M / 'loras/tmp_lora'),
                 (TMP / 'controlnet', M / 'controlnet'),
@@ -409,13 +391,6 @@ def webui_selection(ui):
         say(f'<b>【{{red}} Installing {WEBUI.name}{{d}} 】{{red}}</b>')
         clone(repo)
 
-        if SAVE_IN_DRIVE:
-            outputs = WEBUI / ('Output' if ui == 'SwarmUI' else 'output' if ui == 'ComfyUI' else 'outputs')
-            driveOutputs = Path('/content/drive/MyDrive/OUTPUTS') / ui
-            driveOutputs.mkdir(parents=True, exist_ok=True)
-            if outputs.exists(): SyS(f'rm -rf {outputs}')
-            outputs.symlink_to(driveOutputs)
-
         webui_installation(ui, WEBUI, MODELS, EMB, VAE)
 
         with loading:
@@ -426,8 +401,7 @@ def webui_selection(ui):
 
 def webui_installer():
     CD(HOME)
-    config = json.load(MARKED.open('r')) if MARKED.exists() else {}
-    ui = config.get('ui')
+    ui = (json.load(MARKED.open('r')) if MARKED.exists() else {}).get('ui')
     WEBUI = HOME / ui if ui else None
 
     if WEBUI is not None and WEBUI.exists():
