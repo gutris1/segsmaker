@@ -113,7 +113,7 @@ def PythonPortable():
     BIN = str(PY / 'bin')
     PKG = str(PY / 'lib/python3.10/site-packages')
 
-    if webui == 'ComfyUI':
+    if webui in ['ComfyUI', 'SwarmUI']:
         url = 'https://huggingface.co/gutris1/webui/resolve/main/env/ComfyUI-python310-torch251-cu121.tar.lz4'
     else:
         url = 'https://huggingface.co/gutris1/webui/resolve/main/env/python310-torch251-cu121.tar.lz4'
