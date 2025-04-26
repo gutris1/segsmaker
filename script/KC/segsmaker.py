@@ -83,6 +83,7 @@ def webui_launch(launch_args, skip_comfyui_check, ngrok_token=None, zrok_token=N
             cmd = f'python3 main.py {launch_args}'
 
         elif ui == 'SwarmUI':
+            SyS('pip install -q "pydantic>=1.9.0,<2.0.0"')
             port = 7801
             iRON['SWARMPATH'] = str(CWD)
             iRON['SWARM_NO_VENV'] = 'true'
