@@ -1,4 +1,4 @@
-from IPython.display import display, Image, HTML, clear_output
+from IPython.display import display, Image, clear_output
 from IPython import get_ipython
 from ipywidgets import widgets
 from pathlib import Path
@@ -66,14 +66,12 @@ def prevent_silly():
     parser.add_argument('--webui', required=True, help='available webui: A1111, Forge, ComfyUI, ReForge, SwarmUI')
     parser.add_argument('--civitai_key', required=True, help='your CivitAI API key')
     parser.add_argument('--hf_read_token', default=None, help='your Huggingface READ Token (optional)')
-    parser.add_argument('--bgm', default='dQw4w9WgXcQ', help='play youtube video on jupyter cell')
 
     args, unknown = parser.parse_known_args()
 
     arg1 = args.webui.lower()
     arg2 = args.civitai_key.strip()
     arg3 = args.hf_read_token.strip() if args.hf_read_token else ''
-    arg4 = args.bgm.strip() if args.bgm else ''
 
     if not any(arg1 == option.lower() for option in WEBUI_LIST):
         print(f'{ERR}: invalid webui option: "{args.webui}"')
@@ -93,21 +91,8 @@ def prevent_silly():
     if not arg3: arg3 = ''
     if re.search(r'\s+', arg3): arg3 = ''
 
-    rr = 'dQw4w9WgXcQ'
-    if not arg4: arg4 = rr
-    if re.search(r'\s+', arg4): arg4 = rr
-
-    Muzik = f"""
-    <iframe width="640" height="360"
-      src="https://www.youtube.com/embed/{arg4}?autoplay=1"
-      frameborder="0"
-      referrerpolicy="strict-origin-when-cross-origin"
-      allowfullscreen>
-    </iframe>
-    """
-
-    webui_webui = next(option for option in WEBUI_LIST if arg1 == option.lower())
-    return webui_webui, arg2, arg3, Muzik
+    selected_ui = next(option for option in WEBUI_LIST if arg1 == option.lower())
+    return selected_ui, arg2, arg3
 
 def PythonPortable():
     BIN = str(PY / 'bin')
@@ -442,11 +427,11 @@ def notebook_scripts():
 
     for scripts in [nenen, KANDANG, MRK]: get_ipython().run_line_magic('run', str(scripts))
 
-webui, civitai_key, hf_read_token, bgm = prevent_silly()
+webui, civitai_key, hf_read_token = prevent_silly()
 if civitai_key is None: sys.exit()
 
 display(output, loading)
-with loading: display(HTML(bgm)); display(Image(url=IMG))
+with loading: display(Image(url=IMG))
 with output: PY.exists() or PythonPortable()
 notebook_scripts()
 
