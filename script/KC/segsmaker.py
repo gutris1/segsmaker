@@ -66,7 +66,7 @@ def webui_launch(launch_args, skip_comfyui_check, ngrok_token=None, zrok_token=N
         SyS(f"echo -n {int(time.time()) + 3600} > {CWD / 'asd/pinggytimer.txt'}")
         launch_args += ' --enable-insecure-extension-access --disable-console-progressbars --theme dark'
 
-        if '--share' not in launch_args: launch_args += ' --share'
+        if '--share' in launch_args: launch_args = launch_args.replace('--share', '')
         if ENVNAME == 'Kaggle': launch_args += f' --encrypt-pass={PW}'
         iRON.setdefault('IIB_ACCESS_CONTROL', 'disable')
 
@@ -82,7 +82,7 @@ def webui_launch(launch_args, skip_comfyui_check, ngrok_token=None, zrok_token=N
             skip_comfyui_check or (SyS('python3 apotek.py'), clear_output(wait=True))
             cmd = f'python3 main.py {launch_args}'
 
-        elif ui == 'SwarmUI':
+        else:
             SyS('pip install -q "pydantic>=1.9.0,<2.0.0"')
             port = 7801
             iRON['SWARMPATH'] = str(CWD)
@@ -100,11 +100,9 @@ def webui_launch(launch_args, skip_comfyui_check, ngrok_token=None, zrok_token=N
     Add = lambda command, name, pattern: Alice_Synthesis_Thirty.add_tunnel(command=command, name=name, pattern=pattern)
 
     if not (ngrok_token or zrok_token):
+        Add(gradio, 'Gradio', r'https://[\w-]+\.gradio\.live')
         Add(pinggy, 'Pinggy', r'https://[\w-]+\.a\.free\.pinggy\.link')
         Add(cloudflared, 'Cloudflared', r'[\w-]+\.trycloudflare\.com')
-
-        if ui in ['ComfyUI', 'SwarmUI']:
-            Add(gradio, 'Gradio', r'https://[\w-]+\.gradio\.live')
 
     if ngrok_token:
         NGROK_auth(ngrok_token)
