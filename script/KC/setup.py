@@ -59,11 +59,11 @@ KANDANG = STR / 'KANDANG.py'
 TMP.mkdir(parents=True, exist_ok=True)
 SRC.mkdir(parents=True, exist_ok=True)
 
-WEBUI_LIST = ['A1111', 'Forge', 'ComfyUI', 'ReForge', 'SwarmUI']
+WEBUI_LIST = ['A1111', 'Forge', 'ReForge', 'Forge-Classic', 'ComfyUI', 'SwarmUI']
 
 def prevent_silly():
     parser = argparse.ArgumentParser(description='WebUI Installer Script for Kaggle and Google Colab')
-    parser.add_argument('--webui', required=True, help='available webui: A1111, Forge, ComfyUI, ReForge, SwarmUI')
+    parser.add_argument('--webui', required=True, help='available webui: A1111, Forge, ReForge, Forge-Classic, ComfyUI, SwarmUI')
     parser.add_argument('--civitai_key', required=True, help='your CivitAI API key')
     parser.add_argument('--hf_read_token', default=None, help='your Huggingface READ Token (optional)')
 
@@ -95,18 +95,21 @@ def prevent_silly():
     return selected_ui, arg2, arg3
 
 def PythonPortable():
+    v = '3.11' if webui == 'Forge-Classic' else '3.10'
     BIN = str(PY / 'bin')
-    PKG = str(PY / 'lib/python3.10/site-packages')
+    PKG = str(PY / f'lib/python{v}/site-packages')
 
     if webui in ['ComfyUI', 'SwarmUI']:
-        url = 'https://huggingface.co/gutris1/webui/resolve/main/env/ComfyUI-python310-torch251-cu121.tar.lz4'
+        url = 'https://huggingface.co/gutris1/webui/resolve/main/env/ComfyUI-python310-torch251-cu124.tar.lz4'
+    elif webui == 'Forge-Classic':
+        url = 'https://huggingface.co/gutris1/webui/resolve/main/env/FC-Python311-Torch260-cu124.tar.lz4'
     else:
         url = 'https://huggingface.co/gutris1/webui/resolve/main/env/python310-torch251-cu121.tar.lz4'
 
     fn = Path(url).name
 
     CD('/')
-    print(f'\n{AR} installing Python Portable 3.10.15')
+    print(f"\n{AR} installing Python Portable {'3.11.13' if webui == 'Forge-Classic' else '3.10.15'}")
     SyS('sudo apt-get -qq -y install aria2 pv lz4 >/dev/null 2>&1')
     aria = f'aria2c --console-log-level=error --stderr=true -c -x16 -s16 -k1M -j5 {url} -o {fn}'
     pv = f'pv {fn} | lz4 -d | tar -xf -'
@@ -130,9 +133,6 @@ def PythonPortable():
 def install_tunnel():
     SyS(f'wget -qO {USR}/cl https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64')
     SyS(f'chmod +x {USR}/cl')
-
-    path = PY / 'lib/python3.10/site-packages/gradio_tunneling/main.py'
-    SyS(f'pip install -q gradio-tunneling && wget -qO {path} https://github.com/gutris1/segsmaker/raw/main/script/gradio-tunnel.py')
 
     bins = {
         'zrok': {
@@ -197,20 +197,6 @@ def sym_link(U, M):
             ]
         },
 
-        'ReForge': {
-            'sym': [
-                f"rm -rf {M / 'Stable-diffusion/tmp_ckpt'} {M / 'Lora/tmp_lora'} {M / 'ControlNet'}",
-                f"rm -rf {M / 'svd'} {M / 'z123'} {TMP}/*"
-            ],
-            'links': [
-                (TMP / 'ckpt', M / 'Stable-diffusion/tmp_ckpt'),
-                (TMP / 'lora', M / 'Lora/tmp_lora'),
-                (TMP / 'controlnet', M / 'ControlNet'),
-                (TMP / 'z123', M / 'z123'),
-                (TMP / 'svd', M / 'svd')
-            ]
-        },
-
         'Forge': {
             'sym': [
                 f"rm -rf {M / 'Stable-diffusion/tmp_ckpt'} {M / 'Lora/tmp_lora'} {M / 'ControlNet'}",
@@ -229,6 +215,31 @@ def sym_link(U, M):
                 (TMP / 'diffusion_models', M / 'diffusion_models'),
                 (TMP / 'text_encoders', M / 'text_encoder'),
                 (TMP / 'unet', M / 'unet')
+            ]
+        },
+
+        'ReForge': {
+            'sym': [
+                f"rm -rf {M / 'Stable-diffusion/tmp_ckpt'} {M / 'Lora/tmp_lora'} {M / 'ControlNet'}",
+                f"rm -rf {M / 'svd'} {M / 'z123'} {TMP}/*"
+            ],
+            'links': [
+                (TMP / 'ckpt', M / 'Stable-diffusion/tmp_ckpt'),
+                (TMP / 'lora', M / 'Lora/tmp_lora'),
+                (TMP / 'controlnet', M / 'ControlNet'),
+                (TMP / 'z123', M / 'z123'),
+                (TMP / 'svd', M / 'svd')
+            ]
+        },
+
+        'Forge-Classic': {
+            'sym': [
+                f"rm -rf {M / 'Stable-diffusion/tmp_ckpt'} {M / 'Lora/tmp_lora'} {M / 'ControlNet'}"
+            ],
+            'links': [
+                (TMP / 'ckpt', M / 'Stable-diffusion/tmp_ckpt'),
+                (TMP / 'lora', M / 'Lora/tmp_lora'),
+                (TMP / 'controlnet', M / 'ControlNet')
             ]
         },
 
@@ -268,16 +279,15 @@ def sym_link(U, M):
 
     cfg = configs.get(U)
     [SyS(f'{cmd}') for cmd in cfg['sym']]
-    if U in ['A1111', 'Forge', 'ReForge']: [(M / d).mkdir(parents=True, exist_ok=True) for d in ['Lora', 'ESRGAN']]
+    if U not in ['ComfyUI', 'SwarmUI']: [(M / d).mkdir(parents=True, exist_ok=True) for d in ['Lora', 'ESRGAN']]
     [SyS(f'ln -s {src} {tg}') for src, tg in cfg['links']]
 
 def webui_req(U, W, M):
     CD(W)
 
-    if U in ['A1111', 'Forge', 'ComfyUI', 'ReForge']:
+    if U != 'SwarmUI':
         pull(f'https://github.com/gutris1/segsmaker {U.lower()} {W}')
-
-    elif U == 'SwarmUI':
+    else:
         M.mkdir(parents=True, exist_ok=True)
         for sub in ['Stable-Diffusion', 'Lora', 'Embeddings', 'VAE', 'upscale_models']:
             (M / sub).mkdir(parents=True, exist_ok=True)
@@ -315,6 +325,7 @@ def webui_req(U, W, M):
     if U not in ['SwarmUI', 'ComfyUI']:
         SyS(f'rm -f {W}/html/card-no-preview.png')
         download(f'https://huggingface.co/gutris1/webui/resolve/main/misc/card-no-preview.png {W}/html')
+        download(f'https://github.com/gutris1/segsmaker/raw/main/config/NoCrypt_miku.json {W}/tmp/gradio_themes')
 
 def webui_extension(U, W, M):
     EXT = W / 'custom_nodes' if U == 'ComfyUI' else W / 'extensions'
@@ -340,7 +351,11 @@ def webui_extension(U, W, M):
             else 'https://github.com/BlafKing/sd-civitai-browser-plus'
         )
 
-def webui_installation(U, W, M, E, V):
+def webui_installation(U, W):
+    M = W / 'Models' if U == 'SwarmUI' else W / 'models'
+    E = M / 'Embeddings' if U == 'SwarmUI' else (M / 'embeddings' if U in ['Forge-Classic', 'ComfyUI'] else W / 'embeddings')
+    V = M / 'vae' if U == 'ComfyUI' else M / 'VAE'
+
     webui_req(U, W, M)
 
     extras = [
@@ -359,24 +374,21 @@ def webui_installation(U, W, M, E, V):
 def webui_selection(ui):
     with output:
         output.clear_output(wait=True)
+
         repo_url = {
             'A1111': 'https://github.com/AUTOMATIC1111/stable-diffusion-webui A1111',
             'Forge': 'https://github.com/lllyasviel/stable-diffusion-webui-forge Forge',
-            'ComfyUI': 'https://github.com/comfyanonymous/ComfyUI',
             'ReForge': 'https://github.com/Panchovix/stable-diffusion-webui-reForge ReForge',
+            'Forge-Classic': 'https://github.com/Haoming02/sd-webui-forge-classic Forge-Classic',
+            'ComfyUI': 'https://github.com/comfyanonymous/ComfyUI',
             'SwarmUI': 'https://github.com/mcmonkeyprojects/SwarmUI'
         }
 
         if ui in repo_url: (WEBUI, repo) = (HOME / ui, repo_url[ui])
-
-        MODELS = WEBUI / 'Models' if ui == 'SwarmUI' else WEBUI / 'models'
-        EMB = MODELS / 'Embeddings' if ui == 'SwarmUI' else (MODELS / 'embeddings' if ui == 'ComfyUI' else WEBUI / 'embeddings')
-        VAE = MODELS / 'vae' if ui == 'ComfyUI' else MODELS / 'VAE'
-
         say(f'<b>【{{red}} Installing {WEBUI.name}{{d}} 】{{red}}</b>')
         clone(repo)
 
-        webui_installation(ui, WEBUI, MODELS, EMB, VAE)
+        webui_installation(ui, WEBUI)
 
         with loading:
             loading.clear_output(wait=True)
@@ -399,6 +411,8 @@ def webui_installer():
                     SyS('git pull origin master')
                 elif ui in ['Forge', 'ReForge']:
                     SyS('git pull origin main')
+                elif ui == 'Forge-Classic':
+                    SyS('git pull origin classic')
                 with loading: loading.clear_output()
     else:
         try:

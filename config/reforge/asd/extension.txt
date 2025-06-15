@@ -1,14 +1,15 @@
---depth 1 https://github.com/gutris1/sd-webui-bmab 3-bmab
---depth 1 https://github.com/Bing-su/adetailer 4-adetailer
---depth 1 https://github.com/hako-mikan/sd-webui-supermerger
---depth 1 https://github.com/zanllp/sd-webui-infinite-image-browsing
---depth 1 https://github.com/DominikDoom/a1111-sd-webui-tagcomplete
---depth 1 https://github.com/Coyote-A/ultimate-upscale-for-automatic1111
---depth 1 https://github.com/IDEA-Research/DWPose
---depth 1 https://github.com/hako-mikan/sd-webui-regional-prompter
---depth 1 https://github.com/gutris1/sd-hub
---depth 1 https://github.com/gutris1/sd-image-info
---depth 1 https://github.com/gutris1/sd-image-viewer
---depth 1 https://github.com/gutris1/Scroll-Bar
---depth 1 https://github.com/gutris1/timer_timer
---depth 1 https://github.com/gutris1/sd-simple-dimension-preset
+https://github.com/gutris1/sd-webui-bmab 3-bmab
+https://github.com/Bing-su/adetailer 4-adetailer
+https://github.com/hako-mikan/sd-webui-supermerger
+https://github.com/zanllp/sd-webui-infinite-image-browsing
+https://github.com/DominikDoom/a1111-sd-webui-tagcomplete
+https://github.com/Coyote-A/ultimate-upscale-for-automatic1111
+https://github.com/IDEA-Research/DWPose
+https://github.com/hako-mikan/sd-webui-regional-prompter
+https://github.com/gutris1/sd-hub
+https://github.com/gutris1/sd-image-info
+https://github.com/gutris1/sd-image-viewer
+https://github.com/gutris1/sd-image-scripts
+https://github.com/gutris1/Scroll-Bar
+https://github.com/gutris1/timer_timer
+https://github.com/gutris1/sd-simple-dimension-preset

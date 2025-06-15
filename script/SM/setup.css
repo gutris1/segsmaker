@@ -596,7 +596,7 @@
     --background: #fff;
     --disabled: #F6F8FF;
     --disabled-inner: #E1E6F9;
-    -webkit-appearance: none;
+    appearance: none;
     -moz-appearance: none;
     height: 30px;
     width: auto;
@@ -610,7 +610,7 @@
     cursor: pointer;
     border: 3px solid #212121;
     background-color: rgba(33, 33, 33, 0.5);
-    transition: background 0.3s, border-color 0.3s, box-shadow 0.2s;
+    transition: background-color 0.3s, border-color 0.3s, box-shadow 0.2s;
   }
   .tunnel input[type=radio]:after {
     content: "";
@@ -676,7 +676,7 @@
     top: 3px;
     font-size: 36px;
     position: relative;
-    
+
   }
   .tunnel input[type=radio]:not(.switch):checked {
     --r: 43deg;
@@ -738,7 +738,7 @@
   --background: #fff;
   --disabled: #F6F8FF;
   --disabled-inner: #E1E6F9;
-  -webkit-appearance: none;
+  appearance: none;
   -moz-appearance: none;
   width: 20px;
   height: 20px;
@@ -752,7 +752,7 @@
   cursor: pointer;
   border: 1px solid var(--bc, var(--border));
   background: var(--b, var(--background));
-  transition: background 0.3s, border-color 0.3s, box-shadow 0.2s;
+  transition: background-color 0.3s, border-color 0.3s, box-shadow 0.2s;
   position: relative;
 }
 

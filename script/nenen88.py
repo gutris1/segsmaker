@@ -124,25 +124,44 @@ def netorare(line):
 def strip_(url):
     if 'civitai.com' in url:
         url = url.split('?token=')[0] if '?token=' in url else url
-        url = url.replace('?type=', f'?token={TOKET}&type=') if '?type=' in url else f"{url}?token={TOKET}"
+        url = url.replace('?type=', f'?token={TOKET}&type=') if '?type=' in url else f'{url}?token={TOKET}'
 
         if 'civitai.com/models/' in url:
-            version_id = url.split('?modelVersionId=')[1] if '?modelVersionId=' in url else None
-            model_id = url.split('/models/')[1].split('/')[0] if not version_id else None
-            api_url = f'https://civitai.com/api/v1/model-versions/{version_id}' if version_id else f'https://civitai.com/api/v1/models/{model_id}'
-            data = requests.get(api_url).json()
+            try:
+                version_id = url.split('?modelVersionId=')[1] if '?modelVersionId=' in url else None
+                model_id = url.split('/models/')[1].split('/')[0]
+                there = bool(version_id)
 
-            if data.get('earlyAccessEndsAt'):
-                print("\n  The model is in early access and requires payment for downloading.\n"
-                      f"  -> https://civitai.com/models/{data.get('modelId')}?modelVersionId={data.get('id')}\n")
+                api_url = (
+                    f'https://civitai.com/api/v1/model-versions/{version_id}'
+                    if there else f'https://civitai.com/api/v1/models/{model_id}'
+                )
+
+                r = requests.get(api_url)
+                r.raise_for_status()
+                v = r.json()
+
+                earlyAccess = (
+                    v.get('earlyAccessEndsAt') if there
+                    else next((mv for mv in v.get('modelVersions', []) if mv.get('availability') == 'EarlyAccess'), None)
+                )
+
+                if earlyAccess:
+                    id_ = v.get('id') if there else earlyAccess.get('id')
+                    page = url if there else f'https://civitai.com/models/{model_id}?modelVersionId={id_}'
+                    print(f'\n  The model is in early access and requires payment for downloading.\n  -> {page}\n')
+                    return None
+
+                download = v.get('downloadUrl') if there else v.get('modelVersions', [{}])[0].get('downloadUrl')
+                return f'{download}?token={TOKET}' if download else None
+
+            except requests.exceptions.RequestException as e:
+                print(f'\n  [Error] {str(e)}\n')
                 return None
-
-            return f"{data.get('downloadUrl') or data.get('modelVersions', [{}])[0].get('downloadUrl')}?token={TOKET}"
 
     elif any(domain in url for domain in ['huggingface.co', 'github.com']):
         url = url.replace('/blob/', '/resolve/' if "huggingface.co" in url else '/raw/')
-        if 'huggingface.co' in url and '?' in url:
-            url = url.split('?')[0]
+        if 'huggingface.co' in url and '?' in url: url = url.split('?')[0]
 
     return url
 
@@ -279,7 +298,6 @@ def curlly(cmd, fn):
                         pbar.refresh()
 
                 curl_output += line
-
             pbar.close()
         p.wait()
 

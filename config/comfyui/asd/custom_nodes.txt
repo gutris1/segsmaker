@@ -1,13 +1,13 @@
---depth 1 --recursive https://github.com/ssitu/ComfyUI_UltimateSDUpscale
---depth 1 https://github.com/ltdrdata/ComfyUI-Manager
---depth 1 https://github.com/pythongosssss/ComfyUI-Custom-Scripts
---depth 1 https://github.com/city96/SD-Latent-Upscaler
---depth 1 https://github.com/jags111/efficiency-nodes-comfyui
---depth 1 https://github.com/BlenderNeko/ComfyUI_ADV_CLIP_emb
---depth 1 https://github.com/ssitu/ComfyUI_NestedNodeBuilder
---depth 1 https://github.com/Kosinkadink/ComfyUI-Advanced-ControlNet
---depth 1 https://github.com/Fannovel16/comfyui_controlnet_aux
---depth 1 https://github.com/SLAPaper/ComfyUI-Image-Selector
---depth 1 https://github.com/Derfuu/Derfuu_ComfyUI_ModdedNodes
---depth 1 https://github.com/FizzleDorf/ComfyUI_FizzNodes
---depth 1 https://github.com/WASasquatch/was-node-suite-comfyui
+--recursive https://github.com/ssitu/ComfyUI_UltimateSDUpscale
+https://github.com/ltdrdata/ComfyUI-Manager
+https://github.com/pythongosssss/ComfyUI-Custom-Scripts
+https://github.com/city96/SD-Latent-Upscaler
+https://github.com/jags111/efficiency-nodes-comfyui
+https://github.com/BlenderNeko/ComfyUI_ADV_CLIP_emb
+https://github.com/ssitu/ComfyUI_NestedNodeBuilder
+https://github.com/Kosinkadink/ComfyUI-Advanced-ControlNet
+https://github.com/Fannovel16/comfyui_controlnet_aux
+https://github.com/SLAPaper/ComfyUI-Image-Selector
+https://github.com/Derfuu/Derfuu_ComfyUI_ModdedNodes
+https://github.com/FizzleDorf/ComfyUI_FizzNodes
+https://github.com/WASasquatch/was-node-suite-comfyui

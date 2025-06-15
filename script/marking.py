@@ -23,46 +23,43 @@ SyS = get_ipython().system
 CD = os.chdir
 
 def purgeVAR():
-    var_list = [
-        'WebUI', 'Models', 'WebUI_Output', 'Extensions', 'Embeddings', 'UNET', 'CLIP',
-        'VAE', 'CKPT', 'LORA', 'TMP_CKPT', 'TMP_LORA', 'Forge_SVD', 'Controlnet_Widget', 'Upscalers'
+    l = [
+        'WebUI', 'Models', 'WebUI_Output', 'Extensions', 'Embeddings', 'UNET', 'CLIP', 'VAE',
+        'CKPT', 'LORA', 'TMP_CKPT', 'TMP_LORA', 'Forge_SVD', 'Controlnet_Widget', 'Upscalers'
     ]
-    for var in var_list:
-        if var in globals():
-            del globals()[var]
+    for v in l:
+        if v in globals(): del globals()[v]
 
 def getWebUIName(path):
     return json.load(open(path, 'r')).get('ui', None)
 
 def setWebUIVAR(ui):
-    path_list = {
-        'A1111': ('A1111', 'extensions', 'embeddings', 'VAE', 'Stable-diffusion', 'Lora', 'ESRGAN'),
-        'Forge': ('Forge', 'extensions', 'embeddings', 'VAE', 'Stable-diffusion', 'Lora', 'ESRGAN'),
-        'ComfyUI': ('ComfyUI', 'custom_nodes', 'embeddings', 'vae', 'checkpoints', 'loras', 'upscale_models'),
-        'ReForge': ('ReForge', 'extensions', 'embeddings', 'VAE', 'Stable-diffusion', 'Lora', 'ESRGAN'),
-        'FaceFusion': ('FaceFusion', None, None, None, None, None, None),
-        'SDTrainer': ('SDTrainer', None, None, 'VAE', 'sd-models', None, None),
-        'SwarmUI': ('SwarmUI', 'Extensions', 'Embeddings', 'VAE', 'Stable-Diffusion', 'Lora', 'upscale_models')
+    default = ('extensions', 'embeddings', 'VAE', 'Stable-diffusion', 'Lora', 'ESRGAN')
+
+    maps = {
+        'A1111': default,
+        'Forge': default,
+        'ReForge': default,
+        'Forge-Classic': default,
+        'ComfyUI': ('custom_nodes', 'embeddings', 'vae', 'checkpoints', 'loras', 'upscale_models'),
+        'SwarmUI': ('Extensions', 'Embeddings', 'VAE', 'Stable-Diffusion', 'Lora', 'upscale_models'),
+        'FaceFusion': (None,) * 6,
+        'SDTrainer': (None, None, 'VAE', 'sd-models', None, None)
     }
 
-    U, extension, embed, vae, ckpt, lora, upscaler = path_list[ui]
-    W = HOME / U if U else None
-    M = W / ('Models' if ui == 'SwarmUI' else 'models') if W else None
-    EXT = W / 'src' / extension if ui == 'SwarmUI' and extension else W / extension if extension else None
-    E = (
-        M / embed if ui in ['ComfyUI', 'SwarmUI'] else
-        W / embed if ui in ['A1111', 'Forge', 'ReForge'] else
-        None
-    )
-    V = M / vae if M and vae else None
-    C = M / ckpt if M and ckpt else None
-    L = M / lora if M and lora else None
-    UPS = M / upscaler if ui not in ['FaceFusion', 'SDTrainer'] else None
-    O = W / (
-        'Output' if ui == 'SwarmUI' else 'output' if ui in ['ComfyUI', 'SDTrainer'] else 'outputs'
-    ) if W else None
+    ext, embed, vae, ckpt, lora, upscaler = maps.get(ui, (None,) * 6)
 
-    return W, M, O, EXT, E, V, C, L, UPS
+    WebUI = HOME / ui
+    Models = WebUI / ('Models' if ui == 'SwarmUI' else 'models')
+    WebUI_Output = WebUI / ('Output' if ui == 'SwarmUI' else 'output' if ui in ['ComfyUI', 'SDTrainer'] else 'outputs')
+    Extensions = (WebUI / 'src' / ext if ui == 'SwarmUI' and ext else WebUI / ext if ext else None)
+    Embeddings = (Models / embed if ui in ['Forge-Classic', 'ComfyUI', 'SwarmUI'] else WebUI / embed if embed else None)
+    VAE = Models / vae if vae else None
+    CKPT = Models / ckpt if ckpt else None
+    LORA = Models / lora if lora else None
+    Upscalers = Models / upscaler if upscaler and ui not in ['FaceFusion', 'SDTrainer'] else None
+
+    return WebUI, Models, WebUI_Output, Extensions, Embeddings, VAE, CKPT, LORA, Upscalers
 
 if SM:
     @register_line_magic
