@@ -123,6 +123,7 @@ def netorare(line):
 
 def strip_(url):
     if 'civitai.com' in url:
+        input_url = url
         url = url.split('?token=')[0] if '?token=' in url else url
         url = url.replace('?type=', f'?token={TOKET}&type=') if '?type=' in url else f'{url}?token={TOKET}'
 
@@ -148,7 +149,7 @@ def strip_(url):
 
                 if earlyAccess:
                     id_ = v.get('id') if there else earlyAccess.get('id')
-                    page = url if there else f'https://civitai.com/models/{model_id}?modelVersionId={id_}'
+                    page = input_url if there else f'https://civitai.com/models/{model_id}?modelVersionId={id_}'
                     print(f'\n  The model is in early access and requires payment for downloading.\n  -> {page}\n')
                     return None
 
@@ -358,30 +359,39 @@ def clone(i):
 @register_line_magic
 def pull(line):
     inputs = line.split()
-    if len(inputs) != 3: return
+    if len(inputs) < 3: return
 
-    repo, tarfold, despath = inputs
+    subs = subprocess.run
+    repo, tarfold, despath = inputs[:3]
+    branch = inputs[3] if len(inputs) == 4 else None
 
     print(
         f"\n{'':>2}{'pull':<4} : {tarfold}",
         f"\n{'':>2}{'from':<4} : {repo}",
-        f"\n{'':>2}{'into':<4} : {despath}\n"
+        f"\n{'':>2}{'into':<4} : {despath}",
+        end=''
     )
+
+    if branch: print(f"\n{'':>2}{'branch':<4} : {branch}")
+    print()
 
     fp = Path(despath).expanduser()
     opts = {'stdout': subprocess.PIPE, 'stderr': subprocess.PIPE, 'check': True}
-    subs = subprocess.run
-    cmd1 = f'git clone -n --depth=1 --filter=tree:0 {repo}'
+    cmd1 = f'git clone -n --depth=1 --filter=tree:0'
+    if branch: cmd1 += f' --branch {branch}'
+    cmd1 += f' {repo}'
     subs(shlex.split(cmd1), cwd=str(fp), **opts)
+
     repofold = fp / Path(repo).name.rstrip('.git')
+
     cmd2 = f'git sparse-checkout set --no-cone {tarfold}'
     subs(shlex.split(cmd2), cwd=str(repofold), **opts)
+
     cmd3 = 'git checkout'
     subs(shlex.split(cmd3), cwd=str(repofold), **opts)
 
     zipin = repofold / 'config' / tarfold
     zipout = fp / f'{tarfold}.zip'
-
     with zipfile.ZipFile(str(zipout), 'w') as zipf:
         for root in zipin.rglob('*'):
             if root.is_file():
@@ -391,6 +401,7 @@ def pull(line):
     cmd4 = f'unzip -o {str(zipout)}'
     subs(shlex.split(cmd4), cwd=str(fp), **opts)
     zipout.unlink()
+
     cmd5 = f'rm -rf {str(repofold)}'
     subs(shlex.split(cmd5), cwd=str(fp), **opts)
 

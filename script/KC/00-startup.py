@@ -4,19 +4,19 @@ import json
 import sys
 import os
 
-ENVNAME, ENVBASE, ENVHOME = None, None, None
-env_list = {
-    'Colab': ('/content', '/content', 'COLAB_JUPYTER_TOKEN'),
-    'Kaggle': ('/kaggle', '/kaggle/working', 'KAGGLE_DATA_PROXY_TOKEN')
-}
-for envname, (envbase, envhome, envvar) in env_list.items():
-    if envvar in os.environ:
-        ENVNAME = envname
-        ENVBASE = envbase
-        ENVHOME = envhome
-        break
-
 iRON = os.environ
+
+def getENV():
+    env = {
+        'Colab': ('/content', '/content', 'COLAB_JUPYTER_TOKEN'),
+        'Kaggle': ('/kaggle', '/kaggle/working', 'KAGGLE_DATA_PROXY_TOKEN')
+    }
+    for name, (base, home, var) in env.items():
+        if var in iRON:
+            return name, base, home
+    return None, None, None
+
+ENVNAME, ENVBASE, ENVHOME = getENV()
 
 PY = Path('/GUTRIS1')
 BIN = str(PY / 'bin')
@@ -25,11 +25,10 @@ MRK = Path(ENVHOME) / 'gutris1/marking.py'
 JS = Path(ENVHOME) / 'gutris1/marking.json'
 
 ui = json.loads(JS.read_text()).get('ui', '')
-v = '3.11' if webui == 'Forge-Classic' else '3.10'
+v = '3.11' if ui == 'Forge-Classic' else '3.10'
 PKG = str(PY / f'lib/python{v}/site-packages')
 
-STR = str(Path.home() / '.ipython/profile_default/startup')
-sys.path.append(STR)
+sys.path.append('/root/.ipython/profile_default/startup')
 
 if PY.exists():
     sys.path.insert(0, PKG)
