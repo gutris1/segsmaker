@@ -379,9 +379,7 @@ def facetrainer(ui):
             say('<b>【{red} Done{d} 】{red}</b>')
             CD(HOME)
 
-def oppai(btn):
-    global ui, hbox
-    ui = btn
+def oppai(ui):
     multi_panel.layout.display = 'none'
 
     config = json.load(MARKED.open('r')) if MARKED.exists() else {}
@@ -453,7 +451,7 @@ def Segsmaker_Setup_Widgets():
     ]: SyS(cmd)
 
     Load_CSS()
-    display(multi_panel, hbox, output, loading)
+    display(multi_panel, output, loading)
 
 CD(HOME)
 Segsmaker_Setup_Widgets()
