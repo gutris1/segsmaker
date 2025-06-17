@@ -38,9 +38,19 @@ def setENV():
                 iRON['LD_PRELOAD'] = TCM
 
     else:
-        if ui == 'ComfyUI':
-            VENVLIB = '/tmp/venv-comfyui/lib'
-            VENVBIN = '/tmp/venv-comfyui/bin'
+        if ui in ['ComfyUI', 'SwarmUI']:
+            VENVLIB = '/tmp/venv-comfy-swarm/lib'
+            VENVBIN = '/tmp/venv-comfy-swarm/bin'
+
+            if ui == 'SwarmUI':
+                iRON['SWARMPATH'] = str(cwd)
+                iRON['SWARM_NO_VENV'] = 'true'
+
+        elif ui == 'Forge-Classic':
+            VENVLIB = '/tmp/python311/lib'
+            VENVBIN = '/tmp/python311/bin'
+            iRON['LD_LIBRARY_PATH'] = '/home/studio-lab-user/.conda/envs/default/lib:' + iRON.get('LD_LIBRARY_PATH', '')
+
         else:
             VENVLIB = '/tmp/venv/lib'
             VENVBIN = '/tmp/venv/bin'
@@ -52,22 +62,17 @@ def setENV():
         if VENVBIN not in iRON.get('PATH', ''):
             iRON['PATH'] = VENVBIN + ':' + iRON.get('PATH', '')
 
-        if ui == 'SwarmUI':
-            iRON['SWARMPATH'] = str(cwd)
-            iRON['SWARM_NO_VENV'] = 'true'
-
     iRON['PYTHONWARNINGS'] = 'ignore'
 
 def Launch():
     if ui == 'SwarmUI':
-        SyS('pip install -q rembg')
         SyS('git pull -q')
         cmd = 'bash ./launch-linux.sh ' + ' '.join(sys.argv[1:])
 
     else:
         launcher = 'main.py' if ui == 'ComfyUI' else 'launch.py'
 
-        if ui in ['A1111', 'Forge', 'ReForge']:
+        if ui in ['A1111', 'Forge', 'ReForge', 'Forge-Classic']:
             timer = cwd / 'asd/pinggytimer.txt'
             end_time = int(time.time()) + 3600
             SyS(f'echo -n {end_time} > {timer}')
@@ -95,7 +100,6 @@ def facefusion_launch():
 if __name__ == '__main__':
     try:
         setENV()
-        whichUI = {'FaceFusion': facefusion_launch, 'SDTrainer': sdtrainer_launch}
-        whichUI.get(ui, Launch)()
+        ({'FaceFusion': facefusion_launch, 'SDTrainer': sdtrainer_launch}.get(ui, Launch))()
     except KeyboardInterrupt:
         pass

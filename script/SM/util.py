@@ -146,7 +146,7 @@ def delete_everything(line):
             if 'LD_PRELOAD' in os.environ: del os.environ['LD_PRELOAD']
 
             folder_list = [
-                'A1111', 'Forge', 'ReForge', 'ComfyUI', 'SwarmUI', 'SDTrainer', 'FaceFusion',
+                'A1111', 'Forge', 'ReForge', 'Forge-Classic', 'ComfyUI', 'SwarmUI', 'SDTrainer', 'FaceFusion',
                 'tmp/*', 'tmp', '.cache/*', '.config/*', '.ssh', '.zrok', '.ngrok', '.sagemaker',
                 '.conda/*', '.conda', '.ipython/profile_default/startup/*'
             ]

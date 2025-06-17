@@ -10,13 +10,13 @@ def hitozuma(token, zrok_out):
 
         ass = subprocess.Popen(["/home/studio-lab-user/.zrok/bin/zrok", "share", "public", "localhost:7860", "--headless"],
                                stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
-        
+
         urlp = re.compile(r'https?://[^\s]*\.zrok\.io')
         asu = ("◼◼◼◼◼◼◼◼◼◼◼◼◼◼◼◼◼◼◼◼◼◼◼◼◼◼◼◼◼")
-        
+
         if oppai.returncode == 0:
             zrok_out.put(f"\n{asu}\n[ZROK] environment enabled.\n")
-            
+
         else:
             if "enabled environment" in oppai.stdout:
                 zrok_out.put(f"\n{asu}\n[ZROK] environment already enabled.\n")

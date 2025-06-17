@@ -127,21 +127,6 @@ def sym_link(U, M):
             ]
         },
 
-        'ReForge': {
-            'sym': [
-                f"rm -rf {M / 'Stable-diffusion/tmp_ckpt'} {M / 'Lora/tmp_lora'} {M / 'ControlNet'}",
-                f"rm -rf {M / 'svd'} {M / 'z123'}"
-            ],
-            'links': [
-                (TMP, HOME / 'tmp'),
-                (TMP / 'ckpt', M / 'Stable-diffusion/tmp_ckpt'),
-                (TMP / 'lora', M / 'Lora/tmp_lora'),
-                (TMP / 'controlnet', M / 'ControlNet'),
-                (TMP / 'z123', M / 'z123'),
-                (TMP / 'svd', M / 'svd')
-            ]
-        },
-
         'Forge': {
             'sym': [
                 f"rm -rf {M / 'Stable-diffusion/tmp_ckpt'} {M / 'Lora/tmp_lora'} {M / 'ControlNet'}",
@@ -161,6 +146,33 @@ def sym_link(U, M):
                 (TMP / 'diffusion_models', M / 'diffusion_models'),
                 (TMP / 'text_encoders', M / 'text_encoder'),
                 (TMP / 'unet', M / 'unet')
+            ]
+        },
+
+        'ReForge': {
+            'sym': [
+                f"rm -rf {M / 'Stable-diffusion/tmp_ckpt'} {M / 'Lora/tmp_lora'} {M / 'ControlNet'}",
+                f"rm -rf {M / 'svd'} {M / 'z123'}"
+            ],
+            'links': [
+                (TMP, HOME / 'tmp'),
+                (TMP / 'ckpt', M / 'Stable-diffusion/tmp_ckpt'),
+                (TMP / 'lora', M / 'Lora/tmp_lora'),
+                (TMP / 'controlnet', M / 'ControlNet'),
+                (TMP / 'z123', M / 'z123'),
+                (TMP / 'svd', M / 'svd')
+            ]
+        },
+
+        'Forge-Classic': {
+            'sym': [
+                f"rm -rf {M / 'Stable-diffusion/tmp_ckpt'} {M / 'Lora/tmp_lora'} {M / 'ControlNet'}"
+            ],
+            'links': [
+                (TMP, HOME / 'tmp'),
+                (TMP / 'ckpt', M / 'Stable-diffusion/tmp_ckpt'),
+                (TMP / 'lora', M / 'Lora/tmp_lora'),
+                (TMP / 'controlnet', M / 'ControlNet')
             ]
         },
 
@@ -204,7 +216,7 @@ def sym_link(U, M):
     cfg = configs.get(U)
     SyS(f"rm -rf {HOME / 'tmp'} {HOME / '.cache'}/*")
     [SyS(f'{cmd}') for cmd in cfg['sym']]
-    if U in ['A1111', 'Forge', 'ReForge']: [(M / d).mkdir(parents=True, exist_ok=True) for d in ['Lora', 'ESRGAN']]
+    if U not in ['ComfyUI', 'SwarmUI']: [(M / d).mkdir(parents=True, exist_ok=True) for d in ['Lora', 'ESRGAN']]
     [SyS(f'ln -s {src} {tg}') for src, tg in cfg['links']]
 
 def webui_req(U, W, M):
@@ -212,9 +224,9 @@ def webui_req(U, W, M):
     tmp_cleaning(vnv)
     CD(W)
 
-    if U in ['A1111', 'Forge', 'ComfyUI', 'ReForge']:
-        pull(f'https://github.com/gutris1/segsmaker {U.lower()} {W}')
-    elif U == 'SwarmUI':
+    if U != 'SwarmUI':
+        pull(f'https://github.com/gutris1/segsmaker {U.lower()} {W} fc')
+    else:
         M.mkdir(parents=True, exist_ok=True)
         for sub in ['Stable-Diffusion', 'Lora', 'Embeddings', 'VAE', 'upscale_models']:
             (M / sub).mkdir(parents=True, exist_ok=True)
@@ -237,15 +249,19 @@ def webui_req(U, W, M):
         f'https://huggingface.co/uwg/upscaler/resolve/main/ESRGAN/8x_NMKD-Superscale_150000_G.pth {u}',
         f'https://huggingface.co/gutris1/webui/resolve/main/misc/4x_RealisticRescaler_100000_G.pth {u}',
         f'https://huggingface.co/gutris1/webui/resolve/main/misc/8x_RealESRGAN.pth {u}',
-        f'https://huggingface.co/gutris1/webui/resolve/main/misc/4x_foolhardy_Remacri.pth {u}'
+        f'https://huggingface.co/gutris1/webui/resolve/main/misc/4x_foolhardy_Remacri.pth {u}',
+        f'https://huggingface.co/subby2006/NMKD-YandereNeoXL/resolve/main/4x_NMKD-YandereNeoXL_200k.pth {u}',
+        f'https://huggingface.co/subby2006/NMKD-UltraYandere/resolve/main/4x_NMKD-UltraYandere_300k.pth {u}'
     ]
 
     line = scripts + upscalers
     for item in line: download(item)
 
     if U not in ['SwarmUI', 'ComfyUI']:
-        SyS(f'rm -f {W}/html/card-no-preview.png')
-        download(f'https://huggingface.co/gutris1/webui/resolve/main/misc/card-no-preview.png {W}/html')
+        e = 'jpg' if U == 'Forge-Classic' else 'png'
+        SyS(f'rm -f {W}/html/card-no-preview.{e}')        
+        download(f'https://huggingface.co/gutris1/webui/resolve/main/misc/card-no-preview.png {W}/html card-no-preview.{e}')
+        download(f'https://github.com/gutris1/segsmaker/raw/main/config/NoCrypt_miku.json {W}/tmp/gradio_themes')
 
 def WebUIExtensions(U, W, M):
     EXT = W / 'custom_nodes' if U == 'ComfyUI' else W / 'extensions'
@@ -264,31 +280,30 @@ def WebUIExtensions(U, W, M):
     else:
         say('<br><b>【{red} Installing Extensions{d} 】{red}</b>')
         clone(str(W / 'asd/extension.txt'))
-        clone('https://github.com/BlafKing/sd-civitai-browser-plus')
 
-def installing_webui(U, S, W, M, E, V):
+def installing_webui(U, W):
+    M = W / 'Models' if U == 'SwarmUI' else W / 'models'
+    E = M / 'Embeddings' if U == 'SwarmUI' else (M / 'embeddings' if U in ['Forge-Classic', 'ComfyUI'] else W / 'embeddings')
+    V = M / 'vae' if U == 'ComfyUI' else M / 'VAE'
+
     webui_req(U, W, M)
     install_tunnel()
 
-    if S == 'button-15':
-        embzip =  W / 'embeddings.zip'
-        extras = [
-            f'https://huggingface.co/gutris1/webui/resolve/main/misc/embeddings.zip {W}',
-            f'https://huggingface.co/stabilityai/sd-vae-ft-mse-original/resolve/main/vae-ft-mse-840000-ema-pruned.safetensors {V}'
-        ]
+    extras = [
+        f'https://huggingface.co/gutris1/webui/resolve/main/misc/embeddings.zip {W}',
+        f'https://huggingface.co/stabilityai/sd-vae-ft-mse-original/resolve/main/vae-ft-mse-840000-ema-pruned.safetensors {V}',
+        f'https://huggingface.co/gutris1/webui/resolve/main/misc/embeddingsXL.zip {W}',
+        f'https://huggingface.co/madebyollin/sdxl-vae-fp16-fix/resolve/main/sdxl.vae.safetensors {V} sdxl_vae.safetensors'
+    ]
 
-    elif S == 'button-xl':
-        embzip = W / 'embeddingsXL.zip'
-        extras = [
-            f'https://huggingface.co/gutris1/webui/resolve/main/misc/embeddingsXL.zip {W}',
-            f'https://huggingface.co/madebyollin/sdxl-vae-fp16-fix/resolve/main/sdxl.vae.safetensors {V} sdxl_vae.safetensors'
-        ]
+    for i in extras: download(i)
+    SyS(f"unzip -qo {W / 'embeddings.zip'} -d {E} && rm {W / 'embeddings.zip'}")
+    SyS(f"unzip -qo {W / 'embeddingsXL.zip'} -d {E} && rm {W / 'embeddingsXL.zip'}")
+    SyS(f'rm -f {E}/bad-image-v2-39000-neg.pt')
 
-    for item in extras: download(item)
-    SyS(f'unzip -qo {embzip} -d {E} && rm {embzip}')
     if U != 'SwarmUI': WebUIExtensions(U, W, M)
 
-def webui_install(ui, which_sd):
+def webui_install(ui):
     with loading:
         display(Image(filename=str(IMG)))
 
@@ -296,8 +311,9 @@ def webui_install(ui, which_sd):
         alist = {
             'A1111': 'https://github.com/AUTOMATIC1111/stable-diffusion-webui A1111',
             'Forge': 'https://github.com/lllyasviel/stable-diffusion-webui-forge Forge',
-            'ComfyUI': 'https://github.com/comfyanonymous/ComfyUI',
             'ReForge': 'https://github.com/Panchovix/stable-diffusion-webui-reForge ReForge',
+            'Forge-Classic': 'https://github.com/Haoming02/sd-webui-forge-classic Forge-Classic',
+            'ComfyUI': 'https://github.com/comfyanonymous/ComfyUI',
             'SwarmUI': 'https://github.com/mcmonkeyprojects/SwarmUI'
         }
 
@@ -305,15 +321,11 @@ def webui_install(ui, which_sd):
             WEBUI = HOME / ui
             repo = alist[ui]
 
-        MODELS = WEBUI / 'Models' if ui == 'SwarmUI' else WEBUI / 'models'
-        EMB = MODELS / 'Embeddings' if ui == 'SwarmUI' else (MODELS / 'embeddings' if ui == 'ComfyUI' else WEBUI / 'embeddings')
-        VAE = MODELS / 'vae' if ui == 'ComfyUI' else MODELS / 'VAE'
-
-        say(f'<b>【{{red}} Installing {WEBUI.name}{{d}} 】{{red}}</b>')
+        say(f"<b>【{{red}} Installing {ui.replace('-', '')}{{d}} 】{{red}}</b>")
         clone(repo)
 
         marking(SRC, MARKED, ui)
-        installing_webui(ui, which_sd, WEBUI, MODELS, EMB, VAE)
+        installing_webui(ui, WEBUI)
         tempe()
 
         with loading:
@@ -339,7 +351,7 @@ def facetrainer(ui):
             WEBUI = HOME / ui
             repo, vnv = SDTFusion[ui]
 
-        say(f'<b>【{{red}} Installing {WEBUI.name}{{d}} 】{{red}}</b>')
+        say(f"<b>【{{red}} Installing {ui.replace('-', '')}{{d}} 】{{red}}</b>")
         clone(repo)
 
         marking(SRC, MARKED, ui)
@@ -367,9 +379,7 @@ def facetrainer(ui):
             say('<b>【{red} Done{d} 】{red}</b>')
             CD(HOME)
 
-def oppai(btn, sd=None):
-    global ui, hbox
-    ui = btn
+def oppai(ui):
     multi_panel.layout.display = 'none'
 
     config = json.load(MARKED.open('r')) if MARKED.exists() else {}
@@ -386,6 +396,9 @@ def oppai(btn, sd=None):
 
                 elif ui in ['Forge', 'ReForge', 'SDTrainer']:
                     SyS('git pull origin main')
+
+                else:
+                    SyS('git pull origin classic')
 
                 x = SM_Script(WEBUI)
 
@@ -406,61 +419,29 @@ def oppai(btn, sd=None):
         if ui in ['FaceFusion', 'SDTrainer']:
             facetrainer(ui)
         else:
-            if sd:
-                hbox.layout.display = 'none'
-                webui_install(ui, sd)
-            else:
-                hbox.layout.display = 'flex'
-
-def select_webui(btn):
-    oppai(btn)
-
-def select_sd(sd):
-    oppai(ui, sd)
+            webui_install(ui)
 
 output = widgets.Output()
 loading = widgets.Output()
 
-row1 = ['A1111', 'Forge', 'ComfyUI', 'ReForge']
+row1 = ['A1111', 'Forge', 'ReForge', 'Forge-Classic']
 buttons1 = [widgets.Button(description='') for btn in row1]
 for button, btn in zip(buttons1, row1):
     button.add_class(btn.lower())
-    button.on_click(lambda x, btn=btn: select_webui(btn))
+    button.on_click(lambda x, btn=btn: oppai(btn))
 
-row2 = ['SwarmUI', 'FaceFusion', 'SDTrainer']
+row2 = ['ComfyUI', 'SwarmUI', 'FaceFusion', 'SDTrainer']
 buttons2 = [widgets.Button(description='') for btn in row2]
 for button, btn in zip(buttons2, row2):
     button.add_class(btn.lower())
-    button.on_click(lambda x, btn=btn: select_webui(btn))
+    button.on_click(lambda x, btn=btn: oppai(btn))
 
-hbox1 = widgets.HBox(buttons1, layout=widgets.Layout(width='630px', height='255px'))
-hbox2 = widgets.HBox(buttons2, layout=widgets.Layout(width='630px', height='255px'))
-multi_panel = widgets.VBox([hbox1, hbox2], layout=widgets.Layout(width='640px', height='520px'))
+hbox1 = widgets.HBox(buttons1, layout=widgets.Layout(width='100%', height='255px'))
+hbox2 = widgets.HBox(buttons2, layout=widgets.Layout(width='100%', height='255px'))
+multi_panel = widgets.VBox([hbox1, hbox2], layout=widgets.Layout(width='100%', height='520px'))
 multi_panel.add_class('multi-panel')
 hbox1.add_class('hbox1')
 hbox2.add_class('hbox2')
-
-which_sd = ['button-15', 'button-back', 'button-xl']
-buttons3 = [widgets.Button(description='') for btn in which_sd]
-for button, btn in zip(buttons3, which_sd):
-    button.add_class(btn.lower())
-    if btn == 'button-back':
-        button.on_click(lambda x: go_back(btn))
-    else:
-        button.on_click(lambda x, btn=btn: select_sd(btn))
-
-hbox = widgets.HBox(buttons3, layout=widgets.Layout(width='590px', height='415px'))
-hbox.add_class('multi-panel')
-hbox.layout.display = 'none'
-
-def go_back(b):
-    hbox.layout.display = 'none'
-    clear_output()
-    multi_panel.layout.display = 'block'
-
-    config = json.load(MARKED.open('r')) if MARKED.exists() else {}
-    config['ui'] = None
-    json.dump(config, MARKED.open('w'))
 
 def Segsmaker_Setup_Widgets():
     for cmd in [
@@ -470,7 +451,7 @@ def Segsmaker_Setup_Widgets():
     ]: SyS(cmd)
 
     Load_CSS()
-    display(multi_panel, hbox, output, loading)
+    display(multi_panel, output, loading)
 
 CD(HOME)
 Segsmaker_Setup_Widgets()

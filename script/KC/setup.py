@@ -1,4 +1,4 @@
-from IPython.display import display, Image, HTML, clear_output
+from IPython.display import display, Image, clear_output
 from IPython import get_ipython
 from ipywidgets import widgets
 from pathlib import Path
@@ -14,122 +14,75 @@ SyS = get_ipython().system
 CD = os.chdir
 iRON = os.environ
 
-output = widgets.Output()
-loading = widgets.Output()
+WEBUI_LIST = ['A1111', 'Forge', 'ReForge', 'Forge-Classic', 'ComfyUI', 'SwarmUI']
 
-ENVNAME, ENVBASE, ENVHOME = None, None, None
-env_list = {
-    'Colab': ('/content', '/content', 'COLAB_JUPYTER_TOKEN'),
-    'Kaggle': ('/kaggle', '/kaggle/working', 'KAGGLE_DATA_PROXY_TOKEN')
-}
-for envname, (envbase, envhome, envvar) in env_list.items():
-    if envvar in iRON:
-        ENVNAME = envname
-        ENVBASE = envbase
-        ENVHOME = envhome
-        break
+def getENV():
+    env = {
+        'Colab': ('/content', '/content', 'COLAB_JUPYTER_TOKEN'),
+        'Kaggle': ('/kaggle', '/kaggle/working', 'KAGGLE_DATA_PROXY_TOKEN')
+    }
+    for name, (base, home, var) in env.items():
+        if var in iRON:
+            return name, base, home
+    return None, None, None
 
-if not ENVNAME:
-    print('You are not in Kaggle or Google Colab.\nExiting.')
-    sys.exit()
-
-RST = '\033[0m'
-R = '\033[31m'
-P = '\033[38;5;135m'
-ORANGE = '\033[38;5;208m'
-AR = f'{ORANGE}▶{RST}'
-ERR = f'{P}[{RST}{R}ERROR{RST}{P}]{RST}'
-IMG = 'https://github.com/gutris1/segsmaker/raw/main/script/loading.png'
-
-HOME = Path(ENVHOME)
-BASEPATH = Path(ENVBASE)
-TMP = BASEPATH / 'temp'
-
-PY = Path('/GUTRIS1')
-SRC = HOME / 'gutris1'
-MRK = SRC / 'marking.py'
-KEY = SRC / 'api-key.json'
-MARKED = SRC / 'marking.json'
-
-USR = Path('/usr/bin')
-STR = Path.home() / '.ipython/profile_default/startup'
-nenen = STR / 'nenen88.py'
-KANDANG = STR / 'KANDANG.py'
-
-TMP.mkdir(parents=True, exist_ok=True)
-SRC.mkdir(parents=True, exist_ok=True)
-
-WEBUI_LIST = ['A1111', 'Forge', 'ComfyUI', 'ReForge', 'SwarmUI']
-
-def prevent_silly():
+def getArgs():
     parser = argparse.ArgumentParser(description='WebUI Installer Script for Kaggle and Google Colab')
-    parser.add_argument('--webui', required=True, help='available webui: A1111, Forge, ComfyUI, ReForge, SwarmUI')
+    parser.add_argument('--webui', required=True, help='available webui: A1111, Forge, ReForge, Forge-Classic, ComfyUI, SwarmUI')
     parser.add_argument('--civitai_key', required=True, help='your CivitAI API key')
     parser.add_argument('--hf_read_token', default=None, help='your Huggingface READ Token (optional)')
-    parser.add_argument('--bgm', default='dQw4w9WgXcQ', help='play youtube video on jupyter cell')
 
     args, unknown = parser.parse_known_args()
 
     arg1 = args.webui.lower()
     arg2 = args.civitai_key.strip()
     arg3 = args.hf_read_token.strip() if args.hf_read_token else ''
-    arg4 = args.bgm.strip() if args.bgm else ''
 
     if not any(arg1 == option.lower() for option in WEBUI_LIST):
-        print(f'{ERR}: invalid webui option: "{args.webui}"')
+        print(f'{ERROR}: invalid webui option: "{args.webui}"')
         print(f'Available webui options: {", ".join(WEBUI_LIST)}')
         return None, None, None
 
     if not arg2:
-        print(f'{ERR}: CivitAI API key is missing.')
+        print(f'{ERROR}: CivitAI API key is missing.')
         return None, None, None
     if re.search(r'\s+', arg2):
-        print(f'{ERR}: CivitAI API key contains spaces "{arg2}" - not allowed.')
+        print(f'{ERROR}: CivitAI API key contains spaces "{arg2}" - not allowed.')
         return None, None, None
     if len(arg2) < 32:
-        print(f'{ERR}: CivitAI API key must be at least 32 characters long.')
+        print(f'{ERROR}: CivitAI API key must be at least 32 characters long.')
         return None, None, None
 
     if not arg3: arg3 = ''
     if re.search(r'\s+', arg3): arg3 = ''
 
-    rr = 'dQw4w9WgXcQ'
-    if not arg4: arg4 = rr
-    if re.search(r'\s+', arg4): arg4 = rr
+    selected_ui = next(option for option in WEBUI_LIST if arg1 == option.lower())
+    return selected_ui, arg2, arg3
 
-    Muzik = f"""
-    <iframe width="640" height="360"
-      src="https://www.youtube.com/embed/{arg4}?autoplay=1"
-      frameborder="0"
-      referrerpolicy="strict-origin-when-cross-origin"
-      allowfullscreen>
-    </iframe>
-    """
-
-    webui_webui = next(option for option in WEBUI_LIST if arg1 == option.lower())
-    return webui_webui, arg2, arg3, Muzik
-
-def PythonPortable():
+def getPython():
+    v = '3.11' if webui == 'Forge-Classic' else '3.10'
     BIN = str(PY / 'bin')
-    PKG = str(PY / 'lib/python3.10/site-packages')
+    PKG = str(PY / f'lib/python{v}/site-packages')
 
     if webui in ['ComfyUI', 'SwarmUI']:
-        url = 'https://huggingface.co/gutris1/webui/resolve/main/env/ComfyUI-python310-torch251-cu121.tar.lz4'
+        url = 'https://huggingface.co/gutris1/webui/resolve/main/env/KC-ComfyUI-SwarmUI-Python310-Torch260-cu124.tar.lz4'
+    elif webui == 'Forge-Classic':
+        url = 'https://huggingface.co/gutris1/webui/resolve/main/env/KC-FC-Python311-Torch260-cu124.tar.lz4'
     else:
-        url = 'https://huggingface.co/gutris1/webui/resolve/main/env/python310-torch251-cu121.tar.lz4'
+        url = 'https://huggingface.co/gutris1/webui/resolve/main/env/KC-Python310-Torch260-cu124.tar.lz4'
 
     fn = Path(url).name
 
-    CD('/')
-    print(f'\n{AR} installing Python Portable 3.10.15')
-    SyS('sudo apt-get -qq -y install aria2 pv lz4 >/dev/null 2>&1')
-    aria = f'aria2c --console-log-level=error --stderr=true -c -x16 -s16 -k1M -j5 {url} -o {fn}'
-    pv = f'pv {fn} | lz4 -d | tar -xf -'
+    CD(Path(ENVBASE).parent)
+    print(f"\n{ARROW} installing Python Portable {'3.11.13' if webui == 'Forge-Classic' else '3.10.15'}")
 
+    SyS('sudo apt-get -qq -y install aria2 pv lz4 >/dev/null 2>&1')
+
+    aria = f'aria2c --console-log-level=error --stderr=true -c -x16 -s16 -k1M -j5 {url} -o {fn}'
     p = subprocess.Popen(shlex.split(aria), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     p.wait()
 
-    SyS(pv)
+    SyS(f'pv {fn} | lz4 -d | tar -xf -')
     Path(f'/{fn}').unlink()
 
     sys.path.insert(0, PKG)
@@ -142,12 +95,26 @@ def PythonPortable():
             'rm -f /usr/lib/python3.10/sitecustomize.py'
         ]: SyS(f'{cmd} >/dev/null 2>&1')
 
+def marking(p, n, u):
+    t = p / n
+    v = {'ui': u, 'launch_args': '', 'tunnel': ''}
+
+    if not t.exists(): t.write_text(json.dumps(v, indent=4))
+
+    d = json.loads(t.read_text())
+    d.update(v)
+    t.write_text(json.dumps(d, indent=4))
+
+def key_inject(C, H):
+    p = Path(nenen)
+    v = p.read_text()
+    v = v.replace("TOKET = ''", f"TOKET = '{C}'")
+    v = v.replace("TOBRUT = ''", f"TOBRUT = '{H}'")
+    p.write_text(v)
+
 def install_tunnel():
     SyS(f'wget -qO {USR}/cl https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64')
     SyS(f'chmod +x {USR}/cl')
-
-    path = PY / 'lib/python3.10/site-packages/gradio_tunneling/main.py'
-    SyS(f'pip install -q gradio-tunneling && wget -qO {path} https://github.com/gutris1/segsmaker/raw/main/script/gradio-tunnel.py')
 
     bins = {
         'zrok': {
@@ -171,34 +138,6 @@ def install_tunnel():
         SyS(f'tar -xzf {name} -C {USR}')
         SyS(f'rm -f {name}')
 
-def saving():
-    j = {
-        'ENVNAME': ENVNAME,
-        'HOMEPATH': HOME,
-        'TEMPPATH': TMP,
-        'BASEPATH': BASEPATH
-    }
-
-    text = '\n'.join(f"{k} = '{v}'" for k, v in j.items())
-    Path(KANDANG).write_text(text)
-
-def marking(p, n, u):
-    t = p / n
-    v = {'ui': u, 'launch_args': '', 'tunnel': ''}
-
-    if not t.exists(): t.write_text(json.dumps(v, indent=4))
-
-    d = json.loads(t.read_text())
-    d.update(v)
-    t.write_text(json.dumps(d, indent=4))
-
-def key_inject(C, H):
-    p = Path(nenen)
-    v = p.read_text()
-    v = v.replace("TOKET = ''", f"TOKET = '{C}'")
-    v = v.replace("TOBRUT = ''", f"TOBRUT = '{H}'")
-    p.write_text(v)
-
 def sym_link(U, M):
     configs = {
         'A1111': {
@@ -209,20 +148,6 @@ def sym_link(U, M):
                 (TMP / 'ckpt', M / 'Stable-diffusion/tmp_ckpt'),
                 (TMP / 'lora', M / 'Lora/tmp_lora'),
                 (TMP / 'controlnet', M / 'ControlNet')
-            ]
-        },
-
-        'ReForge': {
-            'sym': [
-                f"rm -rf {M / 'Stable-diffusion/tmp_ckpt'} {M / 'Lora/tmp_lora'} {M / 'ControlNet'}",
-                f"rm -rf {M / 'svd'} {M / 'z123'} {TMP}/*"
-            ],
-            'links': [
-                (TMP / 'ckpt', M / 'Stable-diffusion/tmp_ckpt'),
-                (TMP / 'lora', M / 'Lora/tmp_lora'),
-                (TMP / 'controlnet', M / 'ControlNet'),
-                (TMP / 'z123', M / 'z123'),
-                (TMP / 'svd', M / 'svd')
             ]
         },
 
@@ -244,6 +169,31 @@ def sym_link(U, M):
                 (TMP / 'diffusion_models', M / 'diffusion_models'),
                 (TMP / 'text_encoders', M / 'text_encoder'),
                 (TMP / 'unet', M / 'unet')
+            ]
+        },
+
+        'ReForge': {
+            'sym': [
+                f"rm -rf {M / 'Stable-diffusion/tmp_ckpt'} {M / 'Lora/tmp_lora'} {M / 'ControlNet'}",
+                f"rm -rf {M / 'svd'} {M / 'z123'} {TMP}/*"
+            ],
+            'links': [
+                (TMP / 'ckpt', M / 'Stable-diffusion/tmp_ckpt'),
+                (TMP / 'lora', M / 'Lora/tmp_lora'),
+                (TMP / 'controlnet', M / 'ControlNet'),
+                (TMP / 'z123', M / 'z123'),
+                (TMP / 'svd', M / 'svd')
+            ]
+        },
+
+        'Forge-Classic': {
+            'sym': [
+                f"rm -rf {M / 'Stable-diffusion/tmp_ckpt'} {M / 'Lora/tmp_lora'} {M / 'ControlNet'}"
+            ],
+            'links': [
+                (TMP / 'ckpt', M / 'Stable-diffusion/tmp_ckpt'),
+                (TMP / 'lora', M / 'Lora/tmp_lora'),
+                (TMP / 'controlnet', M / 'ControlNet')
             ]
         },
 
@@ -283,16 +233,15 @@ def sym_link(U, M):
 
     cfg = configs.get(U)
     [SyS(f'{cmd}') for cmd in cfg['sym']]
-    if U in ['A1111', 'Forge', 'ReForge']: [(M / d).mkdir(parents=True, exist_ok=True) for d in ['Lora', 'ESRGAN']]
+    if U not in ['ComfyUI', 'SwarmUI']: [(M / d).mkdir(parents=True, exist_ok=True) for d in ['Lora', 'ESRGAN']]
     [SyS(f'ln -s {src} {tg}') for src, tg in cfg['links']]
 
 def webui_req(U, W, M):
     CD(W)
 
-    if U in ['A1111', 'Forge', 'ComfyUI', 'ReForge']:
-        pull(f'https://github.com/gutris1/segsmaker {U.lower()} {W}')
-
-    elif U == 'SwarmUI':
+    if U != 'SwarmUI':
+        pull(f'https://github.com/gutris1/segsmaker {U.lower()} {W} fc')
+    else:
         M.mkdir(parents=True, exist_ok=True)
         for sub in ['Stable-Diffusion', 'Lora', 'Embeddings', 'VAE', 'upscale_models']:
             (M / sub).mkdir(parents=True, exist_ok=True)
@@ -328,8 +277,10 @@ def webui_req(U, W, M):
     for item in line: download(item)
 
     if U not in ['SwarmUI', 'ComfyUI']:
-        SyS(f'rm -f {W}/html/card-no-preview.png')
-        download(f'https://huggingface.co/gutris1/webui/resolve/main/misc/card-no-preview.png {W}/html')
+        e = 'jpg' if U == 'Forge-Classic' else 'png'
+        SyS(f'rm -f {W}/html/card-no-preview.{e}')        
+        download(f'https://huggingface.co/gutris1/webui/resolve/main/misc/card-no-preview.png {W}/html card-no-preview.{e}')
+        download(f'https://github.com/gutris1/segsmaker/raw/main/config/NoCrypt_miku.json {W}/tmp/gradio_themes')
 
 def webui_extension(U, W, M):
     EXT = W / 'custom_nodes' if U == 'ComfyUI' else W / 'extensions'
@@ -349,13 +300,11 @@ def webui_extension(U, W, M):
         say('<br><b>【{red} Installing Extensions{d} 】{red}</b>')
         clone(str(W / 'asd/extension.txt'))
 
-        clone(
-            'https://github.com/gutris1/sd-civitai-browser-plus-plus'
-            if ENVNAME == 'Kaggle'
-            else 'https://github.com/BlafKing/sd-civitai-browser-plus'
-        )
+def webui_installation(U, W):
+    M = W / 'Models' if U == 'SwarmUI' else W / 'models'
+    E = M / 'Embeddings' if U == 'SwarmUI' else (M / 'embeddings' if U in ['Forge-Classic', 'ComfyUI'] else W / 'embeddings')
+    V = M / 'vae' if U == 'ComfyUI' else M / 'VAE'
 
-def webui_installation(U, W, M, E, V):
     webui_req(U, W, M)
 
     extras = [
@@ -366,32 +315,30 @@ def webui_installation(U, W, M, E, V):
     ]
 
     for i in extras: download(i)
-    SyS(f'unzip -qo {W / "embeddings.zip"} -d {E} && rm {W / "embeddings.zip"}')
-    SyS(f'unzip -qo {W / "embeddingsXL.zip"} -d {E} && rm {W / "embeddingsXL.zip"}')
+    SyS(f"unzip -qo {W / 'embeddings.zip'} -d {E} && rm {W / 'embeddings.zip'}")
+    SyS(f"unzip -qo {W / 'embeddingsXL.zip'} -d {E} && rm {W / 'embeddingsXL.zip'}")
+    SyS(f'rm -f {E}/bad-image-v2-39000-neg.pt')
 
     if U != 'SwarmUI': webui_extension(U, W, M)
 
 def webui_selection(ui):
     with output:
         output.clear_output(wait=True)
+
         repo_url = {
             'A1111': 'https://github.com/AUTOMATIC1111/stable-diffusion-webui A1111',
             'Forge': 'https://github.com/lllyasviel/stable-diffusion-webui-forge Forge',
-            'ComfyUI': 'https://github.com/comfyanonymous/ComfyUI',
             'ReForge': 'https://github.com/Panchovix/stable-diffusion-webui-reForge ReForge',
+            'Forge-Classic': 'https://github.com/Haoming02/sd-webui-forge-classic Forge-Classic',
+            'ComfyUI': 'https://github.com/comfyanonymous/ComfyUI',
             'SwarmUI': 'https://github.com/mcmonkeyprojects/SwarmUI'
         }
 
         if ui in repo_url: (WEBUI, repo) = (HOME / ui, repo_url[ui])
-
-        MODELS = WEBUI / 'Models' if ui == 'SwarmUI' else WEBUI / 'models'
-        EMB = MODELS / 'Embeddings' if ui == 'SwarmUI' else (MODELS / 'embeddings' if ui == 'ComfyUI' else WEBUI / 'embeddings')
-        VAE = MODELS / 'vae' if ui == 'ComfyUI' else MODELS / 'VAE'
-
         say(f'<b>【{{red}} Installing {WEBUI.name}{{d}} 】{{red}}</b>')
         clone(repo)
 
-        webui_installation(ui, WEBUI, MODELS, EMB, VAE)
+        webui_installation(ui, WEBUI)
 
         with loading:
             loading.clear_output(wait=True)
@@ -414,6 +361,8 @@ def webui_installer():
                     SyS('git pull origin master')
                 elif ui in ['Forge', 'ReForge']:
                     SyS('git pull origin main')
+                elif ui == 'Forge-Classic':
+                    SyS('git pull origin classic')
                 with loading: loading.clear_output()
     else:
         try:
@@ -423,7 +372,7 @@ def webui_installer():
             with output: print('\nCanceled.')
         except Exception as e:
             with loading: loading.clear_output()
-            with output: print(f'\n{ERR}: {e}')
+            with output: print(f'\n{ERROR}: {e}')
 
 def notebook_scripts():
     z = [
@@ -435,19 +384,56 @@ def notebook_scripts():
 
     [SyS(y) for x, y in z if not Path(x).exists()]
 
-    saving()
+    j = {'ENVNAME': ENVNAME, 'HOMEPATH': HOME, 'TEMPPATH': TMP, 'BASEPATH': Path(ENVBASE)}
+    text = '\n'.join(f"{k} = '{v}'" for k, v in j.items())
+    Path(KANDANG).write_text(text)
+
     key_inject(civitai_key, hf_read_token)
     marking(SRC, MARKED, webui)
     sys.path.append(str(STR))
 
     for scripts in [nenen, KANDANG, MRK]: get_ipython().run_line_magic('run', str(scripts))
 
-webui, civitai_key, hf_read_token, bgm = prevent_silly()
+ENVNAME, ENVBASE, ENVHOME = getENV()
+
+if not ENVNAME:
+    print('You are not in Kaggle or Google Colab.\nExiting.')
+    sys.exit()
+
+RESET = '\033[0m'
+RED = '\033[31m'
+PURPLE = '\033[38;5;135m'
+ORANGE = '\033[38;5;208m'
+ARROW = f'{ORANGE}▶{RESET}'
+ERROR = f'{PURPLE}[{RESET}{RED}ERROR{RESET}{PURPLE}]{RESET}'
+IMG = 'https://github.com/gutris1/segsmaker/raw/main/script/loading.png'
+
+HOME = Path(ENVHOME)
+TMP = Path(ENVBASE) / 'temp'
+
+PY = Path('/GUTRIS1')
+SRC = HOME / 'gutris1'
+MRK = SRC / 'marking.py'
+KEY = SRC / 'api-key.json'
+MARKED = SRC / 'marking.json'
+
+USR = Path('/usr/bin')
+STR = Path('/root/.ipython/profile_default/startup')
+nenen = STR / 'nenen88.py'
+KANDANG = STR / 'KANDANG.py'
+
+TMP.mkdir(parents=True, exist_ok=True)
+SRC.mkdir(parents=True, exist_ok=True)
+
+output = widgets.Output()
+loading = widgets.Output()
+
+webui, civitai_key, hf_read_token = getArgs()
 if civitai_key is None: sys.exit()
 
 display(output, loading)
-with loading: display(HTML(bgm)); display(Image(url=IMG))
-with output: PY.exists() or PythonPortable()
+with loading: display(Image(url=IMG))
+with output: PY.exists() or getPython()
 notebook_scripts()
 
 from nenen88 import clone, say, download, tempe, pull

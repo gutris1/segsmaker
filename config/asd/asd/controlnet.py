@@ -6,7 +6,7 @@ bura = "/home/studio-lab-user/asd/asd/controlnet.css"
 with open(bura, "r") as oppai:
     susu = oppai.read()
 display(HTML(f"<style>{susu}</style>"))
-    
+
 url_list = {
     "Openpose": [
         "https://huggingface.co/ckpt/ControlNet-v1-1/resolve/main/control_v11p_sd15_openpose_fp16.safetensors openpose.safetensors",
@@ -50,7 +50,7 @@ url_list = {
     "Tile": [
         "https://huggingface.co/ckpt/ControlNet-v1-1/resolve/main/control_v11f1e_sd15_tile_fp16.safetensors tile.safetensors",
         "https://huggingface.co/ckpt/ControlNet-v1-1/raw/main/control_v11f1e_sd15_tile_fp16.yaml tile.yaml"],
-    
+
     "IP Adapter 1.5": [
         "https://huggingface.co/h94/IP-Adapter/resolve/main/models/ip-adapter_sd15.safetensors ip-adapter_sd15.safetensors"],
     "IP Adapter 1.5 Light": [
@@ -107,7 +107,7 @@ def sa_cb(b):
 def usa_cb(b):
     for checkbox in cb1.children + cb2.children:
         checkbox.value = False
-        
+
 sab = widgets.Button(description="Select All")
 sab.add_class("select-all-button")
 sab.on_click(sa_cb)
@@ -126,7 +126,7 @@ boks.layout.height = '455px'
 boks.layout.padding = '0px'
 boks.add_class("boks")
 display(boks)
-        
+
 def d_b_click(b):
     surl = []
     for checkbox, key in zip(cb1.children + cb2.children, list(url_list.keys())):
@@ -136,6 +136,6 @@ def d_b_click(b):
     with dbo:
         for url in surl:
             download(url)
-            
+
 display(dbo)
 db.on_click(d_b_click)

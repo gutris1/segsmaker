@@ -15,7 +15,6 @@ CSS = SRC / 'setup.css'
 MARK = SRC / 'marking.json'
 IMG = SRC / 'loading.png'
 
-PY = '/tmp/venv/bin/python3'
 SyS = get_ipython().system
 
 R = '\033[31m'
@@ -27,17 +26,18 @@ def get_args(ui):
     args_line = {
         'A1111': ('--xformers'),
         'Forge': ('--disable-xformers --opt-sdp-attention --cuda-stream --pin-shared-memory'),
-        'ComfyUI': ('--dont-print-server --preview-method auto --use-pytorch-cross-attention'),
         'ReForge': ('--xformers --cuda-stream --pin-shared-memory'),
+        'Forge-Classic': ('--xformers --cuda-stream --pin-shared-memory --persistent-patches'),
+        'ComfyUI': ('--dont-print-server --use-pytorch-cross-attention'),
+        'SwarmUI': ('--launch_mode none'),
         'FaceFusion': '',
-        'SDTrainer': '',
-        'SwarmUI': ('--launch_mode none')
+        'SDTrainer': ''
     }
 
     return args_line.get(ui, '')
 
 def GPU_check():
-    return Path("/proc/driver/nvidia").exists()
+    return Path('/proc/driver/nvidia').exists()
 
 def load_config():
     global ui
@@ -58,7 +58,7 @@ def load_config():
         tunnel.value = tunnell
     else:
         tunnel.value = 'Pinggy'
-        config.update({"tunnel": tunnel.value})
+        config.update({'tunnel': tunnel.value})
         MARK.write_text(json.dumps(config, indent=4))
 
     cpu_cb.value = False if GPU_check() else config.get('cpu_usage', False)
@@ -67,32 +67,33 @@ def load_config():
     ui_titles = {
         'A1111': 'A1111',
         'Forge': 'Forge',
-        'ComfyUI': 'ComfyUI',
         'ReForge': 'ReForge',
+        'Forge-Classic': 'Forge Classic',
+        'ComfyUI': 'ComfyUI',
+        'SwarmUI': 'SwarmUI',
         'FaceFusion': 'Face Fusion',
-        'SDTrainer': 'SD Trainer',
-        'SwarmUI': 'SwarmUI'
+        'SDTrainer': 'SD Trainer'
     }
 
-    title.value = f'<div class="title"><h1>{ui_titles.get(ui, "Unknown UI")}</h1></div>'
+    title.value = f"<div class='title'><h1>{ui_titles.get(ui, 'Unknown UI')}</h1></div>"
 
 def save_config(zrok_token, ngrok_token, launch_args, tunnel):
     config = json.loads(MARK.read_text()) if MARK.exists() else {}
 
     config.update({
-        "zrok_token": zrok_token,
-        "ngrok_token": ngrok_token,
-        "launch_args": launch_args,
-        "tunnel": tunnel,
-        "cpu_usage": cpu_cb.value
+        'zrok_token': zrok_token,
+        'ngrok_token': ngrok_token,
+        'launch_args': launch_args,
+        'tunnel': tunnel,
+        'cpu_usage': cpu_cb.value
     })
 
     MARK.write_text(json.dumps(config, indent=4))
 
 def load_css():
-    display(HTML(f"<style>{CSS.read_text()}</style>"))
+    display(HTML(f'<style>{CSS.read_text()}</style>'))
 
-options = ["Pinggy", "ZROK", "NGROK"]
+options = ['Pinggy', 'ZROK', 'NGROK']
 title = widgets.HTML()
 zrok_token = widgets.Text(placeholder='Your ZROK Token')
 ngrok_token = widgets.Text(placeholder='Your NGROK Token')
@@ -136,7 +137,7 @@ token_box = widgets.VBox(
         flex_flow='column',
         align_items='center',
         justify_content='space-between',
-        padding='0px'
+        padding='0'
     )
 )
 
@@ -207,54 +208,56 @@ def NGROK_ZROK(T):
         SyS(E); print()
 
 def launching(ui, skip_comfyui_check=False):
-    global PY
     args = f'{launch_args.value}'
     tunnel_name = tunnel.value
 
     get_ipython().run_line_magic('run', 'venv.py')
 
+    if ui in ['A1111', 'Forge', 'ReForge', 'Forge-Classic']:
+        port = 7860
+        PY = '/tmp/python311/bin/python3' if ui == 'Forge-Classic' else '/tmp/venv/bin/python3'
+        args += ' --enable-insecure-extension-access --disable-console-progressbars --theme dark'
+
+    elif ui in ['ComfyUI', 'SwarmUI']:
+        PY = '/tmp/venv-comfy-swarm/bin/python3'
+
+        if ui == 'ComfyUI':
+            port = 8188
+            skip_comfyui_check or (SyS(f'{PY} apotek.py'), clear_output(wait=True))
+        else:
+            port = 7801
+
+    elif ui == 'SDTrainer':
+        port = 28000
+        PY = 'HF_HOME=huggingface /tmp/venv-sd-trainer/bin/python3'
+
+    elif ui == 'FaceFusion':
+        port = 7860
+        PY = '/tmp/venv-fusion/bin/python3'
+
     if cpu_cb.value:
         if ui == 'A1111':
             args += ' --use-cpu all --precision full --no-half --skip-torch-cuda-test'
-        elif ui in ['ReForge', 'Forge']:
+        elif ui in ['Forge', 'ReForge', 'Forge-Classic']:
             args += ' --always-cpu --skip-torch-cuda-test'
         elif ui == 'ComfyUI':
             args += ' --cpu'
 
-    if ui == 'SDTrainer':
-        port = 28000
-    elif ui == 'SwarmUI':
-        port = 7801
-    elif ui == 'ComfyUI':
-        PY = '/tmp/venv-comfyui/bin/python3'
-        port = 8188
-        skip_comfyui_check or (SyS(f'{PY} apotek.py'), clear_output(wait=True))
-
-    else:
-        port = 7860
-
-    if ui in ['A1111', 'Forge', 'ReForge']:
-        args += ' --enable-insecure-extension-access --disable-console-progressbars --theme dark'
-    elif ui == 'FaceFusion':
-        PY = '/tmp/venv-fusion/bin/python3'
-    elif ui == 'SDTrainer':
-        PY = 'HF_HOME=huggingface /tmp/venv-sd-trainer/bin/python3'
-
     tunnel_config = {
         'Pinggy': {
-            'command': f"ssh -o StrictHostKeyChecking=no -p 80 -R0:localhost:{port} a.pinggy.io",
-            'name': "PINGGY",
-            'pattern': r"https://[\w-]+\.a\.free\.pinggy\.link"
+            'command': f'ssh -o StrictHostKeyChecking=no -p 80 -R0:localhost:{port} a.pinggy.io',
+            'name': 'PINGGY',
+            'pattern': r'https://[\w-]+\.a\.free\.pinggy\.link'
         },
         'NGROK': {
-            'command': f"ngrok http http://localhost:{port} --log stdout",
-            'name': "NGROK",
-            'pattern': r"https://[\w-]+\.ngrok-free\.app"
+            'command': f'ngrok http http://localhost:{port} --log stdout',
+            'name': 'NGROK',
+            'pattern': r'https://[\w-]+\.ngrok-free\.app'
         },
         'ZROK': {
-            'command': f"zrok share public localhost:{port} --headless",
-            'name': "ZROK",
-            'pattern': r"https://[\w-]+\.share\.zrok\.io"
+            'command': f'zrok share public localhost:{port} --headless',
+            'name': 'ZROK',
+            'pattern': r'https://[\w-]+\.share\.zrok\.io'
         }
     }
 

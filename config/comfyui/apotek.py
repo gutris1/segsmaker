@@ -121,4 +121,4 @@ for subdir, reqs, scripts in GetsAll('custom_nodes'):
     installing(reqs)
     Run(scripts)
 
-os.system(f"pip install -r {Path.cwd() / 'requirements.txt'}")
+os.system(f"{sys.executable} -m pip install -r {Path.cwd() / 'requirements.txt'}")
