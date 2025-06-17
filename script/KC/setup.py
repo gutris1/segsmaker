@@ -277,8 +277,9 @@ def webui_req(U, W, M):
     for item in line: download(item)
 
     if U not in ['SwarmUI', 'ComfyUI']:
-        SyS(f'rm -f {W}/html/card-no-preview.png')
-        download(f'https://huggingface.co/gutris1/webui/resolve/main/misc/card-no-preview.png {W}/html')
+        e = 'jpg' if U == 'Forge-Classic' else 'png'
+        SyS(f'rm -f {W}/html/card-no-preview.{e}')        
+        download(f'https://huggingface.co/gutris1/webui/resolve/main/misc/card-no-preview.png {W}/html card-no-preview.{e}')
         download(f'https://github.com/gutris1/segsmaker/raw/fc/config/NoCrypt_miku.json {W}/tmp/gradio_themes')
 
 def webui_extension(U, W, M):
@@ -314,8 +315,9 @@ def webui_installation(U, W):
     ]
 
     for i in extras: download(i)
-    SyS(f'unzip -qo {W / "embeddings.zip"} -d {E} && rm {W / "embeddings.zip"}')
-    SyS(f'unzip -qo {W / "embeddingsXL.zip"} -d {E} && rm {W / "embeddingsXL.zip"}')
+    SyS(f"unzip -qo {W / 'embeddings.zip'} -d {E} && rm {W / 'embeddings.zip'}")
+    SyS(f"unzip -qo {W / 'embeddingsXL.zip'} -d {E} && rm {W / 'embeddingsXL.zip'}")
+    SyS(f'rm -f {E}/bad-image-v2-39000-neg.pt')
 
     if U != 'SwarmUI': webui_extension(U, W, M)
 

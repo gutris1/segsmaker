@@ -29,8 +29,8 @@
   padding: 5px;
 }
 
-.a1111, .forge, .comfyui, .reforge,
-.swarmui, .facefusion, .sdtrainer,
+.a1111, .forge, .reforge, .forge-classic,
+.comfyui, .swarmui, .facefusion, .sdtrainer,
 .button-15, .button-xl, .button-back {
   z-index: 99;
   background-color: transparent;
@@ -45,8 +45,8 @@
   overflow: hidden;
 }
 
-.a1111, .forge, .comfyui, .reforge,
-.swarmui, .facefusion, .sdtrainer {
+.a1111, .forge, .reforge, .forge-classic,
+.comfyui, .swarmui, .facefusion, .sdtrainer {
   height: 250px;
 }
 
@@ -54,8 +54,8 @@
   height: 400px;
 }
 
-.a1111, .forge, .comfyui, .reforge,
-.swarmui, .facefusion, .sdtrainer {
+.a1111, .forge, .reforge, .forge-classic,
+.comfyui, .swarmui, .facefusion, .sdtrainer {
   width: 69%;
   filter: brightness(40%);
   transition: 0.5s ease;
@@ -67,35 +67,18 @@
   transition: 0.5s ease;
 }
 
-.a1111 {
-  background-image: url('https://avatars.githubusercontent.com/u/20920490?v=4');
-}
-.forge {
-  background-image: url('https://avatars.githubusercontent.com/u/19834515?v=4');
-}
-.comfyui {
-  background-image: url('https://avatars.githubusercontent.com/u/121283862?v=4');
-}
-.reforge {
-  background-image: url('https://i.imgur.com/95Afkbg.jpg');
-}
-.swarmui {
-  background-image: url('https://avatars.githubusercontent.com/u/43497670?s=200&v=4');
-}
+.a1111 { background-image: url('https://avatars.githubusercontent.com/u/20920490?v=4'); }
+.forge { background-image: url('https://avatars.githubusercontent.com/u/19834515?v=4'); }
+.reforge { background-image: url('https://i.imgur.com/95Afkbg.jpg'); }
+.forge-classic { background-image: url('https://avatars.githubusercontent.com/u/73768377?v=4'); }
+.comfyui { background-image: url('https://avatars.githubusercontent.com/u/121283862?v=4'); }
+.swarmui { background-image: url('https://avatars.githubusercontent.com/u/43497670?s=200&v=4'); }
 
-.facefusion {
-  background-image: url('https://i.imgur.com/1R9rDO6.png');
-}
-.sdtrainer {
-  background-image: url('https://i.imgur.com/Ga2GV5F.png');
-}
+.facefusion { background-image: url('https://i.imgur.com/1R9rDO6.png'); }
+.sdtrainer { background-image: url('https://i.imgur.com/Ga2GV5F.png'); }
 
-.button-15 {
-  background-image: url('https://i.imgur.com/2jsyKzZ.jpg');
-}
-.button-xl {
-  background-image: url('https://i.imgur.com/2WFq4LL.png');
-}
+.button-15 { background-image: url('https://i.imgur.com/2jsyKzZ.jpg'); }
+.button-xl { background-image: url('https://i.imgur.com/2WFq4LL.png'); }
 
 .button-back {
   background-image: url('https://icons.veryicon.com/png/System/Longhorn%20R2/Back%20Button.png');
@@ -106,10 +89,11 @@
   outline: none;
 }
 
-.a1111:hover, .forge:hover, .comfyui:hover, .reforge:hover,
-.swarmui:hover, .facefusion:hover, .sdtrainer:hover,
+.a1111:hover, .forge:hover, .reforge:hover, .forge-classic:hover,
+.comfyui:hover, .swarmui:hover, .facefusion:hover, .sdtrainer:hover,
 .button-15:hover, .button-xl:hover {
-  width: 100%;
+  z-index: 100;
+  width: 90%;
   filter: brightness(100%);
   animation: glowing-shadow 0.4s infinite alternate forwards;
 }
@@ -123,8 +107,8 @@
   }
 }
 
-.a1111::after, .forge::after, .comfyui::after, .reforge::after,
-.swarmui::after, .facefusion::after, .sdtrainer::after,
+.a1111::after, .forge::after, .reforge::after, .forge-classic::after,
+.comfyui::after, .swarmui::after, .facefusion::after, .sdtrainer::after,
 .button-15::after, .button-xl::after {
   font-family: 'Times New Roman', serif;
   text-align: center;
@@ -138,36 +122,17 @@
   display: block;
   border-radius: 1px;
   width: 100%;
+  font-size: 35px;
 }
 
-.a1111::after {
-  content: 'A1111';
-  font-size: 35px;
-}
-.forge::after {
-  content: 'Forge';
-  font-size: 35px;
-}
-.comfyui::after {
-  content: 'ComfyUI';
-  font-size: 35px;
-}
-.reforge::after {
-  content: 'ReForge';
-  font-size: 35px;
-}
-.swarmui::after {
-  content: 'SwarmUI';
-  font-size: 35px;
-}
-.facefusion::after {
-    content: 'Face Fusion';
-    font-size: 35px;
-}
-.sdtrainer::after {
-  content: 'SD Trainer';
-  font-size: 35px;
-}
+.a1111::after { content: 'A1111'; }
+.forge::after { content: 'Forge'; }
+.reforge::after { content: 'ReForge'; }
+.forge-classic::after { content: 'Forge Classic'; }
+.comfyui::after { content: 'ComfyUI'; }
+.swarmui::after { content: 'SwarmUI'; }
+.facefusion::after { content: 'Face Fusion'; }
+.sdtrainer::after { content: 'SD Trainer'; }
 
 .button-15::after {
   content: 'SD 1.5';
