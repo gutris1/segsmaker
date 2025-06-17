@@ -6,7 +6,7 @@ import shlex
 import sys
 import os
 import re
-    
+
 def say(line):
     args = line.split()
     output = []
@@ -28,12 +28,12 @@ def say(line):
 
         if color == '{d}':
             color = default_color
-            
+
         elif not color or '{d}':
             if i < len(args) - 1 and re.match(r'^\{[^\{\}]+\}$', args[i + 1].lower()):
                 color = args[i + 1][1:-1]
                 i += 1
-                
+
             else:
                 msg = line
 
@@ -104,14 +104,14 @@ def netorare(line, auth):
         if path and fn:
             os.makedirs(path, exist_ok=True)
             fc = f"mkdir -p {path} && cd {path} && curl -#JL {auth} {urlll} -o {fn} 2>&1"
-            
+
         elif path:
             os.makedirs(path, exist_ok=True)
             fc = f"mkdir -p {path} && cd {path} && curl -#OJL {auth} {urlll} -o {fn} 2>&1"
-            
+
         elif fn:
             fc = f"curl -#JL {auth} {urlll} -o {fn} 2>&1"
-            
+
         else:
             fc = f"curl -#OJL {auth} {urlll} 2>&1"
 
@@ -152,9 +152,9 @@ def ketsuno_ana(fc, fn, use_auth=False):
                         pbar.refresh()
 
                 oppai += line
-                
+
             pbar.close()
-            
+
         zura.wait()
 
         if zura.returncode != 0:
@@ -168,10 +168,10 @@ def ketsuno_ana(fc, fn, use_auth=False):
 
         else:
             pass
-        
+
     except UnicodeDecodeError:
         print(f"{'':>2}^ Error: Remove '?type=Model&format=SafeTensor&size=pruned&fp=fp16' from the civitai URL")
-    
+
     except KeyboardInterrupt:
         print(f"{'':>2}^ Canceled")
 
@@ -186,7 +186,7 @@ def clone(line):
         for git_command in map(str.strip, file):
             command_list = shlex.split(git_command)
             subprocess.run(command_list, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            
+
 def tempe(line):
     subprocess.run(
         f"mkdir -p /tmp/models /tmp/Lora /tmp/ControlNet",
@@ -211,7 +211,7 @@ def pull(line):
 
     zipin = os.path.join(repofold, 'ui', tarfold)
     zipout = os.path.join(path, f'{tarfold}.zip')
-    
+
     with zipfile.ZipFile(zipout, 'w') as zipf:
         for root, dirs, files in os.walk(zipin):
             for file in files:

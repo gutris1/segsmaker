@@ -36,13 +36,13 @@ iRON = os.environ
 
 def SM_Script(WEBUI):
     return [
-        f'https://github.com/gutris1/segsmaker/raw/fc/script/SM/venv.py {WEBUI}',
-        f'https://github.com/gutris1/segsmaker/raw/fc/script/SM/Launcher.py {WEBUI}',
-        f'https://github.com/gutris1/segsmaker/raw/fc/script/SM/segsmaker.py {WEBUI}'
+        f'https://github.com/gutris1/segsmaker/raw/main/script/SM/venv.py {WEBUI}',
+        f'https://github.com/gutris1/segsmaker/raw/main/script/SM/Launcher.py {WEBUI}',
+        f'https://github.com/gutris1/segsmaker/raw/main/script/SM/segsmaker.py {WEBUI}'
     ]
 
 def CN_Script(WEBUI):
-    return f'https://github.com/gutris1/segsmaker/raw/fc/script/controlnet.py {WEBUI}/asd'
+    return f'https://github.com/gutris1/segsmaker/raw/main/script/controlnet.py {WEBUI}/asd'
 
 def Load_CSS():
     display(HTML(f'<style>{CSS.read_text()}</style>'))
@@ -261,7 +261,7 @@ def webui_req(U, W, M):
         e = 'jpg' if U == 'Forge-Classic' else 'png'
         SyS(f'rm -f {W}/html/card-no-preview.{e}')        
         download(f'https://huggingface.co/gutris1/webui/resolve/main/misc/card-no-preview.png {W}/html card-no-preview.{e}')
-        download(f'https://github.com/gutris1/segsmaker/raw/fc/config/NoCrypt_miku.json {W}/tmp/gradio_themes')
+        download(f'https://github.com/gutris1/segsmaker/raw/main/config/NoCrypt_miku.json {W}/tmp/gradio_themes')
 
 def WebUIExtensions(U, W, M):
     EXT = W / 'custom_nodes' if U == 'ComfyUI' else W / 'extensions'
@@ -445,9 +445,9 @@ hbox2.add_class('hbox2')
 
 def Segsmaker_Setup_Widgets():
     for cmd in [
-        f'curl -sLo {CSS} https://github.com/gutris1/segsmaker/raw/fc/script/SM/setup.css',
-        f'curl -sLo {IMG} https://github.com/gutris1/segsmaker/raw/fc/script/loading.png',
-        f'curl -sLo {MRK} https://github.com/gutris1/segsmaker/raw/fc/script/marking.py'
+        f'curl -sLo {CSS} https://github.com/gutris1/segsmaker/raw/main/script/SM/setup.css',
+        f'curl -sLo {IMG} https://github.com/gutris1/segsmaker/raw/main/script/loading.png',
+        f'curl -sLo {MRK} https://github.com/gutris1/segsmaker/raw/main/script/marking.py'
     ]: SyS(cmd)
 
     Load_CSS()

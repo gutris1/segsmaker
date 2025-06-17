@@ -65,11 +65,11 @@ def getPython():
     PKG = str(PY / f'lib/python{v}/site-packages')
 
     if webui in ['ComfyUI', 'SwarmUI']:
-        url = 'https://huggingface.co/gutris1/webui/resolve/main/env/ComfyUI-Python310-Torch260-cu124.tar.lz4'
+        url = 'https://huggingface.co/gutris1/webui/resolve/main/env/KC-ComfyUI-SwarmUI-Python310-Torch260-cu124.tar.lz4'
     elif webui == 'Forge-Classic':
-        url = 'https://huggingface.co/gutris1/webui/resolve/main/env/FC-Python311-Torch260-cu124.tar.lz4'
+        url = 'https://huggingface.co/gutris1/webui/resolve/main/env/KC-FC-Python311-Torch260-cu124.tar.lz4'
     else:
-        url = 'https://huggingface.co/gutris1/webui/resolve/main/env/Python310-Torch260-cu124.tar.lz4'
+        url = 'https://huggingface.co/gutris1/webui/resolve/main/env/KC-Python310-Torch260-cu124.tar.lz4'
 
     fn = Path(url).name
 
@@ -255,8 +255,8 @@ def webui_req(U, W, M):
     install_tunnel()
 
     scripts = [
-        f'https://github.com/gutris1/segsmaker/raw/fc/script/controlnet.py {W}/asd',
-        f'https://github.com/gutris1/segsmaker/raw/fc/script/KC/segsmaker.py {W}'
+        f'https://github.com/gutris1/segsmaker/raw/main/script/controlnet.py {W}/asd',
+        f'https://github.com/gutris1/segsmaker/raw/main/script/KC/segsmaker.py {W}'
     ]
 
     u = M / 'upscale_models' if U in ['ComfyUI', 'SwarmUI'] else M / 'ESRGAN'
@@ -280,7 +280,7 @@ def webui_req(U, W, M):
         e = 'jpg' if U == 'Forge-Classic' else 'png'
         SyS(f'rm -f {W}/html/card-no-preview.{e}')        
         download(f'https://huggingface.co/gutris1/webui/resolve/main/misc/card-no-preview.png {W}/html card-no-preview.{e}')
-        download(f'https://github.com/gutris1/segsmaker/raw/fc/config/NoCrypt_miku.json {W}/tmp/gradio_themes')
+        download(f'https://github.com/gutris1/segsmaker/raw/main/config/NoCrypt_miku.json {W}/tmp/gradio_themes')
 
 def webui_extension(U, W, M):
     EXT = W / 'custom_nodes' if U == 'ComfyUI' else W / 'extensions'
@@ -376,10 +376,10 @@ def webui_installer():
 
 def notebook_scripts():
     z = [
-        (STR / '00-startup.py', f'wget -qO {STR}/00-startup.py https://github.com/gutris1/segsmaker/raw/fc/script/KC/00-startup.py'),
-        (nenen, f'wget -qO {nenen} https://github.com/gutris1/segsmaker/raw/fc/script/nenen88.py'),
+        (STR / '00-startup.py', f'wget -qO {STR}/00-startup.py https://github.com/gutris1/segsmaker/raw/main/script/KC/00-startup.py'),
+        (nenen, f'wget -qO {nenen} https://github.com/gutris1/segsmaker/raw/main/script/nenen88.py'),
         (STR / 'cupang.py', f'wget -qO {STR}/cupang.py https://github.com/gutris1/segsmaker/raw/main/script/cupang.py'),
-        (MRK, f'wget -qO {MRK} https://github.com/gutris1/segsmaker/raw/fc/script/marking.py')
+        (MRK, f'wget -qO {MRK} https://github.com/gutris1/segsmaker/raw/main/script/marking.py')
     ]
 
     [SyS(y) for x, y in z if not Path(x).exists()]
