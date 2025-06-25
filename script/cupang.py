@@ -511,7 +511,7 @@ class Tunnel:
         YLW = '\033[33m'
 
         log = self.logger
-        Name = ', '.join(tunnel["name"] for tunnel in self.tunnel_list)
+        Name = ', '.join(tunnel['name'] for tunnel in self.tunnel_list)
 
         if self.check_local_port:
             self.wait_for_condition(
@@ -522,8 +522,8 @@ class Tunnel:
 
         if Name == 'ZROK' and (g := Path.cwd() / f'tunnel_{Name}.log').exists():
             time.sleep(1)
-            if "ERROR" in (l := g.read_text()) and "http://" not in l:
-                print(f"\n{l.strip()}\n")
+            if 'ERROR' in (l := g.read_text()) and 'http://' not in l:
+                print(f'\n{l.strip()}\n')
                 sys.exit()
 
         URLs = set()
@@ -534,13 +534,18 @@ class Tunnel:
             with self.urls_lock:
                 for url, note, name in self.urls:
                     if url not in URLs:
-                        Tunnels.append(f"\n🟢 {name} {ORG}:{RST} {url}")
+                        Tunnels.append(f'\n🟢 {name} {ORG}:{RST} {url}')
                         URLs.add(url)
 
             if len(self.urls) == len(self.tunnel_list): break
             time.sleep(1)
 
-        if Tunnels: print("\n".join(Tunnels), "\n")
+        if Tunnels:
+            if any('Gradio' in t for t in Tunnels) and len(Tunnels) > 1:
+                l = ['Gradio', 'Pinggy', 'Cloudflared']
+                Tunnels.sort(key=lambda t: next((i for i, name in enumerate(l) if name in t), len(l)))
+
+            print('\n'.join(Tunnels), '\n')
 
         working_tunnel = {name for _, _, name in self.urls}
         error_tunnel = set(Name.split(', ')) - working_tunnel
