@@ -299,6 +299,7 @@ def webui_extension(U, W, M):
     else:
         say('<br><b>【{red} Installing Extensions{d} 】{red}</b>')
         clone(str(W / 'asd/extension.txt'))
+        if ENVNAME == 'Kaggle': clone('https://github.com/gutris1/sd-image-encryption')
 
 def webui_installation(U, W):
     M = W / 'Models' if U == 'SwarmUI' else W / 'models'
