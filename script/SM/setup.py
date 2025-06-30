@@ -263,6 +263,12 @@ def webui_req(U, W, M):
         download(f'https://huggingface.co/gutris1/webui/resolve/main/misc/card-no-preview.png {W}/html card-no-preview.{e}')
         download(f'https://github.com/gutris1/segsmaker/raw/main/config/NoCrypt_miku.json {W}/tmp/gradio_themes')
 
+        if U != 'Forge':
+            for i in [
+                f'https://github.com/gutris1/segsmaker/raw/main/config/user.css {W} user.css',
+                f'https://github.com/gutris1/segsmaker/raw/main/config/config.json {W} config.json'
+            ]: download(i)
+
 def WebUIExtensions(U, W, M):
     EXT = W / 'custom_nodes' if U == 'ComfyUI' else W / 'extensions'
     CD(EXT)
