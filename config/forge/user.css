@@ -68,8 +68,9 @@ div.compact {
   color: var(--button-secondary-text-color);
 }
 
-.extra-network-pane .card {
-  transition: 0.4s ease;
+.extra-network-pane .card,
+.extra-network-pane .card img {
+  transition: .3s ease;
   text-align: center;
 }
 
@@ -77,10 +78,14 @@ div.compact {
   box-shadow: 0 0 10px 0.4em rgb(76 227 255);
 }
 
+.extra-network-pane .card:hover img {
+  filter: brightness(0.5);
+}
+
 .extra-network-pane .card .actions {
   background: rgba(0, 0, 0, 0.7);
 }
 
 #quicksettings > #setting_sd_vae {
-  min-width: max-content !important;
+  min-width: 210px !important;
 }
