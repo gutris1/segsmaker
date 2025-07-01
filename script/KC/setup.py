@@ -119,7 +119,7 @@ def install_tunnel():
     bins = {
         'zrok': {
             'bin': USR / 'zrok',
-            'url': 'https://github.com/openziti/zrok/releases/download/v1.0.2/zrok_1.0.2_linux_amd64.tar.gz'
+            'url': 'https://github.com/openziti/zrok/releases/download/v1.0.6/zrok_1.0.6_linux_amd64.tar.gz'
         },
         'ngrok': {
             'bin': USR / 'ngrok',
@@ -128,8 +128,7 @@ def install_tunnel():
     }
 
     for n, b in bins.items():
-        if b['bin'].exists():
-            continue
+        if b['bin'].exists(): b['bin'].unlink()
 
         url = b['url']
         name = Path(url).name
