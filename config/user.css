@@ -54,18 +54,18 @@ div.compact {
   margin-bottom: 10px;
 }
 
-.gradio-container {
-  padding-top: 5px !important;
-  padding-bottom: 5px !important;
-  padding-left: 10px !important;
-  padding-right: 10px !important;
-}
-
 #tabs > .tab-nav > button.selected,
 #txt2img_extra_tabs > .tab-nav > button.selected,
 #img2img_extra_tabs > .tab-nav > button.selected,
 #mode_img2img > .tab-nav > button.selected {
   color: var(--button-secondary-text-color);
+}
+
+.gradio-container {
+  padding-top: 5px !important;
+  padding-bottom: 5px !important;
+  padding-left: 10px !important;
+  padding-right: 10px !important;
 }
 
 span.svelte-s1r2yt {
@@ -81,22 +81,78 @@ span.svelte-s1r2yt {
   top: -1px;
 }
 
-.extra-network-pane .card,
-.extra-network-pane .card img {
+.extra-network-pane .card {
+  width: 160px !important;
+  height: 240px !important;
+  font-size: 60% !important;
+  border-radius: 0;
   transition: .3s ease;
   text-align: center;
 }
 
 .extra-network-pane .card:hover {
-  box-shadow: 0 0 10px 0.4em rgb(76 227 255);
+  box-shadow: 0 0 10px 3px #00d4ff;
 }
 
-.extra-network-pane .card:hover img {
-  filter: brightness(0.5);
+.extra-network-pane .card .preview {
+  object-position: top;
+}
+
+.extra-network-pane .card .button-row {
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  visibility: visible;
+  transition: .2s ease;
+}
+
+.extra-network-pane .card:hover .button-row {
+  opacity: 1;
+}
+
+.extra-network-pane .card-button {
+  padding: 0;
+  align-items: center;
+  justify-content: center;
 }
 
 .extra-network-pane .card .actions {
-  background: rgba(0, 0, 0, 0.7);
+  height: 100%;
+  width: 100%;
+  padding: 0;
+  border-bottom: 0;
+  box-shadow: 0 0 5px 1px #000;
+  background: transparent;
+  pointer-events: none;
+  transition: background-color .3s ease;
+}
+
+.extra-network-pane .card .actions > * {
+  pointer-events: auto;
+}
+
+.extra-network-pane .card:hover .actions {
+  background: rgb(0 0 0 / 60%);
+}
+
+.extra-network-pane .card .actions .name {
+  display: flex;
+  position: absolute;
+  justify-content: center;
+  align-items: center;
+  font-size: var(--section-header-text-size);
+  font-weight: normal;
+  background: rgb(0 0 0 / 70%);
+  width: 100%;
+  padding: .3em;
+  bottom: 0;
+  border-radius: 0;
+  box-shadow: 0 0 5px 1px #000;
+}
+
+.extra-network-pane .card .actions .description {
+  display: none !important;
 }
 
 #quicksettings > #setting_sd_vae {
