@@ -5,14 +5,13 @@
         "Txt2img",
         "Img2img",
         "Extras",
-        "PNG Info",
         "Image Info",
         "HUB",
-        "Infinite image browsing",
         "SuperMerger"
     ],
     "hidden_tabs": [
         "Spaces",
+        "PNG Info",
         "Checkpoint Merger"
     ],
     "extra_networks_card_width": 200,

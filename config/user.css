@@ -82,14 +82,80 @@ span.svelte-s1r2yt {
 }
 
 .extra-network-pane .card {
-  transition: 0.4s ease;
+  width: 160px !important;
+  height: 240px !important;
+  font-size: 60% !important;
+  border-radius: 0;
+  transition: .3s ease;
   text-align: center;
 }
 
 .extra-network-pane .card:hover {
-  box-shadow: 0 0 10px 0.4em rgb(76 227 255);
+  box-shadow: 0 0 10px 3px #00d4ff;
+}
+
+.extra-network-pane .card .preview {
+  object-position: top;
+}
+
+.extra-network-pane .card .button-row {
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  visibility: visible;
+  transition: .2s ease;
+}
+
+.extra-network-pane .card:hover .button-row {
+  opacity: 1;
+}
+
+.extra-network-pane .card-button {
+  padding: 0;
+  align-items: center;
+  justify-content: center;
 }
 
 .extra-network-pane .card .actions {
-  background: rgba(0, 0, 0, 0.7);
+  height: 100%;
+  width: 100%;
+  padding: 0;
+  border-bottom: 0;
+  box-shadow: 0 0 5px 1px #000;
+  background: transparent;
+  pointer-events: none;
+  transition: background-color .2s ease;
+}
+
+.extra-network-pane .card .actions > * {
+  pointer-events: auto;
+}
+
+.extra-network-pane .card:hover .actions {
+  background: rgb(0 0 0 / 60%);
+}
+
+.extra-network-pane .card .actions .name {
+  display: flex;
+  position: absolute;
+  justify-content: center;
+  align-items: center;
+  font-size: var(--section-header-text-size);
+  font-weight: normal;
+  background: rgb(0 0 0 / 70%);
+  width: 100%;
+  padding: .3em;
+  bottom: 0;
+  border-radius: 0;
+  box-shadow: 0 0 5px 1px #000;
+}
+
+.extra-network-pane .card .actions .description {
+  display: none !important;
+}
+
+#quicksettings > #setting_sd_vae {
+  min-width: 210px !important;
+  max-width: 210px !important;
 }

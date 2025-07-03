@@ -11,10 +11,12 @@
     "live_preview_content": "Prompt",
     "live_preview_refresh_period": 100.0,
     "live_preview_fast_interrupt": true,
+    "grid_format": "jpg",
     "quicksettings_list": [
         "sd_model_checkpoint",
         "sd_vae",
-        "CLIP_stop_at_last_layers"
+        "randn_source",
+        "emphasis"
     ],
     "ui_tab_order": [
         "txt2img",
@@ -22,15 +24,11 @@
         "Extras",
         "Image Info",
         "HUB",
-        "Infinite image browsing",
         "SuperMerger"
     ],
     "hidden_tabs": [
         "PNG Info",
         "Train",
         "Checkpoint Merger"
-    ],
-    "extra_networks_card_width": 200.0,
-    "extra_networks_card_height": 300.0,
-    "extra_networks_card_text_scale": 0.8
+    ]
 }

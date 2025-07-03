@@ -119,7 +119,7 @@ def install_tunnel():
     bins = {
         'zrok': {
             'bin': USR / 'zrok',
-            'url': 'https://github.com/openziti/zrok/releases/download/v1.0.2/zrok_1.0.2_linux_amd64.tar.gz'
+            'url': 'https://github.com/openziti/zrok/releases/download/v1.0.6/zrok_1.0.6_linux_amd64.tar.gz'
         },
         'ngrok': {
             'bin': USR / 'ngrok',
@@ -128,8 +128,7 @@ def install_tunnel():
     }
 
     for n, b in bins.items():
-        if b['bin'].exists():
-            continue
+        if b['bin'].exists(): b['bin'].unlink()
 
         url = b['url']
         name = Path(url).name
@@ -278,9 +277,15 @@ def webui_req(U, W, M):
 
     if U not in ['SwarmUI', 'ComfyUI']:
         e = 'jpg' if U == 'Forge-Classic' else 'png'
-        SyS(f'rm -f {W}/html/card-no-preview.{e}')        
-        download(f'https://huggingface.co/gutris1/webui/resolve/main/misc/card-no-preview.png {W}/html card-no-preview.{e}')
-        download(f'https://github.com/gutris1/segsmaker/raw/main/config/NoCrypt_miku.json {W}/tmp/gradio_themes')
+        SyS(f'rm -f {W}/html/card-no-preview.{e}')
+
+        for ass in [
+            f'https://huggingface.co/gutris1/webui/resolve/main/misc/card-no-preview.png {W}/html card-no-preview.{e}',
+            f'https://github.com/gutris1/segsmaker/raw/main/config/NoCrypt_miku.json {W}/tmp/gradio_themes',
+            f'https://github.com/gutris1/segsmaker/raw/main/config/user.css {W} user.css'
+        ]: download(ass)
+
+        if U != 'Forge': download(f'https://github.com/gutris1/segsmaker/raw/main/config/config.json {W} config.json')
 
 def webui_extension(U, W, M):
     EXT = W / 'custom_nodes' if U == 'ComfyUI' else W / 'extensions'
@@ -299,6 +304,7 @@ def webui_extension(U, W, M):
     else:
         say('<br><b>【{red} Installing Extensions{d} 】{red}</b>')
         clone(str(W / 'asd/extension.txt'))
+        if ENVNAME == 'Kaggle': clone('https://github.com/gutris1/sd-image-encryption')
 
 def webui_installation(U, W):
     M = W / 'Models' if U == 'SwarmUI' else W / 'models'
@@ -308,16 +314,12 @@ def webui_installation(U, W):
     webui_req(U, W, M)
 
     extras = [
-        f'https://huggingface.co/gutris1/webui/resolve/main/misc/embeddings.zip {W}',
-        f'https://huggingface.co/stabilityai/sd-vae-ft-mse-original/resolve/main/vae-ft-mse-840000-ema-pruned.safetensors {V}',
         f'https://huggingface.co/gutris1/webui/resolve/main/misc/embeddingsXL.zip {W}',
         f'https://huggingface.co/madebyollin/sdxl-vae-fp16-fix/resolve/main/sdxl.vae.safetensors {V} sdxl_vae.safetensors'
     ]
 
     for i in extras: download(i)
-    SyS(f"unzip -qo {W / 'embeddings.zip'} -d {E} && rm {W / 'embeddings.zip'}")
     SyS(f"unzip -qo {W / 'embeddingsXL.zip'} -d {E} && rm {W / 'embeddingsXL.zip'}")
-    SyS(f'rm -f {E}/bad-image-v2-39000-neg.pt')
 
     if U != 'SwarmUI': webui_extension(U, W, M)
 
@@ -378,6 +380,7 @@ def notebook_scripts():
     z = [
         (STR / '00-startup.py', f'wget -qO {STR}/00-startup.py https://github.com/gutris1/segsmaker/raw/main/script/KC/00-startup.py'),
         (nenen, f'wget -qO {nenen} https://github.com/gutris1/segsmaker/raw/main/script/nenen88.py'),
+        (melon, f'wget -qO {melon} https://github.com/gutris1/segsmaker/raw/main/script/melon00.py'),
         (STR / 'cupang.py', f'wget -qO {STR}/cupang.py https://github.com/gutris1/segsmaker/raw/main/script/cupang.py'),
         (MRK, f'wget -qO {MRK} https://github.com/gutris1/segsmaker/raw/main/script/marking.py')
     ]
@@ -392,7 +395,7 @@ def notebook_scripts():
     marking(SRC, MARKED, webui)
     sys.path.append(str(STR))
 
-    for scripts in [nenen, KANDANG, MRK]: get_ipython().run_line_magic('run', str(scripts))
+    for scripts in [nenen, melon, KANDANG, MRK]: get_ipython().run_line_magic('run', str(scripts))
 
 ENVNAME, ENVBASE, ENVHOME = getENV()
 
@@ -420,6 +423,7 @@ MARKED = SRC / 'marking.json'
 USR = Path('/usr/bin')
 STR = Path('/root/.ipython/profile_default/startup')
 nenen = STR / 'nenen88.py'
+melon = STR / 'melon00.py'
 KANDANG = STR / 'KANDANG.py'
 
 TMP.mkdir(parents=True, exist_ok=True)
