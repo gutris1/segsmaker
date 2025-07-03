@@ -125,7 +125,7 @@ span.svelte-s1r2yt {
   box-shadow: 0 0 5px 1px #000;
   background: transparent;
   pointer-events: none;
-  transition: background-color .3s ease;
+  transition: background-color .2s ease;
 }
 
 .extra-network-pane .card .actions > * {
@@ -157,4 +157,5 @@ span.svelte-s1r2yt {
 
 #quicksettings > #setting_sd_vae {
   min-width: 210px !important;
+  max-width: 210px !important;
 }

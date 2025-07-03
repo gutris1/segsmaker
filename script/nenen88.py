@@ -8,12 +8,27 @@ import subprocess
 import requests
 import zipfile
 import shlex
+import json
 import sys
 import re
 import os
+import io
+
+MAGENTA = '\033[35m'
+RED = '\033[31m'
+CYAN = '\033[36m'
+GREEN = '\033[38;5;35m'
+YELLOW = '\033[33m'
+BLUE = '\033[38;5;69m'
+PURPLE = '\033[38;5;135m'
+ORANGE = '\033[38;5;208m'
+RESET = '\033[0m'
 
 CD = os.chdir
 SyS = get_ipython().system
+iRON = os.environ
+
+KAGGLE = 'KAGGLE_DATA_PROXY_TOKEN' in iRON
 
 TOKET = ''
 TOBRUT = ''
@@ -54,6 +69,88 @@ def say(line):
 
     display(HTML(' '.join(output)))
 
+def resizer(b, size=512):
+    from PIL import Image
+    i = Image.open(io.BytesIO(b))
+    w, h = i.size
+    s = (size, int(h * size / w)) if w > h else (int(w * size / h), size)
+    o = io.BytesIO()
+    i.resize(s, Image.LANCZOS).save(o, format='PNG')
+    o.seek(0)
+    return o
+
+def civitai_headers():
+    return {'User-Agent': 'CivitaiLink:Automatic1111'}
+
+def civitai_preview(j, p, fn):
+    v = j['modelVersions'][0] if 'modelVersions' in j else j
+    images = v.get('images', [])
+    name = fn or v.get('files', [{}])[0].get('name')
+    path = Path(p) / f'{Path(name).stem}.preview.png'
+    if path.exists(): return
+
+    preview = next((img.get('url', '') for img in images if not img.get('url', '').lower().endswith(('.mp4', '.gif'))), None)
+    if not preview: return
+
+    r = requests.get(preview, headers=civitai_headers()).content
+    resized = resizer(r)
+
+    if KAGGLE:
+        from melon00 import image_encryption
+        image_encryption(resized, path)
+    else:
+        path.write_bytes(resized.read())
+
+def civitai_infotags(j, p, fn):
+    if 'modelVersions' in j:
+        modelId = j.get('id')
+        v = j['modelVersions'][0]
+    else:
+        v = j
+        modelId = v.get('modelId')
+
+    name = fn or v.get('files', [{}])[0].get('name')
+    info = Path(p) / f'{Path(name).stem}.json'
+    if info.exists(): return
+
+    baseList = {
+        'SD 1': 'SD1',
+        'SD 1.5': 'SD1',
+        'SD 2': 'SD2',
+        'SD 3': 'SD3',
+        'SDXL': 'SDXL',
+        'Pony': 'SDXL',
+        'Illustrious': 'SDXL',
+    }
+
+    data = {
+        'activation text': ', '.join(v.get('trainedWords', [])),
+        'sd version': next((s for k, s in baseList.items() if k in v['baseModel']), ''),
+        'modelId': modelId,
+        'modelVersionId': v.get('id'),
+        'sha256': v.get('files', [{}])[0].get('hashes', {}).get('SHA256')
+    }
+
+    info.write_text(json.dumps(data, indent=4))
+
+def civitai_earlyAccess(j):
+    v = None
+
+    if 'modelVersions' in j:
+        v = next((v for v in j.get('modelVersions', []) if v.get('availability') == 'EarlyAccess'), None)
+        modelId = j.get('id')
+    elif j.get('earlyAccessEndsAt'):
+        v = j
+        modelId = v.get('modelId')
+
+    if v:
+        modelVersionId = v.get('id')
+        page = f'https://civitai.com/models/{modelId}?modelVersionId={modelVersionId}'
+        print(f'{page}\n-> The model is in early access and requires payment for downloading.')
+        return True
+
+    return False
+
 @register_line_magic
 def download(line):
     args = line.split()
@@ -62,28 +159,81 @@ def download(line):
         return
 
     url = args[0]
-    if url.endswith('.txt') and Path(url).expanduser().is_file():
-        with open(Path(url).expanduser(), 'r') as file:
-            [netorare(line) for line in file]
+    path = Path(url).expanduser()
+    if url.endswith('.txt') and path.is_file():
+        for line in path.read_text(encoding='utf-8').splitlines():
+            netorare(line)
     else:
         netorare(line)
 
+def get_fn(url):
+    if any(x in url for x in ['civitai.com', 'drive.google.com']):
+        return None
+    return Path(urlparse(url).path).name
+
+def strip_(url, fn):
+    j = None
+
+    if 'github.com' in url: url = url.replace('/blob/', '/raw/')
+
+    elif 'huggingface.co' in url:
+        url = url.split('?')[0]
+        h = {'User-Agent': 'Mozilla/5.0', **({'Authorization': f'Bearer {TOBRUT}'} if TOBRUT else {})}
+        ext = ['.safetensors', '.pt', '.pth']
+
+        if fn and Path(fn).suffix.lower() in ext:
+            response = requests.get(re.sub(r'/(resolve|blob)/', '/raw/', url), headers=h)
+            t = re.search(r'oid sha256:([a-fA-F0-9]{64})', response.text)
+            if t:
+                sha256 = t.group(1)
+                api_url = f'https://civitai.com/api/v1/model-versions/by-hash/{sha256}'
+                j = requests.get(api_url, headers=civitai_headers()).json()
+                r = next((f for f in j.get('files', []) if f.get('hashes', {}).get('SHA256', '').lower() == sha256.lower()), None)
+                if not r: j = None
+
+        url = url.replace('/blob/', '/resolve/')
+
+    elif 'civitai.com' in url:
+        input_url = url
+        url = url.split('?token=')[0] if '?token=' in url else url
+
+        if 'civitai.com/api/download/models/' in url:
+            use_input = True
+            versionId = url.split('models/')[1].split('/')[0].split('?')[0]
+            api_url = f'https://civitai.com/api/v1/model-versions/{versionId}'
+
+        elif 'civitai.com/models/' in url:
+            use_input = False
+            modelId = url.split('models/')[1].split('/')[0].split('?')[0]
+            versionId = url.split('?modelVersionId=')[1] if '?modelVersionId=' in url else None
+
+            if versionId: api_url = f'https://civitai.com/api/v1/model-versions/{versionId}'
+            else: api_url = f'https://civitai.com/api/v1/models/{modelId}'
+
+        j = requests.get(api_url, headers=civitai_headers()).json()
+
+        msg = civitai_earlyAccess(j)
+        if msg: return None, None
+
+        url = input_url if use_input else (j.get('modelVersions', [{}])[0] if 'modelVersions' in j else j).get('downloadUrl')
+        if not url: print(f'Unable to find download URL for\n-> {input_url}\n'); return None, None
+
+        url = url.replace('?type=', f'?token={TOKET}&type=') if '?type=' in url else f'{url}?token={TOKET}'
+
+    return url, j
+
 def netorare(line):
     parts = line.strip().split()
-    if not parts or not (url := strip_(parts[0].replace('\\', ''))):
-        return
+    if not parts: return
+
+    fp, fn = None, None
+    cwd = Path.cwd()
+    url = parts[0].replace('\\', '')
 
     CHG = any(domain in url for domain in ['civitai.com', 'huggingface.co', 'github.com'])
     DriveGoogle = 'drive.google.com' in url
-    cwd = Path.cwd()
-    fp, fn = None, None
 
     path = lambda s: '/' in s or '~/' in s
-
-    aria2c = 'aria2c --header="User-Agent: Mozilla/5.0" --allow-overwrite=true --console-log-level=error --stderr=true -c -x16 -s16 -k1M -j5'
-
-    if TOBRUT and 'huggingface.co' in url:
-        aria2c += f' --header="Authorization: Bearer {TOBRUT}"'
 
     try:
         if len(parts) >= 3:
@@ -106,118 +256,40 @@ def netorare(line):
                 fn = get_fn(url) if CHG else Path(urlparse(url).path).name
             else:
                 fn = arg
+                fp = cwd
         else:
             fn = get_fn(url) if CHG else Path(urlparse(url).path).name
+            fp = cwd
 
-        if CHG:
-            cmd = f"{aria2c} '{url}'" + (f" -o '{fn}'" if 'civitai.com' not in url or fn is not None else "")
-            ketsuno_ana(cmd, fn)
-        elif DriveGoogle:
-            gdrown(url, fp, fn)
+        if CHG: ariari(url, fp, fn)
+        elif DriveGoogle: gdrown(url, fp, fn)
         else:
             path_only = len(parts) == 2 and fp is not None
             cmd = f"curl -#{'OJL' if len(parts) == 1 or path_only else 'JL'} '{url}'" + (f" -o '{fn}'" if fn is not None and not path_only else "")
-            ketsuno_ana(cmd, fn)
+            curlly(cmd, fn)
     finally:
         CD(cwd)
 
-def strip_(url):
-    if 'civitai.com' in url:
-        input_url = url
-        url = url.split('?token=')[0] if '?token=' in url else url
-        url = url.replace('?type=', f'?token={TOKET}&type=') if '?type=' in url else f'{url}?token={TOKET}'
+def ariari(url, fp, fn):
+    url, j = strip_(url, fn)
+    if not url: return
 
-        if 'civitai.com/models/' in url:
-            try:
-                version_id = url.split('?modelVersionId=')[1] if '?modelVersionId=' in url else None
-                model_id = url.split('/models/')[1].split('/')[0]
-                there = bool(version_id)
+    if 'civitai.com' in url: ua = civitai_headers()['User-Agent']
+    else: ua = 'Mozilla/5.0'
 
-                api_url = (
-                    f'https://civitai.com/api/v1/model-versions/{version_id}'
-                    if there else f'https://civitai.com/api/v1/models/{model_id}'
-                )
+    cmd = [
+        'aria2c', f'--header=User-Agent: {ua}', '--allow-overwrite=true',
+        '--console-log-level=error', '--stderr=true', '-c', '-x16', '-s16', '-k1M', '-j5'
+    ]
 
-                r = requests.get(api_url)
-                r.raise_for_status()
-                v = r.json()
+    if TOBRUT and 'huggingface.co' in url: cmd.append(f'--header=Authorization: Bearer {TOBRUT}')
 
-                earlyAccess = (
-                    v.get('earlyAccessEndsAt') if there
-                    else next((mv for mv in v.get('modelVersions', []) if mv.get('availability') == 'EarlyAccess'), None)
-                )
+    if fn: cmd += ['-o', fn]
+    cmd.append(url)
 
-                if earlyAccess:
-                    id_ = v.get('id') if there else earlyAccess.get('id')
-                    page = input_url if there else f'https://civitai.com/models/{model_id}?modelVersionId={id_}'
-                    print(f'\n  The model is in early access and requires payment for downloading.\n  -> {page}\n')
-                    return None
-
-                download = v.get('downloadUrl') if there else v.get('modelVersions', [{}])[0].get('downloadUrl')
-                return f'{download}?token={TOKET}' if download else None
-
-            except requests.exceptions.RequestException as e:
-                print(f'\n  [Error] {str(e)}\n')
-                return None
-
-    elif any(domain in url for domain in ['huggingface.co', 'github.com']):
-        url = url.replace('/blob/', '/resolve/' if "huggingface.co" in url else '/raw/')
-        if 'huggingface.co' in url and '?' in url: url = url.split('?')[0]
-
-    return url
-
-def get_fn(url):
-    line = urlparse(url)
-    if any(domain in line.netloc for domain in ['civitai.com', 'drive.google.com']):
-        return None
-    return Path(line.path).name
-
-def ketsuno_ana(cmd, fn):
-    (ariari if 'aria2c' in cmd else curlly)(cmd, fn)
-
-def gdrown(url, fp=None, fn=None):
-    is_folder = "drive.google.com/drive/folders" in url
-    cmd = f"gdown --fuzzy {url}"
-
-    if fp:
-        fp = Path(fp).expanduser()
-        fp.mkdir(parents=True, exist_ok=True)
-        if fn:
-            fn = fp / fn
-            cmd += f" -O {fn}"
-        cwd = str(fp)
-    else:
-        cwd = None
-
-    if fn and not fp: cmd += f" -O {fn}"
-    if is_folder: cmd += " --folder"
-
-    SyS(f"cd {cwd} && {cmd}" if cwd else cmd)
-
-def ariari(cmd, fn):
     try:
-        p = subprocess.Popen(
-            shlex.split(cmd),
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True
-        )
-
-        aria2_output = ''
-        break_line = False
-
-        error_code = []
-        error_line = []
-
-        MAGENTA = '\033[35m'
-        RED = '\033[31m'
-        CYAN = '\033[36m'
-        GREEN = '\033[38;5;35m'
-        YELLOW = '\033[33m'
-        BLUE = '\033[38;5;69m'
-        PURPLE = '\033[38;5;135m'
-        ORANGE = '\033[38;5;208m'
-        RESET = '\033[0m'
+        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        aria2_output, break_line, error_code, error_line = '', False, [], []
 
         while True:
             lines = p.stderr.readline()
@@ -269,6 +341,10 @@ def ariari(cmd, fn):
                     lines = f'{first}|{last}'
                     print(f'  {lines}')
 
+        if j:
+            civitai_infotags(j, fp, fn)
+            civitai_preview(j, fp, fn)
+
         p.wait()
 
     except KeyboardInterrupt:
@@ -317,6 +393,25 @@ def curlly(cmd, fn):
 
     except KeyboardInterrupt:
         print(f"{'':>2}^ Canceled")
+
+def gdrown(url, fp=None, fn=None):
+    is_folder = 'drive.google.com/drive/folders' in url
+    cmd = f'gdown --fuzzy {url}'
+
+    if fp:
+        fp = Path(fp).expanduser()
+        fp.mkdir(parents=True, exist_ok=True)
+        if fn:
+            fn = fp / fn
+            cmd += f' -O {fn}'
+        cwd = str(fp)
+    else:
+        cwd = None
+
+    if fn and not fp: cmd += f' -O {fn}'
+    if is_folder: cmd += ' --folder'
+
+    SyS(f'cd {cwd} && {cmd}' if cwd else cmd)
 
 @register_line_magic
 def clone(i):

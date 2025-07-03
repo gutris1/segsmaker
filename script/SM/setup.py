@@ -258,15 +258,15 @@ def webui_req(U, W, M):
 
     if U not in ['SwarmUI', 'ComfyUI']:
         e = 'jpg' if U == 'Forge-Classic' else 'png'
-        SyS(f'rm -f {W}/html/card-no-preview.{e}')        
-        download(f'https://huggingface.co/gutris1/webui/resolve/main/misc/card-no-preview.png {W}/html card-no-preview.{e}')
-        download(f'https://github.com/gutris1/segsmaker/raw/main/config/NoCrypt_miku.json {W}/tmp/gradio_themes')
+        SyS(f'rm -f {W}/html/card-no-preview.{e}')
 
-        if U != 'Forge':
-            for i in [
-                f'https://github.com/gutris1/segsmaker/raw/main/config/user.css {W} user.css',
-                f'https://github.com/gutris1/segsmaker/raw/main/config/config.json {W} config.json'
-            ]: download(i)
+        for ass in [
+            f'https://huggingface.co/gutris1/webui/resolve/main/misc/card-no-preview.png {W}/html card-no-preview.{e}',
+            f'https://github.com/gutris1/segsmaker/raw/main/config/NoCrypt_miku.json {W}/tmp/gradio_themes',
+            f'https://github.com/gutris1/segsmaker/raw/main/config/user.css {W} user.css'
+        ]: download(ass)
+
+        if U != 'Forge': download(f'https://github.com/gutris1/segsmaker/raw/main/config/config.json {W} config.json')
 
 def WebUIExtensions(U, W, M):
     EXT = W / 'custom_nodes' if U == 'ComfyUI' else W / 'extensions'
@@ -295,16 +295,12 @@ def installing_webui(U, W):
     install_tunnel()
 
     extras = [
-        f'https://huggingface.co/gutris1/webui/resolve/main/misc/embeddings.zip {W}',
-        f'https://huggingface.co/stabilityai/sd-vae-ft-mse-original/resolve/main/vae-ft-mse-840000-ema-pruned.safetensors {V}',
         f'https://huggingface.co/gutris1/webui/resolve/main/misc/embeddingsXL.zip {W}',
         f'https://huggingface.co/madebyollin/sdxl-vae-fp16-fix/resolve/main/sdxl.vae.safetensors {V} sdxl_vae.safetensors'
     ]
 
     for i in extras: download(i)
-    SyS(f"unzip -qo {W / 'embeddings.zip'} -d {E} && rm {W / 'embeddings.zip'}")
     SyS(f"unzip -qo {W / 'embeddingsXL.zip'} -d {E} && rm {W / 'embeddingsXL.zip'}")
-    SyS(f'rm -f {E}/bad-image-v2-39000-neg.pt')
 
     if U != 'SwarmUI': WebUIExtensions(U, W, M)
 
