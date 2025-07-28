@@ -25,9 +25,9 @@ ERR = f'{P}[{RST}{R}ERROR{RST}{P}]{RST}'
 def get_args(ui):
     args_line = {
         'A1111': ('--xformers'),
-        'Forge': ('--disable-xformers --opt-sdp-attention --cuda-stream --pin-shared-memory'),
-        'ReForge': ('--xformers --cuda-stream --pin-shared-memory'),
-        'Forge-Classic': ('--xformers --cuda-stream --pin-shared-memory --persistent-patches'),
+        'Forge': ('--disable-xformers --opt-sdp-attention --cuda-stream'),
+        'ReForge': ('--xformers --cuda-stream'),
+        'Forge-Classic': ('--xformers --cuda-stream --persistent-patches'),
         'ComfyUI': ('--dont-print-server --use-pytorch-cross-attention'),
         'SwarmUI': ('--launch_mode none'),
         'FaceFusion': '',
