@@ -20,6 +20,15 @@ import os
 
 from nenen88 import pull, say, download, clone, tempe
 
+REPO = {
+    'A1111': 'https://github.com/AUTOMATIC1111/stable-diffusion-webui A1111',
+    'Forge': 'https://github.com/lllyasviel/stable-diffusion-webui-forge Forge',
+    'ReForge': '-b main-old https://github.com/Panchovix/stable-diffusion-webui-reForge ReForge',
+    'Forge-Classic': 'https://github.com/Haoming02/sd-webui-forge-classic Forge-Classic',
+    'ComfyUI': 'https://github.com/comfyanonymous/ComfyUI',
+    'SwarmUI': 'https://github.com/mcmonkeyprojects/SwarmUI'
+}
+
 SyS = get_ipython().system
 CD = os.chdir
 
@@ -309,18 +318,9 @@ def webui_install(ui):
         display(Image(filename=str(IMG)))
 
     with output:
-        alist = {
-            'A1111': 'https://github.com/AUTOMATIC1111/stable-diffusion-webui A1111',
-            'Forge': 'https://github.com/lllyasviel/stable-diffusion-webui-forge Forge',
-            'ReForge': 'https://github.com/Panchovix/stable-diffusion-webui-reForge ReForge',
-            'Forge-Classic': 'https://github.com/Haoming02/sd-webui-forge-classic Forge-Classic',
-            'ComfyUI': 'https://github.com/comfyanonymous/ComfyUI',
-            'SwarmUI': 'https://github.com/mcmonkeyprojects/SwarmUI'
-        }
-
-        if ui in alist:
+        if ui in REPO:
             WEBUI = HOME / ui
-            repo = alist[ui]
+            repo = REPO[ui]
 
         say(f"<b>【{{red}} Installing {ui.replace('-', '')}{{d}} 】{{red}}</b>")
         clone(repo)
