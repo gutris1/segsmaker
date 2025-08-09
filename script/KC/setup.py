@@ -14,6 +14,15 @@ SyS = get_ipython().system
 CD = os.chdir
 iRON = os.environ
 
+REPO = {
+    'A1111': 'https://github.com/AUTOMATIC1111/stable-diffusion-webui A1111',
+    'Forge': 'https://github.com/lllyasviel/stable-diffusion-webui-forge Forge',
+    'ReForge': '-b main-old https://github.com/Panchovix/stable-diffusion-webui-reForge ReForge',
+    'Forge-Classic': 'https://github.com/Haoming02/sd-webui-forge-classic Forge-Classic',
+    'ComfyUI': 'https://github.com/comfyanonymous/ComfyUI',
+    'SwarmUI': 'https://github.com/mcmonkeyprojects/SwarmUI'
+}
+
 WEBUI_LIST = ['A1111', 'Forge', 'ReForge', 'Forge-Classic', 'ComfyUI', 'SwarmUI']
 
 def getENV():
@@ -327,16 +336,7 @@ def webui_selection(ui):
     with output:
         output.clear_output(wait=True)
 
-        repo_url = {
-            'A1111': 'https://github.com/AUTOMATIC1111/stable-diffusion-webui A1111',
-            'Forge': 'https://github.com/lllyasviel/stable-diffusion-webui-forge Forge',
-            'ReForge': 'https://github.com/Panchovix/stable-diffusion-webui-reForge ReForge',
-            'Forge-Classic': 'https://github.com/Haoming02/sd-webui-forge-classic Forge-Classic',
-            'ComfyUI': 'https://github.com/comfyanonymous/ComfyUI',
-            'SwarmUI': 'https://github.com/mcmonkeyprojects/SwarmUI'
-        }
-
-        if ui in repo_url: (WEBUI, repo) = (HOME / ui, repo_url[ui])
+        if ui in REPO: (WEBUI, repo) = (HOME / ui, REPO[ui])
         say(f'<b>【{{red}} Installing {WEBUI.name}{{d}} 】{{red}}</b>')
         clone(repo)
 

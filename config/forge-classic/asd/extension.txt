@@ -3,7 +3,6 @@ https://github.com/zanllp/sd-webui-infinite-image-browsing
 https://github.com/DominikDoom/a1111-sd-webui-tagcomplete
 https://github.com/Coyote-A/ultimate-upscale-for-automatic1111
 https://github.com/IDEA-Research/DWPose
-https://github.com/hako-mikan/sd-webui-regional-prompter
 https://github.com/gutris1/sd-hub
 https://github.com/gutris1/sd-image-info
 https://github.com/gutris1/sd-image-viewer
