@@ -133,7 +133,7 @@ def install_venv(ui, url, need_space, vnv, fn):
             f'rm -f {vnv}/bin/pip* {vnv}/bin/python*',
             f'python3 -m venv {vnv}',
             f'{pip} install -U --force-reinstall pip',
-            f'{pip} install ipykernel matplotlib yaml',
+            f'{pip} install ipykernel matplotlib pyyaml',
             f'{pip} uninstall -y ngrok pyngrok'
         ]: SyS(f'{cmd} >/dev/null 2>&1')
 
