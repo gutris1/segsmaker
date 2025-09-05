@@ -367,7 +367,7 @@ def facetrainer(ui):
                 f'mkdir -p {WEBUI}/VAE', f'ln -vs /tmp {HOME}/tmp'
             ]
 
-        for lines in req: SyS(f'{lines} >/dev/null 2>&1')
+        for lines in req: SyS(f'{lines} > /dev/null 2>&1')
         for items in SM_Script(WEBUI): download(items)
         tempe()
 
