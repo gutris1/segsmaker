@@ -37,7 +37,7 @@ def trashing():
     paths = [HOME / name for name in dirs1] + [tmp / name for name in dirs2]
     for path in paths:
         cmd = f'find {path} -type d -name .ipynb_checkpoints -exec rm -rf {{}} +'
-        SyS(f'{cmd} >/dev/null 2>&1')
+        SyS(f'{cmd} > /dev/null 2>&1')
 
 def check_pv():
     try:
@@ -135,7 +135,7 @@ def install_venv(ui, url, need_space, vnv, fn):
             f'{pip} install -U --force-reinstall pip',
             f'{pip} install ipykernel matplotlib pyyaml',
             f'{pip} uninstall -y ngrok pyngrok'
-        ]: SyS(f'{cmd} >/dev/null 2>&1')
+        ]: SyS(f'{cmd} > /dev/null 2>&1')
 
 print('checking env...')
 tempe()

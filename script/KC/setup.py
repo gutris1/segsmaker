@@ -85,7 +85,7 @@ def getPython():
     CD(Path(ENVBASE).parent)
     print(f"\n{ARROW} installing Python Portable {'3.11.13' if webui == 'Forge-Classic' else '3.10.15'}")
 
-    SyS('sudo apt-get -qq -y install aria2 pv lz4 >/dev/null 2>&1')
+    SyS('sudo apt-get -qq -y install aria2 pv lz4 > /dev/null 2>&1')
 
     aria = f'aria2c --console-log-level=error --stderr=true -c -x16 -s16 -k1M -j5 {url} -o {fn}'
     p = subprocess.Popen(shlex.split(aria), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
@@ -102,7 +102,7 @@ def getPython():
         for cmd in [
             'pip install ipywidgets jupyterlab_widgets --upgrade',
             'rm -f /usr/lib/python3.10/sitecustomize.py'
-        ]: SyS(f'{cmd} >/dev/null 2>&1')
+        ]: SyS(f'{cmd} > /dev/null 2>&1')
 
 def marking(p, n, u):
     t = p / n
