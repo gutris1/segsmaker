@@ -1,9 +1,9 @@
-from IPython import get_ipython
 from pathlib import Path
+import os
 
 conda = Path('/home/studio-lab-user/.conda/envs/default')
 py = conda / 'bin/python'
-SyS = get_ipython().system
+SyS = os.system
 
 if not py.exists():
     SyS(f'conda create -qy -p {conda} python=3.10.13')
