@@ -60,7 +60,7 @@ def CondaInstall():
             ('mamba install -y conda', None),
             ('mamba install -y python=3.10.13', f'{CYAN} Installing Python 3.10'),
             ('mamba install -y glib gperftools compilers openssh pv gputil curl', f'{PURPLE} Installing Conda Packages'),
-            ('pip install psutil aria2 gdown Pillow', f'{PINK} Installing Python Packages'),
+            ('pip install psutil aria2 gdown Pillow pyyaml', f'{PINK} Installing Python Packages'),
             ('conda clean -qy --all', None)
         ]
 
