@@ -110,6 +110,8 @@ def civitai_infotags(j, p, fn):
         modelId = v.get('modelId')
 
     name = fn or v.get('files', [{}])[0].get('name')
+    if not name: return
+
     info = Path(p) / f'{Path(name).stem}.json'
     if info.exists(): return
 
