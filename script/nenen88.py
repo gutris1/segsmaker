@@ -85,7 +85,10 @@ def civitai_headers():
 def civitai_preview(j, p, fn):
     v = j['modelVersions'][0] if 'modelVersions' in j else j
     images = v.get('images', [])
+
     name = fn or v.get('files', [{}])[0].get('name')
+    if not name: return
+
     path = Path(p) / f'{Path(name).stem}.preview.png'
     if path.exists(): return
 
