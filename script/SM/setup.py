@@ -429,12 +429,14 @@ row1 = ['A1111', 'Forge', 'ReForge', 'Forge-Classic']
 buttons1 = [widgets.Button(description='') for btn in row1]
 for button, btn in zip(buttons1, row1):
     button.add_class(btn.lower())
+    button.add_class('segs-setup-buttons')
     button.on_click(lambda x, btn=btn: oppai(btn))
 
 row2 = ['ComfyUI', 'SwarmUI', 'FaceFusion', 'SDTrainer']
 buttons2 = [widgets.Button(description='') for btn in row2]
 for button, btn in zip(buttons2, row2):
     button.add_class(btn.lower())
+    button.add_class('segs-setup-buttons')
     button.on_click(lambda x, btn=btn: oppai(btn))
 
 hbox1 = widgets.HBox(buttons1, layout=widgets.Layout(width='100%', height='255px'))

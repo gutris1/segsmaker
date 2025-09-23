@@ -41,6 +41,7 @@ def setWebUIVAR(ui):
         'Forge': default,
         'ReForge': default,
         'Forge-Classic': default,
+        'Forge-Neo': default,
         'ComfyUI': ('custom_nodes', 'embeddings', 'vae', 'checkpoints', 'loras', 'upscale_models'),
         'SwarmUI': ('Extensions', 'Embeddings', 'VAE', 'Stable-Diffusion', 'Lora', 'upscale_models'),
         'FaceFusion': (None,) * 6,
@@ -51,9 +52,9 @@ def setWebUIVAR(ui):
 
     WebUI = HOME / ui
     Models = WebUI / ('Models' if ui == 'SwarmUI' else 'models')
-    WebUI_Output = WebUI / ('Output' if ui == 'SwarmUI' else 'output' if ui in ['Forge-Classic', 'ComfyUI', 'SDTrainer'] else 'outputs')
+    WebUI_Output = WebUI / ('Output' if ui == 'SwarmUI' else 'output' if ui in ['Forge-Classic', 'Forge-Neo', 'ComfyUI', 'SDTrainer'] else 'outputs')
     Extensions = (WebUI / 'src' / ext if ui == 'SwarmUI' and ext else WebUI / ext if ext else None)
-    Embeddings = (Models / embed if ui in ['Forge-Classic', 'ComfyUI', 'SwarmUI'] else WebUI / embed if embed else None)
+    Embeddings = (Models / embed if ui in ['Forge-Classic', 'Forge-Neo', 'ComfyUI', 'SwarmUI'] else WebUI / embed if embed else None)
     VAE = Models / vae if vae else None
     CKPT = Models / ckpt if ckpt else None
     LORA = Models / lora if lora else None

@@ -167,9 +167,16 @@ def download(line):
         netorare(line)
 
 def get_fn(url):
-    if any(x in url for x in ['civitai.com', 'drive.google.com']):
-        return None
+    if any(x in url for x in ['civitai.com', 'drive.google.com']): return None
     return Path(urlparse(url).path).name
+
+def get_json(api_url, headers):
+    try:
+        r = requests.get(api_url, headers=headers, timeout=15)
+        if r.status_code != 200: return None
+        return r.json()
+    except:
+        return None
 
 def strip_(url, fn):
     j = None
@@ -187,9 +194,10 @@ def strip_(url, fn):
             if t:
                 sha256 = t.group(1)
                 api_url = f'https://civitai.com/api/v1/model-versions/by-hash/{sha256}'
-                j = requests.get(api_url, headers=civitai_headers()).json()
-                r = next((f for f in j.get('files', []) if f.get('hashes', {}).get('SHA256', '').lower() == sha256.lower()), None)
-                if not r: j = None
+                j = get_json(api_url, civitai_headers())
+                if j:
+                    r = next((f for f in j.get('files', []) if f.get('hashes', {}).get('SHA256', '').lower() == sha256.lower()), None)
+                    if not r: j = None
 
         url = url.replace('/blob/', '/resolve/')
 
@@ -210,13 +218,17 @@ def strip_(url, fn):
             if versionId: api_url = f'https://civitai.com/api/v1/model-versions/{versionId}'
             else: api_url = f'https://civitai.com/api/v1/models/{modelId}'
 
-        j = requests.get(api_url, headers=civitai_headers()).json()
+        j = get_json(api_url, civitai_headers())
+        if not j: return None, None
 
         msg = civitai_earlyAccess(j)
         if msg: return None, None
 
         url = input_url if use_input else (j.get('modelVersions', [{}])[0] if 'modelVersions' in j else j).get('downloadUrl')
-        if not url: print(f'Unable to find download URL for\n-> {input_url}\n'); return None, None
+
+        if not url:
+            print(f'Unable to find download URL for\n-> {input_url}\n')
+            return None, None
 
         url = url.replace('?type=', f'?token={TOKET}&type=') if '?type=' in url else f'{url}?token={TOKET}'
 
