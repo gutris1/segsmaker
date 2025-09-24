@@ -69,6 +69,19 @@ def say(line):
 
     display(HTML(' '.join(output)))
 
+@register_line_magic
+def download(i):
+    args = i.split()
+    if not args:
+        print('  missing URL, downloading nothing')
+        return
+
+    url = args[0]
+    path = Path(url).expanduser()
+    if url.endswith('.txt') and path.is_file():
+        for l in path.read_text(encoding='utf-8').splitlines(): netorare(l)
+    else: netorare(i)
+
 def resizer(b, size=512):
     from PIL import Image
     i = Image.open(io.BytesIO(b))
@@ -82,10 +95,14 @@ def resizer(b, size=512):
 def civitai_headers():
     return {'User-Agent': 'CivitaiLink:Automatic1111'}
 
-def civitai_preview(j, p, fn):
-    v = j['modelVersions'][0] if 'modelVersions' in j else j
+def civitai_preview(j, p, fn, versionId=None):
+    v = get_civitai(j, versionId)
+    if not v: return
+
     images = v.get('images', [])
     name = fn or v.get('files', [{}])[0].get('name')
+    if not name: return
+
     path = Path(p) / f'{Path(name).stem}.preview.png'
     if path.exists(): return
 
@@ -101,15 +118,14 @@ def civitai_preview(j, p, fn):
     else:
         path.write_bytes(resized.read())
 
-def civitai_infotags(j, p, fn):
-    if 'modelVersions' in j:
-        modelId = j.get('id')
-        v = j['modelVersions'][0]
-    else:
-        v = j
-        modelId = v.get('modelId')
+def civitai_infotags(j, p, fn, versionId=None):
+    v = get_civitai(j, versionId)
+    if not v: return
 
+    modelId = j.get('id') or v.get('modelId')
     name = fn or v.get('files', [{}])[0].get('name')
+    if not name: return
+
     info = Path(p) / f'{Path(name).stem}.json'
     if info.exists(): return
 
@@ -125,7 +141,7 @@ def civitai_infotags(j, p, fn):
 
     data = {
         'activation text': ', '.join(v.get('trainedWords', [])),
-        'sd version': next((s for k, s in baseList.items() if k in v['baseModel']), ''),
+        'sd version': next((s for k, s in baseList.items() if k in v.get('baseModel', '')), ''),
         'modelId': modelId,
         'modelVersionId': v.get('id'),
         'sha256': v.get('files', [{}])[0].get('hashes', {}).get('SHA256')
@@ -133,38 +149,18 @@ def civitai_infotags(j, p, fn):
 
     info.write_text(json.dumps(data, indent=4))
 
-def civitai_earlyAccess(j):
-    v = None
+def civitai_earlyAccess(j, versionId=None):
+    v = get_civitai(j, versionId)
+    if not v: return False
 
-    if 'modelVersions' in j:
-        v = next((v for v in j.get('modelVersions', []) if v.get('availability') == 'EarlyAccess'), None)
-        modelId = j.get('id')
-    elif j.get('earlyAccessEndsAt'):
-        v = j
-        modelId = v.get('modelId')
-
-    if v:
+    if v.get('availability') == 'EarlyAccess' or v.get('earlyAccessEndsAt'):
+        modelId = j.get('id') or v.get('modelId')
         modelVersionId = v.get('id')
         page = f'https://civitai.com/models/{modelId}?modelVersionId={modelVersionId}'
-        print(f'{page}\n-> The model is in early access and requires payment for downloading.')
+        print(f'{page}\n-> The model version is in early access and requires payment for downloading.')
         return True
 
     return False
-
-@register_line_magic
-def download(line):
-    args = line.split()
-    if not args:
-        print('  missing URL, downloading nothing')
-        return
-
-    url = args[0]
-    path = Path(url).expanduser()
-    if url.endswith('.txt') and path.is_file():
-        for line in path.read_text(encoding='utf-8').splitlines():
-            netorare(line)
-    else:
-        netorare(line)
 
 def get_fn(url):
     if any(x in url for x in ['civitai.com', 'drive.google.com']): return None
@@ -178,19 +174,36 @@ def get_json(api_url, headers):
     except:
         return None
 
-def strip_(url, fn):
-    j = None
+def get_civitai(j, versionId=None):
+    v = None
 
-    if 'github.com' in url: url = url.replace('/blob/', '/raw/')
+    if versionId:
+        if 'modelVersions' in j: v = next((mv for mv in j['modelVersions'] if str(mv.get('id')) == str(versionId)), None)
+        if not v and str(j.get('id')) == str(versionId) and 'files' in j: v = j
+
+    if not v:
+        if 'modelVersions' in j: v = j['modelVersions'][0]
+        else: v = j
+
+    return v
+
+def get_url(url, fn):
+    def f_(u):
+        return u.replace('?type=', f'?token={TOKET}&type=') if '?type=' in u else f'{u}?token={TOKET}'
+
+    if 'github.com' in url:
+        url = url.replace('/blob/', '/raw/')
+        return url, None, None
 
     elif 'huggingface.co' in url:
         url = url.split('?')[0]
         h = {'User-Agent': 'Mozilla/5.0', **({'Authorization': f'Bearer {TOBRUT}'} if TOBRUT else {})}
         ext = ['.safetensors', '.pt', '.pth']
+        j, versionId = None, None
 
         if fn and Path(fn).suffix.lower() in ext:
-            response = requests.get(re.sub(r'/(resolve|blob)/', '/raw/', url), headers=h)
-            t = re.search(r'oid sha256:([a-fA-F0-9]{64})', response.text)
+            res = requests.get(re.sub(r'/(resolve|blob)/', '/raw/', url), headers=h)
+            t = re.search(r'oid sha256:([a-fA-F0-9]{64})', res.text)
             if t:
                 sha256 = t.group(1)
                 api_url = f'https://civitai.com/api/v1/model-versions/by-hash/{sha256}'
@@ -200,48 +213,53 @@ def strip_(url, fn):
                     if not r: j = None
 
         url = url.replace('/blob/', '/resolve/')
+        return url, j, versionId
 
     elif 'civitai.com' in url:
         input_url = url
         url = url.split('?token=')[0] if '?token=' in url else url
 
         if 'civitai.com/api/download/models/' in url:
-            use_input = True
             versionId = url.split('models/')[1].split('/')[0].split('?')[0]
             api_url = f'https://civitai.com/api/v1/model-versions/{versionId}'
+            j = get_json(api_url, civitai_headers())
+
+            if j:
+                v = get_civitai(j, versionId)
+                if v: return f_(url), j, versionId
+
+            return f_(url), None, None
 
         elif 'civitai.com/models/' in url:
-            use_input = False
+            versionId = None
             modelId = url.split('models/')[1].split('/')[0].split('?')[0]
-            versionId = url.split('?modelVersionId=')[1] if '?modelVersionId=' in url else None
+            if '?modelVersionId=' in url:
+                versionId = url.split('?modelVersionId=')[1]
+            api_url = f'https://civitai.com/api/v1/models/{modelId}'
+            j = get_json(api_url, civitai_headers())
 
-            if versionId: api_url = f'https://civitai.com/api/v1/model-versions/{versionId}'
-            else: api_url = f'https://civitai.com/api/v1/models/{modelId}'
+            if not j or civitai_earlyAccess(j, versionId): return None, None, None
 
-        j = get_json(api_url, civitai_headers())
-        if not j: return None, None
+            v = get_civitai(j, versionId)
+            if not v:
+                print(f'Unable to find download URL for\n-> {input_url}\n')
+                return None, None, None
 
-        msg = civitai_earlyAccess(j)
-        if msg: return None, None
+            url = next((f.get('downloadUrl') for f in v.get('files', []) if f.get('downloadUrl')), None)
+            if not url:
+                print(f'Unable to find download URL for\n-> {input_url}\n')
+                return None, None, None
 
-        url = input_url if use_input else (j.get('modelVersions', [{}])[0] if 'modelVersions' in j else j).get('downloadUrl')
-
-        if not url:
-            print(f'Unable to find download URL for\n-> {input_url}\n')
-            return None, None
-
-        url = url.replace('?type=', f'?token={TOKET}&type=') if '?type=' in url else f'{url}?token={TOKET}'
-
-    return url, j
+            return f_(url), j, versionId
 
 def netorare(line):
+    fp, fn = None, None
+
     parts = line.strip().split()
     if not parts: return
 
-    fp, fn = None, None
     cwd = Path.cwd()
     url = parts[0].replace('\\', '')
-
     CHG = any(domain in url for domain in ['civitai.com', 'huggingface.co', 'github.com'])
     DriveGoogle = 'drive.google.com' in url
 
@@ -283,15 +301,16 @@ def netorare(line):
         CD(cwd)
 
 def ariari(url, fp, fn):
-    url, j = strip_(url, fn)
+    url, j, versionId = get_url(url, fn)
     if not url: return
 
-    if 'civitai.com' in url: ua = civitai_headers()['User-Agent']
-    else: ua = 'Mozilla/5.0'
-
     cmd = [
-        'aria2c', f'--header=User-Agent: {ua}', '--allow-overwrite=true',
-        '--console-log-level=error', '--stderr=true', '-c', '-x16', '-s16', '-k1M', '-j5'
+        'aria2c',
+        f"--header=User-Agent: {civitai_headers()['User-Agent'] if 'civitai.com' in url else 'Mozilla/5.0'}",
+        '--allow-overwrite=true',
+        '--console-log-level=error',
+        '--stderr=true',
+        '-c', '-x16', '-s16', '-k1M', '-j5'
     ]
 
     if TOBRUT and 'huggingface.co' in url: cmd.append(f'--header=Authorization: Bearer {TOBRUT}')
@@ -354,8 +373,8 @@ def ariari(url, fp, fn):
                     print(f'  {lines}')
 
         if j:
-            civitai_infotags(j, fp, fn)
-            civitai_preview(j, fp, fn)
+            civitai_infotags(j, fp, fn, versionId)
+            civitai_preview(j, fp, fn, versionId)
 
         p.wait()
 

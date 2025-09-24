@@ -75,12 +75,13 @@ def getPython():
     BIN = str(PY / 'bin')
     PKG = str(PY / f'lib/python{v}/site-packages')
 
-    if webui in ['ComfyUI', 'SwarmUI']:
-        url = 'https://huggingface.co/gutris1/webui/resolve/main/env/KC-ComfyUI-SwarmUI-Python310-Torch260-cu124.tar.lz4'
-    elif hao:
-        url = 'https://huggingface.co/gutris1/webui/resolve/main/env/KC-FC-Python311-Torch260-cu124.tar.lz4'
-    else:
-        url = 'https://huggingface.co/gutris1/webui/resolve/main/env/KC-Python310-Torch260-cu124.tar.lz4'
+    tar = {
+        **dict.fromkeys(['ComfyUI', 'SwarmUI'], 'https://huggingface.co/gutris1/webui/resolve/main/env/KC-ComfyUI-SwarmUI-Python310-Torch260-cu124.tar.lz4'),
+        'Forge-Classic': 'https://huggingface.co/gutris1/webui/resolve/main/env/KC-FC-Python311-Torch260-cu124.tar.lz4',
+        'Forge-Neo': 'https://huggingface.co/gutris1/webui/resolve/main/env/KC-FN-Python311-Torch280-cu126.tar.lz4',
+    }
+
+    url = tar.get(webui, 'https://huggingface.co/gutris1/webui/resolve/main/env/KC-Python310-Torch260-cu124.tar.lz4')
 
     fn = Path(url).name
 
@@ -263,9 +264,7 @@ def sym_link(U, M):
 def webui_req(U, W, M):
     CD(W)
 
-    if U == 'Forge-Neo':
-        pull(f'https://github.com/gutris1/segsmaker forge-classic {W}')
-    elif U != 'SwarmUI':
+    if U != 'SwarmUI':
         pull(f'https://github.com/gutris1/segsmaker {U.lower()} {W}')
     else:
         M.mkdir(parents=True, exist_ok=True)
@@ -312,7 +311,7 @@ def webui_req(U, W, M):
             f'https://github.com/gutris1/segsmaker/raw/main/config/user.css {W} user.css'
         ]: download(ass)
 
-        if U != 'Forge': download(f'https://github.com/gutris1/segsmaker/raw/main/config/config.json {W} config.json')
+        if U not in ['Forge', 'Forge-Neo']: download(f'https://github.com/gutris1/segsmaker/raw/main/config/config.json {W} config.json')
 
 def webui_extension(U, W, M):
     EXT = W / 'custom_nodes' if U == 'ComfyUI' else W / 'extensions'
