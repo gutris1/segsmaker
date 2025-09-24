@@ -29,8 +29,7 @@
   padding: 5px;
 }
 
-.a1111, .forge, .reforge, .forge-classic,
-.comfyui, .swarmui, .facefusion, .sdtrainer,
+.segs-setup-buttons,
 .button-15, .button-xl, .button-back {
   z-index: 99;
   background-color: transparent;
@@ -45,20 +44,18 @@
   overflow: hidden;
 }
 
-.a1111, .forge, .reforge, .forge-classic,
-.comfyui, .swarmui, .facefusion, .sdtrainer {
+.segs-setup-buttons {
   height: 250px;
+}
+
+.segs-setup-buttons {
+  width: 69%;
+  filter: brightness(40%);
+  transition: 0.5s ease;
 }
 
 .button-15, .button-xl, .button-back {
   height: 400px;
-}
-
-.a1111, .forge, .reforge, .forge-classic,
-.comfyui, .swarmui, .facefusion, .sdtrainer {
-  width: 69%;
-  filter: brightness(40%);
-  transition: 0.5s ease;
 }
 
 .button-15, .button-xl {
@@ -89,8 +86,7 @@
   outline: none;
 }
 
-.a1111:hover, .forge:hover, .reforge:hover, .forge-classic:hover,
-.comfyui:hover, .swarmui:hover, .facefusion:hover, .sdtrainer:hover,
+.segs-setup-buttons:hover,
 .button-15:hover, .button-xl:hover {
   z-index: 100;
   width: 90%;
@@ -107,8 +103,7 @@
   }
 }
 
-.a1111::after, .forge::after, .reforge::after, .forge-classic::after,
-.comfyui::after, .swarmui::after, .facefusion::after, .sdtrainer::after,
+.segs-setup-buttons::after,
 .button-15::after, .button-xl::after {
   font-family: 'Times New Roman', serif;
   text-align: center;

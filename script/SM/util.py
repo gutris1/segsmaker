@@ -515,7 +515,7 @@ def zrok_register(line):
         display(HTML(f'<style>{Path(css).read_text()}</style>'))
 
     def register(b):
-        import pexpect
+        import pexpect # type: ignore
 
         zrok_widget.close()
         email = email_input.value

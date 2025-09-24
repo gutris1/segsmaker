@@ -19,11 +19,12 @@ REPO = {
     'Forge': 'https://github.com/lllyasviel/stable-diffusion-webui-forge Forge',
     'ReForge': '-b main-old https://github.com/Panchovix/stable-diffusion-webui-reForge ReForge',
     'Forge-Classic': 'https://github.com/Haoming02/sd-webui-forge-classic Forge-Classic',
+    'Forge-Neo': '-b neo https://github.com/Haoming02/sd-webui-forge-classic Forge-Neo',
     'ComfyUI': 'https://github.com/comfyanonymous/ComfyUI',
     'SwarmUI': 'https://github.com/mcmonkeyprojects/SwarmUI'
 }
 
-WEBUI_LIST = ['A1111', 'Forge', 'ReForge', 'Forge-Classic', 'ComfyUI', 'SwarmUI']
+WEBUI_LIST = ['A1111', 'Forge', 'ReForge', 'Forge-Classic', 'Forge-Neo', 'ComfyUI', 'SwarmUI']
 
 def getENV():
     env = {
@@ -37,7 +38,7 @@ def getENV():
 
 def getArgs():
     parser = argparse.ArgumentParser(description='WebUI Installer Script for Kaggle and Google Colab')
-    parser.add_argument('--webui', required=True, help='available webui: A1111, Forge, ReForge, Forge-Classic, ComfyUI, SwarmUI')
+    parser.add_argument('--webui', required=True, help='available webui: A1111, Forge, ReForge, Forge-Classic, Forge-Neo, ComfyUI, SwarmUI')
     parser.add_argument('--civitai_key', required=True, help='your CivitAI API key')
     parser.add_argument('--hf_read_token', default=None, help='your Huggingface READ Token (optional)')
 
@@ -69,21 +70,23 @@ def getArgs():
     return selected_ui, arg2, arg3
 
 def getPython():
-    v = '3.11' if webui == 'Forge-Classic' else '3.10'
+    hao = webui in ['Forge-Classic', 'Forge-Neo']
+    v = '3.11' if hao else '3.10'
     BIN = str(PY / 'bin')
     PKG = str(PY / f'lib/python{v}/site-packages')
 
-    if webui in ['ComfyUI', 'SwarmUI']:
-        url = 'https://huggingface.co/gutris1/webui/resolve/main/env/KC-ComfyUI-SwarmUI-Python310-Torch260-cu124.tar.lz4'
-    elif webui == 'Forge-Classic':
-        url = 'https://huggingface.co/gutris1/webui/resolve/main/env/KC-FC-Python311-Torch260-cu124.tar.lz4'
-    else:
-        url = 'https://huggingface.co/gutris1/webui/resolve/main/env/KC-Python310-Torch260-cu124.tar.lz4'
+    tar = {
+        **dict.fromkeys(['ComfyUI', 'SwarmUI'], 'https://huggingface.co/gutris1/webui/resolve/main/env/KC-ComfyUI-SwarmUI-Python310-Torch260-cu124.tar.lz4'),
+        'Forge-Classic': 'https://huggingface.co/gutris1/webui/resolve/main/env/KC-FC-Python311-Torch260-cu124.tar.lz4',
+        'Forge-Neo': 'https://huggingface.co/gutris1/webui/resolve/main/env/KC-FN-Python311-Torch280-cu126.tar.lz4',
+    }
+
+    url = tar.get(webui, 'https://huggingface.co/gutris1/webui/resolve/main/env/KC-Python310-Torch260-cu124.tar.lz4')
 
     fn = Path(url).name
 
     CD(Path(ENVBASE).parent)
-    print(f"\n{ARROW} installing Python Portable {'3.11.13' if webui == 'Forge-Classic' else '3.10.15'}")
+    print(f"\n{ARROW} installing Python Portable {'3.11.13' if hao else '3.10.15'}")
 
     SyS('sudo apt-get -qq -y install aria2 pv lz4 > /dev/null 2>&1')
 
@@ -95,14 +98,17 @@ def getPython():
     Path(f'/{fn}').unlink()
 
     sys.path.insert(0, PKG)
-    if BIN not in iRON['PATH']: iRON['PATH'] = BIN + ':' + iRON['PATH']
-    if PKG not in iRON['PYTHONPATH']: iRON['PYTHONPATH'] = PKG + ':' + iRON['PYTHONPATH']
+    if BIN not in iRON['PATH']:
+        iRON['PATH'] = BIN + ':' + iRON['PATH']
+    if PKG not in iRON['PYTHONPATH']:
+        iRON['PYTHONPATH'] = PKG + ':' + iRON['PYTHONPATH']
 
     if ENVNAME == 'Kaggle':
         for cmd in [
             'pip install ipywidgets jupyterlab_widgets --upgrade',
             'rm -f /usr/lib/python3.10/sitecustomize.py'
-        ]: SyS(f'{cmd} > /dev/null 2>&1')
+        ]:
+            SyS(f'{cmd} > /dev/null 2>&1')
 
 def marking(p, n, u):
     t = p / n
@@ -205,6 +211,17 @@ def sym_link(U, M):
             ]
         },
 
+        'Forge-Neo': {
+            'sym': [
+                f"rm -rf {M / 'Stable-diffusion/tmp_ckpt'} {M / 'Lora/tmp_lora'} {M / 'ControlNet'}"
+            ],
+            'links': [
+                (TMP / 'ckpt', M / 'Stable-diffusion/tmp_ckpt'),
+                (TMP / 'lora', M / 'Lora/tmp_lora'),
+                (TMP / 'controlnet', M / 'ControlNet')
+            ]
+        },
+
         'ComfyUI': {
             'sym': [
                 f"rm -rf {M / 'checkpoints/tmp_ckpt'} {M / 'loras/tmp_lora'} {M / 'controlnet'}",
@@ -285,7 +302,7 @@ def webui_req(U, W, M):
     for item in line: download(item)
 
     if U not in ['SwarmUI', 'ComfyUI']:
-        e = 'jpg' if U == 'Forge-Classic' else 'png'
+        e = 'jpg' if U in ['Forge-Classic', 'Forge-Neo'] else 'png'
         SyS(f'rm -f {W}/html/card-no-preview.{e}')
 
         for ass in [
@@ -294,7 +311,7 @@ def webui_req(U, W, M):
             f'https://github.com/gutris1/segsmaker/raw/main/config/user.css {W} user.css'
         ]: download(ass)
 
-        if U != 'Forge': download(f'https://github.com/gutris1/segsmaker/raw/main/config/config.json {W} config.json')
+        if U not in ['Forge', 'Forge-Neo']: download(f'https://github.com/gutris1/segsmaker/raw/main/config/config.json {W} config.json')
 
 def webui_extension(U, W, M):
     EXT = W / 'custom_nodes' if U == 'ComfyUI' else W / 'extensions'
@@ -317,7 +334,7 @@ def webui_extension(U, W, M):
 
 def webui_installation(U, W):
     M = W / 'Models' if U == 'SwarmUI' else W / 'models'
-    E = M / 'Embeddings' if U == 'SwarmUI' else (M / 'embeddings' if U in ['Forge-Classic', 'ComfyUI'] else W / 'embeddings')
+    E = M / 'Embeddings' if U == 'SwarmUI' else (M / 'embeddings' if U in ['Forge-Classic', 'Forge-Neo', 'ComfyUI'] else W / 'embeddings')
     V = M / 'vae' if U == 'ComfyUI' else M / 'VAE'
 
     webui_req(U, W, M)
@@ -349,6 +366,16 @@ def webui_selection(ui):
             CD(HOME)
 
 def webui_installer():
+    branchs = {
+        'A1111': 'master',
+        'ComfyUI': 'master',
+        'SwarmUI': 'master',
+        'Forge': 'main',
+        'ReForge': 'main',
+        'Forge-Classic': 'classic',
+        'Forge-Neo': 'neo',
+    }
+
     CD(HOME)
     ui = (json.load(MARKED.open('r')) if MARKED.exists() else {}).get('ui')
     WEBUI = HOME / ui if ui else None
@@ -359,12 +386,7 @@ def webui_installer():
             CD(WEBUI)
             with output:
                 output.clear_output(wait=True)
-                if ui in ['A1111', 'ComfyUI', 'SwarmUI']:
-                    SyS('git pull origin master')
-                elif ui in ['Forge', 'ReForge']:
-                    SyS('git pull origin main')
-                elif ui == 'Forge-Classic':
-                    SyS('git pull origin classic')
+                if ui in branchs: SyS(f'git pull origin {branchs[ui]}')
                 with loading: loading.clear_output()
     else:
         try:

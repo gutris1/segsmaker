@@ -2,14 +2,13 @@
     "gradio_theme": "NoCrypt/miku",
     "samples_filename_pattern": "[datetime<%M%S>]",
     "ui_tab_order": [
-        "Txt2img",
-        "Img2img",
+        "txt2img",
+        "img2img",
         "Extras",
         "Image Info",
         "HUB"
     ],
     "hidden_tabs": [
-        "Spaces",
         "PNG Info",
         "Checkpoint Merger"
     ]

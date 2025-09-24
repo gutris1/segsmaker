@@ -25,7 +25,8 @@ MRK = Path(ENVHOME) / 'gutris1/marking.py'
 JS = Path(ENVHOME) / 'gutris1/marking.json'
 
 ui = json.loads(JS.read_text()).get('ui', '')
-v = '3.11' if ui == 'Forge-Classic' else '3.10'
+hao = ui in ['Forge-Classic', 'Forge-Neo']
+v = '3.11' if hao else '3.10'
 PKG = str(PY / f'lib/python{v}/site-packages')
 
 sys.path.append('/root/.ipython/profile_default/startup')
