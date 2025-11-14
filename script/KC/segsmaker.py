@@ -106,7 +106,7 @@ def webui_launch(launch_args, skip_comfyui_check, ngrok_token=None, zrok_token=N
 
     if ngrok_token:
         NGROK_auth(ngrok_token)
-        Add(ngrok, 'NGROK', r'https://[\w-]+\.ngrok-free\.app')
+        Add(ngrok, 'NGROK', r'https://[\w-]+\.ngrok-free\.[\w.-]+')
 
     if zrok_token:
         ZROK_enable(zrok_token)
