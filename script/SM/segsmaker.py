@@ -252,7 +252,7 @@ def launching(ui, skip_comfyui_check=False):
         'NGROK': {
             'command': f'ngrok http http://localhost:{port} --log stdout',
             'name': 'NGROK',
-            'pattern': r'https://[\w-]+\.ngrok-free\.app'
+            'pattern': r'https://[\w-]+\.ngrok-free\.[\w.-]+'
         },
         'ZROK': {
             'command': f'zrok share public localhost:{port} --headless',
