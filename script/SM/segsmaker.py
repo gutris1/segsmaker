@@ -257,7 +257,7 @@ def launching(ui, skip_comfyui_check=False):
         'ZROK': {
             'command': f'zrok share public localhost:{port} --headless',
             'name': 'ZROK',
-            'pattern': r'https://[\w-]+\.share\.zrok\.io'
+            'pattern': r'https://[\w-]+\.share\.zrok\.[\w.-]+'
         }
     }
 

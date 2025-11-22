@@ -110,7 +110,7 @@ def webui_launch(launch_args, skip_comfyui_check, ngrok_token=None, zrok_token=N
 
     if zrok_token:
         ZROK_enable(zrok_token)
-        Add(zrok, 'ZROK', r'https://[\w-]+\.share\.zrok\.io')
+        Add(zrok, 'ZROK', r'https://[\w-]+\.share\.zrok\.[\w.-]+')
 
     with Alice_Synthesis_Thirty:
         SyS(cmd)
