@@ -15,7 +15,7 @@ CD = os.chdir
 iRON = os.environ
 
 REPO = {
-    'A1111': 'https://github.com/AUTOMATIC1111/stable-diffusion-webui A1111',
+    'A1111': 'https://github.com/gutris1/A1111',
     'Forge': 'https://github.com/lllyasviel/stable-diffusion-webui-forge Forge',
     'ReForge': '-b main-old https://github.com/Panchovix/stable-diffusion-webui-reForge ReForge',
     'Forge-Classic': 'https://github.com/Haoming02/sd-webui-forge-classic Forge-Classic',
