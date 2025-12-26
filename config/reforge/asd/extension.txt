@@ -10,7 +10,7 @@ https://github.com/gutris1/sd-hub
 https://github.com/gutris1/sd-image-info
 https://github.com/gutris1/sd-image-viewer
 https://github.com/gutris1/sd-image-scripts
-https://github.com/gutris1/Scroll-Bar
+https://github.com/gutris1/sd-webui-misc
 https://github.com/gutris1/timer_timer
 https://github.com/gutris1/sd-simple-dimension-preset
 https://github.com/gutris1/sd-civitai-browser-plus
