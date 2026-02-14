@@ -1,4 +1,5 @@
 {
+    "VERSION_UID": "PY313",
     "gradio_theme": "NoCrypt/miku",
     "samples_filename_pattern": "[datetime<%M%S>]",
     "ui_tab_order": [
