@@ -134,7 +134,7 @@ def install_venv(ui, url, need_space, vnv, fn):
             f'python3 -m venv {vnv}',
             f'{pip} install -U --force-reinstall pip',
             f'{pip} install ipykernel matplotlib pyyaml',
-            f'{pip} uninstall -y ngrok pyngrok'
+            f'{pip} install -q comfy-aimdo'
         ]: SyS(f'{cmd} > /dev/null 2>&1')
 
 print('checking env...')
