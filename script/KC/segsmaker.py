@@ -59,27 +59,25 @@ def ZROK_enable(token):
         print()
 
 def webui_launch(launch_args, skip_comfyui_check, ngrok_token=None, zrok_token=None):
-    hao = {'Forge-Classic', 'Forge-Neo'}
     ui = json.load((Path(HOMEPATH) / 'gutris1/marking.json').open('r')).get('ui')
 
-    if ui in ['A1111', 'Forge', 'ReForge', *hao]:
+    if ui in ['A1111', 'Forge', 'ReForge', 'Forge-Classic', 'Forge-Neo']:
         port = 7860
         SyS(f"echo -n {int(time.time()) + 3600} > {CWD / 'asd/pinggytimer.txt'}")
         launch_args += ' --enable-insecure-extension-access --disable-console-progressbars --theme dark'
 
         if '--share' in launch_args: launch_args = launch_args.replace('--share', '')
         if ENVNAME == 'Kaggle': launch_args += f' --encrypt-pass={PW}'
-        iRON.setdefault('IIB_ACCESS_CONTROL', 'disable')
 
         if ui == 'Forge' and not (CWD / 'FT.txt').exists():
             SyS('pip uninstall -qy transformers')
             (CWD / 'FT.txt').write_text('blyat')
 
-        if ui in hao:
-            iRON.setdefault('IIB_SKIP_OPTIONAL_DEPS', '1')
+        if ui == 'Forge-Neo':
+            iRON['MPLBACKEND'] = 'agg'
 
-            if ui == 'Forge-Neo':
-                os.environ['MPLBACKEND'] = 'agg'
+        iRON.setdefault('IIB_ACCESS_CONTROL', 'disable')
+        iRON.setdefault('IIB_SKIP_OPTIONAL_DEPS', '1')
 
         cmd = f'python3 launch.py {launch_args}'
 
