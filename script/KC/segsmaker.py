@@ -59,9 +59,10 @@ def ZROK_enable(token):
         print()
 
 def webui_launch(launch_args, skip_comfyui_check, ngrok_token=None, zrok_token=None):
+    hao = {'Forge-Classic', 'Forge-Neo'}
     ui = json.load((Path(HOMEPATH) / 'gutris1/marking.json').open('r')).get('ui')
 
-    if ui in ['A1111', 'Forge', 'ReForge', 'Forge-Classic', 'Forge-Neo']:
+    if ui in ['A1111', 'Forge', 'ReForge', *hao]:
         port = 7860
         SyS(f"echo -n {int(time.time()) + 3600} > {CWD / 'asd/pinggytimer.txt'}")
         launch_args += ' --enable-insecure-extension-access --disable-console-progressbars --theme dark'
@@ -74,8 +75,11 @@ def webui_launch(launch_args, skip_comfyui_check, ngrok_token=None, zrok_token=N
             SyS('pip uninstall -qy transformers')
             (CWD / 'FT.txt').write_text('blyat')
 
-        if ui == 'Forge-Neo':
-            os.environ['MPLBACKEND'] = 'agg'
+        if ui in hao:
+            iRON.setdefault('IIB_SKIP_OPTIONAL_DEPS', '1')
+
+            if ui == 'Forge-Neo':
+                os.environ['MPLBACKEND'] = 'agg'
 
         cmd = f'python3 launch.py {launch_args}'
 
