@@ -68,11 +68,16 @@ def webui_launch(launch_args, skip_comfyui_check, ngrok_token=None, zrok_token=N
 
         if '--share' in launch_args: launch_args = launch_args.replace('--share', '')
         if ENVNAME == 'Kaggle': launch_args += f' --encrypt-pass={PW}'
-        iRON.setdefault('IIB_ACCESS_CONTROL', 'disable')
 
         if ui == 'Forge' and not (CWD / 'FT.txt').exists():
             SyS('pip uninstall -qy transformers')
             (CWD / 'FT.txt').write_text('blyat')
+
+        if ui == 'Forge-Neo':
+            iRON['MPLBACKEND'] = 'agg'
+
+        iRON.setdefault('IIB_ACCESS_CONTROL', 'disable')
+        iRON.setdefault('IIB_SKIP_OPTIONAL_DEPS', '1')
 
         cmd = f'python3 launch.py {launch_args}'
 

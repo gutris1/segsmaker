@@ -70,27 +70,43 @@ def getArgs():
     return selected_ui, arg2, arg3
 
 def getPython():
-    hao = webui in ['Forge-Classic', 'Forge-Neo']
-    v = '3.11' if hao else '3.10'
-    BIN = str(PY / 'bin')
-    PKG = str(PY / f'lib/python{v}/site-packages')
-
-    tar = {
-        **dict.fromkeys(['ComfyUI', 'SwarmUI'], 'https://huggingface.co/gutris1/webui/resolve/main/env/KC-ComfyUI-SwarmUI-Python310-Torch260-cu124.tar.lz4'),
-        'Forge-Classic': 'https://huggingface.co/gutris1/webui/resolve/main/env/KC-FC-Python311-Torch260-cu124.tar.lz4',
-        'Forge-Neo': 'https://huggingface.co/gutris1/webui/resolve/main/env/KC-FN-Python311-Torch280-cu126.tar.lz4',
+    cs = {
+        'v': '3.10.15',
+        'url': 'https://huggingface.co/gutris1/webui/resolve/main/env/KC-ComfyUI-SwarmUI-Python310-Torch260-cu124.tar.lz4'
     }
 
-    url = tar.get(webui, 'https://huggingface.co/gutris1/webui/resolve/main/env/KC-Python310-Torch260-cu124.tar.lz4')
+    c = {
+        'default': {
+            'v': '3.10.15',
+            'url': 'https://huggingface.co/gutris1/webui/resolve/main/env/KC-Python310-Torch260-cu124.tar.lz4'
+        },
 
-    fn = Path(url).name
+        'ComfyUI': cs,
+        'SwarmUI': cs,
+
+        'Forge-Classic': {
+            'v': '3.11.13',
+            'url': 'https://huggingface.co/gutris1/webui/resolve/main/env/KC-FC-Python311-Torch260-cu124.tar.lz4'
+        },
+        'Forge-Neo': {
+            'v': '3.13.12',
+            'url': 'https://huggingface.co/gutris1/webui/resolve/main/env/KC-FN-Python3-13-12-Torch2100-cu130.tar.lz4'
+        }
+    }
+
+    cfg = c.get(webui, c['default'])
+    v = '.'.join(cfg['v'].split('.')[:2])
+
+    BIN = str(PY / 'bin')
+    PKG = str(PY / f'lib/python{v}/site-packages')
+    fn = Path(cfg['url']).name
 
     CD(Path(ENVBASE).parent)
-    print(f"\n{ARROW} installing Python Portable {'3.11.13' if hao else '3.10.15'}")
+    print(f"\n{ARROW} installing Python Portable {cfg['v']}")
 
     SyS('sudo apt-get -qq -y install aria2 pv lz4 > /dev/null 2>&1')
 
-    aria = f'aria2c --console-log-level=error --stderr=true -c -x16 -s16 -k1M -j5 {url} -o {fn}'
+    aria = f'aria2c --console-log-level=error --stderr=true -c -x16 -s16 -k1M -j5 {cfg["url"]} -o {fn}'
     p = subprocess.Popen(shlex.split(aria), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     p.wait()
 
