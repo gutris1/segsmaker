@@ -1,5 +1,4 @@
 https://github.com/Bing-su/adetailer 4-adetailer
-https://github.com/zanllp/sd-webui-infinite-image-browsing
 https://github.com/DominikDoom/a1111-sd-webui-tagcomplete
 https://github.com/Coyote-A/ultimate-upscale-for-automatic1111
 https://github.com/IDEA-Research/DWPose
