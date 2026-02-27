@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from IPython.core.magic import register_line_magic
 from IPython.display import display, HTML
 from urllib.parse import urlparse
@@ -30,6 +31,8 @@ iRON = os.environ
 
 KAGGLE = 'KAGGLE_DATA_PROXY_TOKEN' in iRON
 
+# Atenção: TOKET normalmente é atualizado pelo instalador (install.py).
+# Se preferir, coloque aqui sua API key ou garanta que o instalador já a tenha injetado.
 TOKET = ''
 TOBRUT = ''
 
@@ -188,12 +191,33 @@ def get_civitai(j, versionId=None):
     return v
 
 def get_url(url, fn):
-    def f_(u):
-        return u.replace('?type=', f'?token={TOKET}&type=') if '?type=' in u else f'{u}?token={TOKET}'
+    """
+    Resolve a user-provided URL into a direct download URL when possible.
+    Important fix: do NOT append ?token=... to CivitAI/Backblaze signed URLs (they are sensitive to modification).
+    Only append TOKET for non-Civitai hosts when TOKET is set and needed.
+    """
+    def maybe_add_token(u):
+        # Add token only for non-Civitai hosts and when TOKET is set.
+        try:
+            parsed = urlparse(u)
+            host = parsed.netloc.lower()
+        except:
+            return u
+
+        # If host is Civitai or Backblaze storage, do NOT modify the signed URL.
+        if 'civitai.com' in host or 'b2.civitai.com' in host or host.startswith('b2.'):
+            return u
+
+        if not TOKET:
+            return u
+
+        if '?type=' in u:
+            return u.replace('?type=', f'?token={TOKET}&type=')
+        return f'{u}?token={TOKET}'
 
     if 'github.com' in url:
         url = url.replace('/blob/', '/raw/')
-        return url, None, None
+        return maybe_add_token(url), None, None
 
     elif 'huggingface.co' in url:
         url = url.split('?')[0]
@@ -202,23 +226,29 @@ def get_url(url, fn):
         j, versionId = None, None
 
         if fn and Path(fn).suffix.lower() in ext:
-            res = requests.get(re.sub(r'/(resolve|blob)/', '/raw/', url), headers=h)
-            t = re.search(r'oid sha256:([a-fA-F0-9]{64})', res.text)
-            if t:
-                sha256 = t.group(1)
-                api_url = f'https://civitai.com/api/v1/model-versions/by-hash/{sha256}'
-                j = get_json(api_url, civitai_headers())
-                if j:
-                    r = next((f for f in j.get('files', []) if f.get('hashes', {}).get('SHA256', '').lower() == sha256.lower()), None)
-                    if not r: j = None
+            try:
+                res = requests.get(re.sub(r'/(resolve|blob)/', '/raw/', url), headers=h)
+                t = re.search(r'oid sha256:([a-fA-F0-9]{64})', res.text)
+                if t:
+                    sha256 = t.group(1)
+                    api_url = f'https://civitai.com/api/v1/model-versions/by-hash/{sha256}'
+                    j = get_json(api_url, civitai_headers())
+                    if j:
+                        r = next((f for f in j.get('files', []) if f.get('hashes', {}).get('SHA256', '').lower() == sha256.lower()), None)
+                        if not r:
+                            j = None
+            except Exception:
+                j = None
 
         url = url.replace('/blob/', '/resolve/')
-        return url, j, versionId
+        return maybe_add_token(url), j, versionId
 
     elif 'civitai.com' in url:
         input_url = url
         url = url.split('?token=')[0] if '?token=' in url else url
 
+        # If user passed an API-style download link that points to api/download/models/<versionId>,
+        # return that URL unchanged — do NOT append TOKET or mutate signed URLs.
         if 'civitai.com/api/download/models/' in url:
             versionId = url.split('models/')[1].split('/')[0].split('?')[0]
             api_url = f'https://civitai.com/api/v1/model-versions/{versionId}'
@@ -226,10 +256,12 @@ def get_url(url, fn):
 
             if j:
                 v = get_civitai(j, versionId)
-                if v: return f_(url), j, versionId
+                if v:
+                    return url, j, versionId
 
-            return f_(url), None, None
+            return url, None, None
 
+        # Standard model page URL: resolve via API to find the model file downloadUrl (already signed).
         elif 'civitai.com/models/' in url:
             versionId = None
             modelId = url.split('models/')[1].split('/')[0].split('?')[0]
@@ -238,19 +270,25 @@ def get_url(url, fn):
             api_url = f'https://civitai.com/api/v1/models/{modelId}'
             j = get_json(api_url, civitai_headers())
 
-            if not j or civitai_earlyAccess(j, versionId): return None, None, None
+            if not j or civitai_earlyAccess(j, versionId):
+                return None, None, None
 
             v = get_civitai(j, versionId)
             if not v:
                 print(f'Unable to find download URL for\n-> {input_url}\n')
                 return None, None, None
 
+            # IMPORTANT: downloadUrl provided by the API is typically a signed URL (Backblaze).
+            # Do NOT modify it (no token appended), return it as-is so the signature remains valid.
             url = next((f.get('downloadUrl') for f in v.get('files', []) if f.get('downloadUrl')), None)
             if not url:
                 print(f'Unable to find download URL for\n-> {input_url}\n')
                 return None, None, None
 
-            return f_(url), j, versionId
+            return url, j, versionId
+
+    # Fallback: return the maybe-tokenized URL for non-civitai providers.
+    return maybe_add_token(url), None, None
 
 def netorare(line):
     fp, fn = None, None
@@ -301,9 +339,38 @@ def netorare(line):
         CD(cwd)
 
 def ariari(url, fp, fn):
+    # Preserve original input to detect protected API download endpoint
+    orig_url = url
+    auth_needed = ('civitai.com/api/download/models/' in orig_url or 'civitai.com/api/download/' in orig_url) and bool(TOKET)
+
+    # Resolve user-provided URL into a direct URL (may already be a signed b2 URL).
     url, j, versionId = get_url(url, fn)
     if not url: return
 
+    # If we need authentication for the API endpoint, attempt a preflight request (authorized)
+    # to resolve the final signed URL before passing to aria2. This avoids aria2 fetching
+    # the API endpoint and being redirected to a possibly short-lived signed URL that fails.
+    preflight_done = False
+    if auth_needed:
+        try:
+            headers_pf = {'User-Agent': civitai_headers()['User-Agent'], 'Authorization': f'Bearer {TOKET}'}
+            print("  Resolving authorized download URL (preflight)...")
+            # Use GET with allow_redirects to follow any redirects and get final URL. Use stream=True so we don't download the full body.
+            resp = requests.get(orig_url, headers=headers_pf, allow_redirects=True, stream=True, timeout=30)
+            final_url = resp.url
+            resp.close()
+            if final_url and final_url != orig_url:
+                url = final_url
+                preflight_done = True
+                print(f'  Resolved final URL: {final_url}')
+            else:
+                # If server responded with same URL (no redirect), still mark preflight_done True so we try aria2 with auth header below.
+                preflight_done = True
+                print('  Preflight returned no redirect; will attempt aria2 with Authorization header as fallback.')
+        except Exception as e:
+            print(f'  Preflight error: {e}; will attempt aria2 (with Authorization header) as fallback.')
+
+    # Build aria2 command. If we resolved a final signed URL via preflight, do NOT send Authorization header to aria2.
     cmd = [
         'aria2c',
         f"--header=User-Agent: {civitai_headers()['User-Agent'] if 'civitai.com' in url else 'Mozilla/5.0'}",
@@ -313,7 +380,12 @@ def ariari(url, fp, fn):
         '-c', '-x16', '-s16', '-k1M', '-j5'
     ]
 
-    if TOBRUT and 'huggingface.co' in url: cmd.append(f'--header=Authorization: Bearer {TOBRUT}')
+    # If preflight failed and auth_needed is True, pass Authorization header to aria2 so the API endpoint can authenticate and redirect.
+    if auth_needed and not preflight_done:
+        cmd.append(f"--header=Authorization: Bearer {TOKET}")
+
+    if TOBRUT and 'huggingface.co' in url:
+        cmd.append(f'--header=Authorization: Bearer {TOBRUT}')
 
     if fn: cmd += ['-o', fn]
     cmd.append(url)
