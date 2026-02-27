@@ -31,8 +31,6 @@ iRON = os.environ
 
 KAGGLE = 'KAGGLE_DATA_PROXY_TOKEN' in iRON
 
-# Atenção: TOKET normalmente é atualizado pelo instalador (install.py).
-# Se preferir, coloque aqui sua API key ou garanta que o instalador já a tenha injetado.
 TOKET = ''
 TOBRUT = ''
 
@@ -84,6 +82,54 @@ def download(i):
     if url.endswith('.txt') and path.is_file():
         for l in path.read_text(encoding='utf-8').splitlines(): netorare(l)
     else: netorare(i)
+
+def netorare(line):
+    fp, fn = None, None
+
+    parts = line.strip().split()
+    if not parts: return
+
+    cwd = Path.cwd()
+    url = parts[0].replace('\\', '')
+    CHG = any(domain in url for domain in ['civitai.com', 'huggingface.co', 'github.com'])
+    DriveGoogle = 'drive.google.com' in url
+
+    path = lambda s: '/' in s or '~/' in s
+
+    try:
+        if len(parts) >= 3:
+            arg1, arg2 = parts[1], parts[2]
+            path_arg, file_arg = (arg2, arg1) if path(arg2) and not path(arg1) else \
+                                 (arg1, arg2) if path(arg1) and not path(arg2) else \
+                                 (arg2, arg1) if Path(arg2).suffix == '' and Path(arg1).suffix != '' else \
+                                 (arg1, arg2)
+
+            fp, fn = Path(path_arg).expanduser(), file_arg
+            fp.mkdir(parents=True, exist_ok=True)
+            CD(fp)
+
+        elif len(parts) == 2:
+            arg = parts[1]
+            if path(arg):
+                fp = Path(arg).expanduser()
+                fp.mkdir(parents=True, exist_ok=True)
+                CD(fp)
+                fn = get_fn(url) if CHG else Path(urlparse(url).path).name
+            else:
+                fn = arg
+                fp = cwd
+        else:
+            fn = get_fn(url) if CHG else Path(urlparse(url).path).name
+            fp = cwd
+
+        if CHG: ariari(url, fp, fn)
+        elif DriveGoogle: gdrown(url, fp, fn)
+        else:
+            path_only = len(parts) == 2 and fp is not None
+            cmd = f"curl -#{'OJL' if len(parts) == 1 or path_only else 'JL'} '{url}'" + (f" -o '{fn}'" if fn is not None and not path_only else "")
+            curlly(cmd, fn)
+    finally:
+        CD(cwd)
 
 def resizer(b, size=512):
     from PIL import Image
@@ -290,104 +336,39 @@ def get_url(url, fn):
     # Fallback: return the maybe-tokenized URL for non-civitai providers.
     return maybe_add_token(url), None, None
 
-def netorare(line):
-    fp, fn = None, None
-
-    parts = line.strip().split()
-    if not parts: return
-
-    cwd = Path.cwd()
-    url = parts[0].replace('\\', '')
-    CHG = any(domain in url for domain in ['civitai.com', 'huggingface.co', 'github.com'])
-    DriveGoogle = 'drive.google.com' in url
-
-    path = lambda s: '/' in s or '~/' in s
-
-    try:
-        if len(parts) >= 3:
-            arg1, arg2 = parts[1], parts[2]
-            path_arg, file_arg = (arg2, arg1) if path(arg2) and not path(arg1) else \
-                                 (arg1, arg2) if path(arg1) and not path(arg2) else \
-                                 (arg2, arg1) if Path(arg2).suffix == '' and Path(arg1).suffix != '' else \
-                                 (arg1, arg2)
-
-            fp, fn = Path(path_arg).expanduser(), file_arg
-            fp.mkdir(parents=True, exist_ok=True)
-            CD(fp)
-
-        elif len(parts) == 2:
-            arg = parts[1]
-            if path(arg):
-                fp = Path(arg).expanduser()
-                fp.mkdir(parents=True, exist_ok=True)
-                CD(fp)
-                fn = get_fn(url) if CHG else Path(urlparse(url).path).name
-            else:
-                fn = arg
-                fp = cwd
-        else:
-            fn = get_fn(url) if CHG else Path(urlparse(url).path).name
-            fp = cwd
-
-        if CHG: ariari(url, fp, fn)
-        elif DriveGoogle: gdrown(url, fp, fn)
-        else:
-            path_only = len(parts) == 2 and fp is not None
-            cmd = f"curl -#{'OJL' if len(parts) == 1 or path_only else 'JL'} '{url}'" + (f" -o '{fn}'" if fn is not None and not path_only else "")
-            curlly(cmd, fn)
-    finally:
-        CD(cwd)
-
 def ariari(url, fp, fn):
-    # Preserve original input to detect protected API download endpoint
-    orig_url = url
-    auth_needed = ('civitai.com/api/download/models/' in orig_url or 'civitai.com/api/download/' in orig_url) and bool(TOKET)
-
-    # Resolve user-provided URL into a direct URL (may already be a signed b2 URL).
     url, j, versionId = get_url(url, fn)
     if not url: return
 
-    # If we need authentication for the API endpoint, attempt a preflight request (authorized)
-    # to resolve the final signed URL before passing to aria2. This avoids aria2 fetching
-    # the API endpoint and being redirected to a possibly short-lived signed URL that fails.
-    preflight_done = False
-    if auth_needed:
+    civitai_api = ('civitai.com/api/download/models/' in url and bool(TOKET))
+
+    if civitai_api:
         try:
-            headers_pf = {'User-Agent': civitai_headers()['User-Agent'], 'Authorization': f'Bearer {TOKET}'}
-            print("  Resolving authorized download URL (preflight)...")
-            # Use GET with allow_redirects to follow any redirects and get final URL. Use stream=True so we don't download the full body.
-            resp = requests.get(orig_url, headers=headers_pf, allow_redirects=True, stream=True, timeout=30)
+            headers = {'User-Agent': civitai_headers()['User-Agent'], 'Authorization': f'Bearer {TOKET}'}
+            request_url = url
+            resp = requests.get(request_url, headers=headers, allow_redirects=True, stream=True, timeout=30)
             final_url = resp.url
             resp.close()
-            if final_url and final_url != orig_url:
-                url = final_url
-                preflight_done = True
-                print(f'  Resolved final URL: {final_url}')
-            else:
-                # If server responded with same URL (no redirect), still mark preflight_done True so we try aria2 with auth header below.
-                preflight_done = True
-                print('  Preflight returned no redirect; will attempt aria2 with Authorization header as fallback.')
-        except Exception as e:
-            print(f'  Preflight error: {e}; will attempt aria2 (with Authorization header) as fallback.')
 
-    # Build aria2 command. If we resolved a final signed URL via preflight, do NOT send Authorization header to aria2.
+            if final_url and final_url != request_url: url = final_url
+            else: print("  No redirect detected; aria2 will use Authorization header.")
+
+        except Exception as e:
+            print(f"  Preflight failed: {e}")
+            print("  Falling back to aria2 with Authorization header.")
+
     cmd = [
         'aria2c',
         f"--header=User-Agent: {civitai_headers()['User-Agent'] if 'civitai.com' in url else 'Mozilla/5.0'}",
-        '--allow-overwrite=true',
-        '--console-log-level=error',
-        '--stderr=true',
+        '--allow-overwrite=true', '--console-log-level=error', '--stderr=true',
         '-c', '-x16', '-s16', '-k1M', '-j5'
     ]
 
-    # If preflight failed and auth_needed is True, pass Authorization header to aria2 so the API endpoint can authenticate and redirect.
-    if auth_needed and not preflight_done:
-        cmd.append(f"--header=Authorization: Bearer {TOKET}")
-
-    if TOBRUT and 'huggingface.co' in url:
-        cmd.append(f'--header=Authorization: Bearer {TOBRUT}')
+    if 'civitai.com/api/download/models/' in url and TOKET: cmd.append(f"--header=Authorization: Bearer {TOKET}")
+    if TOBRUT and 'huggingface.co' in url: cmd.append(f'--header=Authorization: Bearer {TOBRUT}')
 
     if fn: cmd += ['-o', fn]
+
     cmd.append(url)
 
     try:
