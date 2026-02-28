@@ -6,6 +6,7 @@ from pathlib import Path
 import subprocess
 import argparse
 import logging
+import shutil
 import shlex
 import json
 import yaml
@@ -82,9 +83,17 @@ def webui_launch(launch_args, skip_comfyui_check, ngrok_token=None, zrok_token=N
         cmd = f'python3 launch.py {launch_args}'
 
     elif ui in ['ComfyUI', 'SwarmUI']:
-        SyS('pip install -q comfy-aimdo')
+        iRON['MPLBACKEND'] = 'agg'
 
         if ui == 'ComfyUI':
+            cfg = Path(HOMEPATH) / 'ComfyUI/custom_nodes/was-node-suite-comfyui/was_suite_config.json'
+            ffmpeg = shutil.which('ffmpeg')
+
+            if cfg.exists() and ffmpeg:
+                c = json.loads(cfg.read_text(encoding='utf-8'))
+                c['ffmpeg_bin_path'] = ffmpeg
+                cfg.write_text(json.dumps(c, indent=2), encoding='utf-8')
+
             port = 8188
             skip_comfyui_check or (SyS('python3 apotek.py'), clear_output(wait=True))
             cmd = f'python3 main.py {launch_args}'

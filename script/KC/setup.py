@@ -71,8 +71,8 @@ def getArgs():
 
 def getPython():
     cs = {
-        'v': '3.10.15',
-        'url': 'https://huggingface.co/gutris1/webui/resolve/main/env/KC-ComfyUI-SwarmUI-Python310-Torch260-cu124.tar.lz4'
+        'v': '3.13.12',
+        'url': 'https://huggingface.co/gutris1/webui/resolve/main/env/KC-ComfyUI-SwarmUI-Python31312-Torch2100-cu130.tar.lz4'
     }
 
     c = {
