@@ -100,7 +100,7 @@ def install_tunnel():
         },
         'ngrok': {
             'bin': HOME / '.ngrok/bin/ngrok',
-            'url': 'https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz'
+            'url': 'https://bin.ngrok.com/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz'
         }
     }
 
