@@ -117,7 +117,7 @@ def webui_launch(launch_args, skip_comfyui_check, ngrok_token=None, zrok_token=N
 
     if not (ngrok_token or zrok_token):
         Add(gradio, 'Gradio', r'https://[\w-]+\.gradio\.live')
-        Add(pinggy, 'Pinggy', r'https://[\w-]+\.a\.free\.pinggy\.link')
+        Add(pinggy, 'Pinggy', r'https://[\w-]+\.run\.pinggy-free\.link')
         Add(cloudflared, 'Cloudflared', r'[\w-]+\.trycloudflare\.com')
 
     if ngrok_token:
