@@ -247,7 +247,7 @@ def launching(ui, skip_comfyui_check=False):
         'Pinggy': {
             'command': f'ssh -o StrictHostKeyChecking=no -p 80 -R0:localhost:{port} a.pinggy.io',
             'name': 'PINGGY',
-            'pattern': r'https://[\w-]+\.a\.free\.pinggy\.link'
+            'pattern': r'https://[\w-]+\.run\.pinggy-free\.link'
         },
         'NGROK': {
             'command': f'ngrok http http://localhost:{port} --log stdout',
