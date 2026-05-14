@@ -1,11 +1,3 @@
-from pathlib import Path
-
-try:
-    from KANDANG import TEMPPATH
-    TMPLORA = Path(TEMPPATH) / 'lora'
-except ImportError:
-    TMPLORA = '/tmp/lora'
-
 controlnet_15_list = {
     'Openpose': [
         'https://huggingface.co/ckpt/ControlNet-v1-1/resolve/main/control_v11p_sd15_openpose_fp16.safetensors openpose.safetensors',
@@ -61,20 +53,5 @@ controlnet_15_list = {
     'IP Adapter Plus Face 1.5': [
         'https://huggingface.co/h94/IP-Adapter/resolve/main/models/ip-adapter-plus-face_sd15.safetensors ip-adapter-plus-face_sd15.safetensors'],
     'IP Adapter Full Face 1.5': [
-        'https://huggingface.co/h94/IP-Adapter/resolve/main/models/ip-adapter-full-face_sd15.safetensors ip-adapter-full-face_sd15.safetensors'],
-
-    'IP Adapter FaceID 1.5': [
-        'https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid_sd15.bin',
-        f'https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid_sd15_lora.safetensors {TMPLORA} \
-        ip-adapter-faceid_sd15_lora.safetensors'],
-    'IP Adapter FaceID Plus 1.5': [
-        'https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-plus_sd15.bin ip-adapter-faceid-plus_sd15.bin',
-        f'https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-plus_sd15_lora.safetensors {TMPLORA} \
-        ip-adapter-faceid-plus_sd15_lora.safetensors'],
-    'IP Adapter FaceID PlusV2 1.5': [
-        'https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-plusv2_sd15.bin ip-adapter-faceid-plusv2_sd15.bin',
-        f'https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-plusv2_sd15_lora.safetensors {TMPLORA} \
-        ip-adapter-faceid-plusv2_sd15_lora.safetensors'],
-    'IP Adapter FaceID Portrait 1.5': [
-        'https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-portrait_sd15.bin']
+        'https://huggingface.co/h94/IP-Adapter/resolve/main/models/ip-adapter-full-face_sd15.safetensors ip-adapter-full-face_sd15.safetensors']
 }
