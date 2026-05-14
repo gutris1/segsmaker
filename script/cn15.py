@@ -1,7 +1,7 @@
 from pathlib import Path
 
 try:
-    from KANDANG import TEMPPATH, HOMEPATH
+    from KANDANG import TEMPPATH
     TMPLORA = Path(TEMPPATH) / 'lora'
 except ImportError:
     TMPLORA = '/tmp/lora'
