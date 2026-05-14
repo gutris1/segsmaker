@@ -64,23 +64,25 @@ cn15_panel = widgets.Box([button_layout_15, checkbox_layout_15], layout=widgets.
 
 cn_main_panel.add_class('cn-panel')
 
-cn15_panel.add_class('cn-15')
-checkbox_layout_15.add_class('checkbox_layout_15')
-checkbox1_15.add_class('checkbox')
-checkbox2_15.add_class('checkbox')
-select_all_button_15.add_class('select-all-button-15')
-unselect_all_button_15.add_class('unselect-all-button-15')
-download_button_15.add_class('download-button-15')
-bottom_box_15.add_class('bottom-box-15')
+for w, c in [
+    (cn15_panel, 'cn-15'),
+    (checkbox_layout_15, 'checkbox_layout_15'),
+    (checkbox1_15, 'checkbox'),
+    (checkbox2_15, 'checkbox'),
+    (select_all_button_15, 'select-all-button-15'),
+    (unselect_all_button_15, 'unselect-all-button-15'),
+    (download_button_15, 'download-button-15'),
+    (bottom_box_15, 'bottom-box-15'),
 
-cnxl_panel.add_class('cn-xl')
-checkbox_layout_xl.add_class('checkbox_layout_xl')
-checkbox1_xl.add_class('checkbox')
-checkbox2_xl.add_class('checkbox')
-select_all_button_xl.add_class('select-all-button-xl')
-unselect_all_button_xl.add_class('unselect-all-button-xl')
-download_button_xl.add_class('download-button-xl')
-bottom_box_xl.add_class('bottom-box-xl')
+    (cnxl_panel, 'cn-xl'),
+    (checkbox_layout_xl, 'checkbox_layout_xl'),
+    (checkbox1_xl, 'checkbox'),
+    (checkbox2_xl, 'checkbox'),
+    (select_all_button_xl, 'select-all-button-xl'),
+    (unselect_all_button_xl, 'unselect-all-button-xl'),
+    (download_button_xl, 'download-button-xl'),
+    (bottom_box_xl, 'bottom-box-xl')
+]: w.add_class(c)
 
 def Controlnet_Buttons(btn):
     cn_main_panel.close()
@@ -129,9 +131,12 @@ load_css()
 cn_main_panel.children = buttons
 display(cn_main_panel, cn15_panel, cnxl_panel, output)
 
-select_all_button_15.on_click(SelectAll)
-unselect_all_button_15.on_click(UnselectAll)
-download_button_15.on_click(Download_Model)
-select_all_button_xl.on_click(SelectAll)
-unselect_all_button_xl.on_click(UnselectAll)
-download_button_xl.on_click(Download_Model)
+for b, f in [
+    (select_all_button_15, SelectAll),
+    (unselect_all_button_15, UnselectAll),
+    (download_button_15, Download_Model),
+
+    (select_all_button_xl, SelectAll),
+    (unselect_all_button_xl, UnselectAll),
+    (download_button_xl, Download_Model)
+]: b.on_click(f)
