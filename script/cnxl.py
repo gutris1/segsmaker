@@ -1,11 +1,3 @@
-from pathlib import Path
-
-try:
-    from KANDANG import TEMPPATH
-    TMPLORA = Path(TEMPPATH) / 'lora'
-except ImportError:
-    TMPLORA = '/tmp/lora'
-
 controlnet_xl_list = {
     'Diffusers XL Canny Mid': [
         'https://huggingface.co/lllyasviel/sd_control_collection/resolve/main/diffusers_xl_canny_mid.safetensors \
@@ -85,15 +77,6 @@ controlnet_xl_list = {
     'NoobAI IP Adapter SDXL': [
         'https://huggingface.co/subby2006/noob-ipa/resolve/main/noobIPAMARK1_mark1.safetensors \
         noobIPAMARK1_mark1.safetensors'],
-
-    'IP Adapter FaceID SDXL': [
-        'https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid_sdxl.bin ip-adapter-faceid_sdxl.bin',
-        f'https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid_sdxl_lora.safetensors {TMPLORA} \
-        ip-adapter-faceid_sdxl_lora.safetensors'],
-    'IP Adapter FaceID Plusv2 SDXL': [
-        'https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-plusv2_sdxl.bin ip-adapter-faceid-plusv2_sdxl.bin',
-        f'https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-plusv2_sdxl_lora.safetensors {TMPLORA} \
-        ip-adapter-faceid-plusv2_sdxl_lora.safetensors'],
 
     'Instant ID': [
         'https://huggingface.co/InstantX/InstantID/resolve/main/ip-adapter.bin ip-adapter_instant_id_sdxl.bin',
