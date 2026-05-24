@@ -3,13 +3,9 @@
 - Forge
 - ReForge
 - Forge Classic
-- Forge Neo (Colab/Kaggle)
+- Forge Neo
 - ComfyUI
 - SwarmUI
-<br>
-
-- SDTrainer (SageMaker Studio Lab)
-- FaceFusion (SageMaker Studio Lab)
 <br>
 
 | Colab | [![Open in Google Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/gutris1/segsmaker/blob/main/notebook/Segsmaker_COLAB.ipynb) |
