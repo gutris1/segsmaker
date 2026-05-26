@@ -98,7 +98,7 @@ def getPython():
 
         'Forge-Neo': {
             'v': '3.13.12',
-            'url': 'https://huggingface.co/gutris1/webui/resolve/main/env/KC-FN-Python3-13-12-Torch2100-cu130.tar.lz4'
+            'url': 'https://huggingface.co/gutris1/webui/resolve/main/env/KC-FN-Python31312-Torch2120-cu130.tar.lz4'
         }
     }
 
