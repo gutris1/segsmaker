@@ -3,7 +3,7 @@
 - Forge
 - ReForge
 - Forge Classic
-- Forge Neo (Colab/Kaggle)
+- Forge Neo
 - ComfyUI
 - SwarmUI
 <br>
