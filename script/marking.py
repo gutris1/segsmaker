@@ -34,7 +34,7 @@ def getWebUIName(path):
     return json.load(open(path, 'r')).get('ui', None)
 
 def setWebUIVAR(ui):
-    default = ('extensions', 'embeddings', 'VAE', 'Stable-diffusion', 'Lora', 'ESRGAN')
+    default = ('extensions', 'embeddings', 'VAE', 'Stable-diffusion', 'Lora', 'ESRGAN', None)
 
     maps = {
         'A1111': default,
@@ -57,7 +57,8 @@ def setWebUIVAR(ui):
 
         'SwarmUI': (
             'Extensions', 'Embeddings', 'VAE',
-            'Stable-Diffusion', 'Lora', 'upscale_models'
+            'Stable-Diffusion', 'Lora', 'upscale_models',
+            None
         ),
 
         'FaceFusion': (None,) * 7,
