@@ -51,7 +51,11 @@ def SM_Script(WEBUI):
     ]
 
 def CN_Script(WEBUI):
-    return f'https://github.com/gutris1/segsmaker/raw/main/script/controlnet.py {WEBUI}/asd'
+    return [
+        f'https://github.com/gutris1/segsmaker/raw/main/script/controlnet.py {WEBUI}/asd',
+        f'https://github.com/gutris1/segsmaker/raw/main/script/cn15.py {WEBUI}/asd',
+        f'https://github.com/gutris1/segsmaker/raw/main/script/cnxl.py {WEBUI}/asd',
+    ]
 
 def Load_CSS():
     display(HTML(f'<style>{CSS.read_text()}</style>'))
