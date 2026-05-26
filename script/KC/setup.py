@@ -320,6 +320,8 @@ def webui_req(U, W, M):
 
     scripts = [
         f'https://github.com/gutris1/segsmaker/raw/main/script/controlnet.py {W}/asd',
+        f'https://github.com/gutris1/segsmaker/raw/main/script/cn15.py {W}/asd',
+        f'https://github.com/gutris1/segsmaker/raw/main/script/cnxl.py {W}/asd',
         f'https://github.com/gutris1/segsmaker/raw/main/script/KC/segsmaker.py {W}'
     ]
 
