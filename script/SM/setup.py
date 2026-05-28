@@ -251,7 +251,7 @@ def webui_req(U, W, M):
     sym_link(U, M)
 
     scripts = SM_Script(W)
-    scripts.append(CN_Script(W))
+    scripts.extend(CN_Script(W))
 
     u = M / 'upscale_models' if U in ['ComfyUI', 'SwarmUI'] else M / 'ESRGAN'
     upscalers = [
