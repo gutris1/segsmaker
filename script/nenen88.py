@@ -24,7 +24,7 @@ CYAN = '\033[36m'
 GREEN = '\033[38;5;35m'
 YELLOW = '\033[33m'
 BLUE = '\033[38;5;69m'
-PURPLE = '\033[38;5;135m'
+PURPLE = '\033[38;5;177m'
 ORANGE = '\033[38;5;208m'
 RESET = '\033[0m'
 
@@ -262,17 +262,12 @@ def get_url(url, fn):
 
     def civitai_filename(j):
         try:
-            if not j:
-                return None
+            if not j: return None
 
             v = get_civitai(j)
-            if not v:
-                return None
+            if not v: return None
 
-            return (
-                v.get('files', [{}])[0].get('name')
-                or v.get('name')
-            )
+            return (v.get('files', [{}])[0].get('name') or v.get('name'))
         except:
             return None
 
@@ -282,10 +277,7 @@ def get_url(url, fn):
     elif 'huggingface.co' in url:
         url = url.split('?')[0]
 
-        headers = {
-            'User-Agent': 'Mozilla/5.0',
-            **({'Authorization': f'Bearer {TOBRUT}'} if TOBRUT else {})
-        }
+        headers = {'User-Agent': 'Mozilla/5.0', **({'Authorization': f'Bearer {TOBRUT}'} if TOBRUT else {})}
 
         ext = ['.safetensors', '.pt', '.pth']
         j, versionId = None, None
@@ -305,16 +297,9 @@ def get_url(url, fn):
                             api_url = f'https://{c}/api/v1/model-versions/by-hash/{sha256}'
                             j_try = get_json(api_url, civitai_headers())
 
-                            if not j_try:
-                                continue
+                            if not j_try: continue
 
-                            r = next(
-                                (
-                                    f for f in j_try.get('files', [])
-                                    if f.get('hashes', {}).get('SHA256', '').lower() == sha256
-                                ),
-                                None
-                            )
+                            r = next((f for f in j_try.get('files', []) if f.get('hashes', {}).get('SHA256', '').lower() == sha256), None)
 
                             if r:
                                 j = j_try
@@ -384,48 +369,28 @@ def ariari(url, fp, fn):
 
     civitai = get_civdom(url)
 
-    headers = {
-        'User-Agent': (
-            civitai_headers()['User-Agent']
-            if civitai
-            else 'Mozilla/5.0'
-        )
-    }
+    headers = {'User-Agent': (civitai_headers()['User-Agent'] if civitai else 'Mozilla/5.0')}
 
     if TOKET and f'{civitai}/api/download/models/' in url:
         headers['Authorization'] = f'Bearer {TOKET}'
 
         try:
-            r = requests.get(
-                url,
-                headers=headers,
-                allow_redirects=True,
-                stream=True,
-                timeout=30
-            )
-
-            if r.url and r.url != url:
-                url = r.url
-
+            r = requests.get(url, headers=headers, allow_redirects=True, stream=True, timeout=30)
+            if r.url and r.url != url: url = r.url
             r.close()
 
         except Exception as e:
             print(f'  Preflight failed: {e}')
             print('  Falling back to aria2 with Authorization header.')
 
-    if TOBRUT and 'huggingface.co' in url:
-        headers['Authorization'] = f'Bearer {TOBRUT}'
-
     cmd = [
         'aria2c',
-        *[f'--header={k}: {v}' for k, v in headers.items()],
-        '--allow-overwrite=true',
-        '--console-log-level=error',
-        '--stderr=true',
-        '--summary-interval=1',
-        '-c', '-x16', '-s16', '-k1M', '-j5'
+        f"--header=User-Agent: {headers['User-Agent']}",
+        '--allow-overwrite=true', '--console-log-level=error', '--stderr=true', '--summary-interval=1',
+        '-c', '-x16', '-s16', '-k1M', '-j5' 
     ]
 
+    if TOBRUT and 'huggingface.co' in url: cmd.append(f'--header=Authorization: Bearer {TOBRUT}')
     if fn: cmd += ['-o', fn]
 
     cmd.append(url)
@@ -464,13 +429,15 @@ def ariari(url, fp, fn):
 
                     if m:
                         sizes, percent, speed, eta = m.groups()
-                        parts = [f'{percent}']
+
+                        percent = re.sub(r'(\d+)(%)', f'\\1{PURPLE}\\2{RESET}', percent)
+                        parts = [f'{MAGENTA}({RESET}{percent}{MAGENTA}){RESET}']
 
                         if sizes:
                             current, total = sizes.split('/')
                             current = re.sub(r'(\d+(?:\.\d+)?)(\w+)', f'\\1{PURPLE}\\2{RESET}', current)
                             total = re.sub(r'(\d+(?:\.\d+)?)(\w+)', f'\\1{PURPLE}\\2{RESET}', total)
-                            parts.append(f'{current}' f'{MAGENTA}/{RESET}' f'{total}')
+                            parts.append(f'{current}' f'{CYAN}/{RESET}' f'{total}')
 
                         speed = re.sub(r'(\d+(?:\.\d+)?)(\w+)', f'\\1{PURPLE}\\2{RESET}', speed)
                         parts.append(f'{CYAN}DL{RESET}:' f'{speed}')
@@ -478,13 +445,13 @@ def ariari(url, fp, fn):
                         if eta:
                             parts.append(f'{CYAN}ETA{RESET}:' f'{YELLOW}{eta}{RESET}')
 
-                        body = ' | '.join(parts)
+                        body = ' '.join(parts)
 
                         r = (
                             f'{fn} '
-                            f'{MAGENTA}【{RESET}'
+                            #f'{MAGENTA}【{RESET}'
                             f'{body}'
-                            f'{MAGENTA}】{RESET}'
+                            #f'{MAGENTA}】{RESET}'
                         )
 
                         print(f"\r{' '*300}\r  {r}", end='')
