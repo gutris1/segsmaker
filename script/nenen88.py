@@ -21,7 +21,7 @@ import io
 MAGENTA = '\033[35m'
 RED = '\033[31m'
 CYAN = '\033[36m'
-GREEN = '\033[38;5;35m'
+GREEN = '\033[38;5;49m'
 YELLOW = '\033[33m'
 BLUE = '\033[38;5;69m'
 PURPLE = '\033[38;5;177m'
@@ -386,7 +386,7 @@ def ariari(url, fp, fn):
     cmd = [
         'aria2c',
         f"--header=User-Agent: {headers['User-Agent']}",
-        '--allow-overwrite=true', '--console-log-level=error', '--stderr=true', '--summary-interval=1',
+        '--allow-overwrite=true', '--console-log-level=error', '--stderr=true',
         '-c', '-x16', '-s16', '-k1M', '-j5' 
     ]
 
@@ -454,7 +454,7 @@ def ariari(url, fp, fn):
                             #f'{MAGENTA}】{RESET}'
                         )
 
-                        print(f"\r{' '*300}\r  {r}", end='')
+                        print(f"\r{' '*300}\r  {RED}●{RESET} {r}", end='')
                         sys.stdout.flush()
 
                         break_line = True
@@ -473,8 +473,9 @@ def ariari(url, fp, fn):
                     if len(pipe) >= 4:
                         saved = pipe[3]
                         saved = re.sub(r'/', f'{ORANGE}/{RESET}', saved)
-                        print(f"\r{' '*300}\r  {saved}", end='')
+                        print(f"\r{' '*300}\r  {GREEN}●{RESET} {saved}", end='')
                         sys.stdout.flush()
+                        break_line = False
 
         break_line and print()
         p.wait()
@@ -608,7 +609,7 @@ def pull(line):
     )
 
     if branch: print(f"\n{'':>2}{'branch':<4} : {branch}")
-    print()
+    print('\n')
 
     fp = Path(despath).expanduser()
     opts = {'stdout': subprocess.PIPE, 'stderr': subprocess.PIPE, 'check': True}
