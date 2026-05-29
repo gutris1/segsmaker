@@ -92,11 +92,13 @@ def netorare(line):
     if not parts: return
 
     cwd = Path.cwd()
-    url = parts[0].replace('\\', '')
-    CHG = any(domain in url for domain in [*CIVITAI, 'huggingface.co', 'github.com'])
-    DriveGoogle = 'drive.google.com' in url
-
     path = lambda s: '/' in s or '~/' in s
+    url = parts[0].replace('\\', '')
+
+    C = any(u in url for u in CIVITAI)
+    H = 'huggingface.co' in url
+    G = 'github.com' in url
+    D = 'drive.google.com' in url
 
     try:
         if len(parts) >= 3:
@@ -105,17 +107,10 @@ def netorare(line):
             aa = path(a)
             bb = path(b)
 
-            if bb and not aa:
-                p, f = b, a
-
-            elif aa and not bb:
-                p, f = a, b
-
-            elif Path(b).suffix == '' and Path(a).suffix != '':
-                p, f = b, a
-
-            else:
-                p, f = a, b
+            if bb and not aa: p, f = b, a
+            elif aa and not bb: p, f = a, b
+            elif Path(b).suffix == '' and Path(a).suffix != '': p, f = b, a
+            else: p, f = a, b
 
             fp = Path(p).expanduser()
             fn = f
@@ -125,25 +120,30 @@ def netorare(line):
 
         elif len(parts) == 2:
             a = parts[1]
+
             if path(a):
                 fp = Path(a).expanduser()
                 fp.mkdir(parents=True, exist_ok=True)
                 CD(fp)
-                fn = get_filename(url) if CHG else Path(urlparse(url).path).name
+                fn = (None if (C or D) else Path(urlparse(url).path).name)
             else:
                 fn = a
                 fp = cwd
+
         else:
-            fn = get_filename(url) if CHG else Path(urlparse(url).path).name
+            fn = (None if (C or D) else Path(urlparse(url).path).name)
             fp = cwd
 
-        if CHG: ariari(url, fp, fn)
+        if C or H or G: ariari(url, fp, fn)
 
-        elif DriveGoogle: gdrown(url, fp, fn)
+        elif D: gdrown(url, fp, fn)
 
         else:
-            path_only = len(parts) == 2 and fp is not None
-            cmd = f"curl -#{'OJL' if len(parts) == 1 or path_only else 'JL'} '{url}'" + (f" -o '{fn}'" if fn is not None and not path_only else "")
+            cp = (len(parts) == 2 and fp is not None)
+            cmd = (
+              f"curl -#{'OJL' if len(parts) == 1 or cp else 'JL'} '{url}'" +
+              (f" -o '{fn}'" if fn is not None and not cp else "")
+            )
             curlly(cmd, fn)
 
     finally:
@@ -232,9 +232,6 @@ def civitai_earlyAccess(j, versionId=None, civitai=None):
         return True
 
     return False
-
-def get_filename(url):
-    return None if any(u in url for u in (*CIVITAI, 'drive.google.com')) else Path(urlparse(url).path).name
 
 def get_json(api_url, headers):
     try:
@@ -536,23 +533,89 @@ def curlly(cmd, fn):
         print(f"{'':>2}^ Canceled")
 
 def gdrown(url, fp=None, fn=None):
-    is_folder = 'drive.google.com/drive/folders' in url
-    cmd = f'gdown --fuzzy {url}'
+    folder = 'drive.google.com/drive/folders' in url
+    cmd = ['gdown', '--fuzzy']
+
+    if folder: cmd.append('--folder')
+    cmd.append(url)
+
+    name = fn or None
+    saved = None
 
     if fp:
         fp = Path(fp).expanduser()
         fp.mkdir(parents=True, exist_ok=True)
+
         if fn:
             fn = fp / fn
-            cmd += f' -O {fn}'
+            cmd += ['-O', str(fn)]
+
         cwd = str(fp)
+
     else:
         cwd = None
 
-    if fn and not fp: cmd += f' -O {fn}'
-    if is_folder: cmd += ' --folder'
+        if fn: cmd += ['-O', fn]
 
-    SyS(f'cd {cwd} && {cmd}' if cwd else cmd)
+    try:
+        p = subprocess.Popen(
+            cmd,
+            cwd=cwd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            bufsize=1
+        )
+
+        bl = False
+
+        while True:
+            prog = p.stdout.readline()
+
+            if prog == '' and p.poll() is not None: break
+            if not prog: continue
+
+            prog = prog.strip()
+            if not prog: continue
+
+            if prog.startswith('To: '):
+                try:
+                    saved = prog[4:].strip()
+                    name = Path(saved).name
+                except: pass
+                continue
+
+            if '%' in prog and '/' in prog:
+                prog = re.sub(r'(\d+)(%)', f'\\1{PURPLE}\\2{RESET}', prog)
+                prog = re.sub(r'(\d+(?:\.\d+)?[KMG]B/s)', f'{CYAN}\\1{RESET}', prog)
+                print(f"\r{' '*300}\r  {RED}●{RESET} {name} {prog}", end='')
+
+                sys.stdout.flush()
+                bl = True
+
+            else:
+                skip = (
+                    'Downloading...' in prog or
+                    'From (original):' in prog or
+                    'From (redirected):' in prog
+                )
+
+                if skip: continue
+                if bl: print()
+
+                print(f'  {GREEN}●{RESET} {prog}')
+                bl = False
+
+        p.wait()
+
+        if saved:
+            saved = re.sub(r'/', f'{ORANGE}/{RESET}', saved)
+            print(f"\r{' '*300}\r  {GREEN}●{RESET} {saved}")
+
+    except KeyboardInterrupt:
+        try: p.terminate()
+        except: pass
+        print(f'\n{"":>2}^ Canceled')
 
 @register_line_magic
 def clone(i):
