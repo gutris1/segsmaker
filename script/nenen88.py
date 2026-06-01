@@ -236,12 +236,14 @@ def civitai_earlyAccess(j, versionId=None, civitai=None):
 
     return False
 
-def civitai_filename(j):
-    try:
-        v = get_civitai(j)
-        return v and (v.get('files', [{}])[0].get('name') or v.get('name'))
-    except:
-        return None
+def civitai_file(j, versionId=None):
+    v = get_civitai(j, versionId)
+    if not v: return None, None
+
+    f = next((f for f in v.get('files', []) if f.get('downloadUrl')), None)
+    n = ((f.get('name') if f else None) or v.get('name'))
+
+    return f, n
 
 def get_json(api_url, headers):
     try:
@@ -273,7 +275,10 @@ def get_url(url, fn):
     elif 'huggingface.co' in url:
         url = url.split('?')[0]
 
-        headers = {'User-Agent': 'Mozilla/5.0', **({'Authorization': f'Bearer {TOBRUT}'} if TOBRUT else {})}
+        headers = {
+            'User-Agent': 'Mozilla/5.0',
+            **({'Authorization': f'Bearer {TOBRUT}'} if TOBRUT else {})
+        }
 
         ext = ['.safetensors', '.pt', '.pth']
         j, versionId = None, None
@@ -281,10 +286,9 @@ def get_url(url, fn):
         if fn and Path(fn).suffix.lower() in ext:
             try:
                 raw_url = re.sub(r'/(resolve|blob)/', '/raw/', url)
-
                 res = requests.get(raw_url, headers=headers, timeout=15)
-                t = re.search(r'oid sha256:([a-fA-F0-9]{64})', res.text)
 
+                t = re.search(r'oid sha256:([a-fA-F0-9]{64})', res.text)
                 if t:
                     sha256 = t.group(1).lower()
 
@@ -292,20 +296,16 @@ def get_url(url, fn):
                         try:
                             api_url = f'https://{c}/api/v1/model-versions/by-hash/{sha256}'
                             j_try = get_json(api_url, civitai_headers())
-
                             if not j_try: continue
 
                             r = next((f for f in j_try.get('files', []) if f.get('hashes', {}).get('SHA256', '').lower() == sha256), None)
-
                             if r:
                                 j = j_try
                                 break
 
-                        except Exception:
-                            continue
+                        except Exception: continue
 
-            except Exception:
-                pass
+            except Exception: pass
 
         url = url.replace('/blob/', '/resolve/')
         return url, j, versionId, fn
@@ -316,46 +316,32 @@ def get_url(url, fn):
 
         if f'{civitai}/api/download/models/' in url:
             versionId = url.split('models/')[1].split('/')[0].split('?')[0]
-
             api_url = f'https://{civitai}/api/v1/model-versions/{versionId}'
+
             j = get_json(api_url, civitai_headers())
+            if not j: return url, None, None, None
 
-            if not j: return url, None, None
+            f, cfn = civitai_file(j, versionId)
+            if not f: return url, None, None, None
 
-            v = get_civitai(j, versionId)
-
-            if not v: return url, None, None
-
-            cfn = fn or civitai_filename(j)
-            return url, j, versionId, cfn
+            return url, j, versionId, (fn or cfn)
 
         elif f'{civitai}/models/' in url:
             versionId = None
-
             modelId = url.split('models/')[1].split('/')[0].split('?')[0]
 
-            if '?modelVersionId=' in url:
-                versionId = url.split('?modelVersionId=')[1]
+            if '?modelVersionId=' in url: versionId = url.split('?modelVersionId=')[1].split('&')[0]
 
             api_url = f'https://{civitai}/api/v1/models/{modelId}'
             j = get_json(api_url, civitai_headers())
+            if not j or civitai_earlyAccess(j, versionId, civitai): return None, None, None, None
 
-            if not j or civitai_earlyAccess(j, versionId, civitai):
-                return None, None, None
-
-            v = get_civitai(j, versionId)
-
-            if not v:
+            f, cfn = civitai_file(j, versionId)
+            if not f:
                 print(f'Unable to find download URL for\n-> {input_url}\n')
-                return None, None, None
+                return None, None, None, None
 
-            file = next((f for f in v.get('files', []) if f.get('downloadUrl')), None)
-            if not file:
-                print(f'Unable to find download URL for\n-> {input_url}\n')
-                return None, None, None
-
-            cfn = fn or civitai_filename(j)
-            return file['downloadUrl'], j, versionId, cfn
+            return f['downloadUrl'], j, versionId, (fn or cfn)
 
     return url, None, None, fn
 
