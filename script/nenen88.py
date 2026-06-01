@@ -8,6 +8,7 @@ from IPython import get_ipython
 from pathlib import Path
 from tqdm import tqdm
 import subprocess
+import threading
 import requests
 import zipfile
 import shlex
@@ -20,10 +21,10 @@ import io
 MAGENTA = '\033[35m'
 RED = '\033[31m'
 CYAN = '\033[36m'
-GREEN = '\033[38;5;35m'
+GREEN = '\033[38;5;49m'
 YELLOW = '\033[33m'
 BLUE = '\033[38;5;69m'
-PURPLE = '\033[38;5;135m'
+PURPLE = '\033[38;5;177m'
 ORANGE = '\033[38;5;208m'
 RESET = '\033[0m'
 
@@ -91,44 +92,60 @@ def netorare(line):
     if not parts: return
 
     cwd = Path.cwd()
-    url = parts[0].replace('\\', '')
-    CHG = any(domain in url for domain in [*CIVITAI, 'huggingface.co', 'github.com'])
-    DriveGoogle = 'drive.google.com' in url
-
     path = lambda s: '/' in s or '~/' in s
+    url = parts[0].replace('\\', '')
+
+    C = any(u in url for u in CIVITAI)
+    H = 'huggingface.co' in url
+    G = 'github.com' in url
+    D = 'drive.google.com' in url
 
     try:
         if len(parts) >= 3:
-            arg1, arg2 = parts[1], parts[2]
-            path_arg, file_arg = (arg2, arg1) if path(arg2) and not path(arg1) else \
-                                 (arg1, arg2) if path(arg1) and not path(arg2) else \
-                                 (arg2, arg1) if Path(arg2).suffix == '' and Path(arg1).suffix != '' else \
-                                 (arg1, arg2)
+            a, b = parts[1], parts[2]
 
-            fp, fn = Path(path_arg).expanduser(), file_arg
+            aa = path(a)
+            bb = path(b)
+
+            if bb and not aa: p, f = b, a
+            elif aa and not bb: p, f = a, b
+            elif Path(b).suffix == '' and Path(a).suffix != '': p, f = b, a
+            else: p, f = a, b
+
+            fp = Path(p).expanduser()
+            fn = f
+
             fp.mkdir(parents=True, exist_ok=True)
             CD(fp)
 
         elif len(parts) == 2:
-            arg = parts[1]
-            if path(arg):
-                fp = Path(arg).expanduser()
+            a = parts[1]
+
+            if path(a):
+                fp = Path(a).expanduser()
                 fp.mkdir(parents=True, exist_ok=True)
                 CD(fp)
-                fn = get_fn(url) if CHG else Path(urlparse(url).path).name
+                fn = (None if (C or D) else Path(urlparse(url).path).name)
             else:
-                fn = arg
+                fn = a
                 fp = cwd
+
         else:
-            fn = get_fn(url) if CHG else Path(urlparse(url).path).name
+            fn = (None if (C or D) else Path(urlparse(url).path).name)
             fp = cwd
 
-        if CHG: ariari(url, fp, fn)
-        elif DriveGoogle: gdrown(url, fp, fn)
+        if C or H or G: ariari(url, fp, fn)
+
+        elif D: gdrown(url, fp, fn)
+
         else:
-            path_only = len(parts) == 2 and fp is not None
-            cmd = f"curl -#{'OJL' if len(parts) == 1 or path_only else 'JL'} '{url}'" + (f" -o '{fn}'" if fn is not None and not path_only else "")
+            cp = (len(parts) == 2 and fp is not None)
+            cmd = (
+              f"curl -#{'OJL' if len(parts) == 1 or cp else 'JL'} '{url}'" +
+              (f" -o '{fn}'" if fn is not None and not cp else "")
+            )
             curlly(cmd, fn)
+
     finally:
         CD(cwd)
 
@@ -142,15 +159,9 @@ def resizer(b, size=512):
     o.seek(0)
     return o
 
-def get_civdom(url: str) -> str | None:
-    try:
-        h = urlparse(url).netloc.lower()
-        for d in CIVITAI:
-            if d in h:
-                return d
-    except:
-        pass
-    return None
+def get_civdom(url):
+    try: return next((d for d in CIVITAI if d in urlparse(url).netloc.lower()), None)
+    except: return None
 
 def civitai_headers():
     return {'User-Agent': 'CivitaiLink:Automatic1111'}
@@ -197,6 +208,9 @@ def civitai_infotags(j, p, fn, versionId=None):
         'SDXL': 'SDXL',
         'Pony': 'SDXL',
         'Illustrious': 'SDXL',
+        'Anima': 'Anima',
+        'ZImageBase': 'ZImageBase',
+        'ZImageTurbo': 'ZImageTurbo',
     }
 
     data = {
@@ -222,9 +236,12 @@ def civitai_earlyAccess(j, versionId=None, civitai=None):
 
     return False
 
-def get_fn(url):
-    if any(x in url for x in [*CIVITAI, 'drive.google.com']): return None
-    return Path(urlparse(url).path).name
+def civitai_filename(j):
+    try:
+        v = get_civitai(j)
+        return v and (v.get('files', [{}])[0].get('name') or v.get('name'))
+    except:
+        return None
 
 def get_json(api_url, headers):
     try:
@@ -248,65 +265,37 @@ def get_civitai(j, versionId=None):
     return v
 
 def get_url(url, fn):
-    """
-    Resolve a user-provided URL into a direct download URL when possible.
-    Important fix: do NOT append ?token=... to CivitAI/Backblaze signed URLs (they are sensitive to modification).
-    Only append TOKET for non-Civitai hosts when TOKET is set and needed.
-    """
-
     civitai = get_civdom(url)
 
-    def maybe_add_token(u):
-        # Add token only for non-Civitai hosts and when TOKET is set.
-        try:
-            parsed = urlparse(u)
-            host = parsed.netloc.lower()
-        except:
-            return u
-
-        # If host is Civitai or Backblaze storage, do NOT modify the signed URL.
-        if any(d in host for d in CIVITAI) or host.startswith('b2.'):
-            return u
-
-        if not TOKET:
-            return u
-
-        if '?type=' in u:
-            return u.replace('?type=', f'?token={TOKET}&type=')
-        return f'{u}?token={TOKET}'
-
     if 'github.com' in url:
-        url = url.replace('/blob/', '/raw/')
-        return maybe_add_token(url), None, None
+        return url.replace('/blob/', '/raw/'), None, None, fn
 
     elif 'huggingface.co' in url:
         url = url.split('?')[0]
-        h = {'User-Agent': 'Mozilla/5.0', **({'Authorization': f'Bearer {TOBRUT}'} if TOBRUT else {})}
+
+        headers = {'User-Agent': 'Mozilla/5.0', **({'Authorization': f'Bearer {TOBRUT}'} if TOBRUT else {})}
+
         ext = ['.safetensors', '.pt', '.pth']
         j, versionId = None, None
 
         if fn and Path(fn).suffix.lower() in ext:
             try:
-                res = requests.get(re.sub(r'/(resolve|blob)/', '/raw/', url), headers=h)
+                raw_url = re.sub(r'/(resolve|blob)/', '/raw/', url)
+
+                res = requests.get(raw_url, headers=headers, timeout=15)
                 t = re.search(r'oid sha256:([a-fA-F0-9]{64})', res.text)
 
                 if t:
-                    sha256 = t.group(1)
-                    j = None
+                    sha256 = t.group(1).lower()
 
                     for c in CIVITAI:
                         try:
                             api_url = f'https://{c}/api/v1/model-versions/by-hash/{sha256}'
                             j_try = get_json(api_url, civitai_headers())
 
-                            if not j_try:
-                                continue
+                            if not j_try: continue
 
-                            r = next(
-                                (f for f in j_try.get('files', [])
-                                if f.get('hashes', {}).get('SHA256', '').lower() == sha256.lower()),
-                                None
-                            )
+                            r = next((f for f in j_try.get('files', []) if f.get('hashes', {}).get('SHA256', '').lower() == sha256), None)
 
                             if r:
                                 j = j_try
@@ -316,30 +305,35 @@ def get_url(url, fn):
                             continue
 
             except Exception:
-                j = None
+                pass
 
         url = url.replace('/blob/', '/resolve/')
-        return maybe_add_token(url), j, versionId
+        return url, j, versionId, fn
 
     elif civitai in url:
         input_url = url
-        url = url.split('?token=')[0] if '?token=' in url else url
+        url = url.split('?token=')[0]
 
         if f'{civitai}/api/download/models/' in url:
             versionId = url.split('models/')[1].split('/')[0].split('?')[0]
+
             api_url = f'https://{civitai}/api/v1/model-versions/{versionId}'
             j = get_json(api_url, civitai_headers())
 
-            if j:
-                v = get_civitai(j, versionId)
-                if v:
-                    return url, j, versionId
+            if not j: return url, None, None
 
-            return url, None, None
+            v = get_civitai(j, versionId)
+
+            if not v: return url, None, None
+
+            cfn = fn or civitai_filename(j)
+            return url, j, versionId, cfn
 
         elif f'{civitai}/models/' in url:
             versionId = None
+
             modelId = url.split('models/')[1].split('/')[0].split('?')[0]
+
             if '?modelVersionId=' in url:
                 versionId = url.split('?modelVersionId=')[1]
 
@@ -350,61 +344,60 @@ def get_url(url, fn):
                 return None, None, None
 
             v = get_civitai(j, versionId)
+
             if not v:
                 print(f'Unable to find download URL for\n-> {input_url}\n')
                 return None, None, None
 
-            url = next((f.get('downloadUrl') for f in v.get('files', []) if f.get('downloadUrl')), None)
-            if not url:
+            file = next((f for f in v.get('files', []) if f.get('downloadUrl')), None)
+            if not file:
                 print(f'Unable to find download URL for\n-> {input_url}\n')
                 return None, None, None
 
-            return url, j, versionId
+            cfn = fn or civitai_filename(j)
+            return file['downloadUrl'], j, versionId, cfn
 
-    return maybe_add_token(url), None, None
+    return url, None, None, fn
 
 def ariari(url, fp, fn):
-    url, j, versionId = get_url(url, fn)
+    url, j, versionId, fn = get_url(url, fn)
     if not url: return
 
     civitai = get_civdom(url)
-    civitai_api = (f'{civitai}/api/download/models/' in url and bool(TOKET))
 
-    if civitai_api:
+    headers = {'User-Agent': (civitai_headers()['User-Agent'] if civitai else 'Mozilla/5.0')}
+
+    if TOKET and f'{civitai}/api/download/models/' in url:
+        headers['Authorization'] = f'Bearer {TOKET}'
+
         try:
-            headers = {'User-Agent': civitai_headers()['User-Agent'], 'Authorization': f'Bearer {TOKET}'}
-            request_url = url
-            resp = requests.get(request_url, headers=headers, allow_redirects=True, stream=True, timeout=30)
-            final_url = resp.url
-            resp.close()
-
-            if final_url and final_url != request_url: url = final_url
-            else: print("  No redirect detected; aria2 will use Authorization header.")
+            r = requests.get(url, headers=headers, allow_redirects=True, stream=True, timeout=30)
+            if r.url and r.url != url: url = r.url
+            r.close()
 
         except Exception as e:
-            print(f"  Preflight failed: {e}")
-            print("  Falling back to aria2 with Authorization header.")
+            print(f'  Preflight failed: {e}')
+            print('  Falling back to aria2 with Authorization header.')
 
     cmd = [
         'aria2c',
-        f"--header=User-Agent: {civitai_headers()['User-Agent'] if f'{civitai}' in url else 'Mozilla/5.0'}",
+        f"--header=User-Agent: {headers['User-Agent']}",
         '--allow-overwrite=true', '--console-log-level=error', '--stderr=true',
-        '-c', '-x16', '-s16', '-k1M', '-j5'
+        '-c', '-x16', '-s16', '-k1M', '-j5' 
     ]
 
-    if f'{civitai}/api/download/models/' in url and TOKET: cmd.append(f"--header=Authorization: Bearer {TOKET}")
     if TOBRUT and 'huggingface.co' in url: cmd.append(f'--header=Authorization: Bearer {TOBRUT}')
-
     if fn: cmd += ['-o', fn]
 
     cmd.append(url)
 
     try:
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        aria2_output, break_line, error_code, error_line = '', False, [], []
+        aria2_output, bl, error_code, error_line = '', False, [], []
 
         while True:
             lines = p.stderr.readline()
+
             if lines == '' and p.poll() is not None: break
 
             if lines:
@@ -413,6 +406,7 @@ def ariari(url, fp, fn):
                 for prog in lines.splitlines():
                     if 'errorCode' in prog or 'Exception' in prog:
                         error_code.append(prog)
+
                     if '|' in prog and 'error_line' in prog:
                         prog = re.sub(r'(\|\s*)(error_line)(\s*\|)', f'\\1{RED}\\2{RESET}\\3', prog)
                         first, _, last = prog.rpartition('|')
@@ -420,45 +414,73 @@ def ariari(url, fp, fn):
                         prog = f'{first}|{last}'
                         error_line.append(prog)
 
-                    if re.match(r'\[#\w{6}\s.*\]', prog):
-                        prog = re.sub(r'\[', MAGENTA + '【' + RESET, prog)
-                        prog = re.sub(r'\]', MAGENTA + '】' + RESET, prog)
-                        prog = re.sub(r'(#)(\w+)', f'{CYAN}\\1{RESET}{GREEN}\\2{RESET}', prog)
-                        prog = re.sub(r'(\d+(\.\d+)?)(\w+)(/)(\d+(\.\d+)?)(\w+)', f"\\1{PURPLE}\\3{RESET}{MAGENTA}\\4{RESET}\\5{PURPLE}\\7{RESET}", prog)
-                        prog = re.sub(r'(\()(\d+%)(\))', f'{MAGENTA}\\1{RESET}\\2{MAGENTA}\\3{RESET}', prog)
-                        prog = re.sub(r'(CN)(:)(\d+)', f"{CYAN}\\1{RESET}\\2{ORANGE}\\3{RESET}", prog)
-                        prog = re.sub(r'(DL)(:)(\d+(\.\d+)?)(\w+)', f"{CYAN}\\1{RESET}\\2\\3{PURPLE}\\5{RESET}", prog)
-                        prog = re.sub(r'(ETA)(:)(\d+\w+)', f"{CYAN}\\1{RESET}\\2{YELLOW}\\3{RESET}", prog)
+                    m = re.match(
+                        r'\[#\w+\s+'
+                        r'(?:(\d+(?:\.\d+)?\w+/\d+(?:\.\d+)?\w+))?'
+                        r'\((\d+%)\)'
+                        r'.*?DL:(\d+(?:\.\d+)?\w+)'
+                        r'(?:.*?ETA:(\d+\w+))?',
+                        prog
+                    )
 
-                        lines = prog.splitlines()
-                        for line in lines:
-                            print(f"\r{' '*300}\r {line}", end='')
-                            sys.stdout.flush()
+                    if m:
+                        sizes, percent, speed, eta = m.groups()
 
-                        break_line = True
+                        percent = re.sub(r'(\d+)(%)', f'\\1{PURPLE}\\2{RESET}', percent)
+                        parts = [f'{MAGENTA}({RESET}{percent}{MAGENTA}){RESET}']
+
+                        if sizes:
+                            current, total = sizes.split('/')
+                            current = re.sub(r'(\d+(?:\.\d+)?)(\w+)', f'\\1{PURPLE}\\2{RESET}', current)
+                            total = re.sub(r'(\d+(?:\.\d+)?)(\w+)', f'\\1{PURPLE}\\2{RESET}', total)
+                            parts.append(f'{current}' f'{CYAN}/{RESET}' f'{total}')
+
+                        speed = re.sub(r'(\d+(?:\.\d+)?)(\w+)', f'\\1{PURPLE}\\2{RESET}', speed)
+                        parts.append(f'{CYAN}DL{RESET}:' f'{speed}')
+
+                        if eta:
+                            parts.append(f'{CYAN}ETA{RESET}:' f'{YELLOW}{eta}{RESET}')
+
+                        body = ' '.join(parts)
+
+                        r = (
+                            f'{fn} '
+                            #f'{MAGENTA}【{RESET}'
+                            f'{body}'
+                            #f'{MAGENTA}】{RESET}'
+                        )
+
+                        print(f"\r{' '*300}\r  {RED}●{RESET} {r}", end='')
+                        sys.stdout.flush()
+
+                        bl = True
                         break
 
         civitai = None
         error = error_code + error_line
         for lines in error: print(f'  {lines}')
 
-        break_line and print()
+        for lines in aria2_output.splitlines():
+            if '|' in lines and 'OK' in lines:
+                pipe = [p.strip() for p in lines.split('|')]
 
-        stripe = aria2_output.find('======+====+===========')
-        if stripe != -1:
-            for lines in aria2_output[stripe:].splitlines():
-                if '|' in lines and 'OK' in lines:
-                    lines = re.sub(r'(\|\s*)(OK)(\s*\|)', f'\\1{GREEN}\\2{RESET}\\3', lines)
-                    first, _, last = lines.rpartition('|')
-                    last = re.sub(r'/', f'{ORANGE}/{RESET}', last)
-                    lines = f'{first}|{last}'
-                    print(f'  {lines}')
+                if len(pipe) >= 4:
+                    saved = pipe[3]
+                    saved = re.sub(r'/', f'{ORANGE}/{RESET}', saved)
+                    print(f"\r{' '*300}\r  {GREEN}●{RESET} {saved}")
+                    sys.stdout.flush()
+                    bl = False
+
+        bl and print()
+        p.wait()
 
         if j:
             civitai_infotags(j, fp, fn, versionId)
-            civitai_preview(j, fp, fn, versionId)
-
-        p.wait()
+            threading.Thread(
+                target=civitai_preview,
+                args=(j, fp, fn, versionId),
+                daemon=True
+            ).start()
 
     except KeyboardInterrupt:
         print(f'\n{"":>2}^ Canceled')
@@ -508,23 +530,89 @@ def curlly(cmd, fn):
         print(f"{'':>2}^ Canceled")
 
 def gdrown(url, fp=None, fn=None):
-    is_folder = 'drive.google.com/drive/folders' in url
-    cmd = f'gdown --fuzzy {url}'
+    folder = 'drive.google.com/drive/folders' in url
+    cmd = ['gdown', '--fuzzy']
+
+    if folder: cmd.append('--folder')
+    cmd.append(url)
+
+    name = fn or None
+    saved = None
 
     if fp:
         fp = Path(fp).expanduser()
         fp.mkdir(parents=True, exist_ok=True)
+
         if fn:
             fn = fp / fn
-            cmd += f' -O {fn}'
+            cmd += ['-O', str(fn)]
+
         cwd = str(fp)
+
     else:
         cwd = None
 
-    if fn and not fp: cmd += f' -O {fn}'
-    if is_folder: cmd += ' --folder'
+        if fn: cmd += ['-O', fn]
 
-    SyS(f'cd {cwd} && {cmd}' if cwd else cmd)
+    try:
+        p = subprocess.Popen(
+            cmd,
+            cwd=cwd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            bufsize=1
+        )
+
+        bl = False
+
+        while True:
+            prog = p.stdout.readline()
+
+            if prog == '' and p.poll() is not None: break
+            if not prog: continue
+
+            prog = prog.strip()
+            if not prog: continue
+
+            if prog.startswith('To: '):
+                try:
+                    saved = prog[4:].strip()
+                    name = Path(saved).name
+                except: pass
+                continue
+
+            if '%' in prog and '/' in prog:
+                prog = re.sub(r'(\d+)(%)', f'\\1{PURPLE}\\2{RESET}', prog)
+                prog = re.sub(r'(\d+(?:\.\d+)?[KMG]B/s)', f'{CYAN}\\1{RESET}', prog)
+                print(f"\r{' '*300}\r  {RED}●{RESET} {name} {prog}", end='')
+
+                sys.stdout.flush()
+                bl = True
+
+            else:
+                skip = (
+                    'Downloading...' in prog or
+                    'From (original):' in prog or
+                    'From (redirected):' in prog
+                )
+
+                if skip: continue
+                if bl: print()
+
+                print(f'  {GREEN}●{RESET} {prog}')
+                bl = False
+
+        p.wait()
+
+        if saved:
+            saved = re.sub(r'/', f'{ORANGE}/{RESET}', saved)
+            print(f"\r{' '*300}\r  {GREEN}●{RESET} {saved}")
+
+    except KeyboardInterrupt:
+        try: p.terminate()
+        except: pass
+        print(f'\n{"":>2}^ Canceled')
 
 @register_line_magic
 def clone(i):
@@ -581,7 +669,7 @@ def pull(line):
     )
 
     if branch: print(f"\n{'':>2}{'branch':<4} : {branch}")
-    print()
+    print('\n')
 
     fp = Path(despath).expanduser()
     opts = {'stdout': subprocess.PIPE, 'stderr': subprocess.PIPE, 'check': True}
