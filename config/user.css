@@ -159,3 +159,12 @@ span.svelte-s1r2yt {
   min-width: 210px !important;
   max-width: 210px !important;
 }
+
+.gradio-container-4-40-0 #tab_pnginfo-button {
+  visibility: hidden !important;
+  height: 0 !important;
+  width: 0 !important;
+  border: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
