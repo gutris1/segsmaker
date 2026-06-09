@@ -5,6 +5,7 @@ from IPython.core.magic import register_line_magic
 from IPython.display import display, HTML
 from urllib.parse import urlparse
 from IPython import get_ipython
+from datetime import datetime
 from pathlib import Path
 from tqdm import tqdm
 import subprocess
@@ -33,8 +34,6 @@ SyS = get_ipython().system
 iRON = os.environ
 
 KAGGLE = 'KAGGLE_DATA_PROXY_TOKEN' in iRON
-
-CIVITAI = ['civitai.com', 'civitai.red']
 
 @register_line_magic
 def say(line):
@@ -95,7 +94,7 @@ def netorare(line):
     path = lambda s: '/' in s or '~/' in s
     url = parts[0].replace('\\', '')
 
-    C = any(u in url for u in CIVITAI)
+    C = bool(CIVITAI.domain(url))
     H = 'huggingface.co' in url
     G = 'github.com' in url
     D = 'drive.google.com' in url
@@ -149,58 +148,10 @@ def netorare(line):
     finally:
         CD(cwd)
 
-def resizer(b, size=512):
-    from PIL import Image
-    i = Image.open(io.BytesIO(b))
-    w, h = i.size
-    s = (size, int(h * size / w)) if w > h else (int(w * size / h), size)
-    o = io.BytesIO()
-    i.resize(s, Image.LANCZOS).save(o, format='PNG')
-    o.seek(0)
-    return o
+class CIVITAI:
+    DOMAINS = ('civitai.com', 'civitai.red',)
 
-def get_civdom(url):
-    try: return next((d for d in CIVITAI if d in urlparse(url).netloc.lower()), None)
-    except: return None
-
-def civitai_headers():
-    return {'User-Agent': 'CivitaiLink:Automatic1111'}
-
-def civitai_preview(j, p, fn, versionId=None):
-    v = get_civitai(j, versionId)
-    if not v: return
-
-    images = v.get('images', [])
-    name = fn or v.get('files', [{}])[0].get('name')
-    if not name: return
-
-    path = Path(p) / f'{Path(name).stem}.preview.png'
-    if path.exists(): return
-
-    preview = next((img.get('url', '') for img in images if not img.get('url', '').lower().endswith(('.mp4', '.gif'))), None)
-    if not preview: return
-
-    r = requests.get(preview, headers=civitai_headers()).content
-    resized = resizer(r)
-
-    if KAGGLE:
-        from melon00 import image_encryption
-        image_encryption(resized, path)
-    else:
-        path.write_bytes(resized.read())
-
-def civitai_infotags(j, p, fn, versionId=None):
-    v = get_civitai(j, versionId)
-    if not v: return
-
-    modelId = j.get('id') or v.get('modelId')
-    name = fn or v.get('files', [{}])[0].get('name')
-    if not name: return
-
-    info = Path(p) / f'{Path(name).stem}.json'
-    if info.exists(): return
-
-    baseList = {
+    BaseList = {
         'SD 1': 'SD1',
         'SD 1.5': 'SD1',
         'SD 2': 'SD2',
@@ -213,145 +164,241 @@ def civitai_infotags(j, p, fn, versionId=None):
         'ZImageTurbo': 'ZImageTurbo',
     }
 
-    data = {
-        'activation text': ', '.join(v.get('trainedWords', [])),
-        'sd version': next((s for k, s in baseList.items() if k in v.get('baseModel', '')), ''),
-        'modelId': modelId,
-        'modelVersionId': v.get('id'),
-        'sha256': v.get('files', [{}])[0].get('hashes', {}).get('SHA256')
-    }
+    @classmethod
+    def domain(c, url):
+        try:
+            h = urlparse(url).netloc.lower()
+            return next((d for d in c.DOMAINS if d in h), None)
 
-    info.write_text(json.dumps(data, indent=4))
+        except Exception:
+            return None
 
-def civitai_earlyAccess(j, versionId=None, civitai=None):
-    v = get_civitai(j, versionId)
-    if not v: return False
+    @staticmethod
+    def headers():
+        return {'User-Agent': 'CivitaiLink:Automatic1111'}
 
-    if v.get('availability') == 'EarlyAccess' or v.get('earlyAccessEndsAt'):
-        modelId = j.get('id') or v.get('modelId')
-        modelVersionId = v.get('id')
-        page = f'https://{civitai}/models/{modelId}?modelVersionId={modelVersionId}'
-        print(f'{page}\n-> The model version is in early access and requires payment for downloading.')
+    @classmethod
+    def get_json(c, api_url):
+        try:
+            r = requests.get(api_url, headers=c.headers(), timeout=15)
+            if r.status_code != 200: return None
+
+            return r.json()
+
+        except Exception:
+            return None
+
+    def __init__(self, data, version_id=None, domain=None):
+        self.data = data
+        self.domain_name = domain
+        self.version = self.whichVersion(version_id)
+
+    def whichVersion(self, version_id=None):
+        if 'modelVersions' not in self.data: return self.data
+
+        if version_id:
+            v = next((mv for mv in self.data['modelVersions'] if str(mv.get('id')) == str(version_id)), None)
+            if v: return v
+
+        return self.data['modelVersions'][0]
+
+    @property
+    def exists(self):
+        return self.version is not None
+
+    @property
+    def model_id(self):
+        return (self.data.get('id') or self.version.get('modelId'))
+
+    @property
+    def version_id(self):
+        return self.version.get('id')
+
+    @property
+    def file(self):
+        return next((f for f in self.version.get('files', []) if f.get('downloadUrl')), None)
+
+    @property
+    def filename(self):
+        f = self.file
+        return ((f.get('name') if f else None) or self.version.get('name'))
+
+    @property
+    def sha256(self):
+        return (self.version.get('files', [{}])[0].get('hashes', {}).get('SHA256'))
+
+    @property
+    def preview_url(self):
+        return next((img.get('url', '') for img in self.version.get('images', []) if not img.get('url', '').lower().endswith(('.mp4', '.gif'))), None)
+
+    @staticmethod
+    def resizer(b, size=512):
+        from PIL import Image
+
+        i = Image.open(io.BytesIO(b))
+        w, h = i.size
+        s = ((size, int(h * size / w)) if w > h else (int(w * size / h), size))
+        o = io.BytesIO()
+        i.resize(s, Image.LANCZOS).save(o, format='PNG')
+        o.seek(0)
+
+        return o
+
+    @property
+    def activation_text(self):
+        return ', '.join(self.version.get('trainedWords', []))
+
+    @property
+    def sd_version(self):
+        return next((s for k, s in self.BaseList.items() if k in self.version.get('baseModel', '')), '')
+
+    @property
+    def early_access(self):
+        return (self.version.get('availability') == 'EarlyAccess' or bool(self.version.get('earlyAccessEndsAt')))
+
+    def early_access_info(self):
+        if not self.early_access: return False
+
+        page = f'https://{self.domain_name}/models/{self.model_id}?modelVersionId={self.version_id}'
+        ends = self.version.get('earlyAccessEndsAt')
+
+        if ends: ends = datetime.fromisoformat(ends.replace('Z', '+00:00')).strftime('%d %B %Y')
+
+        print(f'{page}\n-> The model is in early access{f", ending at {ends}" if ends else ""}.')
+        print(self.version.keys())
+        print(self.version.get('earlyAccessEndsAt'))
         return True
 
-    return False
+    def model_json(self, folder, filename=None):
+        name = filename or self.filename
+        if not name: return
 
-def civitai_file(j, versionId=None):
-    v = get_civitai(j, versionId)
-    if not v: return None, None
+        info = (Path(folder) / f'{Path(name).stem}.json')
+        if info.exists(): return
 
-    f = next((f for f in v.get('files', []) if f.get('downloadUrl')), None)
-    n = ((f.get('name') if f else None) or v.get('name'))
+        data = {
+            'activation text': self.activation_text,
+            'sd version': self.sd_version,
+            'modelId': self.model_id,
+            'modelVersionId': self.version_id,
+            'sha256':self.sha256
+        }
 
-    return f, n
+        info.write_text(json.dumps(data, indent=4))
 
-def get_json(api_url, headers):
-    try:
-        r = requests.get(api_url, headers=headers, timeout=15)
-        if r.status_code != 200: return None
-        return r.json()
-    except:
-        return None
+    def model_preview(self, folder, filename=None):
+        name = filename or self.filename
+        if not name: return
 
-def get_civitai(j, versionId=None):
-    v = None
+        preview = self.preview_url
+        if not preview: return
 
-    if versionId:
-        if 'modelVersions' in j: v = next((mv for mv in j['modelVersions'] if str(mv.get('id')) == str(versionId)), None)
-        if not v and str(j.get('id')) == str(versionId) and 'files' in j: v = j
+        path = (Path(folder) / f'{Path(name).stem}.preview.png')
+        if path.exists(): return
 
-    if not v:
-        if 'modelVersions' in j: v = j['modelVersions'][0]
-        else: v = j
+        r = requests.get(preview, headers=self.headers()).content
+        resized = self.resizer(r)
 
-    return v
+        if KAGGLE:
+            from melon00 import image_encryption
+            image_encryption(resized, path)
+        else:
+            path.write_bytes(resized.read())
+
+    def extras(self, path, filename):
+        def t():
+            self.model_json(path, filename)
+            self.model_preview(path, filename)
+
+        threading.Thread(target=t, daemon=True).start()
 
 def get_url(url, fn):
-    civitai = get_civdom(url)
+    civitai = CIVITAI.domain(url)
 
     if 'github.com' in url:
-        return url.replace('/blob/', '/raw/'), None, None, fn
+        return (url.replace('/blob/', '/raw/'), None, fn)
 
     elif 'huggingface.co' in url:
         url = url.split('?')[0]
-
-        headers = {
-            'User-Agent': 'Mozilla/5.0',
-            **({'Authorization': f'Bearer {TOBRUT}'} if TOBRUT else {})
-        }
-
-        ext = ['.safetensors', '.pt', '.pth']
-        j, versionId = None, None
+        headers = {'User-Agent': 'Mozilla/5.0', **({'Authorization': f'Bearer {TOBRUT}'} if TOBRUT else {})}
+        cv = None
+        ext = {'.safetensors', '.pt', '.pth'}
 
         if fn and Path(fn).suffix.lower() in ext:
             try:
                 raw_url = re.sub(r'/(resolve|blob)/', '/raw/', url)
                 res = requests.get(raw_url, headers=headers, timeout=15)
-
                 t = re.search(r'oid sha256:([a-fA-F0-9]{64})', res.text)
+
                 if t:
                     sha256 = t.group(1).lower()
 
-                    for c in CIVITAI:
+                    for c in CIVITAI.DOMAINS:
                         try:
                             api_url = f'https://{c}/api/v1/model-versions/by-hash/{sha256}'
-                            j_try = get_json(api_url, civitai_headers())
-                            if not j_try: continue
 
-                            r = next((f for f in j_try.get('files', []) if f.get('hashes', {}).get('SHA256', '').lower() == sha256), None)
+                            j = CIVITAI.get_json(api_url)
+                            if not j: continue
+
+                            r = next((f for f in j.get('files', []) if f.get('hashes', {}).get('SHA256', '').lower() == sha256), None)
                             if r:
-                                j = j_try
+                                cv = CIVITAI(j, domain=c)
                                 break
 
-                        except Exception: continue
+                        except Exception:
+                            continue
 
-            except Exception: pass
+            except Exception:
+                pass
 
         url = url.replace('/blob/', '/resolve/')
-        return url, j, versionId, fn
+        return (url, cv, fn)
 
     elif civitai in url:
         input_url = url
         url = url.split('?token=')[0]
 
         if f'{civitai}/api/download/models/' in url:
-            versionId = url.split('models/')[1].split('/')[0].split('?')[0]
-            api_url = f'https://{civitai}/api/v1/model-versions/{versionId}'
+            version_id = url.split('models/')[1].split('/')[0].split('?')[0]
+            api_url = f'https://{civitai}/api/v1/model-versions/{version_id}'
 
-            j = get_json(api_url, civitai_headers())
-            if not j: return url, None, None, None
+            j = CIVITAI.get_json(api_url)
+            if not j: return (url, None, None)
 
-            f, cfn = civitai_file(j, versionId)
-            if not f: return url, None, None, None
+            cv = CIVITAI(j, version_id, civitai)
+            if not cv.file: return (url, None, None)
 
-            return url, j, versionId, (fn or cfn)
+            return (url, cv, fn or cv.filename)
 
         elif f'{civitai}/models/' in url:
-            versionId = None
-            modelId = url.split('models/')[1].split('/')[0].split('?')[0]
+            version_id = None
+            model_id = url.split('models/')[1].split('/')[0].split('?')[0]
 
-            if '?modelVersionId=' in url: versionId = url.split('?modelVersionId=')[1].split('&')[0]
+            if '?modelVersionId=' in url: version_id = url.split('?modelVersionId=')[1].split('&')[0]
 
-            api_url = f'https://{civitai}/api/v1/models/{modelId}'
-            j = get_json(api_url, civitai_headers())
-            if not j or civitai_earlyAccess(j, versionId, civitai): return None, None, None, None
+            api_url = (f'https://{civitai}/api/v1/model-versions/{version_id}' if version_id else f'https://{civitai}/api/v1/models/{model_id}')
 
-            f, cfn = civitai_file(j, versionId)
-            if not f:
+            j = CIVITAI.get_json(api_url)
+            if not j: return (None, None, None)
+
+            cv = CIVITAI(j, version_id, civitai)
+
+            if cv.early_access_info(): return (None, None, None)
+
+            if not cv.file:
                 print(f'Unable to find download URL for\n-> {input_url}\n')
-                return None, None, None, None
+                return (None, None, None)
 
-            return f['downloadUrl'], j, versionId, (fn or cfn)
+            return (cv.file['downloadUrl'], cv, fn or cv.filename)
 
-    return url, None, None, fn
+    return (url, None, fn)
 
 def ariari(url, fp, fn):
-    url, j, versionId, fn = get_url(url, fn)
+    url, cv, fn = get_url(url, fn)
     if not url: return
 
-    civitai = get_civdom(url)
-
-    headers = {'User-Agent': (civitai_headers()['User-Agent'] if civitai else 'Mozilla/5.0')}
+    civitai = CIVITAI.domain(url)
+    headers = {'User-Agent': (CIVITAI.headers()['User-Agent'] if civitai else 'Mozilla/5.0')}
 
     if TOKET and f'{civitai}/api/download/models/' in url:
         headers['Authorization'] = f'Bearer {TOKET}'
@@ -378,6 +425,8 @@ def ariari(url, fp, fn):
     cmd.append(url)
 
     try:
+        if cv: cv.extras(fp, fn)
+
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         aria2_output, bl, error_code, error_line = '', False, [], []
 
@@ -459,14 +508,6 @@ def ariari(url, fp, fn):
 
         bl and print()
         p.wait()
-
-        if j:
-            civitai_infotags(j, fp, fn, versionId)
-            threading.Thread(
-                target=civitai_preview,
-                args=(j, fp, fn, versionId),
-                daemon=True
-            ).start()
 
     except KeyboardInterrupt:
         print(f'\n{"":>2}^ Canceled')
