@@ -261,12 +261,8 @@ class CIVITAI:
 
         page = f'https://{self.domain_name}/models/{self.model_id}?modelVersionId={self.version_id}'
         ends = self.version.get('earlyAccessEndsAt')
-
         if ends: ends = datetime.fromisoformat(ends.replace('Z', '+00:00')).strftime('%d %B %Y')
-
         print(f'{page}\n-> The model is in early access{f", ending at {ends}" if ends else ""}.')
-        print(self.version.keys())
-        print(self.version.get('earlyAccessEndsAt'))
         return True
 
     def model_json(self, folder, filename=None):
