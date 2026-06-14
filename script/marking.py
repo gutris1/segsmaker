@@ -39,7 +39,13 @@ def setWebUIVAR(ui):
     maps = {
         'A1111': default,
         'Forge': default,
-        'ReForge': default,
+
+        'ReForge': (
+            'extensions', 'embeddings', 'VAE',
+            'Stable-diffusion', 'Lora', 'ESRGAN',
+            'text_encoders'
+        ),
+
         'ReForge-old': default,
         'Forge-Classic': default,
 
