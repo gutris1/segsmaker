@@ -27,6 +27,7 @@
   overflow: hidden;
   animation: UndressSetup 1s forwards ease-out;
   padding: 5px;
+  scrollbar-width: none;
 }
 
 .segs-setup-buttons,
@@ -205,7 +206,44 @@
   margin-bottom: 0px;
   margin-left: 0px;
   position: relative;
-  overflow: visible;
+  overflow: hidden;
+}
+
+.hbox1, .hbox2 {
+  overflow: visible !important;
+}
+
+.hbox1 {
+  animation: UndressBox1 1s forwards ease;
+}
+
+@keyframes UndressBox1 {
+  0% {
+    transform: translateX(-2000px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.hbox2 {
+  animation: UndressBox2 1s forwards ease;
+}
+
+@keyframes UndressBox2 {
+  0% {
+    transform: translateX(2000px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.hbox1.undress, .hbox2.undress, .multi-panel.undress {
+  max-height: 600px;
+  transform: translateX(0);
+  overflow: visible !important;
+  animation: none;
 }
 
 .buttons {
@@ -371,7 +409,7 @@
   100% {
     max-height: 600px;
     opacity: 1;
-    filter: blur(0px);
+    filter: blur(0);
   }
 }
 
