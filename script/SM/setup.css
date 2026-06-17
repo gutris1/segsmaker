@@ -67,12 +67,11 @@
 .a1111 { background-image: url('https://avatars.githubusercontent.com/u/20920490?v=4'); }
 .forge { background-image: url('https://avatars.githubusercontent.com/u/19834515?v=4'); }
 .reforge { background-image: url('https://i.imgur.com/95Afkbg.jpg'); }
-.forge-classic { background-image: url('https://avatars.githubusercontent.com/u/73768377?v=4'); }
+.reforge-old { background-image: url('https://private-user-images.githubusercontent.com/19834515/302513283-16893937-9ed9-4f8e-b960-70cd5d1e288f.png?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3ODE3MDE1MDEsIm5iZiI6MTc4MTcwMTIwMSwicGF0aCI6Ii8xOTgzNDUxNS8zMDI1MTMyODMtMTY4OTM5MzctOWVkOS00ZjhlLWI5NjAtNzBjZDVkMWUyODhmLnBuZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNjA2MTclMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjYwNjE3VDEzMDAwMVomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPThjZjdiOTVjYTgzMWFjZDc5YzExMDk0OWRmNzY2YTcxYjA1NjFlZGYxMTFmN2FlMDlkNTQ0ZmExNjgwNjRhZjgmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0JnJlc3BvbnNlLWNvbnRlbnQtdHlwZT1pbWFnZSUyRnBuZyJ9.9HJGOe57oAVddw0brx9E8DDZw3qbNJcQnLbhOA0FFTQ'); }
+.forge-classic { background-image: url('https://raw.githubusercontent.com/Haoming02/sd-webui-forge-classic/classic/html/ui.webp'); }
+.forge-neo { background-image: url('https://raw.githubusercontent.com/Haoming02/sd-webui-forge-classic/refs/heads/neo/html/ui.webp'); }
 .comfyui { background-image: url('https://avatars.githubusercontent.com/u/121283862?v=4'); }
-.swarmui { background-image: url('https://avatars.githubusercontent.com/u/43497670?s=200&v=4'); }
-
-.facefusion { background-image: url('https://i.imgur.com/1R9rDO6.png'); }
-.sdtrainer { background-image: url('https://i.imgur.com/Ga2GV5F.png'); }
+.swarmui { background-image: url('https://raw.githubusercontent.com/mcmonkeyprojects/SwarmUI/master/.github/images/swarmui.jpg'); }
 
 .button-15 { background-image: url('https://i.imgur.com/2jsyKzZ.jpg'); }
 .button-xl { background-image: url('https://i.imgur.com/2WFq4LL.png'); }
@@ -123,11 +122,11 @@
 .a1111::after { content: 'A1111'; }
 .forge::after { content: 'Forge'; }
 .reforge::after { content: 'ReForge'; }
+.reforge-old::after { content: 'ReForge old'; }
 .forge-classic::after { content: 'Forge Classic'; }
+.forge-neo::after { content: 'Forge Neo'; }
 .comfyui::after { content: 'ComfyUI'; }
 .swarmui::after { content: 'SwarmUI'; }
-.facefusion::after { content: 'Face Fusion'; }
-.sdtrainer::after { content: 'SD Trainer'; }
 
 .button-15::after {
   content: 'SD 1.5';
