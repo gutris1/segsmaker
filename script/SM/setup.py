@@ -23,8 +23,10 @@ from nenen88 import pull, say, download, clone, tempe
 REPO = {
     'A1111': 'https://github.com/gutris1/A1111',
     'Forge': 'https://github.com/lllyasviel/stable-diffusion-webui-forge Forge',
-    'ReForge': '-b main-old https://github.com/Panchovix/stable-diffusion-webui-reForge ReForge',
+    'ReForge': 'https://github.com/Panchovix/stable-diffusion-webui-reForge ReForge',
+    'ReForge-old': '-b main-old https://github.com/Panchovix/stable-diffusion-webui-reForge ReForge-old',
     'Forge-Classic': '-b classic https://github.com/Haoming02/sd-webui-forge-classic Forge-Classic',
+    'Forge-Neo': '-b neo https://github.com/Haoming02/sd-webui-forge-classic Forge-Neo',
     'ComfyUI': 'https://github.com/comfyanonymous/ComfyUI',
     'SwarmUI': 'https://github.com/mcmonkeyprojects/SwarmUI'
 }
@@ -78,8 +80,7 @@ def check_ffmpeg():
         ]
 
         for d, m in c:
-            if m is not None:
-                print(m)
+            if m is not None: print(m)
             subprocess.run(shlex.split(d), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 def marking(p, n, i):
@@ -100,7 +101,7 @@ def install_tunnel():
     bins = {
         'zrok': {
             'bin': HOME / '.zrok/bin/zrok',
-            'url': 'https://github.com/openziti/zrok/releases/download/v1.0.6/zrok_1.0.6_linux_amd64.tar.gz'
+            'url': 'https://github.com/openziti/zrok/releases/download/v2.0.4/zrok_2.0.4_linux_amd64.tar.gz'
         },
         'ngrok': {
             'bin': HOME / '.ngrok/bin/ngrok',
@@ -225,6 +226,9 @@ def sym_link(U, M):
         }
     }
 
+    configs['ReForge-old'] = configs['ReForge']
+    configs['Forge-Neo'] = configs['Forge-Classic']
+
     cfg = configs.get(U)
     SyS(f"rm -rf {HOME / 'tmp'} {HOME / '.cache'}/*")
     [SyS(f'{cmd}') for cmd in cfg['sym']]
@@ -270,7 +274,7 @@ def webui_req(U, W, M):
     for item in line: download(item)
 
     if U not in ['SwarmUI', 'ComfyUI']:
-        e = 'jpg' if U == 'Forge-Classic' else 'png'
+        e = 'jpg' if U in ['Forge-Classic', 'Forge-Neo'] else 'png'
         SyS(f'rm -f {W}/html/card-no-preview.{e}')
 
         for ass in [
@@ -279,7 +283,7 @@ def webui_req(U, W, M):
             f'https://github.com/gutris1/segsmaker/raw/main/config/user.css {W} user.css'
         ]: download(ass)
 
-        if U != 'Forge': download(f'https://github.com/gutris1/segsmaker/raw/main/config/config.json {W} config.json')
+        if U not in ['Forge', 'Forge-Neo']: download(f'https://github.com/gutris1/segsmaker/raw/main/config/config.json {W} config.json')
 
 def WebUIExtensions(U, W, M):
     EXT = W / 'custom_nodes' if U == 'ComfyUI' else W / 'extensions'
@@ -301,7 +305,7 @@ def WebUIExtensions(U, W, M):
 
 def installing_webui(U, W):
     M = W / 'Models' if U == 'SwarmUI' else W / 'models'
-    E = M / 'Embeddings' if U == 'SwarmUI' else (M / 'embeddings' if U in ['Forge-Classic', 'ComfyUI'] else W / 'embeddings')
+    E = M / 'Embeddings' if U == 'SwarmUI' else (M / 'embeddings' if U in ['Forge-Classic', 'Forge-Neo', 'ComfyUI'] else W / 'embeddings')
     V = M / 'vae' if U == 'ComfyUI' else M / 'VAE'
 
     webui_req(U, W, M)
@@ -346,30 +350,17 @@ def facetrainer(ui):
     with loading:
         display(Image(filename=str(IMG)))
 
-    SDTFusion = {
-        'FaceFusion': ('--depth 1 https://github.com/LaoJiuYes/facefusion-lockless FaceFusion', TMP / 'venv-fusion'),
-        'SDTrainer': ('--recurse-submodules https://github.com/Akegarasu/lora-scripts SDTrainer', TMP / 'venv-sd-trainer'),
-    }
-
     with output:
-        if ui in SDTFusion:
-            WEBUI = HOME / ui
-            repo, vnv = SDTFusion[ui]
-
         say(f"<b>【{{red}} Installing {ui.replace('-', '')}{{d}} 】{{red}}</b>")
         clone(repo)
 
         marking(SRC, MARKED, ui)
         tmp_cleaning(vnv)
 
-        if ui == 'FaceFusion':
-            check_ffmpeg()
-            req = [f'rm -rf {HOME}/tmp {HOME}/.cache/*', f'ln -vs /tmp {HOME}/tmp']
-        else:
-            req = [
-                f'rm -rf {HOME}/tmp {HOME}/.cache/*', f'mkdir -p {WEBUI}/dataset',
-                f'mkdir -p {WEBUI}/VAE', f'ln -vs /tmp {HOME}/tmp'
-            ]
+        req = [
+            f'rm -rf {HOME}/tmp {HOME}/.cache/*', f'mkdir -p {WEBUI}/dataset',
+            f'mkdir -p {WEBUI}/VAE', f'ln -vs /tmp {HOME}/tmp'
+        ]
 
         for lines in req: SyS(f'{lines} > /dev/null 2>&1')
         for items in SM_Script(WEBUI): download(items)
@@ -391,24 +382,29 @@ def oppai(ui):
     current_ui = config.get('ui')
     WEBUI = HOME / ui if ui else None
 
+    branches = {
+        'A1111': 'master',
+        'ComfyUI': 'master',
+        'SwarmUI': 'master',
+        'Forge': 'main',
+        'ReForge': 'main',
+        'ReForge-old': 'main-old',
+        'Forge-Classic': 'classic',
+        'Forge-Neo': 'neo'
+    }
+
     if WEBUI and WEBUI.exists():
         git_dir = WEBUI / '.git'
+
         if git_dir.exists():
             CD(WEBUI)
+
             with output:
-                if ui in ['A1111', 'ComfyUI', 'SwarmUI', 'FaceFusion']:
-                    SyS('git pull origin master')
-
-                elif ui in ['Forge', 'ReForge', 'SDTrainer']:
-                    SyS('git pull origin main')
-
-                else:
-                    SyS('git pull origin classic')
+                branch = branches.get(ui)
+                if branch: SyS(f'git pull origin {branch}')
 
                 x = SM_Script(WEBUI)
-
-                if ui and ui not in ['SDTrainer', 'FaceFusion']:
-                    x.append(CN_Script(WEBUI))
+                if ui: x.append(CN_Script(WEBUI))
 
                 print()
                 for y in x: download(y)
@@ -416,27 +412,25 @@ def oppai(ui):
     else:
         if current_ui and current_ui != ui:
             webui = HOME / current_ui
+
             with output:
                 if webui.exists():
                     print(f'{current_ui} is installed. uninstall it before switching to {ui}.')
                     return
 
-        if ui in ['FaceFusion', 'SDTrainer']:
-            facetrainer(ui)
-        else:
-            webui_install(ui)
+        webui_install(ui)
 
 output = widgets.Output()
 loading = widgets.Output()
 
-row1 = ['A1111', 'Forge', 'ReForge', 'Forge-Classic']
+row1 = ['A1111', 'Forge', 'ReForge', 'ReForge-old']
 buttons1 = [widgets.Button(description='') for btn in row1]
 for button, btn in zip(buttons1, row1):
     button.add_class(btn.lower())
     button.add_class('segs-setup-buttons')
     button.on_click(lambda x, btn=btn: oppai(btn))
 
-row2 = ['ComfyUI', 'SwarmUI', 'FaceFusion', 'SDTrainer']
+row2 = ['Forge-Neo', 'Forge-Classic', 'ComfyUI', 'SwarmUI']
 buttons2 = [widgets.Button(description='') for btn in row2]
 for button, btn in zip(buttons2, row2):
     button.add_class(btn.lower())
@@ -450,6 +444,13 @@ multi_panel.add_class('multi-panel')
 hbox1.add_class('hbox1')
 hbox2.add_class('hbox2')
 
+def Undress():
+    display(HTML("""
+    <script>
+    setTimeout(() => ['.multi-panel', '.hbox1', '.hbox2'].forEach(el => document.querySelector(el)?.classList.add('undress')), 1200);
+    </script>
+    """))
+
 def Segsmaker_Setup_Widgets():
     for cmd in [
         f'curl -sLo {CSS} https://github.com/gutris1/segsmaker/raw/main/script/SM/setup.css',
@@ -458,7 +459,9 @@ def Segsmaker_Setup_Widgets():
     ]: SyS(cmd)
 
     Load_CSS()
+    Undress()
     display(multi_panel, output, loading)
+    
 
 CD(HOME)
 Segsmaker_Setup_Widgets()
