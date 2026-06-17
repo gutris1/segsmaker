@@ -214,12 +214,15 @@
 }
 
 .hbox1 {
-  animation: UndressBox1 1s forwards ease;
+  animation: UndressBox1 1.2s forwards ease;
 }
 
 @keyframes UndressBox1 {
   0% {
-    transform: translateX(-2000px);
+    transform: translateX(-100%);
+  }
+  80% {
+    transform: translateX(20%);
   }
   100% {
     transform: translateX(0);
@@ -227,12 +230,15 @@
 }
 
 .hbox2 {
-  animation: UndressBox2 1s forwards ease;
+  animation: UndressBox2 1.2s forwards ease;
 }
 
 @keyframes UndressBox2 {
   0% {
-    transform: translateX(2000px);
+    transform: translateX(100%);
+  }
+  80% {
+    transform: translateX(-20%);
   }
   100% {
     transform: translateX(0);
