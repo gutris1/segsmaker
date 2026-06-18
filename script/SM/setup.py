@@ -100,11 +100,12 @@ def marking(p, n, i):
 def install_tunnel():
     bins = {
         'zrok': {
-            'bin': HOME / '.zrok/bin/zrok',
+            'bin': HOME / '.zrok2/zrok2',
             'url': 'https://github.com/openziti/zrok/releases/download/v2.0.4/zrok_2.0.4_linux_amd64.tar.gz'
         },
+
         'ngrok': {
-            'bin': HOME / '.ngrok/bin/ngrok',
+            'bin': HOME / '.ngrok/ngrok',
             'url': 'https://bin.ngrok.com/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz'
         }
     }
@@ -114,16 +115,18 @@ def install_tunnel():
         if binPath.exists(): binPath.unlink()
 
         url = b['url']
-        name = Path(url).name
-        binDir = binPath.parent
+        n = Path(url).name
+        p = binPath.parent
 
-        binDir.mkdir(parents=True, exist_ok=True)
+        p.mkdir(parents=True, exist_ok=True)
 
-        SyS(f'curl -sLo {binDir}/{name} {url}')
-        SyS(f'tar -xzf {binDir}/{name} -C {binDir} --wildcards *{n}')
-        SyS(f'rm -f {binDir}/{name}')
+        for cmd in [
+            f'curl -sLo {p}/{n} {url}',
+            f'tar -xzf {p}/{n} -C {p}',
+            f'rm -f {p}/{n}'
+        ]: SyS(cmd)
 
-        if str(binDir) not in iRON.get('PATH', ''): iRON['PATH'] += ':' + str(binDir)
+        if str(p) not in iRON.get('PATH', ''): iRON['PATH'] += ':' + str(p)
         binPath.chmod(0o755)
 
 def sym_link(U, M):
@@ -321,61 +324,7 @@ def installing_webui(U, W):
 
     if U != 'SwarmUI': WebUIExtensions(U, W, M)
 
-def webui_install(ui):
-    with loading:
-        display(Image(filename=str(IMG)))
-
-    with output:
-        if ui in REPO:
-            WEBUI = HOME / ui
-            repo = REPO[ui]
-
-        say(f"<b>【{{red}} Installing {ui.replace('-', '')}{{d}} 】{{red}}</b>")
-        clone(repo)
-
-        marking(SRC, MARKED, ui)
-        installing_webui(ui, WEBUI)
-        tempe()
-
-        with loading:
-            loading.clear_output(wait=True)
-            get_ipython().run_line_magic('run', str(MRK))
-            get_ipython().run_line_magic('run', str(WEBUI / 'venv.py'))
-
-            loading.clear_output(wait=True)
-            say('<b>【{red} Done{d} 】{red}</b>')
-            CD(HOME)
-
-def facetrainer(ui):
-    with loading:
-        display(Image(filename=str(IMG)))
-
-    with output:
-        say(f"<b>【{{red}} Installing {ui.replace('-', '')}{{d}} 】{{red}}</b>")
-        clone(repo)
-
-        marking(SRC, MARKED, ui)
-        tmp_cleaning(vnv)
-
-        req = [
-            f'rm -rf {HOME}/tmp {HOME}/.cache/*', f'mkdir -p {WEBUI}/dataset',
-            f'mkdir -p {WEBUI}/VAE', f'ln -vs /tmp {HOME}/tmp'
-        ]
-
-        for lines in req: SyS(f'{lines} > /dev/null 2>&1')
-        for items in SM_Script(WEBUI): download(items)
-        tempe()
-
-        with loading:
-            loading.clear_output(wait=True)
-            get_ipython().run_line_magic('run', str(MRK))
-            get_ipython().run_line_magic('run', str(WEBUI / 'venv.py'))
-
-            loading.clear_output(wait=True)
-            say('<b>【{red} Done{d} 】{red}</b>')
-            CD(HOME)
-
-def oppai(ui):
+def webui_setup(ui):
     multi_panel.layout.display = 'none'
 
     config = json.load(MARKED.open('r')) if MARKED.exists() else {}
@@ -418,7 +367,29 @@ def oppai(ui):
                     print(f'{current_ui} is installed. uninstall it before switching to {ui}.')
                     return
 
-        webui_install(ui)
+        with loading:
+            display(Image(filename=str(IMG)))
+    
+        with output:
+            if ui in REPO:
+                WEBUI = HOME / ui
+                repo = REPO[ui]
+    
+            say(f"<b>【{{red}} Installing {ui.replace('-', '')}{{d}} 】{{red}}</b>")
+            clone(repo)
+    
+            marking(SRC, MARKED, ui)
+            installing_webui(ui, WEBUI)
+            tempe()
+    
+            with loading:
+                loading.clear_output(wait=True)
+                get_ipython().run_line_magic('run', str(MRK))
+                get_ipython().run_line_magic('run', str(WEBUI / 'venv.py'))
+    
+                loading.clear_output(wait=True)
+                say('<b>【{red} Done{d} 】{red}</b>')
+                CD(HOME)
 
 output = widgets.Output()
 loading = widgets.Output()
@@ -428,14 +399,14 @@ buttons1 = [widgets.Button(description='') for btn in row1]
 for button, btn in zip(buttons1, row1):
     button.add_class(btn.lower())
     button.add_class('segs-setup-buttons')
-    button.on_click(lambda x, btn=btn: oppai(btn))
+    button.on_click(lambda x, btn=btn: webui_setup(btn))
 
 row2 = ['Forge-Neo', 'Forge-Classic', 'ComfyUI', 'SwarmUI']
 buttons2 = [widgets.Button(description='') for btn in row2]
 for button, btn in zip(buttons2, row2):
     button.add_class(btn.lower())
     button.add_class('segs-setup-buttons')
-    button.on_click(lambda x, btn=btn: oppai(btn))
+    button.on_click(lambda x, btn=btn: webui_setup(btn))
 
 hbox1 = widgets.HBox(buttons1, layout=widgets.Layout(width='100%', height='255px'))
 hbox2 = widgets.HBox(buttons2, layout=widgets.Layout(width='100%', height='255px'))
