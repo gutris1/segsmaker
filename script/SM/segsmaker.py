@@ -173,12 +173,12 @@ is_ready = Value('b', False)
 def NGROK_ZROK(T):
     P = {
         'zrok': {
-            'B': HOME / '.zrok/bin/zrok',
-            'C': HOME / '.zrok/environment.json',
+            'B': HOME / '.zrok2/zrok2',
+            'C': HOME / '.zrok2/environment.json',
             't': zrok_token.value
         },
         'ngrok': {
-            'B': HOME / '.ngrok/bin/ngrok',
+            'B': HOME / '.ngrok/ngrok',
             'C': HOME / '.config/ngrok/ngrok.yml',
             't': ngrok_token.value
         }
@@ -255,9 +255,9 @@ def launching(ui, skip_comfyui_check=False):
             'pattern': r'https://[\w-]+\.ngrok-free\.[\w.-]+'
         },
         'ZROK': {
-            'command': f'zrok share public localhost:{port} --headless',
+            'command': f'zrok2 share public localhost:{port} --headless',
             'name': 'ZROK',
-            'pattern': r'https://[\w-]+\.share\.zrok\.[\w.-]+'
+            'pattern': r'https://[\w-]+\.shares\.zrok\.[\w.-]+'
         }
     }
 
