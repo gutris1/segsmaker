@@ -23,74 +23,83 @@ startup = home / '.ipython/profile_default/startup'
 
 @register_line_magic
 def storage(line):
+    U = ['B', 'KB', 'MB', 'GB', 'TB']
+    P = [str(home), '/tmp']
+
     SyS(f'rm -rf {home}/.cache/*')
-    paths = [str(home), '/tmp']
 
-    def size1(size, dcml=1):
-        if size == 0:
-            return '0 KB'
+    def size1(s, d=1):
+        if s == 0: return '0 KB'
 
-        for unit in ['B', 'KB', 'MB', 'GB', 'TB']:
-            if size < 1024.0:
-                if unit in ['B', 'KB']:
-                    return f'{size:.0f} {unit}'
-                else:
-                    return f'{size:.{dcml}f} {unit}'
-            size /= 1024.0
+        for u in U:
+            if s < 1024.0:
+                if u in ['B', 'KB']: return f'{s:.0f} {u}'
+                else: return f'{s:.{d}f} {u}'
+            s /= 1024.0
 
-    def size2(size_in_kb):
-        if size_in_kb == 0:
-            return '0 KB'
+    def size2(s):
+        if s == 0: return '0 KB'
 
-        base = 1024
-        size_in_bytes = size_in_kb * base
-        for unit in ['B', 'KB', 'MB', 'GB', 'TB']:
-            if size_in_bytes < base:
-                if unit in ['B', 'KB']:
-                    return f'{size_in_bytes:.0f} {unit}'
-                else:
-                    return f'{size_in_bytes:.1f} {unit}'
-            size_in_bytes /= base
+        b = 1024
+        sb = s * b
 
-    for path_str in paths:
-        path = Path(path_str)
+        for u in U:
+            if sb < b:
+                if u in ['B', 'KB']: return f'{sb:.0f} {u}'
+                else: return f'{sb:.1f} {u}'
+            sb /= b
 
-        usage = psutil.disk_usage(path)
-        size_str = size1(usage.total, dcml=0)
-        used_str = size1(usage.used, dcml=1)
-        free_str = size1(usage.free, dcml=1)
+    def listing(r, p):
+        if r == str(home): return '/' + str(Path(p).relative_to(home))
+        else: return '/' + str(Path(p).relative_to('/tmp'))
 
-        if path_str == str(home):
-            storage_type = 'Persistent Storage'
-        elif path_str == '/tmp':
-            storage_type = 'Temporary Storage'
+    g = {}
 
-        display(HTML(f'{storage_type}'))
+    for r in P:
+        du = subprocess.check_output(['du', '-k', '--max-depth=1', r], stderr=subprocess.DEVNULL).decode()
 
-        print(f' Size = {size_str:>8}')
-        print(f' Used = {used_str:>8} | {usage.percent:.1f}%')
-        print(f' Free = {free_str:>8} | {100 - usage.percent:.1f}%')
+        e = []
+
+        for l in du.split('\n'):
+            if not l.strip(): continue
+
+            try:
+                sb, p = l.split('\t')
+                s = int(sb)
+            except ValueError: continue
+
+            if p == r: continue
+
+            name = listing(r, p)
+            e.append((name, s))
+
+        g[r] = e
+
+    a = []
+    for r in P: a.extend(g.get(r, []))
+
+    m = (max((len(p) for p, _ in a), default=0) + 4)
+
+    for r in P:
+        if r == '/tmp': print()
+
+        usage = psutil.disk_usage(Path(r))
+
+        t = 'Persistent Storage' if r == str(home) else 'Temporary Storage'
+        display(HTML(f'<b>{t}</b>'))
+
+        free_disk = size1(usage.free, d=1)
+        total_disk = size1(usage.total, d=0)
+
+        print(f'{free_disk} free of {total_disk}')
         print()
 
-    du_process = subprocess.Popen(['du', '-h', '-k', '--max-depth=1', str(home)], stdout=subprocess.PIPE)
-    du_output = du_process.communicate()[0].decode()
-    lines = du_output.split('\n')
-    sub_paths = [Path(line.split('\t')[1]) for line in lines if line]
-    sizes_kb = [int(line.split('\t')[0]) for line in lines if line]
+        e = g.get(r, [])
 
-    subdirectories = []
-
-    for sub_path, size_kb in zip(sub_paths, sizes_kb):
-        formatted_size = size2(size_kb)
-        base_path = sub_path.name
-
-        if base_path != 'studio-lab-user':
-            subdirectories.append((base_path, formatted_size))
-
-    if subdirectories:
-        for base_path, formatted_size in subdirectories:
-            padding = ' ' * max(0, 9 - len(formatted_size))
-            print(f'/{base_path:<30} {padding}{formatted_size}')
+        e.sort(key=lambda x: (0 if Path(x[0]).name.startswith('.') else 1, Path(x[0]).name.lower()))
+        for p, s in e:
+            l = size2(s)
+            print(f'{p:<{m}} {l:>10}')
 
 @register_line_magic
 def delete_everything(line):    
@@ -146,14 +155,12 @@ def delete_everything(line):
             if 'LD_PRELOAD' in os.environ: del os.environ['LD_PRELOAD']
 
             folder_list = [
-                'A1111', 'Forge', 'ReForge', 'Forge-Classic', 'ComfyUI', 'SwarmUI', 'SDTrainer', 'FaceFusion',
+                'A1111', 'Forge', 'ReForge', 'ReForge-old', 'Forge-Classic', 'Forge-Neo', 'ComfyUI', 'SwarmUI', 'SDTrainer', 'FaceFusion',
                 'tmp/*', 'tmp', '.cache/*', '.config/*', '.ssh', '.zrok', '.ngrok', '.sagemaker',
                 '.conda/*', '.conda', '.ipython/profile_default/startup/*'
             ]
 
-            cmd_list = [
-                f"rm -rf {' '.join([str(home / folder) for folder in folder_list])}",
-            ]
+            cmd_list = [f"rm -rf {' '.join([str(home / folder) for folder in folder_list])}"]
 
             for deleting in cmd_list: SyS(deleting)
 
@@ -403,35 +410,41 @@ def change_key(line):
         current_hf_token.value = current_hf_token_value
 
         def save_key(b):
-            civitai_key = new_civitai_key.value.strip()
-            hf_token = new_hf_token.value.strip()
-
             with main_output:
+                main_output.clear_output(wait=True)
+        
+                civitai_key = new_civitai_key.value.strip() or current_civitai_key.value.strip()
+                hf_token = new_hf_token.value.strip() or current_hf_token.value.strip()
+
+                new_civitai_key.value = civitai_key
+                new_hf_token.value = hf_token
+
                 if not civitai_key:
                     print('Please enter your CivitAI API Key')
                     return
-
+        
                 if len(civitai_key) < 32:
                     print('API key must be at least 32 characters long')
                     return
-
-                civitai_ke = {'civitai-api-key': civitai_key}
-                hf_toke = {'huggingface-read-token': hf_token}
-
-                secrets = {**civitai_ke, **hf_toke}
+        
+                secrets = {
+                    'civitai-api-key': civitai_key,
+                    'huggingface-read-token': hf_token
+                }
+        
                 Path(key_file).write_text(json.dumps(secrets, indent=4))
-
+        
             with main_output:
                 input_widget.close()
                 main_output.clear_output(wait=True)
                 say('Saving...')
                 key_inject(civitai_key, hf_token)
-
+        
                 main_output.clear_output(wait=True)
                 get_ipython().kernel.do_shutdown(True)
                 time.sleep(2)
                 say('Kernel restarting...')
-
+        
                 main_output.clear_output(wait=True)
                 time.sleep(3)
                 say('Done')
