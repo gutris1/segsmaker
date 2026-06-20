@@ -95,32 +95,6 @@
   filter: brightness(100%) blur(0);
 }
 
-@keyframes Undress15 {
-  0% {
-    max-height: 0;
-    opacity: 0;
-    filter: blur(10px);
-  }
-  100% {
-    max-height: 490px;
-    opacity: 1;
-    filter: blur(0px);
-  }
-}
-
-@keyframes UndressXL {
-  0% {
-    max-height: 0;
-    opacity: 0;
-    filter: blur(10px);
-  }
-  100% {
-    max-height: 580px;
-    opacity: 1;
-    filter: blur(0px);
-  }
-}
-
 .cn-xl, .cn-15 {
   position: relative;
   border: 3px solid transparent;
@@ -130,13 +104,29 @@
   background-color: transparent;
   background-size: cover;
   background-position: center;
+  overflow: hidden;
+  animation: UndressCNpanel .8s forwards ease-out;
 }
 
 .cn-xl {
-  animation: UndressXL 1s forwards ease-out, BorderPulse 15s infinite;
+  max-height: 580px;
 }
+
 .cn-15 {
-  animation: Undress15 1s forwards ease-out, BorderPulse 15s infinite;
+  max-height: 450px;
+}
+
+@keyframes UndressCNpanel {
+  0% {
+    clip-path: inset(0 0 100% 0);
+    opacity: 0;
+    filter: blur(10px);
+  }
+  100% {
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
+    filter: blur(0);
+  }
 }
 
 .cn-xl::before, .cn-15::before {
@@ -155,6 +145,7 @@
   z-index: -1;
   background-color: rgba(0, 0, 0, 0.5);
   mix-blend-mode: multiply;
+  box-shadow: inset 0 0 7px 1px #000;
 }
 
 .cn-xl:hover::before, .cn-15:hover::before {
@@ -165,11 +156,6 @@
   margin: 0;
   overflow: hidden;
   position: relative;
-}
-
-.widget-container .checkbox_layout_15,
-.widget-container .checkbox_layout_xl {
-  top: -40px !important;
 }
 
 .widget-container .widget-box {
@@ -199,18 +185,6 @@
   justify-content: center;
   align-items: center;
   transition: 0.3s ease;
-}
-
-.download-button-15,
-.select-all-button-15,
-.unselect-all-button-15 {
-  top: 415px;
-}
-
-.download-button-xl,
-.select-all-button-xl,
-.unselect-all-button-xl {
-  top: 505px;
 }
 
 .download-button-15,
@@ -250,30 +224,20 @@
 }
 
 .bottom-box-15, .bottom-box-xl {
-  display: block;
+  display: flex;
+  flex-direction: row;
   user-select: none;
   -webkit-user-select: none;
-  position: absolute;
-  pointer-events: none;
-  transform: translateX(-50%);
-  height: 55px;
+  align-items: center;
+  position: relative;
+  top: 38px !important;
+  height: 45px;
+  width: 100%;
   border: 3px solid transparent;
   border-radius: 30px;
-  background-color: rgba(0, 0, 0, 0.9);
-  padding: 0px;
-  animation: BorderPulse 15s infinite;
-}
-
-.bottom-box-15 {
-  bottom: -425px;
-  left: 49.5%;
-  width: 530px;
-}
-
-.bottom-box-xl {
-  bottom: -515px;
-  left: 49.5%;
-  width: 600px;
+  background-color: rgb(0 0 0 / 45%);
+  padding: 0;
+  box-shadow: 0 0 6px 2px #000;
 }
 
 .checkbox input {
