@@ -36,7 +36,7 @@ CD = os.chdir
 
 HOME = Path.home()
 SRC = HOME / '.gutris1'
-CSS = SRC / 'setup.css'
+CSS = SRC / 'segsmaker.css'
 IMG = SRC / 'loading.png'
 MRK = SRC / 'marking.py'
 MARKED = SRC / 'marking.json'
@@ -98,36 +98,42 @@ def marking(p, n, i):
     t.write_text(json.dumps(d, indent=4))
 
 def install_tunnel():
-    bins = {
-        'zrok': {
+    tunnel = {
+        'zrok2': {
             'bin': HOME / '.zrok2/zrok2',
+            'version': HOME / '.zrok2/v2.0.4',
             'url': 'https://github.com/openziti/zrok/releases/download/v2.0.4/zrok_2.0.4_linux_amd64.tar.gz'
         },
-
         'ngrok': {
             'bin': HOME / '.ngrok/ngrok',
             'url': 'https://bin.ngrok.com/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz'
         }
     }
 
-    for n, b in bins.items():
+    for b in tunnel.values():
         binPath = b['bin']
-        if binPath.exists(): binPath.unlink()
-
-        url = b['url']
-        n = Path(url).name
         p = binPath.parent
 
+        if b.get('version', binPath).exists(): continue
+
         p.mkdir(parents=True, exist_ok=True)
+        if binPath.exists(): binPath.unlink()
+
+        n = Path(b['url']).name
 
         for cmd in [
-            f'curl -sLo {p}/{n} {url}',
+            f'curl -sLo {p}/{n} {b["url"]}',
             f'tar -xzf {p}/{n} -C {p}',
             f'rm -f {p}/{n}'
-        ]: SyS(cmd)
+        ]:
+            SyS(cmd)
+
+        if 'version' in b:
+            [f.unlink(missing_ok=True) for f in p.glob('v*')]
+            b['version'].touch()
 
         if str(p) not in iRON.get('PATH', ''): iRON['PATH'] += ':' + str(p)
-        binPath.chmod(0o755)
+        if binPath.exists(): binPath.chmod(0o755)
 
 def sym_link(U, M):
     configs = {
@@ -243,8 +249,7 @@ def webui_req(U, W, M):
     tmp_cleaning(vnv)
     CD(W)
 
-    if U != 'SwarmUI':
-        pull(f'https://github.com/gutris1/segsmaker {U.lower()} {W}')
+    if U != 'SwarmUI': pull(f'https://github.com/gutris1/segsmaker {U.lower()} {W}')
     else:
         M.mkdir(parents=True, exist_ok=True)
         for sub in ['Stable-Diffusion', 'Lora', 'Embeddings', 'VAE', 'upscale_models']:
@@ -288,28 +293,12 @@ def webui_req(U, W, M):
 
         if U not in ['Forge', 'Forge-Neo']: download(f'https://github.com/gutris1/segsmaker/raw/main/config/config.json {W} config.json')
 
-def WebUIExtensions(U, W, M):
-    EXT = W / 'custom_nodes' if U == 'ComfyUI' else W / 'extensions'
-    CD(EXT)
-
-    if U == 'ComfyUI':
-        say('<br><b>【{red} Installing Custom Nodes{d} 】{red}</b>')
-        clone(str(W / 'asd/custom_nodes.txt'))
-        print()
-
-        for faces in [
-            f'https://github.com/sczhou/CodeFormer/releases/download/v0.1.0/codeformer.pth {M}/facerestore_models',
-            f'https://github.com/TencentARC/GFPGAN/releases/download/v1.3.4/GFPGANv1.4.pth {M}/facerestore_models'
-        ]: download(faces)
-
-    else:
-        say('<br><b>【{red} Installing Extensions{d} 】{red}</b>')
-        clone(str(W / 'asd/extension.txt'))
-
 def installing_webui(U, W):
     M = W / 'Models' if U == 'SwarmUI' else W / 'models'
     E = M / 'Embeddings' if U == 'SwarmUI' else (M / 'embeddings' if U in ['Forge-Classic', 'Forge-Neo', 'ComfyUI'] else W / 'embeddings')
     V = M / 'vae' if U == 'ComfyUI' else M / 'VAE'
+
+    EXT = W / 'custom_nodes' if U == 'ComfyUI' else W / 'extensions'
 
     webui_req(U, W, M)
     install_tunnel()
@@ -322,7 +311,22 @@ def installing_webui(U, W):
     for i in extras: download(i)
     SyS(f"unzip -qo {W / 'embeddingsXL.zip'} -d {E} && rm {W / 'embeddingsXL.zip'}")
 
-    if U != 'SwarmUI': WebUIExtensions(U, W, M)
+    if U != 'SwarmUI':
+        CD(EXT)
+
+        if U == 'ComfyUI':
+            say('<br><b>【{red} Installing Custom Nodes{d} 】{red}</b>')
+            clone(str(W / 'asd/custom_nodes.txt'))
+            print()
+
+            for faces in [
+                f'https://github.com/sczhou/CodeFormer/releases/download/v0.1.0/codeformer.pth {M}/facerestore_models',
+                f'https://github.com/TencentARC/GFPGAN/releases/download/v1.3.4/GFPGANv1.4.pth {M}/facerestore_models'
+            ]: download(faces)
+
+        else:
+            say('<br><b>【{red} Installing Extensions{d} 】{red}</b>')
+            clone(str(W / 'asd/extension.txt'))
 
 def webui_setup(ui):
     multi_panel.layout.display = 'none'
@@ -356,6 +360,7 @@ def webui_setup(ui):
                 if ui: x.append(CN_Script(WEBUI))
 
                 print()
+                install_tunnel()
                 for y in x: download(y)
 
     else:
@@ -408,9 +413,9 @@ for button, btn in zip(buttons2, row2):
     button.add_class('segs-setup-buttons')
     button.on_click(lambda x, btn=btn: webui_setup(btn))
 
-hbox1 = widgets.HBox(buttons1, layout=widgets.Layout(width='100%', height='255px'))
-hbox2 = widgets.HBox(buttons2, layout=widgets.Layout(width='100%', height='255px'))
-multi_panel = widgets.VBox([hbox1, hbox2], layout=widgets.Layout(width='100%', height='520px'))
+hbox1 = widgets.Box(buttons1, layout=widgets.Layout(width='100%', height='255px'))
+hbox2 = widgets.Box(buttons2, layout=widgets.Layout(width='100%', height='255px'))
+multi_panel = widgets.VBox([hbox1, hbox2])
 multi_panel.add_class('multi-panel')
 hbox1.add_class('hbox1')
 hbox2.add_class('hbox2')
@@ -418,13 +423,15 @@ hbox2.add_class('hbox2')
 def Undress():
     display(HTML("""
     <script>
-    setTimeout(() => ['.multi-panel', '.hbox1', '.hbox2'].forEach(el => document.querySelector(el)?.classList.add('undress')), 1200);
+    setTimeout(() => document.querySelector('.multi-panel')?.classList.add('undress'), 1200);
+    setTimeout(() => document.querySelector('.hbox1')?.classList.add('undress'), 1200);
+    setTimeout(() => document.querySelector('.hbox2')?.classList.add('undress'), 1200);
     </script>
     """))
 
 def Segsmaker_Setup_Widgets():
     for cmd in [
-        f'curl -sLo {CSS} https://github.com/gutris1/segsmaker/raw/main/script/SM/setup.css',
+        f'curl -sLo {CSS} https://github.com/gutris1/segsmaker/raw/main/script/SM/segsmaker.css',
         f'curl -sLo {IMG} https://github.com/gutris1/segsmaker/raw/main/script/loading.png',
         f'curl -sLo {MRK} https://github.com/gutris1/segsmaker/raw/main/script/marking.py'
     ]: SyS(cmd)
@@ -432,7 +439,6 @@ def Segsmaker_Setup_Widgets():
     Load_CSS()
     Undress()
     display(multi_panel, output, loading)
-    
 
 CD(HOME)
 Segsmaker_Setup_Widgets()
