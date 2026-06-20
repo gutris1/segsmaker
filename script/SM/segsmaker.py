@@ -11,7 +11,7 @@ import sys
 
 HOME = Path.home()
 SRC = HOME / '.gutris1'
-CSS = SRC / 'setup.css'
+CSS = SRC / 'segsmaker.css'
 MARK = SRC / 'marking.json'
 IMG = SRC / 'loading.png'
 
@@ -54,7 +54,7 @@ def load_config():
     else:
         launch_args.value = get_args(ui)
 
-    if tunnell in ['Pinggy', 'ZROK', 'NGROK']:
+    if tunnell in ['Pinggy', 'ZROK2', 'NGROK']:
         tunnel.value = tunnell
     else:
         tunnel.value = 'Pinggy'
@@ -93,9 +93,9 @@ def save_config(zrok_token, ngrok_token, launch_args, tunnel):
 def load_css():
     display(HTML(f'<style>{CSS.read_text()}</style>'))
 
-options = ['Pinggy', 'ZROK', 'NGROK']
+options = ['Pinggy', 'ZROK2', 'NGROK']
 title = widgets.HTML()
-zrok_token = widgets.Text(placeholder='Your ZROK Token')
+zrok_token = widgets.Text(placeholder='Your ZROK2 Token')
 ngrok_token = widgets.Text(placeholder='Your NGROK Token')
 launch_args = widgets.Text(placeholder='Launch Arguments List', layout=widgets.Layout(top='20px'))
 tunnel = widgets.RadioButtons(
@@ -172,14 +172,14 @@ is_ready = Value('b', False)
 
 def NGROK_ZROK(T):
     P = {
-        'zrok': {
+        'zrok2': {
             'B': HOME / '.zrok2/zrok2',
             'C': HOME / '.zrok2/environment.json',
             't': zrok_token.value
         },
         'ngrok': {
             'B': HOME / '.ngrok/ngrok',
-            'C': HOME / '.config/ngrok/ngrok.yml',
+            'C': HOME / '.config/ngrok.yml',
             't': ngrok_token.value
         }
     }
@@ -191,17 +191,17 @@ def NGROK_ZROK(T):
     if not B.exists():
         print(f'{ERR}: {T.upper()} is not installed'); sys.exit()
 
-    E = f'{T} enable {t}' if T == 'zrok' else f'{T} config add-authtoken {t}'
+    E = f'{T} enable {t}' if T == 'zrok2' else f'{T} config add-authtoken {t}'
 
     if C.exists():
         ct = None
-        if T == 'zrok':
+        if T == 'zrok2':
             ct = json.loads(C.read_text()).get('zrok_token')
         elif T == 'ngrok':
             ct = yaml.safe_load(C.read_text()).get('agent', {}).get('authtoken')
 
         if ct != t:
-            if T == 'zrok':
+            if T == 'zrok2':
                 SyS(f'{T} disable')
             SyS(E); print()
     else:
@@ -254,22 +254,22 @@ def launching(ui, skip_comfyui_check=False):
             'name': 'NGROK',
             'pattern': r'https://[\w-]+\.ngrok-free\.[\w.-]+'
         },
-        'ZROK': {
+        'ZROK2': {
             'command': f'zrok2 share public localhost:{port} --headless',
-            'name': 'ZROK',
-            'pattern': r'https://[\w-]+\.shares\.zrok\.[\w.-]+'
+            'name': 'ZROK2',
+            'pattern': r'[\w-]+\.shares\.zrok\.io'
         }
     }
 
     c = f'{PY} Launcher.py {args}'
-    cmd = {key: c for key in ['Pinggy', 'ZROK', 'NGROK']}.get(tunnel_name)
+    cmd = {key: c for key in ['Pinggy', 'ZROK2', 'NGROK']}.get(tunnel_name)
     configs = tunnel_config.get(tunnel_name)
 
     if cmd and configs:
         try:
             from cupang import Tunnel as Alice_Zuberg
 
-            if tunnel_name == 'ZROK': NGROK_ZROK('zrok')
+            if tunnel_name == 'ZROK2': NGROK_ZROK('zrok2')
             if tunnel_name == 'NGROK': NGROK_ZROK('ngrok')
 
             Alice_Synthesis_Thirty = Alice_Zuberg(port)
