@@ -3,6 +3,7 @@ from nenen88 import download, tempe
 from IPython import get_ipython
 from ipywidgets import widgets
 from pathlib import Path
+import asyncio
 import os
 
 from cn15 import controlnet_15_list
@@ -26,94 +27,143 @@ except ImportError:
 
 output = widgets.Output()
 
-options = ['btn-cn-15', 'btn-cn-xl']
-buttons = []
+_lock = asyncio.Lock()
 
-for btn in options:
+PANELS = [
+    {
+        'btn_class': 'btn-cn-15',
+        'panel_class': 'cn-15',
+        'model_list': controlnet_15_list,
+        'layout': dict(display='none', flex_flow='column', width='550px', height='440px', padding='15px'),
+        'btn_layout': dict(width='130px', left='104px'),
+        'sel_layout': dict(width='130px', left='15px'),
+        'unsel_layout': dict(width='130px', left='20px'),
+        'css_classes': [
+            ('checkbox_layout', 'checkbox-layout-15'),
+            ('checkbox1', 'checkbox'),
+            ('checkbox2', 'checkbox'),
+            ('select_all_btn', 'select-all-button-15'),
+            ('unselect_all_btn', 'unselect-all-button-15'),
+            ('download_btn', 'download-button-15'),
+            ('bottom_box', 'bottom-box-15'),
+        ],
+    },
+    {
+        'btn_class': 'btn-cn-xl',
+        'panel_class': 'cn-xl',
+        'model_list': controlnet_xl_list,
+        'layout': dict(display='none', flex_flow='column', width='660px', height='570px', padding='15px'),
+        'btn_layout': dict(left='130px'),
+        'sel_layout': dict(left='30px'),
+        'unsel_layout': dict(left='35px'),
+        'css_classes': [
+            ('checkbox_layout', 'checkbox-layout-xl'),
+            ('checkbox1', 'checkbox'),
+            ('checkbox2', 'checkbox'),
+            ('select_all_btn', 'select-all-button-xl'),
+            ('unselect_all_btn', 'unselect-all-button-xl'),
+            ('download_btn', 'download-button-xl'),
+            ('bottom_box', 'bottom-box-xl'),
+        ],
+    },
+]
+
+
+def _build_panel(cfg):
+    model_list = cfg['model_list']
+
+    half = len(model_list) // 2
+    left_models = dict(list(model_list.items())[:half])
+    right_models = dict(list(model_list.items())[half:])
+
+    checkbox1 = widgets.VBox([widgets.Checkbox(value=False, description=name) for name in left_models])
+    checkbox2 = widgets.VBox([widgets.Checkbox(value=False, description=name) for name in right_models])
+    checkbox_layout = widgets.HBox([checkbox1, checkbox2])
+
+    download_btn = widgets.Button(description='Download', layout=widgets.Layout(**cfg['btn_layout']))
+    select_all_btn = widgets.Button(description='Select All', layout=widgets.Layout(**cfg['sel_layout']))
+    unselect_all_btn = widgets.Button(description='Unselect All', layout=widgets.Layout(**cfg['unsel_layout']))
+    bottom_box = widgets.HBox([select_all_btn, unselect_all_btn, download_btn])
+
+    panel = widgets.Box([checkbox_layout, bottom_box], layout=widgets.Layout(**cfg['layout']))
+
+    ns = dict(
+        panel=panel,
+        checkbox_layout=checkbox_layout,
+        checkbox1=checkbox1,
+        checkbox2=checkbox2,
+        select_all_btn=select_all_btn,
+        unselect_all_btn=unselect_all_btn,
+        download_btn=download_btn,
+        bottom_box=bottom_box,
+    )
+
+    panel.add_class(cfg['panel_class'])
+    for attr, cls in cfg['css_classes']:
+        ns[attr].add_class(cls)
+
+    return {
+        'cfg': cfg,
+        'panel': panel,
+        'checkbox1': checkbox1,
+        'checkbox2': checkbox2,
+        'select_all_btn': select_all_btn,
+        'unselect_all_btn': unselect_all_btn,
+        'download_btn': download_btn,
+    }
+
+panels = [_build_panel(cfg) for cfg in PANELS]
+cn_box = {p['cfg']['btn_class']: p['panel'] for p in panels}
+
+main_panel = widgets.HBox(layout=widgets.Layout(width='460px', height='405px'))
+main_panel.add_class('cn-panel')
+
+buttons = []
+for p in panels:
+    btn_class = p['cfg']['btn_class']
     button = widgets.Button(description='')
-    button.add_class(btn.lower())
-    button.on_click(lambda x, btn=btn: Controlnet_Buttons(btn))
+    button.add_class(btn_class)
+    button.on_click(lambda x, bc=btn_class: Controlnet_Buttons(bc))
     buttons.append(button)
 
-cn_main_panel = widgets.HBox(layout=widgets.Layout(width='460px', height='405px'))
+def Controlnet_Buttons(btn_class):
+    main_panel.close()
+    cn_box[btn_class].layout.display = 'flex'
 
-half_xl = len(controlnet_xl_list) // 2
-left_xl = dict(list(controlnet_xl_list.items())[:half_xl])
-right_xl = dict(list(controlnet_xl_list.items())[half_xl:])
-checkbox1_xl = widgets.VBox([widgets.Checkbox(value=False, description=name) for name in left_xl])
-checkbox2_xl = widgets.VBox([widgets.Checkbox(value=False, description=name) for name in right_xl])
-checkbox_layout_xl = widgets.HBox([checkbox1_xl, checkbox2_xl])
-download_button_xl = widgets.Button(description='Download', layout=widgets.Layout(left='130px'))
-select_all_button_xl = widgets.Button(description='Select All', layout=widgets.Layout(left='30px'))
-unselect_all_button_xl = widgets.Button(description='Unselect All', layout=widgets.Layout(left='35px'))
-bottom_box_xl = widgets.HBox([select_all_button_xl, unselect_all_button_xl, download_button_xl])
-cnxl_panel = widgets.Box([checkbox_layout_xl, bottom_box_xl], layout=widgets.Layout(display='none', flex_flow='column', width='660px', height='570px', padding='15px'))
+def selection():
+    for p in panels:
+        if p['panel'].layout.display == 'flex':
+            return p['checkbox1'].children + p['checkbox2'].children
+    return []
 
-half_15 = len(controlnet_15_list) // 2
-left_15 = dict(list(controlnet_15_list.items())[:half_15])
-right_15 = dict(list(controlnet_15_list.items())[half_15:])
-checkbox1_15 = widgets.VBox([widgets.Checkbox(value=False, description=name) for name in left_15])
-checkbox2_15 = widgets.VBox([widgets.Checkbox(value=False, description=name) for name in right_15])
-checkbox_layout_15 = widgets.HBox([checkbox1_15, checkbox2_15])
-download_button_15 = widgets.Button(description='Download', layout=widgets.Layout(width='130px', left='104px'))
-select_all_button_15 = widgets.Button(description='Select All', layout=widgets.Layout(width='130px', left='15px'))
-unselect_all_button_15 = widgets.Button(description='Unselect All', layout=widgets.Layout(width='130px', left='20px'))
-bottom_box_15 = widgets.HBox([select_all_button_15, unselect_all_button_15, download_button_15])
-cn15_panel = widgets.Box([checkbox_layout_15, bottom_box_15], layout=widgets.Layout(display='none', flex_flow='column', width='550px', height='440px', padding='15px'))
-
-cn_main_panel.add_class('cn-panel')
-
-for w, c in [
-    (cn15_panel, 'cn-15'),
-    (checkbox_layout_15, 'checkbox-layout-15'),
-    (checkbox1_15, 'checkbox'),
-    (checkbox2_15, 'checkbox'),
-    (select_all_button_15, 'select-all-button-15'),
-    (unselect_all_button_15, 'unselect-all-button-15'),
-    (download_button_15, 'download-button-15'),
-    (bottom_box_15, 'bottom-box-15'),
-
-    (cnxl_panel, 'cn-xl'),
-    (checkbox_layout_xl, 'checkbox-layout-xl'),
-    (checkbox1_xl, 'checkbox'),
-    (checkbox2_xl, 'checkbox'),
-    (select_all_button_xl, 'select-all-button-xl'),
-    (unselect_all_button_xl, 'unselect-all-button-xl'),
-    (download_button_xl, 'download-button-xl'),
-    (bottom_box_xl, 'bottom-box-xl')
-]: w.add_class(c)
-
-def Controlnet_Buttons(btn):
-    cn_main_panel.close()
-    {'btn-cn-15': cn15_panel, 'btn-cn-xl': cnxl_panel}[btn].layout.display = 'flex'
-
-def set_(value: bool):
-    if cn15_panel.layout.display == 'flex': boxes = checkbox1_15.children + checkbox2_15.children
-    elif cnxl_panel.layout.display == 'flex': boxes = checkbox1_xl.children + checkbox2_xl.children
-    for cb in boxes: cb.value = value
+async def set_(v: bool):
+    if _lock.locked(): return
+    async with _lock:
+        boxes = selection()
+        if not v: boxes = boxes[::-1]
+        for cb in boxes:
+            cb.value = v
+            await asyncio.sleep(0.025)
 
 def SelectAll(b):
-    set_(True)
+    asyncio.ensure_future(set_(True))
 
 def UnselectAll(b):
-    set_(False)
+    asyncio.ensure_future(set_(False))
 
 def Download_Model(b):
-    cn15_panel.close()
-    cnxl_panel.close()
     tempe()
-
     download_list = []
 
-    if cn15_panel.layout.display == 'flex':
-        cn15_panel.layout.display = 'none'
-        for cb, k in zip(checkbox1_15.children + checkbox2_15.children, list(controlnet_15_list.keys())):
-            if cb.value: download_list.extend(controlnet_15_list[k])
-
-    elif cnxl_panel.layout.display == 'flex':
-        cnxl_panel.layout.display = 'none'
-        for cb, k in zip(checkbox1_xl.children + checkbox2_xl.children, list(controlnet_xl_list.keys())):
-            if cb.value: download_list.extend(controlnet_xl_list[k])
+    for p in panels:
+        pw = p['panel']
+        if pw.layout.display == 'flex':
+            pw.layout.display = 'none'
+            l = p['cfg']['model_list']
+            c = p['checkbox1'].children + p['checkbox2'].children
+            for cb, k in zip(c, list(l.keys())):
+                if cb.value: download_list.extend(l[k])
+            break
 
     with output:
         CD(TMPCN)
@@ -121,7 +171,7 @@ def Download_Model(b):
         CD(HOME)
 
 def load_css():
-    if SM or not Path(CSSCN).exists(): SyS(f'curl -sLo {CSSCN} https://github.com/gutris1/segsmaker/raw/main/script/controlnet.css')
+    if SM or not Path(CSS).exists(): SyS(f'curl -sLo {CSS} https://github.com/gutris1/segsmaker/raw/main/script/controlnet.css')
     display(HTML(f'<style>{Path(CSS).read_text()}</style>'))
 
 def cn_loaded():
@@ -129,24 +179,22 @@ def cn_loaded():
     <script>
     setTimeout(() => document.querySelector('.cn-panel')?.classList.add('loaded'), 1000);
     setTimeout(() => {
-      const btn15 = document.querySelector('.btn-cn-15'), btnxl = document.querySelector('.btn-cn-xl');
-      if (btn15) btn15.onclick = () => setTimeout(() => document.querySelector('.cn-15')?.classList.add('loaded'), 1100);
-      if (btnxl) btnxl.onclick = () => setTimeout(() => document.querySelector('.cn-xl')?.classList.add('loaded'), 1100);
+      document.querySelectorAll('[class*="btn-cn-"]').forEach(btn => {
+        btn.onclick = () => {
+          const panel = '.' + btn.className.match(/btn-cn-\\S+/)[1].replace('btn-', '');
+          setTimeout(() => document.querySelector(panel)?.classList.add('loaded'), 1100);
+        };
+      });
     }, 10);
     </script>
     """))
 
+for p in panels:
+    p['select_all_btn'].on_click(SelectAll)
+    p['unselect_all_btn'].on_click(UnselectAll)
+    p['download_btn'].on_click(Download_Model)
+
 load_css()
-cn_main_panel.children = buttons
+main_panel.children = buttons
 cn_loaded()
-display(cn_main_panel, cn15_panel, cnxl_panel, output)
-
-for b, f in [
-    (select_all_button_15, SelectAll),
-    (unselect_all_button_15, UnselectAll),
-    (download_button_15, Download_Model),
-
-    (select_all_button_xl, SelectAll),
-    (unselect_all_button_xl, UnselectAll),
-    (download_button_xl, Download_Model)
-]: b.on_click(f)
+display(main_panel, *[p['panel'] for p in panels], output)
