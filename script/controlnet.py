@@ -3,7 +3,6 @@ from nenen88 import download, tempe
 from IPython import get_ipython
 from ipywidgets import widgets
 from pathlib import Path
-import asyncio
 import os
 
 from cn15 import controlnet_15_list
@@ -26,8 +25,6 @@ except ImportError:
     SM = True
 
 output = widgets.Output()
-
-_lock = asyncio.Lock()
 
 PANELS = [
     {
@@ -67,7 +64,6 @@ PANELS = [
         ],
     },
 ]
-
 
 def _build_panel(cfg):
     model_list = cfg['model_list']
@@ -136,20 +132,17 @@ def selection():
             return p['checkbox1'].children + p['checkbox2'].children
     return []
 
-async def set_(v: bool):
-    if _lock.locked(): return
-    async with _lock:
-        boxes = selection()
-        if not v: boxes = boxes[::-1]
-        for cb in boxes:
-            cb.value = v
-            await asyncio.sleep(0.025)
+def set_(v: bool):
+    boxes = selection()
+    if not v: boxes = boxes[::-1]
+    for cb in boxes:
+        cb.value = v
 
 def SelectAll(b):
-    asyncio.ensure_future(set_(True))
+    set_(True)
 
 def UnselectAll(b):
-    asyncio.ensure_future(set_(False))
+    set_(False)
 
 def Download_Model(b):
     tempe()
