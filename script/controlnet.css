@@ -23,6 +23,7 @@
 .lm-Widget.jupyter-widgets.jupyter-button.widget-button.btn-cn-15,
 .lm-Widget.jupyter-widgets.jupyter-button.widget-button.btn-cn-xl {
   height: auto;
+  margin: 0;
   cursor: pointer;
   border-width: 0px;
   filter: brightness(50%) blur(5px);
@@ -121,19 +122,20 @@
   background-size: cover;
   background-position: center;
   border-radius: 28px;
-  z-index: -2;
+  z-index: 0;
   transition: filter 0.5s ease;
 }
 
 .cn-xl::after, .cn-15::after {
   content: '';
-  position: absolute;
+  pointer-events: none;
+  z-index: 1;
   inset: 0;
+  position: absolute;
   border-radius: 28px;
-  z-index: -1;
   box-shadow: inset 0 0 20px 2px hsl(var(--hue, 0) 100% 50%);
-  animation: BoxShadowPulsecn 5s linear infinite;
   transition: .4s ease;
+  animation: BoxShadowPulsecn 5s linear infinite;
 }
 
 @keyframes BoxShadowPulsecn {
@@ -163,9 +165,9 @@
 .cn-xl .download-button-xl,
 .cn-xl .select-all-button-xl,
 .cn-xl .unselect-all-button-xl,
-.cn-15 .download-button-15,
-.cn-15 .select-all-button-15,
-.cn-15 .unselect-all-button-15 {
+body .cn-15 .download-button-15,
+body .cn-15 .select-all-button-15,
+body .cn-15 .unselect-all-button-15 {
   display: flex;
   outline: none !important;
   font-weight: bold;
