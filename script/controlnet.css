@@ -189,41 +189,42 @@
 
 .download-button-15,
 .download-button-xl {
-  left: -40px;
-  margin-right: 0px;
-  margin-bottom: 0px;
-  margin-left: 0px;
+  left: -40px !important;
+  margin-right: 0 !important;
+  margin-bottom: 0 !important;
+  margin-left: 0!important;
 }
 
 .select-all-button-15,
 .select-all-button-xl {
-  margin-right: 0px;
-  margin-bottom: 0px;
-  margin-left: 0px;
+  margin-right: 0 !important;
+  margin-bottom: 0 !important;
+  margin-left: 0 !important;
 }
 
 .unselect-all-button-15,
 .unselect-all-button-xl {
-  left: -40px;
-  margin-right: 0px;
-  margin-bottom: 0px;
-  margin-left: 0px;
+  left: -40px !important;
+  margin-right: 0px !important;
+  margin-bottom: 0px !important;
+  margin-left: 0px !important;
 }
 
-.download-button-15:hover,
-.select-all-button-15:hover,
-.unselect-all-button-15:hover,
-.download-button-xl:hover,
-.select-all-button-xl:hover,
-.unselect-all-button-xl:hover {
-  border-color: cyan;
-  filter: drop-shadow(0 0 10px #275EFE);
+.cn-15 .download-button-15:hover,
+.cn-15 .select-all-button-15:hover,
+.cn-15 .unselect-all-button-15:hover,
+.cn-xl .download-button-xl:hover,
+.cn-xl .select-all-button-xl:hover,
+.cn-xl .unselect-all-button-xl:hover {
+  border-color: cyan !important;
+  filter: drop-shadow(0 0 10px #275EFE) !important;
   box-shadow: 0 0 10px 1px cyan !important;
-  background-color: cyan;
-  color: #000;
+  background-color: cyan !important;
+  color: #000 !important;
 }
 
-.bottom-box-15, .bottom-box-xl {
+.lm-Widget.lm-Panel.jupyter-widgets.widget-container.widget-box.widget-hbox.bottom-box-15,
+.lm-Widget.lm-Panel.jupyter-widgets.widget-container.widget-box.widget-hbox.bottom-box-xl {
   display: flex;
   flex-direction: row;
   user-select: none;
@@ -377,8 +378,4 @@
     opacity: 1;
     filter: blur(0px);
   }
-}
-
-.lm-Widget.lm-Panel {
-  top: 0px;
 }
