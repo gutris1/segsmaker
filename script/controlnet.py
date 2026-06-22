@@ -8,10 +8,11 @@ import os
 from cn15 import controlnet_15_list
 from cnxl import controlnet_xl_list
 
-CSSCN = Path(__file__).parent / 'controlnet.css'
 SyS = get_ipython().system
 CD = os.chdir
 SM = None
+
+CSS = Path(__file__).parent / 'controlnet.css'
 
 try:
     from KANDANG import TEMPPATH, HOMEPATH
@@ -39,9 +40,9 @@ cn_main_panel = widgets.HBox(layout=widgets.Layout(width='460px', height='405px'
 half_xl = len(controlnet_xl_list) // 2
 left_xl = dict(list(controlnet_xl_list.items())[:half_xl])
 right_xl = dict(list(controlnet_xl_list.items())[half_xl:])
-checkbox1_xl = widgets.VBox([widgets.Checkbox(value=False, description=name, style={'description_width': '0px'}) for name in left_xl], layout=widgets.Layout(left='0px'))
-checkbox2_xl = widgets.VBox([widgets.Checkbox(value=False, description=name, style={'description_width': '0px'}) for name in right_xl], layout=widgets.Layout(left='20px'))
-checkbox_layout_xl = widgets.HBox([checkbox1_xl, checkbox2_xl], layout=widgets.Layout(align_items='flex-start'))
+checkbox1_xl = widgets.VBox([widgets.Checkbox(value=False, description=name) for name in left_xl])
+checkbox2_xl = widgets.VBox([widgets.Checkbox(value=False, description=name) for name in right_xl])
+checkbox_layout_xl = widgets.HBox([checkbox1_xl, checkbox2_xl])
 download_button_xl = widgets.Button(description='Download', layout=widgets.Layout(left='130px'))
 select_all_button_xl = widgets.Button(description='Select All', layout=widgets.Layout(left='30px'))
 unselect_all_button_xl = widgets.Button(description='Unselect All', layout=widgets.Layout(left='35px'))
@@ -51,10 +52,10 @@ cnxl_panel = widgets.Box([checkbox_layout_xl, bottom_box_xl], layout=widgets.Lay
 half_15 = len(controlnet_15_list) // 2
 left_15 = dict(list(controlnet_15_list.items())[:half_15])
 right_15 = dict(list(controlnet_15_list.items())[half_15:])
-checkbox1_15 = widgets.VBox([widgets.Checkbox(value=False, description=name, style={'description_width': '0px'}) for name in left_15], layout=widgets.Layout(left='10px'))
-checkbox2_15 = widgets.VBox([widgets.Checkbox(value=False, description=name, style={'description_width': '0px'}) for name in right_15], layout=widgets.Layout(left='-60px'))
-checkbox_layout_15 = widgets.HBox([checkbox1_15, checkbox2_15], layout=widgets.Layout(align_items='flex-start'))
-download_button_15 = widgets.Button(description='Download', layout=widgets.Layout(width='130px', left='110px'))
+checkbox1_15 = widgets.VBox([widgets.Checkbox(value=False, description=name) for name in left_15])
+checkbox2_15 = widgets.VBox([widgets.Checkbox(value=False, description=name) for name in right_15])
+checkbox_layout_15 = widgets.HBox([checkbox1_15, checkbox2_15])
+download_button_15 = widgets.Button(description='Download', layout=widgets.Layout(width='130px', left='104px'))
 select_all_button_15 = widgets.Button(description='Select All', layout=widgets.Layout(width='130px', left='15px'))
 unselect_all_button_15 = widgets.Button(description='Unselect All', layout=widgets.Layout(width='130px', left='20px'))
 bottom_box_15 = widgets.HBox([select_all_button_15, unselect_all_button_15, download_button_15])
@@ -64,7 +65,7 @@ cn_main_panel.add_class('cn-panel')
 
 for w, c in [
     (cn15_panel, 'cn-15'),
-    (checkbox_layout_15, 'checkbox_layout_15'),
+    (checkbox_layout_15, 'checkbox-layout-15'),
     (checkbox1_15, 'checkbox'),
     (checkbox2_15, 'checkbox'),
     (select_all_button_15, 'select-all-button-15'),
@@ -73,7 +74,7 @@ for w, c in [
     (bottom_box_15, 'bottom-box-15'),
 
     (cnxl_panel, 'cn-xl'),
-    (checkbox_layout_xl, 'checkbox_layout_xl'),
+    (checkbox_layout_xl, 'checkbox-layout-xl'),
     (checkbox1_xl, 'checkbox'),
     (checkbox2_xl, 'checkbox'),
     (select_all_button_xl, 'select-all-button-xl'),
@@ -121,7 +122,7 @@ def Download_Model(b):
 
 def load_css():
     if SM or not Path(CSSCN).exists(): SyS(f'curl -sLo {CSSCN} https://github.com/gutris1/segsmaker/raw/main/script/controlnet.css')
-    display(HTML(f'<style>{Path(CSSCN).read_text()}</style>'))
+    display(HTML(f'<style>{Path(CSS).read_text()}</style>'))
 
 def cn_loaded():
     display(HTML("""
