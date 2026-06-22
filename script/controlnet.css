@@ -20,7 +20,8 @@
   }
 }
 
-.btn-cn-15, .btn-cn-xl {
+.lm-Widget.jupyter-widgets.jupyter-button.widget-button.btn-cn-15,
+.lm-Widget.jupyter-widgets.jupyter-button.widget-button.btn-cn-xl {
   height: auto;
   cursor: pointer;
   border-width: 0px;
@@ -37,15 +38,16 @@
   transition: 0.4s ease;
 }
 
-.btn-cn-15 {
+.lm-Widget.jupyter-widgets.jupyter-button.widget-button.btn-cn-15 {
   background-image: url('https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/5f06d0e2-5959-4c31-be80-546735970d76/original=true,quality=90/00014-1506.jpeg');
 }
 
-.btn-cn-xl {
+.lm-Widget.jupyter-widgets.jupyter-button.widget-button.btn-cn-xl {
   background-image: url('https://i.imgur.com/giAg91c.jpg');
 }
 
-.btn-cn-15::after, .btn-cn-xl::after {
+.lm-Widget.jupyter-widgets.jupyter-button.widget-button.btn-cn-15::after,
+.lm-Widget.jupyter-widgets.jupyter-button.widget-button.btn-cn-xl::after {
   font-family: 'Times New Roman', serif;
   text-align: center;
   position: absolute;
@@ -62,14 +64,15 @@
   box-shadow: 0 0 10px 1px #000;
 }
 
-.btn-cn-15::after {
+.lm-Widget.jupyter-widgets.jupyter-button.widget-button.btn-cn-15::after {
   content: 'SD 1.5';
 }
-.btn-cn-xl::after {
+.lm-Widget.jupyter-widgets.jupyter-button.widget-button.btn-cn-xl::after {
   content: 'SD XL';
 }
 
-.btn-cn-15:hover, .btn-cn-xl:hover {
+.lm-Widget.jupyter-widgets.jupyter-button.widget-button.btn-cn-15:hover,
+.lm-Widget.jupyter-widgets.jupyter-button.widget-button.btn-cn-xl:hover {
   width: 100%;
   border-width: 0px;
   filter: brightness(100%) blur(0);
