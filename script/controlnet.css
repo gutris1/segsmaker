@@ -165,26 +165,26 @@
 .cn-xl .download-button-xl,
 .cn-xl .select-all-button-xl,
 .cn-xl .unselect-all-button-xl,
-body .cn-15 .download-button-15,
-body .cn-15 .select-all-button-15,
-body .cn-15 .unselect-all-button-15 {
-  display: flex;
+.cn-15 .download-button-15,
+.cn-15 .select-all-button-15,
+.cn-15 .unselect-all-button-15 {
+  display: flex !important;
   outline: none !important;
-  font-weight: bold;
-  position: relative;
-  margin: 0;
-  background-color: transparent;
-  text-align: center;
-  color: cyan;
-  border: 2px solid transparent;
-  border-radius: 100px;
-  height: 40px;
-  font-size: 16px;
-  padding: 0 10px;
-  z-index: 1;
-  justify-content: center;
-  align-items: center;
-  transition: 0.3s ease;
+  font-weight: bold !important;
+  position: relative !important;
+  margin: 0 !important;
+  background-color: transparent !important;
+  text-align: center !important;
+  color: cyan !important;
+  border: 2px solid transparent !important;
+  border-radius: 100px !important;
+  height: 40px !important;
+  font-size: 16px !important;
+  padding: 0 10px !important;
+  z-index: 1 !important;
+  justify-content: center!important;
+  align-items: center !important;
+  transition: 0.3s ease !important;
 }
 
 .download-button-15,
