@@ -111,7 +111,7 @@ def _build_panel(cfg):
 panels = [_build_panel(cfg) for cfg in PANELS]
 cn_box = {p['cfg']['btn_class']: p['panel'] for p in panels}
 
-main_panel = widgets.HBox(layout=widgets.Layout(width='464px', height='405px'))
+main_panel = widgets.HBox(layout=widgets.Layout(width='466px', height='405px'))
 main_panel.add_class('cn-main-panel')
 
 buttons = []
