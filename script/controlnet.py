@@ -31,7 +31,7 @@ PANELS = [
         'btn_class': 'btn-cn-15',
         'panel_class': 'cn-15',
         'model_list': controlnet_15_list,
-        'layout': dict(display='none', flex_flow='column', width='550px', height='440px', padding='15px'),
+        'layout': dict(display='none', flex_flow='column', width='550px', height='430px', padding='15px'),
         'btn_layout': dict(width='130px', left='104px'),
         'sel_layout': dict(width='130px', left='15px'),
         'unsel_layout': dict(width='130px', left='20px'),
@@ -49,7 +49,7 @@ PANELS = [
         'btn_class': 'btn-cn-xl',
         'panel_class': 'cn-xl',
         'model_list': controlnet_xl_list,
-        'layout': dict(display='none', flex_flow='column', width='660px', height='570px', padding='15px'),
+        'layout': dict(display='none', flex_flow='column', width='660px', height='558px', padding='15px'),
         'btn_layout': dict(left='130px'),
         'sel_layout': dict(left='30px'),
         'unsel_layout': dict(left='35px'),
@@ -111,8 +111,8 @@ def _build_panel(cfg):
 panels = [_build_panel(cfg) for cfg in PANELS]
 cn_box = {p['cfg']['btn_class']: p['panel'] for p in panels}
 
-main_panel = widgets.HBox(layout=widgets.Layout(width='460px', height='405px'))
-main_panel.add_class('cn-panel')
+main_panel = widgets.HBox(layout=widgets.Layout(width='464px', height='405px'))
+main_panel.add_class('cn-main-panel')
 
 buttons = []
 for p in panels:
