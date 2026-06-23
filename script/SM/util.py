@@ -155,7 +155,7 @@ def delete_everything(line):
             if 'LD_PRELOAD' in os.environ: del os.environ['LD_PRELOAD']
 
             folder_list = [
-                'A1111', 'Forge', 'ReForge', 'ReForge-old', 'Forge-Classic', 'Forge-Neo', 'ComfyUI', 'SwarmUI', 'SDTrainer', 'FaceFusion',
+                'A1111', 'Forge', 'ReForge', 'ReForge-old', 'Forge-Classic', 'Forge-Neo', 'ComfyUI', 'SwarmUI',
                 'tmp/*', 'tmp', '.cache/*', '.config/*', '.ssh', '.zrok', '.ngrok', '.sagemaker',
                 '.conda/*', '.conda', '.ipython/profile_default/startup/*'
             ]
@@ -319,79 +319,44 @@ def zipping(line, cell):
     zip_folder(input_path, output_path, max_size_mb, custom_name)
 
 @register_line_magic
-def change_key(line):
+def change_api_key(line):
     nenen = startup / 'nenen88.py'
     key_file = src / 'api-key.json'
 
-    main_output = widgets.Output()
+    output = widgets.Output()
+
+    title = widgets.HTML("<h4>Change API Key</h4>")
+
+    current_civitai = widgets.Text(placeholder='', disabled=True)
+    new_civitai = widgets.Text(placeholder='New Civitai API KEY')
+    civitai_box = widgets.VBox([current_civitai, new_civitai])
+
+    current_hf = widgets.Text(placeholder='', disabled=True)
+    new_hf = widgets.Text(placeholder='New Huggingface READ Token (optional)')
+    hf_box = widgets.VBox([current_hf, new_hf])
+
     save_button = widgets.Button(description='Save')
     cancel_button = widgets.Button(description='Cancel')
-    new_civitai_key = widgets.Text(placeholder='New Civitai API KEY')
-    new_hf_token = widgets.Text(placeholder='New Huggingface READ Token (optional)', layout=widgets.Layout(left='6px', width='340px'))
-    current_civitai_key = widgets.Text(placeholder='', disabled=True, layout=widgets.Layout(left='-3px', top='0px'))
-    current_hf_token = widgets.Text(placeholder='', disabled=True, layout=widgets.Layout(top='0px'))
+    button_box = widgets.HBox([cancel_button, save_button])
 
-    buttons = widgets.HBox(
-        [cancel_button, save_button],
-        layout=widgets.Layout(
-            width='400px',
-            display='flex',
-            flex_flow='row',
-            align_items='center',
-            justify_content='space-around',
-            padding='0px'
-        )
-    )
+    key_box = widgets.VBox([civitai_box, hf_box])
+    change_key_box = widgets.VBox([title, key_box, button_box])
 
-    current_box = widgets.Box(
-        [current_civitai_key, current_hf_token],
-        layout=widgets.Layout(
-            left='12px',
-            top='0px',
-            height='100px',
-            display='flex',
-            flex_flow='column',
-            justify_content='space-around',
-            align_items='baseline'
-        )
-    )
-
-    new_box = widgets.Box(
-        [new_civitai_key, new_hf_token],
-        layout=widgets.Layout(
-            left='50px',
-            top='-10px',
-            height='100px',
-            display='flex',
-            flex_flow='column',
-            justify_content='space-around',
-            align_items='flex-end'
-        )
-    )
-
-    key_box = widgets.HBox([current_box, new_box])
-
-    input_widget = widgets.VBox(
-        [key_box, buttons],
-        layout=widgets.Layout(
-            position="absolute",
-            width="700px",
-            height="180px",
-            display="flex",
-            flex_flow="column",
-            align_items="center",
-            justify_content="space-around",
-            padding="20px",
-        )
-    )
-
-    save_button.add_class('save')
-    cancel_button.add_class('cancel')
-    new_civitai_key.add_class('key-input')
-    new_hf_token.add_class('key-hf')
-    current_civitai_key.add_class('current-key')
-    current_hf_token.add_class('current-hf')
-    input_widget.add_class('input-widget')
+    for w, c in [
+        (title, 'change-key-title'),
+        (change_key_box, 'change-key-box'),
+        (save_button, 'save-change-key'),
+        (cancel_button, 'cancel-change-key'),
+        (key_box, 'key-box'),
+        (button_box, 'button-box'),
+        (civitai_box, 'civitai-box'),
+        (current_civitai, 'current-civitai'),
+        (new_civitai, 'new-civitai'),
+        (hf_box, 'hf-box'),
+        (current_hf, 'current-hf'),
+        (new_hf, 'new-hf'),
+    ]:
+        w.add_class(c)
 
     def load_css(css):
         display(HTML(f'<style>{Path(css).read_text()}</style>'))
@@ -405,19 +370,19 @@ def change_key(line):
         v = v.replace("TOBRUT = ''", f"TOBRUT = '{hf_token}'")
         p.write_text(v)
 
-    def key_widget(current_civitai_key_value='', current_hf_token_value=''):
-        current_civitai_key.value = current_civitai_key_value
-        current_hf_token.value = current_hf_token_value
+    def key_widget(current_civitai_key='', current_hf_key=''):
+        current_civitai.value = current_civitai_key
+        current_hf.value = current_hf_key
 
         def save_key(b):
-            with main_output:
-                main_output.clear_output(wait=True)
+            with output:
+                output.clear_output(wait=True)
         
-                civitai_key = new_civitai_key.value.strip() or current_civitai_key.value.strip()
-                hf_token = new_hf_token.value.strip() or current_hf_token.value.strip()
+                civitai_key = new_civitai.value.strip() or current_civitai.value.strip()
+                hf_token = new_hf.value.strip() or current_hf.value.strip()
 
-                new_civitai_key.value = civitai_key
-                new_hf_token.value = hf_token
+                new_civitai.value = civitai_key
+                new_hf.value = hf_token
 
                 if not civitai_key:
                     print('Please enter your CivitAI API Key')
@@ -434,45 +399,60 @@ def change_key(line):
         
                 Path(key_file).write_text(json.dumps(secrets, indent=4))
         
-            with main_output:
-                input_widget.close()
-                main_output.clear_output(wait=True)
+            with output:
+                change_key_box.close()
+                output.clear_output(wait=True)
                 say('Saving...')
                 key_inject(civitai_key, hf_token)
         
-                main_output.clear_output(wait=True)
+                output.clear_output(wait=True)
                 get_ipython().kernel.do_shutdown(True)
                 time.sleep(2)
                 say('Kernel restarting...')
         
-                main_output.clear_output(wait=True)
+                output.clear_output(wait=True)
                 time.sleep(3)
                 say('Done')
 
         def cancel_key(b):
-            new_civitai_key.value = ''
-            new_hf_token.value = ''
+            new_civitai.value = ''
+            new_hf.value = ''
 
-            with main_output:
-                input_widget.close()
-                main_output.clear_output(wait=True)
+            with output:
+                change_key_box.close()
+                output.clear_output(wait=True)
                 say('^ Canceled')
 
         save_button.on_click(save_key)
         cancel_button.on_click(cancel_key)
 
+    def change_key_loaded():
+        display(HTML("""
+        <script>
+        setTimeout(() => {
+          document.querySelectorAll('.new-civitai input, .new-hf input').forEach(el => el.spellcheck = false);
+
+          const box = document.querySelector('.change-key-box');
+          (box) && box.classList.add('loaded');
+
+        }, 1000);
+        </script>
+        """))
+
     def key_check():
         if key_file.exists():
-            v = json.loads(key_file.read_text())
+            load_css(css)
 
+            v = json.loads(key_file.read_text())
             civitai_key = v.get('civitai-api-key', '')
             hf_token = v.get('huggingface-read-token', '')
+
             key_widget(civitai_key, hf_token)
-            display(input_widget, main_output)
+            change_key_loaded()
+            display(change_key_box, output)
         else:
             say('API Key does not exist')
 
-    load_css(css)
     key_check()
 
 @register_line_magic
