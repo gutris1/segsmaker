@@ -29,23 +29,23 @@ def storage(line):
     SyS(f'rm -rf {home}/.cache/*')
 
     def size1(s, d=1):
-        if s == 0: return '0 KB'
+        if s == 0: return '0'
 
         for u in U:
             if s < 1024.0:
-                if u in ['B', 'KB']: return f'{s:.0f} {u}'
+                if u in ['B', 'K']: return f'{s:.0f} {u}'
                 else: return f'{s:.{d}f} {u}'
             s /= 1024.0
 
     def size2(s):
-        if s == 0: return '0 KB'
+        if s == 0: return '0'
 
         b = 1024
         sb = s * b
 
         for u in U:
             if sb < b:
-                if u in ['B', 'KB']: return f'{sb:.0f} {u}'
+                if u in ['B', 'K']: return f'{sb:.0f} {u}'
                 else: return f'{sb:.1f} {u}'
             sb /= b
 
@@ -477,14 +477,48 @@ def change_key(line):
 
 @register_line_magic
 def zrok_register(line):
-    zrok_bin = home / '.zrok/bin'
-    zrok_cmd = zrok_bin / 'zrok invite'
-    zrok_txt = zrok_bin / 'zrok_log.txt'
+    zrok = {
+        'bin': home / '.zrok2/zrok2',
+        'version': home / '.zrok2/v2.0.4',
+        'url': 'https://github.com/openziti/zrok/releases/download/v2.0.4/zrok_2.0.4_linux_amd64.tar.gz'
+    }
+
+    def zrok_install():
+        binPath = zrok['bin']
+        p = binPath.parent
+
+        if zrok['version'].exists(): return
+
+        p.mkdir(parents=True, exist_ok=True)
+        if binPath.exists(): binPath.unlink()
+
+        n = Path(zrok['url']).name
+
+        for cmd in [
+            f'curl -sLo {p}/{n} {zrok["url"]}',
+            f'tar -xzf {p}/{n} -C {p}',
+            f'rm -f {p}/{n}'
+        ]:
+            SyS(cmd)
+
+        for f in p.glob('v*'):
+            f.unlink(missing_ok=True)
+
+        zrok['version'].touch()
+        if binPath.exists(): binPath.chmod(0o755)
+
+    zrok_install()
+
+    zrok_cmd = zrok['bin'].with_name('zrok invite')
+    zrok_txt = zrok['bin'].parent / 'zrok_log.txt'
 
     zrok_output = widgets.Output()
-    register_button = widgets.Button(description='Register', layout=widgets.Layout(left= '-45%'))
-    exit_button = widgets.Button(description='Exit', layout=widgets.Layout(left= '45%'))
-    email_input = widgets.Text(placeholder='Enter Your Valid Email Address', layout=widgets.Layout(width= '75%'))
+    register_button = widgets.Button(description='Register', layout=widgets.Layout(left='-45%'))
+    exit_button = widgets.Button(description='Exit', layout=widgets.Layout(left='45%'))
+    email_input = widgets.Text(
+        placeholder='Enter Your Valid Email Address',
+        layout=widgets.Layout(width='75%')
+    )
 
     zrok_button = widgets.HBox(
         [register_button, exit_button],
@@ -499,7 +533,7 @@ def zrok_register(line):
         [email_input, zrok_button],
         layout=widgets.Layout(
             height='160px',
-            width= '550px',
+            width='550px',
             display='flex',
             flex_flow='column',
             align_items='center',
@@ -510,25 +544,14 @@ def zrok_register(line):
 
     register_button.add_class('zrok-btn')
     exit_button.add_class('zrok-btn')
-    email_input.add_class('email-input')
+    email_input.add_class('zrok-email-input')
     zrok_widget.add_class('zrok-widget')
-
-    def zrok_install():    
-        if zrok_bin.exists(): return
-
-        zrok_bin.mkdir(parents=True, exist_ok=True)
-        zrok_url = 'https://github.com/openziti/zrok/releases/download/v1.0.2/zrok_1.0.2_linux_amd64.tar.gz'
-        zrok_tar = zrok_bin / Path(zrok_url).name
-
-        SyS(f'curl -sLo {zrok_tar} {zrok_url}')
-        SyS(f'tar -xzf {zrok_tar} -C {zrok_bin} --wildcards *zrok')
-        SyS(f'rm -rf {home}/.cache/* {zrok_tar}')
 
     def load_css(css):
         display(HTML(f'<style>{Path(css).read_text()}</style>'))
 
     def register(b):
-        import pexpect # type: ignore
+        import pexpect
 
         zrok_widget.close()
         email = email_input.value
@@ -548,7 +571,7 @@ def zrok_register(line):
             zrok_txt.touch()
 
             child = pexpect.spawn('bash')
-            child.sendline(f'{zrok_cmd} | tee {zrok_txt}')
+            child.sendline(f'{zrok["bin"]} invite | tee {zrok_txt}')
             child.expect('enter and confirm your email address...')
 
             for _ in range(2):
@@ -562,7 +585,7 @@ def zrok_register(line):
             child.close()
 
             print(f'Invitation sent to {E}\n Be sure to check your SPAM folder if you do not receive the invitation email.')
-            zrok_txt.unlink()
+            zrok_txt.unlink(missing_ok=True)
 
     def exit(b):
         zrok_widget.close()
@@ -573,5 +596,4 @@ def zrok_register(line):
     register_button.on_click(register)
     exit_button.on_click(exit)
 
-    zrok_install()
     SyS('pip install -q pexpect')
