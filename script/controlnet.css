@@ -1,68 +1,107 @@
-.cn-panel {
-  border: 0px solid transparent;
-  border-radius: 30px;
-  margin: 0;
-  background-color: transparent;
+.cn-main-panel {
+  gap: 4px;
+  border: 0 solid transparent !important;
+  margin: 0 !important;
+  background: transparent !important;
   animation: slide-blur-panel 1s;
-  overflow: visible !important;
+  overflow: hidden !important;
 }
 
 @keyframes slide-blur-panel {
   from {
-    height: 0px;
     opacity: 0;
     filter: blur(30px);
   }
   to {
-    height: 405px;
     opacity: 1;
-    filter: blur(0px);
+    filter: blur(0);
   }
 }
 
 .lm-Widget.jupyter-widgets.jupyter-button.widget-button.btn-cn-15,
 .lm-Widget.jupyter-widgets.jupyter-button.widget-button.btn-cn-xl {
+  -webkit-mask: linear-gradient(to left, transparent, #000 1px);
+  position: relative;
   height: auto;
-  margin: 0;
-  cursor: pointer;
-  border-width: 0px;
-  filter: brightness(50%) blur(5px);
+  width: 70%;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  box-shadow: inset 0 0 10px 0px #000 !important;
+  border-width: 0;
   border-radius: 3px;
-  position: relative;
+  margin: 0;
   overflow: hidden;
-  -webkit-mask: linear-gradient(to left, transparent, #000 1px);
-  width: 70%;
-  box-shadow: inset 0 0 10px 7px #000 !important;
-  transition: 0.4s ease;
+  cursor: pointer;
+  transition: .4s ease;
 }
 
 .lm-Widget.jupyter-widgets.jupyter-button.widget-button.btn-cn-15 {
-  background-image: url('https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/5f06d0e2-5959-4c31-be80-546735970d76/original=true,quality=90/00014-1506.jpeg');
+  animation: slide-cn15 1s;
 }
 
 .lm-Widget.jupyter-widgets.jupyter-button.widget-button.btn-cn-xl {
+  animation: slide-cnxl 1s;
+}
+
+@keyframes slide-cn15 {
+  from {
+    transform: translateY(-410px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-cnxl {
+  from {
+    transform: translateY(410px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.lm-Widget.jupyter-widgets.jupyter-button.widget-button.btn-cn-15::before,
+.lm-Widget.jupyter-widgets.jupyter-button.widget-button.btn-cn-xl::before {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  box-shadow: inset 0 0 10px 7px #000 !important;
+  filter: brightness(50%) blur(5px);
+  transition: .4s ease;
+}
+
+.lm-Widget.jupyter-widgets.jupyter-button.widget-button.btn-cn-15::before {
+  background-image: url('https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/5f06d0e2-5959-4c31-be80-546735970d76/original=true,quality=90/00014-1506.jpeg');
+}
+
+.lm-Widget.jupyter-widgets.jupyter-button.widget-button.btn-cn-xl::before {
   background-image: url('https://i.imgur.com/giAg91c.jpg');
 }
 
 .lm-Widget.jupyter-widgets.jupyter-button.widget-button.btn-cn-15::after,
 .lm-Widget.jupyter-widgets.jupyter-button.widget-button.btn-cn-xl::after {
-  font-family: 'Times New Roman', serif;
-  text-align: center;
+  display: block;
   position: absolute;
   bottom: 0px;
   left: -10px;
+  z-index: 1;
+  font-family: 'Times New Roman', serif;
+  text-align: center;
   color: white;
   font-size: 40px;
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgb(0 0 0 / 80%);
   padding: 10px;
-  display: block;
-  border-radius: 0px;
+  border-radius: 0;
   width: 100%;
-  filter: drop-shadow(0 0 10px #000);
+  filter: brightness(50%) blur(0);
   box-shadow: 0 0 10px 1px #000;
+  transition: .4s ease;
 }
 
 .lm-Widget.jupyter-widgets.jupyter-button.widget-button.btn-cn-15::after {
@@ -75,7 +114,13 @@
 .lm-Widget.jupyter-widgets.jupyter-button.widget-button.btn-cn-15:hover,
 .lm-Widget.jupyter-widgets.jupyter-button.widget-button.btn-cn-xl:hover {
   width: 100%;
-  border-width: 0px;
+  border-width: 0;
+}
+
+.lm-Widget.jupyter-widgets.jupyter-button.widget-button.btn-cn-15:hover::before,
+.lm-Widget.jupyter-widgets.jupyter-button.widget-button.btn-cn-xl:hover::before,
+.lm-Widget.jupyter-widgets.jupyter-button.widget-button.btn-cn-15:hover::after,
+.lm-Widget.jupyter-widgets.jupyter-button.widget-button.btn-cn-xl:hover::after {
   filter: brightness(100%) blur(0);
 }
 
@@ -89,7 +134,7 @@
   background-size: cover;
   background-position: center;
   overflow: hidden;
-  animation: UndressCNpanel .8s forwards ease-out;
+  animation: loadCNpanel .4s forwards ease;
 }
 
 .cn-xl {
@@ -100,14 +145,14 @@
   max-height: 450px;
 }
 
-@keyframes UndressCNpanel {
-  0% {
-    clip-path: inset(0 0 100% 0);
+@keyframes loadCNpanel {
+  from {
+    transform: scale(50%);
     opacity: 0;
     filter: blur(10px);
   }
-  100% {
-    clip-path: inset(0 0 0 0);
+  to {
+    transform: scale(100%);
     opacity: 1;
     filter: blur(0);
   }
@@ -229,7 +274,7 @@
   -webkit-user-select: none;
   align-items: center;
   position: relative;
-  top: 38px !important;
+  top: 30px !important;
   height: 45px;
   width: 100%;
   border: 3px solid transparent;
