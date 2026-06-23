@@ -1,5 +1,5 @@
 .cn-main-panel {
-  gap: 4px;
+  gap: 6px;
   border: 0 solid transparent !important;
   margin: 0 !important;
   background: transparent !important;
@@ -40,10 +40,6 @@
   animation: slide-cn15 1s;
 }
 
-.lm-Widget.jupyter-widgets.jupyter-button.widget-button.btn-cn-xl {
-  animation: slide-cnxl 1s;
-}
-
 @keyframes slide-cn15 {
   from {
     transform: translateY(-410px);
@@ -51,6 +47,10 @@
   to {
     transform: translateY(0);
   }
+}
+
+.lm-Widget.jupyter-widgets.jupyter-button.widget-button.btn-cn-xl {
+  animation: slide-cnxl 1s;
 }
 
 @keyframes slide-cnxl {
