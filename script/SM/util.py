@@ -463,11 +463,12 @@ def zrok_register(line):
         'url': 'https://github.com/openziti/zrok/releases/download/v2.0.4/zrok_2.0.4_linux_amd64.tar.gz'
     }
 
+    def load_css(css):
+        display(HTML(f'<style>{Path(css).read_text()}</style>'))
+
     def zrok_install():
         binPath = zrok['bin']
         p = binPath.parent
-
-        if zrok['version'].exists(): return
 
         p.mkdir(parents=True, exist_ok=True)
         if binPath.exists(): binPath.unlink()
@@ -487,60 +488,17 @@ def zrok_register(line):
         zrok['version'].touch()
         if binPath.exists(): binPath.chmod(0o755)
 
-    zrok_install()
-
-    zrok_cmd = zrok['bin'].with_name('zrok invite')
-    zrok_txt = zrok['bin'].parent / 'zrok_log.txt'
-
-    zrok_output = widgets.Output()
-    register_button = widgets.Button(description='Register', layout=widgets.Layout(left='-45%'))
-    exit_button = widgets.Button(description='Exit', layout=widgets.Layout(left='45%'))
-    email_input = widgets.Text(
-        placeholder='Enter Your Valid Email Address',
-        layout=widgets.Layout(width='75%')
-    )
-
-    zrok_button = widgets.HBox(
-        [register_button, exit_button],
-        layout=widgets.Layout(
-            display='flex',
-            flex_flow='row',
-            justify_content='space-between'
-        )
-    )
-
-    zrok_widget = widgets.VBox(
-        [email_input, zrok_button],
-        layout=widgets.Layout(
-            height='160px',
-            width='550px',
-            display='flex',
-            flex_flow='column',
-            align_items='center',
-            justify_content='space-around',
-            padding='20px'
-        )
-    )
-
-    register_button.add_class('zrok-btn')
-    exit_button.add_class('zrok-btn')
-    email_input.add_class('zrok-email-input')
-    zrok_widget.add_class('zrok-widget')
-
-    def load_css(css):
-        display(HTML(f'<style>{Path(css).read_text()}</style>'))
-
     def register(b):
         import pexpect
 
-        zrok_widget.close()
-        email = email_input.value
+        zrok_box.close()
+        email = email_box.value
 
         R = '\033[0m'
         O = '\033[38;5;208m'
         E = f'{O}{email}{R}'
 
-        with zrok_output:
+        with output:
             if not email:
                 print('No email address entered.')
                 return
@@ -567,13 +525,51 @@ def zrok_register(line):
             print(f'Invitation sent to {E}\n Be sure to check your SPAM folder if you do not receive the invitation email.')
             zrok_txt.unlink(missing_ok=True)
 
-    def exit(b):
-        zrok_widget.close()
+    def cancel(b):
+        zrok_box.close()
+
+    def zrok_register_loaded():
+        display(HTML("""
+        <script>
+        setTimeout(() => {
+          const box = document.querySelector('.zrok-box'),
+          email = document.querySelector('.zrok-email input');
+
+          box && box.classList.add('loaded');
+          email && (email.spellcheck = false);
+        }, 1000);
+        </script>
+        """))
+
+    if not zrok['version'].exists(): zrok_install()
+
+    zrok_cmd = zrok['bin'].with_name('zrok invite')
+    zrok_txt = zrok['bin'].parent / 'zrok_log.txt'
+
+    output = widgets.Output()
+
+    email_box = widgets.Text(placeholder='Enter Your Valid Email Address')
+
+    register_button = widgets.Button(description='Register')
+    cancel_button = widgets.Button(description='Cancel')
+
+    buttons_box = widgets.HBox([cancel_button, register_button])
+    zrok_box = widgets.VBox([email_box, buttons_box])
+
+    for w, c in [
+        (zrok_box, 'zrok-box'),
+        (email_box, 'zrok-email'),
+        (buttons_box, 'zrok-buttons-box'),
+        (register_button, 'zrok-button'),
+        (cancel_button, 'zrok-button')
+    ]:
+        w.add_class(c)
 
     load_css(css)
-    display(zrok_widget, zrok_output)
+    zrok_register_loaded()
+    display(zrok_box, output)
 
     register_button.on_click(register)
-    exit_button.on_click(exit)
+    cancel_button.on_click(cancel)
 
     SyS('pip install -q pexpect')
