@@ -172,14 +172,11 @@ def cn_loaded():
     <script>
     setTimeout(() => {
       const c = 'loaded',
-        main = document.querySelector('.cn-main-panel'),
+        box = document.querySelector('.cn-main-panel'),
         btn15 = document.querySelector('.btn-cn-15'),
         btnxl = document.querySelector('.btn-cn-xl');
 
-      [main, btn15, btnxl].forEach(el => el?.classList.add(c));
-
-      btn15 && (btn15.onclick = () => setTimeout(() => document.querySelector('.cn-15')?.classList.add(c), 1000));
-      btnxl && (btnxl.onclick = () => setTimeout(() => document.querySelector('.cn-xl')?.classList.add(c), 1000));
+      [box, btn15, btnxl].forEach(el => el?.classList.add(c));
     }, 1000);
     </script>
     """))
