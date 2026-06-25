@@ -140,7 +140,7 @@
   background-size: cover;
   background-position: center;
   overflow: hidden;
-  animation: loadCNpanel .4s forwards ease;
+  animation: loadCNpanel .4s forwards;
 }
 
 .cn-xl {
@@ -173,7 +173,7 @@
   background-image: url('https://i.imgur.com/5Mkdrpw.jpg');
   background-size: cover;
   background-position: center;
-  transition: .5s ease;
+  transition: .4s ease;
 }
 
 .cn-xl:hover::before,
@@ -201,11 +201,9 @@
 
 .btn-cn-15.loaded,
 .btn-cn-xl.loaded,
-.cn-15.loaded,
-.cn-xl.loaded,
 .cn-main-panel.loaded {
   opacity: 1;
-  transform: scale(1) translateY(0);
+  transform: translateY(0);
   filter: blur(0);
   overflow: hidden;
   animation: none !important;
