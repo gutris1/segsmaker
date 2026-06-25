@@ -170,15 +170,17 @@ def load_css():
 def cn_loaded():
     display(HTML("""
     <script>
-    setTimeout(() => document.querySelector('.cn-panel')?.classList.add('loaded'), 1000);
     setTimeout(() => {
-      document.querySelectorAll('[class*="btn-cn-"]').forEach(btn => {
-        btn.onclick = () => {
-          const panel = '.' + btn.className.match(/btn-cn-\\S+/)[1].replace('btn-', '');
-          setTimeout(() => document.querySelector(panel)?.classList.add('loaded'), 1100);
-        };
-      });
-    }, 10);
+      const c = 'loaded',
+        main = document.querySelector('.cn-main-panel'),
+        btn15 = document.querySelector('.btn-cn-15'),
+        btnxl = document.querySelector('.btn-cn-xl');
+
+      [main, btn15, btnxl].forEach(el => el?.classList.add(c));
+
+      btn15 && (btn15.onclick = () => setTimeout(() => document.querySelector('.cn-15')?.classList.add(c), 1000));
+      btnxl && (btnxl.onclick = () => setTimeout(() => document.querySelector('.cn-xl')?.classList.add(c), 1000));
+    }, 1000);
     </script>
     """))
 
