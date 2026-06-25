@@ -1,21 +1,14 @@
 :root {
-  --multi-gradient-bg: linear-gradient(to right,
-    rgb(255, 0, 0), rgb(255, 0, 25), rgb(255, 0, 50), rgb(255, 0, 75),
-    rgb(255, 0, 100), rgb(255, 0, 125), rgb(255, 0, 150), rgb(255, 0, 175),
-    rgb(255, 0, 200), rgb(255, 0, 225), rgb(255, 0, 255), rgb(225, 0, 255),
-    rgb(200, 0, 255), rgb(175, 0, 255), rgb(150, 0, 255), rgb(125, 0, 255),
-    rgb(100, 0, 255), rgb(75, 0, 255), rgb(50, 0, 255), rgb(25, 0, 255),
-    rgb(0, 0, 255), rgb(0, 25, 255), rgb(0, 50, 255), rgb(0, 75, 255),
-    rgb(0, 100, 255), rgb(0, 125, 255), rgb(0, 150, 255), rgb(0, 175, 255),
-    rgb(0, 200, 255), rgb(0, 225, 255), rgb(0, 255, 255), rgb(0, 255, 225),
-    rgb(0, 255, 200), rgb(0, 255, 175), rgb(0, 255, 150), rgb(0, 255, 125),
-    rgb(0, 255, 100), rgb(0, 255, 75), rgb(0, 255, 50), rgb(0, 255, 25),
-    rgb(0, 255, 0), rgb(25, 255, 0), rgb(50, 255, 0), rgb(75, 255, 0),
-    rgb(100, 255, 0), rgb(125, 255, 0), rgb(150, 255, 0), rgb(175, 255, 0),
-    rgb(200, 255, 0), rgb(225, 255, 0), rgb(255, 255, 0), rgb(255, 225, 0),
-    rgb(255, 200, 0), rgb(255, 175, 0), rgb(255, 150, 0), rgb(255, 125, 0),
-    rgb(255, 100, 0), rgb(255, 75, 0), rgb(255, 50, 0), rgb(255, 25, 0),
-    rgb(255, 0, 0));
+  --gradient-background: linear-gradient(
+    90deg,
+    hsl(0 100% 50%),
+    hsl(60 100% 50%),
+    hsl(120 100% 50%),
+    hsl(180 100% 50%),
+    hsl(240 100% 50%),
+    hsl(300 100% 50%),
+    hsl(360 100% 50%)
+  );
 }
 
 @keyframes BoxShadowPulse {
@@ -234,16 +227,28 @@
   height: 170px;
 }
 
-.launcher-title {
-  display: block;
+.launcher-webui-title {
   position: absolute;
-  top: -20px;
-  right: 14px;
-  font-family: 'Times New Roman', serif;
-  font-size: 28px;
+  right: 0;
+  height: max-content;
+  width: max-content;
+  border: 0;
   margin: 0;
+  padding: 10px;
+  overflow: visible;
+}
+
+.launcher-title {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: relative;
+  font-weight: bold;
+  font-family: 'Times New Roman', serif;
+  margin: 0;
+  padding: 10px;
   color: transparent;
-  background-image: var(--multi-gradient-bg);
+  background-image: var(--gradient-background);
   background-size: 800% 500%;
   background-clip: text;
   -webkit-background-clip: text;
@@ -251,7 +256,16 @@
   user-select: none;
   -webkit-user-select: none;
   filter: drop-shadow(2px 4px 6px black);
+  overflow: visible;
   animation: slideBackground 20s linear infinite;
+}
+
+.launcher-title span:first-child {
+  font-size: 46px;
+}
+
+.launcher-title span:nth-child(2) {
+  font-size: 30px;
 }
 
 .launcher-token-box {
@@ -581,7 +595,7 @@
   width: 200px;
   height: 5px;
   font-size: 0px;
-  background-image: var(--multi-gradient-bg);
+  background-image: var(--gradient-background);
   background-size: 800% 500%;
   border-radius: 2px;
   border: 1px solid transparent;
@@ -791,7 +805,7 @@
   border: 3px solid transparent;
   background-size: 800% 100%;
   cursor: pointer;
-  background-image: var(--multi-gradient-bg);
+  background-image: var(--gradient-background);
   animation: slideBackground 10s linear infinite, BorderPulse 7s infinite;
 }
 
