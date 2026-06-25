@@ -1,49 +1,25 @@
+from IPython.display import display, HTML, clear_output, Image
+from IPython import get_ipython
+from ipywidgets import widgets
+from pathlib import Path
+import subprocess
+import shutil
+import shlex
+import json
+import sys
+import os
+
 R = '\033[31m'
 P = '\033[38;5;135m'
 RST = '\033[0m'
 ERR = f'{P}[{RST}{R}ERROR{RST}{P}]{RST}'
 
-import sys, subprocess
 python_version = subprocess.run(['python', '--version'], capture_output=True, text=True).stdout.split()[1]
 if tuple(map(int, python_version.split('.'))) < (3, 10, 6):
     print(f'{ERR}: Python version 3.10.6 or higher required, and you are using Python {python_version}')
     sys.exit()
 
-from IPython.display import display, HTML, clear_output, Image
-from IPython import get_ipython
-from ipywidgets import widgets
-from pathlib import Path
-import shutil
-import shlex
-import json
-import os
-
 from nenen88 import pull, say, download, clone, tempe
-
-REPO = {
-    'A1111': 'https://github.com/gutris1/A1111',
-    'Forge': 'https://github.com/lllyasviel/stable-diffusion-webui-forge Forge',
-    'ReForge': 'https://github.com/Panchovix/stable-diffusion-webui-reForge ReForge',
-    'ReForge-old': '-b main-old https://github.com/Panchovix/stable-diffusion-webui-reForge ReForge-old',
-    'Forge-Classic': '-b classic https://github.com/Haoming02/sd-webui-forge-classic Forge-Classic',
-    'Forge-Neo': '-b neo https://github.com/Haoming02/sd-webui-forge-classic Forge-Neo',
-    'ComfyUI': 'https://github.com/comfyanonymous/ComfyUI',
-    'SwarmUI': 'https://github.com/mcmonkeyprojects/SwarmUI'
-}
-
-SyS = get_ipython().system
-CD = os.chdir
-
-HOME = Path.home()
-SRC = HOME / '.gutris1'
-CSS = SRC / 'segsmaker.css'
-IMG = SRC / 'loading.png'
-MRK = SRC / 'marking.py'
-MARKED = SRC / 'marking.json'
-TMP = Path('/tmp')
-
-SRC.mkdir(parents=True, exist_ok=True)
-iRON = os.environ
 
 def SM_Script(WEBUI):
     return [
@@ -396,6 +372,51 @@ def webui_setup(ui):
                 say('<b>【{red} Done{d} 】{red}</b>')
                 CD(HOME)
 
+def Undress():
+    display(HTML("""
+    <script>
+    setTimeout(() => document.querySelector('.multi-panel')?.classList.add('undress'), 1200);
+    setTimeout(() => document.querySelector('.hbox1')?.classList.add('undress'), 1200);
+    setTimeout(() => document.querySelector('.hbox2')?.classList.add('undress'), 1200);
+    </script>
+    """))
+
+def Segsmaker_Setup_Widgets():
+    for cmd in [
+        f'curl -sLo {CSS} https://github.com/gutris1/segsmaker/raw/main/script/SM/segsmaker.css',
+        f'curl -sLo {IMG} https://github.com/gutris1/segsmaker/raw/main/script/loading.png',
+        f'curl -sLo {MRK} https://github.com/gutris1/segsmaker/raw/main/script/marking.py'
+    ]: SyS(cmd)
+
+    Load_CSS()
+    Undress()
+    display(multi_panel, output, loading)
+
+REPO = {
+    'A1111': 'https://github.com/gutris1/A1111',
+    'Forge': 'https://github.com/lllyasviel/stable-diffusion-webui-forge Forge',
+    'ReForge': 'https://github.com/Panchovix/stable-diffusion-webui-reForge ReForge',
+    'ReForge-old': '-b main-old https://github.com/Panchovix/stable-diffusion-webui-reForge ReForge-old',
+    'Forge-Classic': '-b classic https://github.com/Haoming02/sd-webui-forge-classic Forge-Classic',
+    'Forge-Neo': '-b neo https://github.com/Haoming02/sd-webui-forge-classic Forge-Neo',
+    'ComfyUI': 'https://github.com/comfyanonymous/ComfyUI',
+    'SwarmUI': 'https://github.com/mcmonkeyprojects/SwarmUI'
+}
+
+SyS = get_ipython().system
+iRON = os.environ
+CD = os.chdir
+
+HOME = Path.home()
+SRC = HOME / '.gutris1'
+CSS = SRC / 'segsmaker.css'
+IMG = SRC / 'loading.png'
+MRK = SRC / 'marking.py'
+MARKED = SRC / 'marking.json'
+TMP = Path('/tmp')
+
+SRC.mkdir(parents=True, exist_ok=True)
+
 output = widgets.Output()
 loading = widgets.Output()
 
@@ -419,26 +440,6 @@ multi_panel = widgets.VBox([hbox1, hbox2])
 multi_panel.add_class('multi-panel')
 hbox1.add_class('hbox1')
 hbox2.add_class('hbox2')
-
-def Undress():
-    display(HTML("""
-    <script>
-    setTimeout(() => document.querySelector('.multi-panel')?.classList.add('undress'), 1200);
-    setTimeout(() => document.querySelector('.hbox1')?.classList.add('undress'), 1200);
-    setTimeout(() => document.querySelector('.hbox2')?.classList.add('undress'), 1200);
-    </script>
-    """))
-
-def Segsmaker_Setup_Widgets():
-    for cmd in [
-        f'curl -sLo {CSS} https://github.com/gutris1/segsmaker/raw/main/script/SM/segsmaker.css',
-        f'curl -sLo {IMG} https://github.com/gutris1/segsmaker/raw/main/script/loading.png',
-        f'curl -sLo {MRK} https://github.com/gutris1/segsmaker/raw/main/script/marking.py'
-    ]: SyS(cmd)
-
-    Load_CSS()
-    Undress()
-    display(multi_panel, output, loading)
 
 CD(HOME)
 Segsmaker_Setup_Widgets()
