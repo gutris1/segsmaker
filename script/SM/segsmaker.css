@@ -288,7 +288,7 @@
   line-height: 2.5;
   font-family: 'Segoe UI', sans-serif;
   font-size: 16px;
-  text-align: center;
+  text-align: left;
   height: 30px;
   color: white;
   border: 0;
@@ -313,7 +313,6 @@
 .launcher-args,
 .launcher-args input[type='text'] {
   width: 96%;
-  text-align: left;
   align-self: center;
 }
   
@@ -436,6 +435,7 @@
 .launcher-tunnel-radio label:has(input:checked) span {
   color: hsl(179.72deg 100% 50%);
   filter: drop-shadow(0 0 5px hsl(240deg 100% 50%));
+  animation: BoxShadowPulse 5s linear infinite;
 }
 
 .launcher-tunnel-radio *,
@@ -479,9 +479,9 @@
 
 .launcher-button:hover {
   color: #000;
-  box-shadow: var(--a) #000, var(--b) var(--d), var(--c) var(--d);
-  background: var(--d);
-  filter: drop-shadow(0 0 4px var(--d));
+  box-shadow: var(--a) #000, var(--b) var(--d), var(--c) var(--d) !important;
+  background: var(--d) !important;
+  filter: drop-shadow(0 0 4px var(--d)) !important;
 }
 
 .launcher-cpu-cb {
