@@ -13,12 +13,12 @@ SRC = HOME / '.gutris1'
 MARK = SRC / 'marking.json'
 IMG = SRC / 'loading.png'
 
-tmp = Path('/tmp')
+TMP = Path('/tmp')
 cwd = Path.cwd()
 
-vnv_D = tmp / 'venv'
-vnv_C = tmp / 'venv-comfy-swarm'
-vnv_FC = tmp / 'python311'
+vnv_D = TMP / 'venv'
+vnv_C = TMP / 'venv-comfy-swarm'
+vnv_FC = TMP / 'python311'
 
 SyS = get_ipython().system
 CD = os.chdir
@@ -28,10 +28,10 @@ def aDel():
         globals().pop(name, None)
 
 def trashing():
-    dirs1 = ['A1111', 'Forge', 'ReForge', 'Forge-Classic', 'ComfyUI', 'SwarmUI']
+    dirs1 = ['A1111', 'Forge', 'ReForge', 'ReForge-old', 'Forge-Classic', 'Forge-Neo', 'ComfyUI', 'SwarmUI']
     dirs2 = ['ckpt', 'lora', 'controlnet', 'svd', 'z123']
 
-    for path in [HOME / d for d in dirs1] + [tmp / d for d in dirs2]:
+    for path in [HOME / d for d in dirs1] + [TMP / d for d in dirs2]:
         SyS(f'find {path} -type d -name .ipynb_checkpoints -exec rm -rf {{}} + > /dev/null 2>&1')
 
 def check_pv():
@@ -78,21 +78,19 @@ def install_venv(ui, url, vnv, fn):
     clear_output(wait=True)
     display(Image(filename=str(IMG)))
 
-    CD(HOME)
+    CD(TMP)
 
     msg = 'Installing Forge Classic Python 3.11.13' if ui == 'Forge-Classic' else f'Installing {ui} VENV'
     say(f'<b>【{{red}} {msg}{{d}} 】{{red}}</b>')
 
-    if isinstance(url, list):
-        for u, f in zip(url, fn):
-            download(u)
-            SyS(f'cd {tmp} && pv "{HOME / f}" | lz4 -d | tar xf -')
-            Path(HOME / f).unlink(missing_ok=True)
+    v = zip(url, fn) if isinstance(url, list) else [(url, fn)]
 
-    else:
-        download(url)
-        SyS(f'cd {tmp} && pv "{HOME / fn}" | lz4 -d | tar xf -')
-        Path(HOME / fn).unlink(missing_ok=True)
+    for u, f in v:
+        t = TMP / f
+    
+        download(u)
+        SyS(f'pv "{t}" | lz4 -d | tar xf -')
+        t.unlink(missing_ok=True)
 
     if ui != 'Forge-Classic':
         for cmd in [
