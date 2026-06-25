@@ -52,7 +52,7 @@ def load_config():
 
     title.value = f"""
     <div class='launcher-title'>
-      <h1>{app.get('title', 'Unknown UI')}</h1>
+      {''.join(f'<span>{t}</span>' for t in app.get('title', 'Unknown').split())}
     </div>
     """
 
@@ -290,6 +290,7 @@ launch_panel = widgets.Box([top_row, launch_args, bottom_row])
 
 for w, c in [
     (launch_panel, 'launcher-box'),
+    (title, 'launcher-webui-title'),
     (top_row, 'launcher-top-row'),
     (bottom_row, 'launcher-bottom-row'),
     (cpu_cb, 'launcher-cpu-cb'),
