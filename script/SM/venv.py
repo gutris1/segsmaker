@@ -8,110 +8,101 @@ import os
 
 from nenen88 import tempe, say, download
 
-HOME = Path.home()
-SRC = HOME / '.gutris1'
-MARK = SRC / 'marking.json'
-IMG = SRC / 'loading.png'
-
-TMP = Path('/tmp')
-cwd = Path.cwd()
-
-vnv_D = TMP / 'venv'
-vnv_C = TMP / 'venv-comfy-swarm'
-vnv_FC = TMP / 'python311'
-
-SyS = get_ipython().system
-CD = os.chdir
-
 def aDel():
     for name in ['tempe', 'say', 'download']:
         globals().pop(name, None)
 
 def trashing():
-    dirs1 = ['A1111', 'Forge', 'ReForge', 'ReForge-old', 'Forge-Classic', 'Forge-Neo', 'ComfyUI', 'SwarmUI']
-    dirs2 = ['ckpt', 'lora', 'controlnet', 'svd', 'z123']
-
-    for path in [HOME / d for d in dirs1] + [TMP / d for d in dirs2]:
-        SyS(f'find {path} -type d -name .ipynb_checkpoints -exec rm -rf {{}} + > /dev/null 2>&1')
+    f = ['ckpt', 'lora', 'controlnet', 'svd', 'z123']
+    for p in [HOME / ui] + [TMP / d for d in f]:
+        SyS(f'find {p} -type d -name .ipynb_checkpoints -exec rm -rf {{}} + > /dev/null 2>&1')
 
 def check_pv():
     try:
-        cmd = 'pv -V'
-        subprocess.run(shlex.split(cmd), capture_output=True, text=True, check=True)
-    except (subprocess.CalledProcessError, FileNotFoundError):
-        cmd = 'mamba install -y pv'
-        subprocess.run(shlex.split(cmd), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.run(['pv', '-V'], capture_output=True, text=True, check=True)
+    except Exception:
+        subprocess.run(['mamba', 'install', '-y', 'pv'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-def unused_venv(vnv):
-    venvs = [vnv_D, vnv_C, vnv_FC]
-    unused = [v for v in venvs if v != vnv and v.exists()]
+def unused_python(py):
+    venvs = [TMP / 'venv', TMP / 'venv-comfy-swarm', TMP / 'python311', TMP / 'NEO']
+    unused = [v for v in venvs if v != py and v.exists()]
+    if unused: SyS(f"rm -rf {' '.join(str(v) for v in unused)}")
 
-    if unused:
-        SyS(f"rm -rf {' '.join(f'{v}/* {v}' for v in unused)}")
+def install_python():
+    py = UI_CFG[ui]['py']
+    if py.exists(): return
 
-def load_config():
-    config = json.load(MARK.open('r')) if MARK.exists() else {}
-    ui = config.get('ui')
-
-    if ui in ['ComfyUI', 'SwarmUI']:
-        url = 'https://huggingface.co/gutris1/webui/resolve/main/env/SSL-ComfyUI-SwarmUI-Torch260-cu124.tar.lz4'
-        vnv = vnv_C
-
-    elif ui == 'Forge-Classic':
-        url = 'https://huggingface.co/gutris1/webui/resolve/main/env/SSL-FC-Python311-Torch260-cu124.tar.lz4'
-        vnv = vnv_FC
-
-    else:
-        url = [
-            'https://huggingface.co/gutris1/webui/resolve/main/env/SSL-Torch2120-cu130-part1.tar.lz4',
-            'https://huggingface.co/gutris1/webui/resolve/main/env/SSL-Torch2120-cu130-part2.tar.lz4'
-        ]
-        vnv = vnv_D
-
-    fn = [Path(u).name for u in url] if isinstance(url, list) else Path(url).name
-    return ui, url, vnv, fn
-
-def install_venv(ui, url, vnv, fn):
-    unused_venv(vnv)
+    unused_python(py)
     check_pv()
-
-    clear_output(wait=True)
-    display(Image(filename=str(IMG)))
 
     CD(TMP)
 
-    msg = 'Installing Forge Classic Python 3.11.13' if ui == 'Forge-Classic' else f'Installing {ui} VENV'
-    say(f'<b>【{{red}} {msg}{{d}} 】{{red}}</b>')
+    clear_output(wait=True)
+    display(Image(filename=str(IMG)))
+    say(f'<b>Installing {ui} Python</b>')
 
-    v = zip(url, fn) if isinstance(url, list) else [(url, fn)]
+    url = UI_CFG[ui]['url']
+    l = zip(url, [Path(u).name for u in url]) if isinstance(url, list) else [(url, Path(url).name)]
 
-    for u, f in v:
+    for u, f in l:
         t = TMP / f
-    
         download(u)
         SyS(f'pv "{t}" | lz4 -d | tar xf -')
         t.unlink(missing_ok=True)
 
-    if ui != 'Forge-Classic':
-        for cmd in [
-            f'rm -f {vnv}/bin/pip* {vnv}/bin/python*',
-            f'python3 -m venv {vnv}',
-            f'{pip} install -U --force-reinstall pip',
-            f'{pip} install ipykernel matplotlib pyyaml',
-            f'{pip} install -q comfy-aimdo'
-        ]:
-            SyS(f'{cmd} > /dev/null 2>&1')
+    if ui not in ['Forge-Classic', 'Forge-Neo']:
+        pi = f'{py}/bin/python3 -m pip install'
 
-print('checking env...')
+        for c in [
+            f'rm -f {py}/bin/pip* {py}/bin/python*',
+            f'python3 -m venv {py}',
+            f'{pi} -U pip'
+            f'{pi} ipykernel matplotlib pyyaml',
+            f'{pi} -q comfy-aimdo'
+        ]: SyS(f'{c} > /dev/null 2>&1')
+
+HOME = Path.home()
+SRC = HOME / '.gutris1'
+MARK = SRC / 'marking.json'
+IMG = SRC / 'loading.png'
+TMP = Path('/tmp')
+cwd = Path.cwd()
+
+SyS = get_ipython().system
+CD = os.chdir
+
+ui = json.load(MARK.open()).get('ui')
+
+URL = {
+    'D': [
+        'https://huggingface.co/gutris1/webui/resolve/main/env/SSL-Torch2120-cu130-part1.tar.lz4',
+        'https://huggingface.co/gutris1/webui/resolve/main/env/SSL-Torch2120-cu130-part2.tar.lz4'
+    ],
+    'FC': 'https://huggingface.co/gutris1/webui/resolve/main/env/SSL-FC-Python311-Torch260-cu124.tar.lz4',
+    'FN': [
+        'https://huggingface.co/gutris1/webui/resolve/main/env/SSL-FN-Torch2121-cu130-part1.tar.lz4',
+        'https://huggingface.co/gutris1/webui/resolve/main/env/SSL-FN-Torch2121-cu130-part2.tar.lz4'
+    ],
+    'CS': 'https://huggingface.co/gutris1/webui/resolve/main/env/SSL-ComfyUI-SwarmUI-Torch260-cu124.tar.lz4',
+}
+
+UI_CFG = {
+    'A1111': {'py': TMP / 'venv', 'url': URL['D']},
+    'Forge': {'py': TMP / 'venv', 'url': URL['D']},
+    'ReForge': {'py': TMP / 'venv', 'url': URL['D']},
+    'ReForge-old': {'py': TMP / 'venv', 'url': URL['D']},
+    'Forge-Classic': {'py': TMP / 'python311', 'url': URL['FC']},
+    'Forge-Neo': {'py': TMP / 'NEO', 'url': URL['FN']},
+    'ComfyUI': {'py': TMP / 'venv-comfy-swarm', 'url': URL['CS']},
+    'SwarmUI': {'py': TMP / 'venv-comfy-swarm', 'url': URL['CS']},
+}
+
+print('checking python...')
 tempe()
+trashing()
 
-ui, url, vnv, fn = load_config()
-pip = f'{vnv}/bin/python3 -m pip'
-
-if not vnv.exists():
-    install_venv(ui, url, vnv, fn)
+install_python()
 
 clear_output(wait=True)
-trashing()
 aDel()
 CD(cwd)
