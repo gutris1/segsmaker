@@ -196,7 +196,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background-image: url('https://i.imgur.com/5Mkdrpw.jpeg');
+  background-image: var(--segsmaker-bg);
   background-size: cover;
   background-position: center;
   transition: .5s ease;
@@ -704,7 +704,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: url('https://i.imgur.com/5Mkdrpw.jpg');
+  background-image: var(--segsmaker-bg);
   background-size: cover;
   background-position: center;
   filter: brightness(80%);
@@ -838,7 +838,7 @@
   position: absolute;
   z-index: -1;
   inset: 0;
-  background-image: url('https://i.imgur.com/5Mkdrpw.jpg');
+  background-image: var(--segsmaker-bg);
   background-size: cover;
   background-position: center;
   border-radius: 10px;
