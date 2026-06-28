@@ -3,13 +3,18 @@ from multiprocessing import Process, Condition, Value
 from IPython import get_ipython
 from ipywidgets import widgets
 from pathlib import Path
+import subprocess
 import argparse
 import logging
+import shlex
 import json
 import yaml
+import time
 import sys
+import os
 
 SyS = get_ipython().system
+iRON = os.environ
 
 HOME = Path.home()
 SRC = HOME / '.gutris1'
@@ -107,61 +112,81 @@ def NGROK_ZROK(T):
     else:
         SyS(E); print()
 
+def setENV(ui):
+    app = UI_CFG[ui]
+
+    L = '/home/studio-lab-user/.conda/envs/default/lib/libtcmalloc_minimal.so.4'
+    D = '/home/studio-lab-user/.conda/envs/default/lib'
+
+    if app.get('ld'):
+        iRON['LD_LIBRARY_PATH'] = (D + ':' + iRON.get('LD_LIBRARY_PATH', ''))
+
+    if app.get('cm'):
+        iRON.pop('MPLBACKEND', None)
+
+    for k, v in app.get('env', {}).items():
+        iRON[k] = v() if callable(v) else v
+
+    if L not in iRON.get('LD_PRELOAD', ''):
+        iRON['LD_PRELOAD'] = L
+
+    if app['lib'] not in iRON.get('LD_LIBRARY_PATH', ''):
+        iRON['LD_LIBRARY_PATH'] = (app['lib'] + ':' + iRON.get('LD_LIBRARY_PATH', ''))
+
+    if app['bin'] not in iRON.get('PATH', ''):
+        iRON['PATH'] = (app['bin'] + ':' + iRON.get('PATH', ''))
+
+    iRON['PYTHONWARNINGS'] = 'ignore'
+
 def launching(ui, skip_comfyui_check=False):
-    args = launch_args.value
+    from cupang import Tunnel as Alice
+
+    args = '' if cpu_cb.value else launch_args.value
     tunnel = tunnel_radio.value
 
     get_ipython().run_line_magic('run', 'venv.py')
 
-    if ui in {'ComfyUI', 'SwarmUI'}:
-        PY = '/tmp/venv-comfy-swarm/bin/python3'
+    app = UI_CFG[ui]
 
-        if ui == 'ComfyUI':
-            port = 8188
-            skip_comfyui_check or (SyS(f'{PY} apotek.py'), clear_output(wait=True))
-        else:
-            port = 7801
+    py = app['py']
+    port = app.get('port', 7860)
+
+    setENV(ui)
+
+    t = TUNNELS.get(tunnel)
+    if t['a']: NGROK_ZROK(tunnel.lower())
+
+    Zuberg = Alice(port)
+    Zuberg.logger.setLevel(logging.DEBUG)
+    Zuberg.add_tunnel(command=t['c'](port), name=t['n'], pattern=t['p'])
+
+    if ui == 'SwarmUI':
+        SyS('git pull -q')
+        launcher = 'bash ./launch-linux.sh'
 
     else:
-        port = 7860
-        PY = '/tmp/python311/bin/python3' if ui == 'Forge-Classic' else '/tmp/venv/bin/python3'
-        args += ' --enable-insecure-extension-access --disable-console-progressbars --theme dark'
+        if ui == 'ComfyUI':
+            if not skip_comfyui_check: SyS(f'{py} apotek.py'); clear_output(wait=True)
+            launcher = f'{py} main.py'
 
-    if cpu_cb.value:
-        if ui == 'A1111':
-            args += ' --use-cpu all --precision full --no-half --skip-torch-cuda-test'
+        else:
+            iRON.setdefault('IIB_ACCESS_CONTROL', 'disable')
+            iRON.setdefault('IIB_SKIP_OPTIONAL_DEPS', '1')
 
-        elif ui in {'Forge', 'ReForge', 'ReForge-old', 'Forge-Classic'}:
-            args += ' --always-cpu --skip-torch-cuda-test'
+            args += ' --enable-insecure-extension-access --disable-console-progressbars --theme dark'
 
-        elif ui == 'ComfyUI':
-            args += ' --cpu'
+            Path('asd/pinggytimer.txt').write_text(str(int(time.time()) + 3600))
 
-    configs = TUNNELS.get(tunnel)
+            if ui == 'Forge':
+                ft = Path('FT.txt')
+                if not ft.exists(): SyS(f"{app['py']} -m pip uninstall -qy transformers"); ft.write_text('tf')
 
-    if not configs:
-        return
+            launcher = f'{py} launch.py'
 
-    try:
-        from cupang import Tunnel as Alice_Zuberg
+    if cpu_cb.value: args += f" {app.get('cpu', '')}"
 
-        if configs['auth']:
-            NGROK_ZROK(tunnel.lower())
-
-        Alice_Synthesis_Thirty = Alice_Zuberg(port)
-        Alice_Synthesis_Thirty.logger.setLevel(logging.DEBUG)
-
-        Alice_Synthesis_Thirty.add_tunnel(
-            command=configs['command'](port),
-            name=configs['name'],
-            pattern=configs['pattern']
-        )
-
-        with Alice_Synthesis_Thirty:
-            SyS(f'{PY} Launcher.py {args}')
-
-    except KeyboardInterrupt:
-        pass
+    with Zuberg:
+        SyS(f'{launcher} {args}')
 
 def waiting(con, ready):
     with con:
@@ -169,11 +194,8 @@ def waiting(con, ready):
             try:
                 con.wait()
             except KeyboardInterrupt:
-                print('')
-                clear_output()
-                sys.exit()
+                print(''); clear_output(); sys.exit()
 
-    load_config()
     launching(ui, skip_comfyui_check=args.skip_comfyui_check)
 
 def launch(b):
@@ -192,82 +214,127 @@ def exit(b):
 def launcher_loaded():
     display(HTML("""
     <script>
-    setTimeout(() => {
-      document.querySelectorAll('.launcher-tunnel-radio label').forEach(label => {
+    setTimeout(() => {{
+      document.querySelectorAll('.launcher-tunnel-radio label').forEach(label => {{
         const text = label.childNodes[0];
-        if (text && text.nodeType === Node.TEXT_NODE) {
+        if (text && text.nodeType === Node.TEXT_NODE) {{
           const span = document.createElement('span');
           span.textContent = text.textContent.trim();
           label.replaceChild(span, text);
-        }
-      });
-    }, 100);
-
-    setTimeout(() => {
+        }}
+      }});
+    }}, 100);
+    
+    setTimeout(() => {{
       const box = document.querySelector('.launcher-box'),
-      inputs = document.querySelectorAll('.launcher-zrok-token input, .launcher-ngrok-token input, .launcher-args input');
+      tokens = document.querySelectorAll('.launcher-zrok-token input, .launcher-ngrok-token input, .launcher-args input');
+    
       box && box.classList.add('loaded');
-      inputs.forEach(el => el.spellcheck = false);
-    }, 1000);
+      tokens.forEach(el => el.spellcheck = false);
+    }}, 400);
     </script>
     """))
+
+TUNNELS = {
+    'Pinggy': {
+        'a': False,
+        'n': 'PINGGY',
+        'c': lambda port: f'ssh -o StrictHostKeyChecking=no -p 80 -R0:localhost:{port} a.pinggy.io',
+        'p': r'https://[\w-]+\.run\.pinggy-free\.link'
+    },
+
+    'ZROK2': {
+        'a': True,
+        'n': 'ZROK2',
+        'c': lambda port: f'zrok2 share public localhost:{port} --headless',
+        'p': r'[\w-]+\.shares\.zrok\.io'
+    },
+
+    'NGROK': {
+        'a': True,
+        'n': 'NGROK',
+        'c': lambda port: f'ngrok http http://localhost:{port} --log stdout',
+        'p': r'https://[\w-]+\.ngrok-free\.[\w.-]+'
+    }
+}
 
 UI_CFG = {
     'A1111': {
         'title': 'A1111',
-        'args': '--xformers'
+        'args': '--xformers',
+        'py': '/tmp/venv/bin/python3',
+        'lib': '/tmp/venv/lib',
+        'bin': '/tmp/venv/bin',
+        'cpu': '--use-cpu all --precision full --no-half --skip-torch-cuda-test',
     },
+
     'Forge': {
         'title': 'Forge',
-        'args': '--disable-xformers --opt-sdp-attention --cuda-stream'
+        'args': '--disable-xformers --opt-sdp-attention --cuda-stream',
+        'py': '/tmp/venv/bin/python3',
+        'lib': '/tmp/venv/lib',
+        'bin': '/tmp/venv/bin',
+        'cpu': '--always-cpu --skip-torch-cuda-test',
     },
+
     'ReForge': {
         'title': 'ReForge',
-        'args': '--xformers --cuda-stream'
+        'args': '--xformers --cuda-stream',
+        'py': '/tmp/venv/bin/python3',
+        'lib': '/tmp/venv/lib',
+        'bin': '/tmp/venv/bin',
+        'cpu': '--always-cpu --skip-torch-cuda-test',
     },
+
     'ReForge-old': {
         'title': 'ReForge old',
-        'args': '--xformers --cuda-stream'
+        'args': '--xformers --cuda-stream',
+        'py': '/tmp/venv/bin/python3',
+        'lib': '/tmp/venv/lib',
+        'bin': '/tmp/venv/bin',
+        'cpu': '--always-cpu --skip-torch-cuda-test',
     },
+
     'Forge-Classic': {
         'title': 'Forge Classic',
-        'args': '--xformers --cuda-stream --persistent-patches'
+        'args': '--xformers --cuda-stream --persistent-patches',
+        'py': '/tmp/python311/bin/python3',
+        'lib': '/tmp/python311/lib',
+        'bin': '/tmp/python311/bin',
+        'cpu': '--always-cpu --skip-torch-cuda-test',
+        'ld': True,
     },
+
     'Forge-Neo': {
         'title': 'Forge Neo',
-        'args': '--xformers --cuda-stream'
+        'args': '--xformers --cuda-stream',
+        'py': '/tmp/NEO/bin/python3',
+        'lib': '/tmp/NEO/lib',
+        'bin': '/tmp/NEO/bin',
+        'cpu': '--cpu --skip-torch-cuda-test',
+        'ld': True,
+        'cm': True,
     },
+
     'ComfyUI': {
         'title': 'ComfyUI',
-        'args': '--dont-print-server --use-pytorch-cross-attention'
+        'args': '--dont-print-server --use-pytorch-cross-attention',
+        'py': '/tmp/venv-comfy-swarm/bin/python3',
+        'lib': '/tmp/venv-comfy-swarm/lib',
+        'bin': '/tmp/venv-comfy-swarm/bin',
+        'port': 8188,
+        'cpu': '--cpu',
     },
+
     'SwarmUI': {
         'title': 'SwarmUI',
-        'args': '--launch_mode none'
-    }
-}
-
-TUNNELS = {
-    'Pinggy': {
-        'auth': False,
-        'name': 'PINGGY',
-        'command': lambda port: f'ssh -o StrictHostKeyChecking=no -p 80 -R0:localhost:{port} a.pinggy.io',
-        'pattern': r'https://[\w-]+\.run\.pinggy-free\.link'
+        'args': '--launch_mode none',
+        'py': '/tmp/venv-comfy-swarm/bin/python3',
+        'lib': '/tmp/venv-comfy-swarm/lib',
+        'bin': '/tmp/venv-comfy-swarm/bin',
+        'port': 7801,
+        'env': {'SWARMPATH': lambda: str(Path.cwd()), 'SWARM_NO_VENV': 'true'},
     },
-
-    'ZROK2': {
-        'auth': True,
-        'name': 'ZROK2',
-        'command': lambda port: f'zrok2 share public localhost:{port} --headless',
-        'pattern': r'[\w-]+\.shares\.zrok\.io'
-    },
-
-    'NGROK': {
-        'auth': True,
-        'name': 'NGROK',
-        'command': lambda port: f'ngrok http http://localhost:{port} --log stdout',
-        'pattern': r'https://[\w-]+\.ngrok-free\.[\w.-]+'
-    }
 }
 
 tunnel_radio = widgets.RadioButtons(options=list(TUNNELS))
@@ -301,8 +368,7 @@ for w, c in [
     (launch_args, 'launcher-args'),
     (launch_button, 'launcher-button'),
     (exit_button, 'launcher-button')
-]:
-    w.add_class(c)
+]: w.add_class(c)
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--skip-comfyui-check', action='store_true', help='Skip checking custom node dependencies for ComfyUI')
