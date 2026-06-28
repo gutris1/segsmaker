@@ -24,7 +24,6 @@ from nenen88 import pull, say, download, clone, tempe
 def SM_Script(WEBUI):
     return [
         f'https://github.com/gutris1/segsmaker/raw/main/script/SM/venv.py {WEBUI}',
-        f'https://github.com/gutris1/segsmaker/raw/main/script/SM/Launcher.py {WEBUI}',
         f'https://github.com/gutris1/segsmaker/raw/main/script/SM/segsmaker.py {WEBUI}'
     ]
 
