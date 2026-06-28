@@ -428,7 +428,6 @@ def ariari(url, fp, fn):
 
         while True:
             lines = p.stderr.readline()
-
             if lines == '' and p.poll() is not None: break
 
             if lines:
@@ -464,46 +463,38 @@ def ariari(url, fp, fn):
                             current, total = sizes.split('/')
                             current = re.sub(r'(\d+(?:\.\d+)?)(\w+)', f'\\1{PURPLE}\\2{RESET}', current)
                             total = re.sub(r'(\d+(?:\.\d+)?)(\w+)', f'\\1{PURPLE}\\2{RESET}', total)
-                            parts.append(f'{current}' f'{CYAN}/{RESET}' f'{total}')
+                            parts.append(f'{current}{CYAN}/{RESET}{total}')
 
                         speed = re.sub(r'(\d+(?:\.\d+)?)(\w+)', f'\\1{PURPLE}\\2{RESET}', speed)
-                        parts.append(f'{CYAN}DL{RESET}:' f'{speed}')
+                        parts.append(f'{CYAN}DL{RESET}:{speed}')
 
-                        if eta:
-                            parts.append(f'{CYAN}ETA{RESET}:' f'{YELLOW}{eta}{RESET}')
+                        if eta: parts.append(f'{CYAN}ETA{RESET}:{YELLOW}{eta}{RESET}')
 
                         body = ' '.join(parts)
 
-                        r = (
-                            f'{fn} '
-                            #f'{MAGENTA}【{RESET}'
-                            f'{body}'
-                            #f'{MAGENTA}】{RESET}'
-                        )
-
-                        print(f"\r{' '*300}\r  {RED}●{RESET} {r}", end='')
+                        print(f"\r{' '*300}\r  {RED}●{RESET} {fn} {body}", end='')
                         sys.stdout.flush()
 
                         bl = True
                         break
 
-        civitai = None
-        error = error_code + error_line
-        for lines in error: print(f'  {lines}')
+        p.wait()
+
+        if p.returncode:
+            for line in error_code + error_line:
+                print(f'  {line}')
 
         for lines in aria2_output.splitlines():
             if '|' in lines and 'OK' in lines:
                 pipe = [p.strip() for p in lines.split('|')]
 
                 if len(pipe) >= 4:
-                    saved = pipe[3]
-                    saved = re.sub(r'/', f'{ORANGE}/{RESET}', saved)
+                    saved = re.sub(r'/', f'{ORANGE}/{RESET}', pipe[3])
                     print(f"\r{' '*300}\r  {GREEN}●{RESET} {saved}")
                     sys.stdout.flush()
                     bl = False
 
         bl and print()
-        p.wait()
 
     except KeyboardInterrupt:
         print(f'\n{"":>2}^ Canceled')
