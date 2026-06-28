@@ -355,8 +355,7 @@ def change_api_key(line):
         (hf_box, 'hf-box'),
         (current_hf, 'current-hf'),
         (new_hf, 'new-hf'),
-    ]:
-        w.add_class(c)
+    ]: w.add_class(c)
 
     def load_css(css):
         display(HTML(f'<style>{Path(css).read_text()}</style>'))
@@ -426,18 +425,16 @@ def change_api_key(line):
         save_button.on_click(save_key)
         cancel_button.on_click(cancel_key)
 
-    def change_key_loaded():
-        display(HTML("""
-        <script>
-        setTimeout(() => {
-          document.querySelectorAll('.new-civitai input, .new-hf input').forEach(el => el.spellcheck = false);
+    JS = """
+    (() => {
+      setTimeout(() => {
+        document.querySelectorAll('.new-civitai input, .new-hf input').forEach(el => el.spellcheck = false);
 
-          const box = document.querySelector('.change-key-box');
-          (box) && box.classList.add('loaded');
-
-        }, 1000);
-        </script>
-        """))
+        const box = document.querySelector('.change-key-box');
+        box && box.classList.add('loaded');
+      }, 1000);
+    })();
+    """
 
     def key_check():
         if key_file.exists():
@@ -448,8 +445,10 @@ def change_api_key(line):
             hf_token = v.get('huggingface-read-token', '')
 
             key_widget(civitai_key, hf_token)
-            change_key_loaded()
+
+            display(HTML(f'<script>{JS}</script>'))
             display(change_key_box, output)
+
         else:
             say('API Key does not exist')
 
@@ -528,18 +527,23 @@ def zrok_register(line):
     def cancel(b):
         zrok_box.close()
 
-    def zrok_register_loaded():
-        display(HTML("""
-        <script>
-        setTimeout(() => {
-          const box = document.querySelector('.zrok-box'),
-          email = document.querySelector('.zrok-email input');
+    JS = """
+    (() => {
+      const baseUrl = JSON.parse(document.querySelector("#jupyter-config-data").textContent).baseUrl;
+      document.documentElement.style.setProperty(
+        "--segsmaker-bg",
+        `url(${location.origin}${baseUrl}files/.gutris1/bg.jpg)`
+      );
 
-          box && box.classList.add('loaded');
-          email && (email.spellcheck = false);
-        }, 1000);
-        </script>
-        """))
+      setTimeout(() => {
+        const box = document.querySelector('.zrok-box'),
+        email = document.querySelector('.zrok-email input');
+
+        box && box.classList.add('loaded');
+        email && (email.spellcheck = false);
+      }, 1000);
+    })();
+    """
 
     if not zrok['version'].exists(): zrok_install()
 
@@ -562,11 +566,10 @@ def zrok_register(line):
         (buttons_box, 'zrok-buttons-box'),
         (register_button, 'zrok-button'),
         (cancel_button, 'zrok-button')
-    ]:
-        w.add_class(c)
+    ]: w.add_class(c)
 
     load_css(css)
-    zrok_register_loaded()
+    display(HTML(f'<script>{JS}</script>'))
     display(zrok_box, output)
 
     register_button.on_click(register)
