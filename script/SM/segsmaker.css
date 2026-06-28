@@ -60,7 +60,9 @@
   }
 }
 
-.hbox1, .hbox2 {
+.hbox1,
+.hbox2 {
+  z-index: 1;
   overflow: visible !important;
 }
 
@@ -72,11 +74,24 @@
   animation: UndressBox2 1.2s forwards ease;
 }
 
-.hbox1.undress, .hbox2.undress, .multi-panel.undress {
+.hbox1:hover,
+.hbox2:hover {
+  z-index: 2;
+}
+
+.multi-panel.loaded,
+.hbox1.loaded,
+.hbox2.loaded {
   max-height: 600px;
   transform: translateX(0);
   overflow: visible !important;
   animation: none;
+}
+
+.lm-Widget.lm-Panel.jp-OutputArea-output.setup-loaded,
+.lm-Widget.lm-Panel.jp-OutputArea-child.setup-loaded,
+.lm-Widget.jp-OutputArea.jp-Cell-outputArea.setup-loaded {
+  overflow: visible !important;
 }
 
 @keyframes UndressBox1 {
