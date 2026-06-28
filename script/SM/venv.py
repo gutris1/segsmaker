@@ -8,6 +8,17 @@ import os
 
 from nenen88 import tempe, say, download
 
+SyS = get_ipython().system
+CD = os.chdir
+
+HOME = Path.home()
+SRC = HOME / '.gutris1'
+MARK = SRC / 'marking.json'
+TMP = Path('/tmp')
+cwd = Path.cwd()
+
+ui = json.load(MARK.open()).get('ui')
+
 def aDel():
     for name in ['tempe', 'say', 'download']:
         globals().pop(name, None)
@@ -29,7 +40,7 @@ def unused_python(py):
     if unused: SyS(f"rm -rf {' '.join(str(v) for v in unused)}")
 
 def install_python():
-    py = UI_CFG[ui]['py']
+    py = UID[ui]['py']
     if py.exists(): return
 
     unused_python(py)
@@ -38,10 +49,9 @@ def install_python():
     CD(TMP)
 
     clear_output(wait=True)
-    display(Image(filename=str(IMG)))
-    say(f'<b>Installing {ui} Python</b>')
+    say(f"<b>【{{red}} Installing {ui.replace('-', ' ')} Python{{d}} 】{{red}}</b>")
 
-    url = UI_CFG[ui]['url']
+    url = UID[ui]['url']
     l = zip(url, [Path(u).name for u in url]) if isinstance(url, list) else [(url, Path(url).name)]
 
     for u, f in l:
@@ -61,18 +71,6 @@ def install_python():
             f'{pi} -q comfy-aimdo'
         ]: SyS(f'{c} > /dev/null 2>&1')
 
-HOME = Path.home()
-SRC = HOME / '.gutris1'
-MARK = SRC / 'marking.json'
-IMG = SRC / 'loading.png'
-TMP = Path('/tmp')
-cwd = Path.cwd()
-
-SyS = get_ipython().system
-CD = os.chdir
-
-ui = json.load(MARK.open()).get('ui')
-
 URL = {
     'D': [
         'https://huggingface.co/gutris1/webui/resolve/main/env/SSL-Torch2120-cu130-part1.tar.lz4',
@@ -86,7 +84,7 @@ URL = {
     'CS': 'https://huggingface.co/gutris1/webui/resolve/main/env/SSL-ComfyUI-SwarmUI-Torch260-cu124.tar.lz4',
 }
 
-UI_CFG = {
+UID = {
     'A1111': {'py': TMP / 'venv', 'url': URL['D']},
     'Forge': {'py': TMP / 'venv', 'url': URL['D']},
     'ReForge': {'py': TMP / 'venv', 'url': URL['D']},
