@@ -186,7 +186,7 @@
 }
 
 .launcher-box.loaded {
-  animation: none;
+  animation: unset;
   transform: scale(1);
   opacity: 1;
   filter: none;
@@ -196,7 +196,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background-image: url('https://i.imgur.com/5Mkdrpw.jpg');
+  background-image: url('https://i.imgur.com/5Mkdrpw.jpeg');
   background-size: cover;
   background-position: center;
   transition: .5s ease;
@@ -461,10 +461,11 @@
 .launcher-bottom-row {
   display: flex;
   flex-direction: row;
+  flex-wrap: nowrap;
   align-items: center;
   justify-content: space-between;
   align-self: center;
-  height: auto;
+  height: 100%;
   width: 96%;
 }
 
