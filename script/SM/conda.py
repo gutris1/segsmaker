@@ -27,37 +27,67 @@ IMG = SRC / 'loading.png'
 
 SRC.mkdir(parents=True, exist_ok=True)
 
-def install_conda():
-    try:
-        display(Image(filename=str(IMG)))
-
-        cmd_list = [
-            (f'rm -rf {HOME}/.condarc', None),
-            ('conda config --add channels conda-forge', None),
-            ('conda install -qy mamba', f'{BLUE} Installing Anaconda'),
-            ('mamba install -y conda', None),
-            ('mamba install -y python=3.10.13', f'{CYAN} Installing Python 3.10'),
-            ('mamba install -y glib gperftools compilers openssh pv gputil curl', f'{PURPLE} Installing Conda Packages'),
-            ('pip install psutil aria2 gdown Pillow pyyaml', f'{PINK} Installing Python Packages'),
-            ('conda clean -qy --all', None)
-        ]
-
-        for cmd, msg in cmd_list:
-            if msg is not None: print(msg)
-            subprocess.run(shlex.split(cmd), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-
-        SyS(f'rm -rf {HOME}/.cache/* {HOME}/.condarc')
-        clear_output()
-        print(f'{GREEN} Done')
-
-        get_ipython().kernel.do_shutdown(True)
-
-    except KeyboardInterrupt:
-        clear_output()
-        print('^ Canceled')
-
 def load_css(): 
     display(HTML(f'<style>{open(CSS).read()}</style>'))
+
+def restart_kernel():
+    display(HTML("""
+    <script>
+    (() => {
+      const i = setInterval(() => {
+        const b = document.querySelector('dialog[aria-label*="It will restart automatically"] button');
+        if (b) clearInterval(i), b.click();
+      }, 200);
+    })();
+    </script>
+    """))
+
+    get_ipython().kernel.do_shutdown(True)
+
+def install_conda():
+    cv = int(subprocess.run(['conda', '--version'], capture_output=True, text=True, check=True).stdout.split()[1].split('.')[0])
+
+    if cv < 26:
+        try:
+            with loading:
+                output.clear_output(wait=True)
+                display(Image(filename=str(IMG)))
+    
+            with output:
+                cmd_list = [
+                    (f'rm -rf {HOME}/.condarc', None),
+                    ('conda config --add channels conda-forge', None),
+                    ('conda install -qy mamba', f'{BLUE} Installing Anaconda'),
+                    ('mamba install -y conda', None),
+                    ('mamba install -y python=3.10.13', f'{CYAN} Installing Python 3.10'),
+                    ('mamba install -y glib gperftools compilers openssh pv gputil curl', f'{PURPLE} Installing Conda Packages'),
+                    ('pip install psutil aria2 gdown Pillow pyyaml', f'{PINK} Installing Python Packages'),
+                    ('conda clean -qy --all', None)
+                ]
+    
+                for cmd, msg in cmd_list:
+                    if msg is not None: print(msg)
+                    subprocess.run(shlex.split(cmd), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    
+                SyS(f'rm -rf {HOME}/.cache/* {HOME}/.condarc')
+    
+                with output:
+                    output.clear_output(wait=True)
+    
+                with loading:
+                    loading.clear_output(wait=True)
+                    print(f'{GREEN} Done')
+    
+                restart_kernel()
+    
+        except KeyboardInterrupt:
+            clear_output()
+            print('^ Canceled')
+
+    else:
+        with output:
+            print(f'{GREEN} Done')
+            restart_kernel()
 
 def key_inject(civitai_key, hf_token):
     SyS(f'curl -sLo {nenen} {G}/script/nenen88.py')
@@ -95,23 +125,14 @@ def key_widget(civitai_key='', hf_token=''):
         conda_widget.close()
         output.clear_output()
 
-        p = subprocess.run(['conda', '--version'], capture_output=True, text=True, check=True)
-        cv = p.stdout.strip().split()[1]
-        mv = int(cv.split('.')[0])
-
-        with output:
-            if mv < 24:
-                install_conda()
-            else:
-                print(f'{GREEN} Done')
-                get_ipython().kernel.do_shutdown(True)
+        install_conda()
 
     save_button.on_click(save_key)
 
 def display_widget(civitai_key='', hf_token=''):
     load_css()
     display(HTML(f'<script>{JS}</script>'))
-    display(conda_widget, output)
+    display(conda_widget, output, loading)
     key_widget(civitai_key, hf_token)
 
 def key_check():
@@ -128,7 +149,7 @@ def key_check():
         return
 
     key_inject(civitai_key, hf_token)
-    display(output)
+    display(output, loading)
     install_conda()
 
 def misc():
@@ -160,11 +181,14 @@ JS = """
 """
 
 output = widgets.Output()
+loading = widgets.Output()
 
 civitai_box = widgets.Text(placeholder='Civitai API Key')
 hf_box = widgets.Text(placeholder='Huggingface READ Token (optional)')
 token_box = widgets.VBox([civitai_box, hf_box])
+
 save_button = widgets.Button(description='Save')
+
 conda_widget = widgets.Box([token_box, save_button])
 
 for w, c in [
