@@ -16,7 +16,6 @@
   100% { background-position: -800% 50%; }
 }
 
-
 @keyframes BoxShadowPulse {
   0%   { filter: hue-rotate(0deg); }
   100% { filter: hue-rotate(360deg); }
@@ -33,6 +32,10 @@
     opacity: 1;
     filter: blur(0);
   }
+}
+
+.widget-output.jupyter-widgets-disconnected::before {
+  display: none !important;
 }
 
 .widget-container {
