@@ -292,7 +292,7 @@ def segsmaker_setup():
     for cmd in [
         f'curl -sLo {CSS} https://github.com/gutris1/segsmaker/raw/main/script/SM/segsmaker.css',
         f'curl -sLo {IMG} https://github.com/gutris1/segsmaker/raw/main/script/loading.png',
-        f'curl -sLo {SRC}/bg.jpg https://i.imgur.com/5Mkdrpw.jpeg,'
+        f'curl -sLo {SRC}/bg.jpg https://i.imgur.com/5Mkdrpw.jpeg',
         f'curl -sLo {MRK} https://github.com/gutris1/segsmaker/raw/main/script/marking.py'
     ]: SyS(cmd)
 
