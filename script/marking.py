@@ -130,6 +130,18 @@ if SM:
         SyS(f"rm -rf {webui} {HOME / 'tmp'} {HOME / '.cache/*'}")
         print(f'{ui} uninstalled.')
         CD(HOME)
+
+        from IPython.display import display, HTML
+        display(HTML("""
+        <script>
+        (() => {
+          const i = setInterval(() => {
+            const b = document.querySelector('dialog[aria-label*="It will restart automatically"] button');
+            if (b) clearInterval(i), b.click();
+          }, 200);
+        })();
+        </script>
+        """))
         get_ipython().kernel.do_shutdown(True)
 
 if marked.exists():
