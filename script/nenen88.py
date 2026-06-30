@@ -96,7 +96,7 @@ def netorare(line):
 
     C = bool(CIVITAI.domain(url))
     H = 'huggingface.co' in url
-    G = 'github.com' in url
+    G = 'github.com' in url or 'raw.githubusercontent.com' in url
     D = 'drive.google.com' in url
 
     try:
@@ -311,7 +311,7 @@ class CIVITAI:
 def get_url(url, fn):
     civitai = CIVITAI.domain(url)
 
-    if 'github.com' in url:
+    if 'github.com' in url or 'raw.githubusercontent.com' in url:
         return (url.replace('/blob/', '/raw/'), None, fn)
 
     elif 'huggingface.co' in url:
