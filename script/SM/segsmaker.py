@@ -13,6 +13,8 @@ import time
 import sys
 import os
 
+from ssl_uid import UID
+
 R = '\033[31m'
 P = '\033[38;5;135m'
 RST = '\033[0m'
@@ -48,12 +50,12 @@ def load_config():
 
     ui = j.get('ui')
     tunnel = j.get('tunnel')
-    app = UID.get(ui, {})
+    d = UID.get(ui, {})
 
     zrok_token.value = j.get('zrok_token', '')
     ngrok_token.value = j.get('ngrok_token', '')
 
-    launch_args.value = j.get('launch_args') or app.get('args', '')
+    launch_args.value = j.get('launch_args') or d.get('args', '')
 
     if tunnel not in TUNNELS:
         tunnel = 'Pinggy'
@@ -67,7 +69,7 @@ def load_config():
 
     title.value = f"""
     <div class='launcher-title'>
-      {''.join(f"<span class='launch-title-{t.lower()}'>{t}</span>" for t in app.get('title', 'Unknown').split())}
+      {''.join(f"<span class='launch-title-{t.lower()}'>{t}</span>" for t in d.get('title', '').split())}
     </div>
     """
 
@@ -112,28 +114,28 @@ def NGROK_ZROK(T):
         SyS(E); print()
 
 def setENV(ui):
-    app = UID[ui]
+    d = UID[ui]
 
     L = '/home/studio-lab-user/.conda/envs/default/lib/libtcmalloc_minimal.so.4'
     D = '/home/studio-lab-user/.conda/envs/default/lib'
 
-    if app.get('ld'):
+    if d.get('ld'):
         iRON['LD_LIBRARY_PATH'] = (D + ':' + iRON.get('LD_LIBRARY_PATH', ''))
 
-    if app.get('cm'):
+    if d.get('cm'):
         iRON.pop('MPLBACKEND', None)
 
-    for k, v in app.get('env', {}).items():
+    for k, v in d.get('env', {}).items():
         iRON[k] = v() if callable(v) else v
 
     if L not in iRON.get('LD_PRELOAD', ''):
         iRON['LD_PRELOAD'] = L
 
-    if app['lib'] not in iRON.get('LD_LIBRARY_PATH', ''):
-        iRON['LD_LIBRARY_PATH'] = (app['lib'] + ':' + iRON.get('LD_LIBRARY_PATH', ''))
+    if d['lib'] not in iRON.get('LD_LIBRARY_PATH', ''):
+        iRON['LD_LIBRARY_PATH'] = (d['lib'] + ':' + iRON.get('LD_LIBRARY_PATH', ''))
 
-    if app['bin'] not in iRON.get('PATH', ''):
-        iRON['PATH'] = (app['bin'] + ':' + iRON.get('PATH', ''))
+    if d['bin'] not in iRON.get('PATH', ''):
+        iRON['PATH'] = (d['bin'] + ':' + iRON.get('PATH', ''))
 
     iRON['PYTHONWARNINGS'] = 'ignore'
 
@@ -145,10 +147,10 @@ def launching(ui, skip_comfyui_check=False):
 
     get_ipython().run_line_magic('run', 'venv.py')
 
-    app = UID[ui]
+    d = UID[ui]
 
-    py = app['py']
-    port = app.get('port', 7860)
+    py = d['py']
+    port = d.get('port', 7860)
 
     setENV(ui)
 
@@ -178,11 +180,11 @@ def launching(ui, skip_comfyui_check=False):
 
             if ui == 'Forge':
                 ft = Path('FT.txt')
-                if not ft.exists(): SyS(f"{app['py']} -m pip uninstall -qy transformers"); ft.write_text('tf')
+                if not ft.exists(): SyS(f"{d['py']} -m pip uninstall -qy transformers"); ft.write_text('tf')
 
             launcher = f'{py} launch.py'
 
-    if cpu_cb.value: args += f" {app.get('cpu', '')}"
+    if cpu_cb.value: args += f" {d.get('cpu', '')}"
 
     with Zuberg:
         SyS(f'{launcher} {args}')
@@ -229,85 +231,6 @@ TUNNELS = {
         'c': lambda port: f'ngrok http http://localhost:{port} --log stdout',
         'p': r'https://[\w-]+\.ngrok-free\.[\w.-]+'
     }
-}
-
-UID = {
-    'A1111': {
-        'title': 'A1111',
-        'args': '--xformers',
-        'py': '/tmp/venv/bin/python3',
-        'lib': '/tmp/venv/lib',
-        'bin': '/tmp/venv/bin',
-        'cpu': '--use-cpu all --precision full --no-half --skip-torch-cuda-test',
-    },
-
-    'Forge': {
-        'title': 'Forge',
-        'args': '--disable-xformers --opt-sdp-attention --cuda-stream',
-        'py': '/tmp/venv/bin/python3',
-        'lib': '/tmp/venv/lib',
-        'bin': '/tmp/venv/bin',
-        'cpu': '--always-cpu --skip-torch-cuda-test',
-    },
-
-    'ReForge': {
-        'title': 'ReForge',
-        'args': '--xformers --cuda-stream',
-        'py': '/tmp/venv/bin/python3',
-        'lib': '/tmp/venv/lib',
-        'bin': '/tmp/venv/bin',
-        'cpu': '--always-cpu --skip-torch-cuda-test',
-    },
-
-    'ReForge-old': {
-        'title': 'ReForge old',
-        'args': '--xformers --cuda-stream',
-        'py': '/tmp/venv/bin/python3',
-        'lib': '/tmp/venv/lib',
-        'bin': '/tmp/venv/bin',
-        'cpu': '--always-cpu --skip-torch-cuda-test',
-    },
-
-    'Forge-Classic': {
-        'title': 'Forge Classic',
-        'args': '--xformers --cuda-stream --persistent-patches',
-        'py': '/tmp/python311/bin/python3',
-        'lib': '/tmp/python311/lib',
-        'bin': '/tmp/python311/bin',
-        'cpu': '--always-cpu --skip-torch-cuda-test',
-        'ld': True,
-    },
-
-    'Forge-Neo': {
-        'title': 'Forge Neo',
-        'args': '--xformers --cuda-stream',
-        'py': '/tmp/NEO/bin/python3',
-        'lib': '/tmp/NEO/lib',
-        'bin': '/tmp/NEO/bin',
-        'cpu': '--cpu --skip-torch-cuda-test',
-        'ld': True,
-        'cm': True,
-    },
-
-    'ComfyUI': {
-        'title': 'ComfyUI',
-        'args': '--dont-print-server --use-pytorch-cross-attention',
-        'py': '/tmp/venv-comfy-swarm/bin/python3',
-        'lib': '/tmp/venv-comfy-swarm/lib',
-        'bin': '/tmp/venv-comfy-swarm/bin',
-        'port': 8188,
-        'cpu': '--cpu',
-    },
-
-    'SwarmUI': {
-        'title': 'SwarmUI',
-        'args': '--launch_mode none',
-        'py': '/tmp/venv-comfy-swarm/bin/python3',
-        'lib': '/tmp/venv-comfy-swarm/lib',
-        'bin': '/tmp/venv-comfy-swarm/bin',
-        'port': 7801,
-        'env': {'SWARMPATH': lambda: str(Path.cwd()), 'SWARM_NO_VENV': 'true'},
-    },
 }
 
 JS = """
