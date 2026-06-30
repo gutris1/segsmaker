@@ -33,6 +33,8 @@ MRK = SRC / 'marking.py'
 MARKED = SRC / 'marking.json'
 TMP = Path('/tmp')
 
+uid = HOME / '.ipython/profile_default/startup/ssl_uid.py'
+
 SRC.mkdir(parents=True, exist_ok=True)
 
 def load_css():
@@ -285,127 +287,6 @@ def segsmaker_setup():
     display(HTML(f'<script>{JS}</script>'))
     display(multi_panel, output, loading)
 
-UID = {
-    'A1111': {
-        'r': 'https://github.com/gutris1/A1111',
-        'b': 'master',
-        'sym': lambda M: [
-            f"rm -rf {M / 'Stable-diffusion/tmp_ckpt'} {M / 'Lora/tmp_lora'} {M / 'ControlNet'}"
-        ],
-        'links': lambda M: [
-            (TMP, HOME / 'tmp'),
-            (TMP / 'ckpt', M / 'Stable-diffusion/tmp_ckpt'),
-            (TMP / 'lora', M / 'Lora/tmp_lora'),
-            (TMP / 'controlnet', M / 'ControlNet')
-        ],
-    },
-
-    'Forge': {
-        'r': 'https://github.com/lllyasviel/stable-diffusion-webui-forge Forge',
-        'b': 'main',
-        'sym': lambda M: [
-            f"rm -rf {M / 'Stable-diffusion/tmp_ckpt'} {M / 'Lora/tmp_lora'} {M / 'ControlNet'}",
-            f"rm -rf {M / 'svd'} {M / 'z123'} {M / 'clip'} {M / 'clip_vision'} {M / 'diffusers'}",
-            f"rm -rf {M / 'diffusion_models'} {M / 'text_encoder'} {M / 'unet'}"
-        ],
-        'links': lambda M: [
-            (TMP, HOME / 'tmp'),
-            (TMP / 'ckpt', M / 'Stable-diffusion/tmp_ckpt'),
-            (TMP / 'lora', M / 'Lora/tmp_lora'),
-            (TMP / 'controlnet', M / 'ControlNet'),
-            (TMP / 'z123', M / 'z123'),
-            (TMP / 'svd', M / 'svd'),
-            (TMP / 'clip', M / 'clip'),
-            (TMP / 'clip_vision', M / 'clip_vision'),
-            (TMP / 'diffusers', M / 'diffusers'),
-            (TMP / 'diffusion_models', M / 'diffusion_models'),
-            (TMP / 'text_encoders', M / 'text_encoder'),
-            (TMP / 'unet', M / 'unet')
-        ],
-    },
-
-    'ReForge': {
-        'r': 'https://github.com/Panchovix/stable-diffusion-webui-reForge ReForge',
-        'b': 'main',
-        'sym': lambda M: [
-            f"rm -rf {M / 'Stable-diffusion/tmp_ckpt'} {M / 'Lora/tmp_lora'} {M / 'ControlNet'}",
-            f"rm -rf {M / 'svd'} {M / 'z123'}"
-        ],
-        'links': lambda M: [
-            (TMP, HOME / 'tmp'),
-            (TMP / 'ckpt', M / 'Stable-diffusion/tmp_ckpt'),
-            (TMP / 'lora', M / 'Lora/tmp_lora'),
-            (TMP / 'controlnet', M / 'ControlNet'),
-            (TMP / 'z123', M / 'z123'),
-            (TMP / 'svd', M / 'svd')
-        ],
-    },
-
-    'ReForge-old': {
-        'r': '-b main-old https://github.com/Panchovix/stable-diffusion-webui-reForge ReForge-old',
-        'b': 'main-old',
-    },
-
-    'Forge-Classic': {
-        'r': '-b classic https://github.com/Haoming02/sd-webui-forge-classic Forge-Classic',
-        'b': 'classic',
-        'sym': lambda M: [
-            f"rm -rf {M / 'Stable-diffusion/tmp_ckpt'} {M / 'Lora/tmp_lora'} {M / 'ControlNet'}"
-        ],
-        'links': lambda M: [
-            (TMP, HOME / 'tmp'),
-            (TMP / 'ckpt', M / 'Stable-diffusion/tmp_ckpt'),
-            (TMP / 'lora', M / 'Lora/tmp_lora'),
-            (TMP / 'controlnet', M / 'ControlNet')
-        ],
-    },
-
-    'Forge-Neo': {
-        'r': '-b neo https://github.com/Haoming02/sd-webui-forge-classic Forge-Neo',
-        'b': 'neo',
-    },
-
-    'ComfyUI': {
-        'r': 'https://github.com/comfyanonymous/ComfyUI',
-        'b': 'master',
-        'sym': lambda M: [
-            f"rm -rf {M / 'checkpoints/tmp_ckpt'} {M / 'loras/tmp_lora'} {M / 'controlnet'}",
-            f"rm -rf {M / 'clip'} {M / 'clip_vision'} {M / 'diffusers'} {M / 'diffusion_models'}",
-            f"rm -rf {M / 'text_encoders'} {M / 'unet'}"
-        ],
-        'links': lambda M: [
-            (M / 'checkpoints', M / 'checkpoints_symlink'),
-            (TMP, HOME / 'tmp'),
-            (TMP / 'ckpt', M / 'checkpoints/tmp_ckpt'),
-            (TMP / 'lora', M / 'loras/tmp_lora'),
-            (TMP / 'controlnet', M / 'controlnet'),
-            (TMP / 'clip', M / 'clip'),
-            (TMP / 'clip_vision', M / 'clip_vision'),
-            (TMP / 'diffusers', M / 'diffusers'),
-            (TMP / 'diffusion_models', M / 'diffusion_models'),
-            (TMP / 'text_encoders', M / 'text_encoders'),
-            (TMP / 'unet', M / 'unet')
-        ],
-    },
-
-    'SwarmUI': {
-        'r': 'https://github.com/mcmonkeyprojects/SwarmUI',
-        'b': 'master',
-       'sym': lambda M: [
-            f"rm -rf {M / 'Stable-Diffusion/tmp_ckpt'} {M / 'Lora/tmp_lora'} {M / 'controlnet'}",
-            f"rm -rf {M / 'clip'} {M / 'unet'}"
-        ],
-        'links': lambda M: [
-            (TMP, HOME / 'tmp'),
-            (TMP / 'ckpt', M / 'Stable-Diffusion/tmp_ckpt'),
-            (TMP / 'lora', M / 'Lora/tmp_lora'),
-            (TMP / 'controlnet', M / 'controlnet'),
-            (TMP / 'clip', M / 'clip'),
-            (TMP / 'unet', M / 'unet')
-        ],
-    },
-}
-
 G = 'https://raw.githubusercontent.com/gutris1/segsmaker/main'
 
 output = widgets.Output()
@@ -431,6 +312,9 @@ multi_panel = widgets.VBox([hbox1, hbox2])
 multi_panel.add_class('multi-panel')
 hbox1.add_class('hbox1')
 hbox2.add_class('hbox2')
+
+if not uid.exists(): SyS(f'curl -sLo {uid} {G}/script/SM/ssl_uid.py')
+from ssl_uid import UID
 
 CD(HOME)
 segsmaker_setup()
