@@ -5,17 +5,15 @@ from nenen88 import tempe
 import json
 import os
 
-SM = None
-
 try:
     from KANDANG import TEMPPATH, HOMEPATH
     TMP = Path(TEMPPATH)
     HOME = Path(HOMEPATH)
-    SM = False
+    SSL = False
 except ImportError:
     TMP = Path('/tmp')
     HOME = Path.home()
-    SM = True
+    SSL = True
 
 marked = Path(__file__).parent / 'marking.json'
 
@@ -114,7 +112,7 @@ def setWebUIVAR(ui):
 
     return WebUI, Models, WebUI_Output, Extensions, Embeddings, VAE, CKPT, LORA, Upscalers, TE
 
-if SM:
+if SSL:
     @register_line_magic
     def clear_output_images(line):
         ui = getWebUIName(marked)
