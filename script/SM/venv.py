@@ -7,6 +7,7 @@ import json
 import os
 
 from nenen88 import tempe, say, download
+from ssl_uid import UID
 
 SyS = get_ipython().system
 CD = os.chdir
@@ -40,7 +41,7 @@ def unused_python(py):
     if unused: SyS(f"rm -rf {' '.join(str(v) for v in unused)}")
 
 def install_python():
-    py = UID[ui]['py']
+    py = UID[ui]['python']
     if py.exists(): return
 
     unused_python(py)
@@ -70,30 +71,6 @@ def install_python():
             f'{pi} ipykernel matplotlib pyyaml',
             f'{pi} -q comfy-aimdo'
         ]: SyS(f'{c} > /dev/null 2>&1')
-
-URL = {
-    'D': [
-        'https://huggingface.co/gutris1/webui/resolve/main/env/SSL-Torch2120-cu130-part1.tar.lz4',
-        'https://huggingface.co/gutris1/webui/resolve/main/env/SSL-Torch2120-cu130-part2.tar.lz4'
-    ],
-    'FC': 'https://huggingface.co/gutris1/webui/resolve/main/env/SSL-FC-Python311-Torch260-cu124.tar.lz4',
-    'FN': [
-        'https://huggingface.co/gutris1/webui/resolve/main/env/SSL-FN-Torch2121-cu130-part1.tar.lz4',
-        'https://huggingface.co/gutris1/webui/resolve/main/env/SSL-FN-Torch2121-cu130-part2.tar.lz4'
-    ],
-    'CS': 'https://huggingface.co/gutris1/webui/resolve/main/env/SSL-ComfyUI-SwarmUI-Torch260-cu124.tar.lz4',
-}
-
-UID = {
-    'A1111': {'py': TMP / 'venv', 'url': URL['D']},
-    'Forge': {'py': TMP / 'venv', 'url': URL['D']},
-    'ReForge': {'py': TMP / 'venv', 'url': URL['D']},
-    'ReForge-old': {'py': TMP / 'venv', 'url': URL['D']},
-    'Forge-Classic': {'py': TMP / 'python311', 'url': URL['FC']},
-    'Forge-Neo': {'py': TMP / 'NEO', 'url': URL['FN']},
-    'ComfyUI': {'py': TMP / 'venv-comfy-swarm', 'url': URL['CS']},
-    'SwarmUI': {'py': TMP / 'venv-comfy-swarm', 'url': URL['CS']},
-}
 
 print('checking python...')
 tempe()
