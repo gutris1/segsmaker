@@ -321,7 +321,7 @@ def zipping(line, cell):
 @register_line_magic
 def change_api_key(line):
     nenen = startup / 'nenen88.py'
-    key_file = src / 'api-key.json'
+    api_key = src / 'api-key.json'
 
     output = widgets.Output()
 
@@ -376,7 +376,7 @@ def change_api_key(line):
         def save_key(b):
             with output:
                 output.clear_output(wait=True)
-        
+
                 civitai_key = new_civitai.value.strip() or current_civitai.value.strip()
                 hf_token = new_hf.value.strip() or current_hf.value.strip()
 
@@ -386,32 +386,24 @@ def change_api_key(line):
                 if not civitai_key:
                     print('Please enter your CivitAI API Key')
                     return
-        
+
                 if len(civitai_key) < 32:
                     print('API key must be at least 32 characters long')
                     return
-        
-                secrets = {
+
+                api_key.write_text(json.dumps({
                     'civitai-api-key': civitai_key,
                     'huggingface-read-token': hf_token
-                }
-        
-                Path(key_file).write_text(json.dumps(secrets, indent=4))
-        
+                }, indent=4))
+
             with output:
                 change_key_box.close()
                 output.clear_output(wait=True)
-                say('Saving...')
+
                 key_inject(civitai_key, hf_token)
-        
-                output.clear_output(wait=True)
-                get_ipython().kernel.do_shutdown(True)
-                time.sleep(2)
-                say('Kernel restarting...')
-        
-                output.clear_output(wait=True)
-                time.sleep(3)
-                say('Done')
+                say('Saved')
+
+                restart_kernel()
 
         def cancel_key(b):
             new_civitai.value = ''
@@ -437,10 +429,10 @@ def change_api_key(line):
     """
 
     def key_check():
-        if key_file.exists():
+        if api_key.exists():
             load_css(css)
 
-            v = json.loads(key_file.read_text())
+            v = json.loads(api_key.read_text())
             civitai_key = v.get('civitai-api-key', '')
             hf_token = v.get('huggingface-read-token', '')
 
@@ -576,3 +568,19 @@ def zrok_register(line):
     cancel_button.on_click(cancel)
 
     SyS('pip install -q pexpect')
+
+def restart_kernel():
+    from IPython.display import display, HTML
+
+    display(HTML("""
+    <script>
+    (() => {
+      const i = setInterval(() => {
+        const b = document.querySelector('dialog[aria-label*="It will restart automatically"] button');
+        if (b) clearInterval(i), b.click();
+      }, 200);
+    })();
+    </script>
+    """))
+
+    get_ipython().kernel.do_shutdown(True)
