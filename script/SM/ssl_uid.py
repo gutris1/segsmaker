@@ -30,7 +30,7 @@ UID = {
             (TMP / 'controlnet', M / 'ControlNet')
         ],
 
-        'python': '/tmp/venv',
+        'python': TMP / 'venv',
         'url': URL['D'],
 
         'title': 'A1111',
@@ -64,7 +64,7 @@ UID = {
             (TMP / 'unet', M / 'unet')
         ],
 
-        'python': '/tmp/venv',
+        'python': TMP / 'venv',
         'url': URL['D'],
 
         'title': 'Forge',
@@ -91,7 +91,7 @@ UID = {
             (TMP / 'svd', M / 'svd')
         ],
 
-        'python': '/tmp/venv',
+        'python': TMP / 'venv',
         'url': URL['D'],
 
         'title': 'ReForge',
@@ -106,7 +106,7 @@ UID = {
         'r': '-b main-old https://github.com/Panchovix/stable-diffusion-webui-reForge ReForge-old',
         'b': 'main-old',
 
-        'python': '/tmp/venv',
+        'python': TMP / 'venv',
         'url': URL['D'],
 
         'title': 'ReForge old',
@@ -130,7 +130,7 @@ UID = {
             (TMP / 'controlnet', M / 'ControlNet')
         ],
 
-        'python': '/tmp/python311',
+        'python': TMP / 'python311',
         'url': URL['FC'],
 
         'title': 'Forge Classic',
@@ -146,7 +146,7 @@ UID = {
         'r': '-b neo https://github.com/Haoming02/sd-webui-forge-classic Forge-Neo',
         'b': 'neo',
 
-        'python': '/tmp/NEO',
+        'python': TMP / 'NEO',
         'url': URL['FN'],
 
         'title': 'Forge Neo',
@@ -181,7 +181,7 @@ UID = {
             (TMP / 'unet', M / 'unet')
         ],
 
-        'python': '/tmp/venv-comfy-swarm',
+        'python': TMP / 'venv-comfy-swarm',
         'url': URL['CS'],
 
         'title': 'ComfyUI',
@@ -209,7 +209,7 @@ UID = {
             (TMP / 'unet', M / 'unet')
         ],
 
-        'python': '/tmp/venv-comfy-swarm',
+        'python': TMP / 'venv-comfy-swarm',
         'url': URL['CS'],
 
         'title': 'SwarmUI',
