@@ -137,9 +137,6 @@ def webui_req(U, W, M):
 
     sym_link(U, M)
 
-    scripts = SM_Script(W)
-    scripts.extend(CN_Script(W))
-
     u = M / 'upscale_models' if U in ['ComfyUI', 'SwarmUI'] else M / 'ESRGAN'
     upscalers = [
         f'https://huggingface.co/gutris1/webui/resolve/main/misc/4x-UltraSharp.pth {u}',
@@ -153,20 +150,19 @@ def webui_req(U, W, M):
         f'https://huggingface.co/subby2006/NMKD-UltraYandere/resolve/main/4x_NMKD-UltraYandere_300k.pth {u}'
     ]
 
-    l = scripts + upscalers
-    for i in l: download(i)
+    for i in sm_script(W) + upscalers: download(i)
 
     if U not in ['SwarmUI', 'ComfyUI']:
         e = 'jpg' if U in ['Forge-Classic', 'Forge-Neo'] else 'png'
         SyS(f'rm -f {W}/html/card-no-preview.{e}')
 
-        for ass in [
+        for m in [
             f'https://huggingface.co/gutris1/webui/resolve/main/misc/card-no-preview.png {W}/html card-no-preview.{e}',
-            f'https://github.com/gutris1/segsmaker/raw/main/config/NoCrypt_miku.json {W}/tmp/gradio_themes',
-            f'https://github.com/gutris1/segsmaker/raw/main/config/user.css {W} user.css'
-        ]: download(ass)
+            f'{G}/config/NoCrypt_miku.json {W}/tmp/gradio_themes',
+            f'{G}/config/user.css {W} user.css'
+        ]: download(m)
 
-        if U not in ['Forge', 'Forge-Neo']: download(f'https://github.com/gutris1/segsmaker/raw/main/config/config.json {W} config.json')
+        if U not in ['Forge', 'Forge-Neo']: download(f'{G}/config/config.json {W} config.json')
 
 def installing_webui(U, W):
     M = W / 'Models' if U == 'SwarmUI' else W / 'models'
@@ -210,30 +206,27 @@ def webui_setup(ui):
     WEBUI = HOME / ui if ui else None
 
     if WEBUI and WEBUI.exists():
-        git_dir = WEBUI / '.git'
-
-        if git_dir.exists():
+        if (WEBUI / '.git').exists():
             CD(WEBUI)
 
             with output:
                 branch = UID.get(ui, {}).get('b')
                 if branch: SyS(f'git pull origin {branch}')
 
-                x = SM_Script(WEBUI)
-                if ui: x.append(CN_Script(WEBUI))
-
-                print()
                 install_tunnel()
-                for y in x: download(y)
+                print()
+                for l in sm_script(WEBUI): download(l)
 
     else:
-        if current_ui and current_ui != ui:
-            webui = HOME / current_ui
+        if current_ui and current_ui != ui and (HOME / current_ui).exists():
+            with output: print(f'{current_ui} is installed. uninstall it before switching to {ui}.')
+            return
 
-            with output:
-                if webui.exists():
-                    print(f'{current_ui} is installed. uninstall it before switching to {ui}.')
-                    return
+        for s in [
+            f'{SRC}/bg.jpg https://i.imgur.com/5Mkdrpw.jpeg',
+            f'{IMG} {G}/script/loading.png',
+            f'{MRK} {G}/script/marking.py'
+        ]: SyS(f'curl -sLo {s}')
 
         with loading:
             display(Image(filename=str(IMG)))
@@ -258,17 +251,14 @@ def webui_setup(ui):
                 say('<b>【{red} Done{d} 】{red}</b>')
                 CD(HOME)
 
-def SM_Script(WEBUI):
+def sm_script(W):
     return [
-        f'https://github.com/gutris1/segsmaker/raw/main/script/SM/venv.py {WEBUI}',
-        f'https://github.com/gutris1/segsmaker/raw/main/script/SM/segsmaker.py {WEBUI}'
-    ]
+        f'{G}/script/SM/venv.py {W}',
+        f'{G}/script/SM/segsmaker.py {W}',
 
-def CN_Script(WEBUI):
-    return [
-        f'https://github.com/gutris1/segsmaker/raw/main/script/controlnet.py {WEBUI}/asd',
-        f'https://github.com/gutris1/segsmaker/raw/main/script/cn15.py {WEBUI}/asd',
-        f'https://github.com/gutris1/segsmaker/raw/main/script/cnxl.py {WEBUI}/asd'
+        f'{G}/script/controlnet.py {W}/asd',
+        f'{G}/script/cn15.py {W}/asd',
+        f'{G}/script/cnxl.py {W}/asd'
     ]
 
 def segsmaker_setup():
@@ -277,7 +267,7 @@ def segsmaker_setup():
       setTimeout(() => {
         document.querySelectorAll('.multi-panel, .hbox1, .hbox2').forEach(el => el.classList.add('loaded'));
       }, 1200);
-    
+
       setTimeout(() => {
         document.querySelectorAll('.multi-panel').forEach(el => {
           let p = el.parentElement;
@@ -289,12 +279,7 @@ def segsmaker_setup():
     })();
     """
 
-    for cmd in [
-        f'curl -sLo {CSS} https://github.com/gutris1/segsmaker/raw/main/script/SM/segsmaker.css',
-        f'curl -sLo {IMG} https://github.com/gutris1/segsmaker/raw/main/script/loading.png',
-        f'curl -sLo {SRC}/bg.jpg https://i.imgur.com/5Mkdrpw.jpeg',
-        f'curl -sLo {MRK} https://github.com/gutris1/segsmaker/raw/main/script/marking.py'
-    ]: SyS(cmd)
+    SyS(f'curl -sLo {CSS} {G}/script/SM/segsmaker.css')
 
     load_css()
     display(HTML(f'<script>{JS}</script>'))
@@ -420,6 +405,8 @@ UID = {
         ],
     },
 }
+
+G = 'https://raw.githubusercontent.com/gutris1/segsmaker/main'
 
 output = widgets.Output()
 loading = widgets.Output()
