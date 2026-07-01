@@ -287,7 +287,7 @@ def segsmaker_setup():
     display(HTML(f'<script>{JS}</script>'))
     display(setup_panel, output, loading)
 
-G = 'https://raw.githubusercontent.com/gutris1/segsmaker/ssl'
+G = 'https://raw.githubusercontent.com/gutris1/segsmaker/main'
 
 output = widgets.Output()
 loading = widgets.Output()
