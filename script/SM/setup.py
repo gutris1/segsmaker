@@ -297,7 +297,7 @@ def setup_buttons(i, c):
 
     for b, n in zip(btn, i):
         b.add_class(n.lower())
-        b.add_class('segs-setup-buttons')
+        b.add_class('setup-buttons')
         b.on_click(lambda _, n=n: webui_setup(n))
 
     box = widgets.Box(btn)
