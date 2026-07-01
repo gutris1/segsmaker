@@ -269,15 +269,6 @@ def segsmaker_setup():
       setTimeout(() => {
         document.querySelectorAll('.setup-panel, .setup-box1, .setup-box2').forEach(el => el.classList.add('loaded'));
       }, 1200);
-
-      setTimeout(() => {
-        document.querySelectorAll('.setup-panel').forEach(el => {
-          let p = el.parentElement;
-          for (let i = 0; i < 3 && p; i++, p = p.parentElement) {
-            p.classList.add('setup-loaded');
-          }
-        });
-      }, 1000);
     })();
     """
 
