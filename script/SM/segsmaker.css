@@ -44,7 +44,7 @@
   overflow: visible;
 }
 
-.multi-panel {
+.setup-panel {
   border: 0;
   border-radius: 10px;
   margin: 0;
@@ -69,28 +69,30 @@
   }
 }
 
-.hbox1,
-.hbox2 {
+.setup-box1,
+.setup-box2 {
   z-index: 1;
+  height: 255px;
+  width: 100%;
   overflow: visible !important;
 }
 
-.hbox1 {
+.setup-box1 {
   animation: UndressBox1 1.2s forwards ease;
 }
 
-.hbox2 {
+.setup-box2 {
   animation: UndressBox2 1.2s forwards ease;
 }
 
-.hbox1:hover,
-.hbox2:hover {
+.setup-box1:hover,
+.setup-box2:hover {
   z-index: 2;
 }
 
-.multi-panel.loaded,
-.hbox1.loaded,
-.hbox2.loaded {
+.setup-panel.loaded,
+.setup-box1.loaded,
+.setup-box2.loaded {
   max-height: 600px;
   transform: translateX(0);
   overflow: visible !important;
