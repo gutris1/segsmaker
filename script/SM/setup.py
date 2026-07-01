@@ -202,7 +202,7 @@ def installing_webui(U, W):
             clone(str(W / 'asd/extension.txt'))
 
 def webui_setup(ui):
-    multi_panel.layout.display = 'none'
+    setup_panel.layout.display = 'none'
 
     current_ui = json.load(MARKED.open()).get('ui') if MARKED.exists() else None
     WEBUI = HOME / ui if ui else None
@@ -267,11 +267,11 @@ def segsmaker_setup():
     JS = """
     (() => {
       setTimeout(() => {
-        document.querySelectorAll('.multi-panel, .hbox1, .hbox2').forEach(el => el.classList.add('loaded'));
+        document.querySelectorAll('.setup-panel, .setup-box1, .setup-box2').forEach(el => el.classList.add('loaded'));
       }, 1200);
 
       setTimeout(() => {
-        document.querySelectorAll('.multi-panel').forEach(el => {
+        document.querySelectorAll('.setup-panel').forEach(el => {
           let p = el.parentElement;
           for (let i = 0; i < 3 && p; i++, p = p.parentElement) {
             p.classList.add('setup-loaded');
@@ -285,33 +285,31 @@ def segsmaker_setup():
 
     load_css()
     display(HTML(f'<script>{JS}</script>'))
-    display(multi_panel, output, loading)
+    display(setup_panel, output, loading)
 
-G = 'https://raw.githubusercontent.com/gutris1/segsmaker/main'
+G = 'https://raw.githubusercontent.com/gutris1/segsmaker/ssl'
 
 output = widgets.Output()
 loading = widgets.Output()
 
-row1 = ['A1111', 'Forge', 'ReForge', 'ReForge-old']
-buttons1 = [widgets.Button(description='') for btn in row1]
-for button, btn in zip(buttons1, row1):
-    button.add_class(btn.lower())
-    button.add_class('segs-setup-buttons')
-    button.on_click(lambda x, btn=btn: webui_setup(btn))
+def setup_buttons(i, c):
+    btn = [widgets.Button(description='') for _ in i]
 
-row2 = ['Forge-Neo', 'Forge-Classic', 'ComfyUI', 'SwarmUI']
-buttons2 = [widgets.Button(description='') for btn in row2]
-for button, btn in zip(buttons2, row2):
-    button.add_class(btn.lower())
-    button.add_class('segs-setup-buttons')
-    button.on_click(lambda x, btn=btn: webui_setup(btn))
+    for b, n in zip(btn, i):
+        b.add_class(n.lower())
+        b.add_class('segs-setup-buttons')
+        b.on_click(lambda _, n=n: webui_setup(n))
 
-hbox1 = widgets.Box(buttons1, layout=widgets.Layout(width='100%', height='255px'))
-hbox2 = widgets.Box(buttons2, layout=widgets.Layout(width='100%', height='255px'))
-multi_panel = widgets.VBox([hbox1, hbox2])
-multi_panel.add_class('multi-panel')
-hbox1.add_class('hbox1')
-hbox2.add_class('hbox2')
+    box = widgets.Box(btn)
+    box.add_class(c)
+    return box
+
+setup_panel = widgets.VBox([
+    setup_buttons(['A1111', 'Forge', 'ReForge', 'ReForge-old'], 'setup-box1'),
+    setup_buttons(['Forge-Neo', 'Forge-Classic', 'ComfyUI', 'SwarmUI'], 'setup-box2')
+])
+
+setup_panel.add_class('setup-panel')
 
 if not uid.exists(): SyS(f'curl -sLo {uid} {G}/script/SM/ssl_uid.py')
 from ssl_uid import UID
