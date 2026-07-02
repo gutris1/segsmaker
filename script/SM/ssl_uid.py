@@ -18,8 +18,9 @@ URL = {
 
 UID = {
     'A1111': {
-        'r': 'https://github.com/gutris1/A1111',
-        'b': 'master',
+        'repo': 'https://github.com/gutris1/A1111',
+        'branch': 'master',
+
         'sym': lambda M: [
             f"rm -rf {M / 'Stable-diffusion/tmp_ckpt'} {M / 'Lora/tmp_lora'} {M / 'ControlNet'}"
         ],
@@ -30,20 +31,18 @@ UID = {
             (TMP / 'controlnet', M / 'ControlNet')
         ],
 
-        'python': TMP / 'venv',
+        'env': TMP / 'venv',
         'url': URL['D'],
 
         'title': 'A1111',
         'args': '--xformers',
-        'py': '/tmp/venv/bin/python3',
-        'lib': '/tmp/venv/lib',
-        'bin': '/tmp/venv/bin',
         'cpu': '--use-cpu all --precision full --no-half --skip-torch-cuda-test',
     },
 
     'Forge': {
-        'r': 'https://github.com/lllyasviel/stable-diffusion-webui-forge Forge',
-        'b': 'main',
+        'repo': 'https://github.com/lllyasviel/stable-diffusion-webui-forge Forge',
+        'branch': 'main',
+
         'sym': lambda M: [
             f"rm -rf {M / 'Stable-diffusion/tmp_ckpt'} {M / 'Lora/tmp_lora'} {M / 'ControlNet'}",
             f"rm -rf {M / 'svd'} {M / 'z123'} {M / 'clip'} {M / 'clip_vision'} {M / 'diffusers'}",
@@ -64,20 +63,18 @@ UID = {
             (TMP / 'unet', M / 'unet')
         ],
 
-        'python': TMP / 'venv',
+        'env': TMP / 'venv',
         'url': URL['D'],
 
         'title': 'Forge',
         'args': '--disable-xformers --opt-sdp-attention --cuda-stream',
-        'py': '/tmp/venv/bin/python3',
-        'lib': '/tmp/venv/lib',
-        'bin': '/tmp/venv/bin',
         'cpu': '--always-cpu --skip-torch-cuda-test',
     },
 
     'ReForge': {
-        'r': 'https://github.com/Panchovix/stable-diffusion-webui-reForge ReForge',
-        'b': 'main',
+        'repo': 'https://github.com/Panchovix/stable-diffusion-webui-reForge ReForge',
+        'branch': 'main',
+
         'sym': lambda M: [
             f"rm -rf {M / 'Stable-diffusion/tmp_ckpt'} {M / 'Lora/tmp_lora'} {M / 'ControlNet'}",
             f"rm -rf {M / 'svd'} {M / 'z123'}"
@@ -91,35 +88,30 @@ UID = {
             (TMP / 'svd', M / 'svd')
         ],
 
-        'python': TMP / 'venv',
+        'env': TMP / 'venv',
         'url': URL['D'],
 
         'title': 'ReForge',
         'args': '--xformers --cuda-stream',
-        'py': '/tmp/venv/bin/python3',
-        'lib': '/tmp/venv/lib',
-        'bin': '/tmp/venv/bin',
         'cpu': '--always-cpu --skip-torch-cuda-test',
     },
 
     'ReForge-old': {
-        'r': '-b main-old https://github.com/Panchovix/stable-diffusion-webui-reForge ReForge-old',
-        'b': 'main-old',
+        'repo': '-b main-old https://github.com/Panchovix/stable-diffusion-webui-reForge ReForge-old',
+        'branch': 'main-old',
 
-        'python': TMP / 'venv',
+        'env': TMP / 'venv',
         'url': URL['D'],
 
         'title': 'ReForge old',
         'args': '--xformers --cuda-stream',
-        'py': '/tmp/venv/bin/python3',
-        'lib': '/tmp/venv/lib',
-        'bin': '/tmp/venv/bin',
         'cpu': '--always-cpu --skip-torch-cuda-test',
     },
 
     'Forge-Classic': {
-        'r': '-b classic https://github.com/Haoming02/sd-webui-forge-classic Forge-Classic',
-        'b': 'classic',
+        'repo': '-b classic https://github.com/Haoming02/sd-webui-forge-classic Forge-Classic',
+        'branch': 'classic',
+
         'sym': lambda M: [
             f"rm -rf {M / 'Stable-diffusion/tmp_ckpt'} {M / 'Lora/tmp_lora'} {M / 'ControlNet'}"
         ],
@@ -130,38 +122,33 @@ UID = {
             (TMP / 'controlnet', M / 'ControlNet')
         ],
 
-        'python': TMP / 'python311',
+        'env': TMP / 'python311',
         'url': URL['FC'],
 
         'title': 'Forge Classic',
         'args': '--xformers --cuda-stream --persistent-patches',
-        'py': '/tmp/python311/bin/python3',
-        'lib': '/tmp/python311/lib',
-        'bin': '/tmp/python311/bin',
         'cpu': '--always-cpu --skip-torch-cuda-test',
         'ld': True,
     },
 
     'Forge-Neo': {
-        'r': '-b neo https://github.com/Haoming02/sd-webui-forge-classic Forge-Neo',
-        'b': 'neo',
+        'repo': '-b neo https://github.com/Haoming02/sd-webui-forge-classic Forge-Neo',
+        'branch': 'neo',
 
-        'python': TMP / 'NEO',
+        'env': TMP / 'NEO',
         'url': URL['FN'],
 
         'title': 'Forge Neo',
         'args': '--xformers --cuda-stream',
-        'py': '/tmp/NEO/bin/python3',
-        'lib': '/tmp/NEO/lib',
-        'bin': '/tmp/NEO/bin',
         'cpu': '--cpu --skip-torch-cuda-test',
         'ld': True,
         'cm': True,
     },
 
     'ComfyUI': {
-        'r': 'https://github.com/comfyanonymous/ComfyUI',
-        'b': 'master',
+        'repo': 'https://github.com/comfyanonymous/ComfyUI',
+        'branch': 'master',
+
         'sym': lambda M: [
             f"rm -rf {M / 'checkpoints/tmp_ckpt'} {M / 'loras/tmp_lora'} {M / 'controlnet'}",
             f"rm -rf {M / 'clip'} {M / 'clip_vision'} {M / 'diffusers'} {M / 'diffusion_models'}",
@@ -181,22 +168,20 @@ UID = {
             (TMP / 'unet', M / 'unet')
         ],
 
-        'python': TMP / 'venv-comfy-swarm',
+        'env': TMP / 'venv-comfy-swarm',
         'url': URL['CS'],
 
         'title': 'ComfyUI',
         'args': '--dont-print-server --use-pytorch-cross-attention',
-        'py': '/tmp/venv-comfy-swarm/bin/python3',
-        'lib': '/tmp/venv-comfy-swarm/lib',
-        'bin': '/tmp/venv-comfy-swarm/bin',
         'port': 8188,
         'cpu': '--cpu',
     },
 
     'SwarmUI': {
-        'r': 'https://github.com/mcmonkeyprojects/SwarmUI',
-        'b': 'master',
-       'sym': lambda M: [
+        'repo': 'https://github.com/mcmonkeyprojects/SwarmUI',
+        'branch': 'master',
+
+        'sym': lambda M: [
             f"rm -rf {M / 'Stable-Diffusion/tmp_ckpt'} {M / 'Lora/tmp_lora'} {M / 'controlnet'}",
             f"rm -rf {M / 'clip'} {M / 'unet'}"
         ],
@@ -209,15 +194,12 @@ UID = {
             (TMP / 'unet', M / 'unet')
         ],
 
-        'python': TMP / 'venv-comfy-swarm',
+        'env': TMP / 'venv-comfy-swarm',
         'url': URL['CS'],
 
         'title': 'SwarmUI',
         'args': '--launch_mode none',
-        'py': '/tmp/venv-comfy-swarm/bin/python3',
-        'lib': '/tmp/venv-comfy-swarm/lib',
-        'bin': '/tmp/venv-comfy-swarm/bin',
         'port': 7801,
-        'env': {'SWARMPATH': lambda: str(Path.cwd()), 'SWARM_NO_VENV': 'true'},
+        'var': {'SWARMPATH': lambda: str(Path.cwd()), 'SWARM_NO_VENV': 'true'},
     },
 }
