@@ -147,7 +147,12 @@
 
 .setup-buttons:hover::before {
   z-index: 101;
-  animation: setupHover .4s alternate infinite;
+  animation: setupHover .4s alternate infinite, BoxShadowPulse 2s linear infinite;
+}
+
+@keyframes setupHover {
+  from { box-shadow: inset 0 0 2px 1px var(--a), 0 0 2px 1px var(--a); }
+  to { box-shadow: inset 0 0 14px 8px var(--a), 0 0 14px 8px var(--a); }
 }
 
 .setup-buttons::after {
@@ -183,17 +188,6 @@
 .forge-neo::after { content: 'Forge Neo'; }
 .comfyui::after { content: 'ComfyUI'; }
 .swarmui::after { content: 'SwarmUI'; }
-
-@keyframes setupHover {
-  from { 
-    box-shadow: inset 0 0 2px 1px var(--a), 0 0 2px 1px var(--a);
-    filter: hue-rotate(0deg);
-  }
-  to { 
-    box-shadow: inset 0 0 14px 8px var(--a), 0 0 14px 8px var(--a);
-    filter: hue-rotate(360deg);
-  }
-}
 
 /* WEBUI LAUNCHER ################################################################################################################## */
 
