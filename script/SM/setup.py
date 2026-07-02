@@ -238,7 +238,7 @@ def webui_setup(ui):
 
             marking(SRC, MARKED, ui)
             installing_webui(ui, WEBUI)
-            tempe()
+            tempe(); print()
 
             with loading:
                 loading.clear_output(wait=True)
