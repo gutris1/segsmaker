@@ -205,19 +205,18 @@ def webui_setup(ui):
     setup_panel.layout.display = 'none'
 
     current_ui = json.load(MARKED.open()).get('ui') if MARKED.exists() else None
-    WEBUI = HOME / ui if ui else None
+    WEBUI = HOME / ui
 
-    if WEBUI and WEBUI.exists():
-        if (WEBUI / '.git').exists():
+    if WEBUI.exists() and (WEBUI / '.git').exists():
+        with output:
             CD(WEBUI)
 
-            with output:
-                branch = UID.get(ui, {}).get('b')
-                if branch: SyS(f'git pull origin {branch}')
+            branch = UID.get(ui, {}).get('branch')
+            if branch: SyS(f'git pull origin {branch}')
+            print()
 
-                install_tunnel()
-                print()
-                for l in sm_script(WEBUI): download(l)
+            install_tunnel()
+            for l in sm_script(WEBUI): download(l)
 
     else:
         if current_ui and current_ui != ui and (HOME / current_ui).exists():
@@ -234,11 +233,8 @@ def webui_setup(ui):
             display(Image(filename=str(IMG)))
 
         with output:
-            WEBUI = HOME / ui
-            repo = UID[ui]['r']
-
             say(f"<b>【{{red}} Installing {ui.replace('-', ' ')}{{d}} 】{{red}}</b>")
-            clone(repo)
+            clone(UID[ui]['repo'])
 
             marking(SRC, MARKED, ui)
             installing_webui(ui, WEBUI)
