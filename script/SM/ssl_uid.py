@@ -8,12 +8,18 @@ URL = {
         'https://huggingface.co/gutris1/webui/resolve/main/env/SSL-Torch2120-cu130-part1.tar.lz4',
         'https://huggingface.co/gutris1/webui/resolve/main/env/SSL-Torch2120-cu130-part2.tar.lz4'
     ],
+
     'FC': 'https://huggingface.co/gutris1/webui/resolve/main/env/SSL-FC-Python311-Torch260-cu124.tar.lz4',
+
     'FN': [
         'https://huggingface.co/gutris1/webui/resolve/main/env/SSL-FN-Torch2121-cu130-part1.tar.lz4',
         'https://huggingface.co/gutris1/webui/resolve/main/env/SSL-FN-Torch2121-cu130-part2.tar.lz4'
     ],
-    'CS': 'https://huggingface.co/gutris1/webui/resolve/main/env/SSL-ComfyUI-SwarmUI-Torch260-cu124.tar.lz4',
+
+    'CS': [
+        'https://huggingface.co/gutris1/webui/resolve/main/env/SSL-CS-Torch2121-cu130-part1.tar.lz4',
+        'https://huggingface.co/gutris1/webui/resolve/main/env/SSL-CS-Torch2121-cu130-part2.tar.lz4'
+    ],
 }
 
 UID = {
@@ -168,7 +174,7 @@ UID = {
             (TMP / 'unet', M / 'unet')
         ],
 
-        'env': TMP / 'venv-comfy-swarm',
+        'env': TMP / 'Comfy-Swarm',
         'url': URL['CS'],
 
         'title': 'ComfyUI',
@@ -194,7 +200,7 @@ UID = {
             (TMP / 'unet', M / 'unet')
         ],
 
-        'env': TMP / 'venv-comfy-swarm',
+        'env': TMP / 'Comfy-Swarm',
         'url': URL['CS'],
 
         'title': 'SwarmUI',
