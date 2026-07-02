@@ -35,16 +35,15 @@ def check_pv():
     except Exception:
         subprocess.run(['mamba', 'install', '-y', 'pv'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-def unused_python(py):
-    venvs = [TMP / 'venv', TMP / 'venv-comfy-swarm', TMP / 'python311', TMP / 'NEO']
-    unused = [v for v in venvs if v != py and v.exists()]
-    if unused: SyS(f"rm -rf {' '.join(str(v) for v in unused)}")
+def unused_python(env):
+    unused = [d['env'] for d in UID.values() if d['env'] != env and d['env'].exists()]
+    if unused: SyS(f"rm -rf {' '.join(map(str, unused))}")
 
 def install_python():
-    py = UID[ui]['python']
-    if py.exists(): return
+    env = UID[ui]['env']
+    if env.exists(): return
 
-    unused_python(py)
+    unused_python(env)
     check_pv()
 
     CD(TMP)
@@ -62,15 +61,16 @@ def install_python():
         t.unlink(missing_ok=True)
 
     if ui not in ['Forge-Classic', 'Forge-Neo']:
-        pi = f'{py}/bin/python3 -m pip install'
+        pi = f'{env}/bin/python3 -m pip install'
 
         for c in [
-            f'rm -f {py}/bin/pip* {py}/bin/python*',
-            f'python3 -m venv {py}',
-            f'{pi} -U pip'
+            f'rm -f {env}/bin/pip* {env}/bin/python*',
+            f'python3 -m venv {env}',
+            f'{pi} -U pip',
             f'{pi} ipykernel matplotlib pyyaml',
             f'{pi} -q comfy-aimdo'
-        ]: SyS(f'{c} > /dev/null 2>&1')
+        ]:
+            SyS(f'{c} > /dev/null 2>&1')
 
 print('checking python...')
 tempe()
