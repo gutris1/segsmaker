@@ -121,23 +121,19 @@ def setENV(ui):
     lib = str(env / 'lib')
     bin = str(env / 'bin')
 
-    L = '/home/studio-lab-user/.conda/envs/default/lib/libtcmalloc_minimal.so.4'
     D = '/home/studio-lab-user/.conda/envs/default/lib'
-
-    if d.get('ld'):
-        iRON['LD_LIBRARY_PATH'] = D + ':' + iRON.get('LD_LIBRARY_PATH', '')
+    L = f'{D}/libtcmalloc_minimal.so.4'
 
     if d.get('cm'):
         iRON.pop('MPLBACKEND', None)
+
+    iRON['LD_LIBRARY_PATH'] = f'{lib}:{D}:{iRON.get("LD_LIBRARY_PATH", "")}'
 
     for k, v in d.get('var', {}).items():
         iRON[k] = v() if callable(v) else v
 
     if L not in iRON.get('LD_PRELOAD', ''):
         iRON['LD_PRELOAD'] = L
-
-    if lib not in iRON.get('LD_LIBRARY_PATH', ''):
-        iRON['LD_LIBRARY_PATH'] = lib + ':' + iRON.get('LD_LIBRARY_PATH', '')
 
     if bin not in iRON.get('PATH', ''):
         iRON['PATH'] = bin + ':' + iRON.get('PATH', '')
