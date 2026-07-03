@@ -269,6 +269,7 @@
   position: relative;
   font-weight: bold;
   font-family: 'Times New Roman', serif;
+  height: 100%;
   margin: 0;
   padding: 8px;
   color: transparent;
@@ -437,8 +438,7 @@
 
 .launcher-tunnel-radio input[type=radio]:checked {
   box-shadow: var(--f);
-  filter: drop-shadow(0 0 4px var(--a));
-  background: #24242442;
+  background: rgb(36 36 36 / 45%);
 }
 
 .launcher-tunnel-radio label:hover input:not(:checked) {
