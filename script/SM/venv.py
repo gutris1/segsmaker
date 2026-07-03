@@ -60,18 +60,6 @@ def install_python():
         SyS(f'pv "{t}" | lz4 -d | tar xf -')
         t.unlink(missing_ok=True)
 
-    if ui not in ['Forge-Classic', 'Forge-Neo']:
-        pi = f'{env}/bin/python3 -m pip install'
-
-        for c in [
-            f'rm -f {env}/bin/pip* {env}/bin/python*',
-            f'python3 -m venv {env}',
-            f'{pi} -U pip',
-            f'{pi} ipykernel matplotlib pyyaml',
-            f'{pi} -q comfy-aimdo'
-        ]:
-            SyS(f'{c} > /dev/null 2>&1')
-
 print('checking python...')
 tempe()
 trashing()
