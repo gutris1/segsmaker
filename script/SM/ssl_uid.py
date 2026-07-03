@@ -4,19 +4,24 @@ HOME = Path.home()
 TMP = Path('/tmp')
 
 URL = {
-    'D': [
+    'D': [ # 3.10.13
         'https://huggingface.co/gutris1/webui/resolve/main/env/SSL-Torch2120-cu130-part1.tar.lz4',
         'https://huggingface.co/gutris1/webui/resolve/main/env/SSL-Torch2120-cu130-part2.tar.lz4'
     ],
 
+    'RF': [ # 3.12.13
+        'https://huggingface.co/gutris1/webui/resolve/main/env/SSL-RF-Torch2121-cu130-part1.tar.lz4',
+        'https://huggingface.co/gutris1/webui/resolve/main/env/SSL-RF-Torch2121-cu130-part2.tar.lz4'
+    ],
+
     'FC': 'https://huggingface.co/gutris1/webui/resolve/main/env/SSL-FC-Python311-Torch260-cu124.tar.lz4',
 
-    'FN': [
+    'FN': [ # 3.13.12
         'https://huggingface.co/gutris1/webui/resolve/main/env/SSL-FN-Torch2121-cu130-part1.tar.lz4',
         'https://huggingface.co/gutris1/webui/resolve/main/env/SSL-FN-Torch2121-cu130-part2.tar.lz4'
     ],
 
-    'CS': [
+    'CS': [ # 3.12.13
         'https://huggingface.co/gutris1/webui/resolve/main/env/SSL-CS-Torch2121-cu130-part1.tar.lz4',
         'https://huggingface.co/gutris1/webui/resolve/main/env/SSL-CS-Torch2121-cu130-part2.tar.lz4'
     ],
@@ -77,6 +82,18 @@ UID = {
         'cpu': '--always-cpu --skip-torch-cuda-test',
     },
 
+    'ReForge-old': {
+        'repo': '-b main-old https://github.com/Panchovix/stable-diffusion-webui-reForge ReForge-old',
+        'branch': 'main-old',
+
+        'env': TMP / 'venv',
+        'url': URL['D'],
+
+        'title': 'ReForge old',
+        'args': '--xformers --cuda-stream',
+        'cpu': '--always-cpu --skip-torch-cuda-test',
+    },
+
     'ReForge': {
         'repo': 'https://github.com/Panchovix/stable-diffusion-webui-reForge ReForge',
         'branch': 'main',
@@ -94,22 +111,10 @@ UID = {
             (TMP / 'svd', M / 'svd')
         ],
 
-        'env': TMP / 'venv',
-        'url': URL['D'],
+        'env': TMP / 'R-F',
+        'url': URL['RF'],
 
         'title': 'ReForge',
-        'args': '--xformers --cuda-stream',
-        'cpu': '--always-cpu --skip-torch-cuda-test',
-    },
-
-    'ReForge-old': {
-        'repo': '-b main-old https://github.com/Panchovix/stable-diffusion-webui-reForge ReForge-old',
-        'branch': 'main-old',
-
-        'env': TMP / 'venv',
-        'url': URL['D'],
-
-        'title': 'ReForge old',
         'args': '--xformers --cuda-stream',
         'cpu': '--always-cpu --skip-torch-cuda-test',
     },
@@ -134,7 +139,6 @@ UID = {
         'title': 'Forge Classic',
         'args': '--xformers --cuda-stream --persistent-patches',
         'cpu': '--always-cpu --skip-torch-cuda-test',
-        'ld': True,
     },
 
     'Forge-Neo': {
@@ -147,7 +151,6 @@ UID = {
         'title': 'Forge Neo',
         'args': '--xformers --cuda-stream',
         'cpu': '--cpu --skip-torch-cuda-test',
-        'ld': True,
         'cm': True,
     },
 
