@@ -4,9 +4,9 @@ HOME = Path.home()
 TMP = Path('/tmp')
 
 URL = {
-    'D': [ # 3.10.13
-        'https://huggingface.co/gutris1/webui/resolve/main/env/SSL-Torch2120-cu130-part1.tar.lz4',
-        'https://huggingface.co/gutris1/webui/resolve/main/env/SSL-Torch2120-cu130-part2.tar.lz4'
+    'D': [ # 3.10.20
+        'https://huggingface.co/gutris1/webui/resolve/main/env/SSL-PY310-Torch2121-cu130-part1.tar.lz4',
+        'https://huggingface.co/gutris1/webui/resolve/main/env/SSL-PY310-Torch2121-cu130-part2.tar.lz4'
     ],
 
     'RF': [ # 3.12.13
@@ -42,7 +42,7 @@ UID = {
             (TMP / 'controlnet', M / 'ControlNet')
         ],
 
-        'env': TMP / 'venv',
+        'env': TMP / 'PY-310',
         'url': URL['D'],
 
         'title': 'A1111',
@@ -74,7 +74,7 @@ UID = {
             (TMP / 'unet', M / 'unet')
         ],
 
-        'env': TMP / 'venv',
+        'env': TMP / 'PY-310',
         'url': URL['D'],
 
         'title': 'Forge',
@@ -86,7 +86,7 @@ UID = {
         'repo': '-b main-old https://github.com/Panchovix/stable-diffusion-webui-reForge ReForge-old',
         'branch': 'main-old',
 
-        'env': TMP / 'venv',
+        'env': TMP / 'PY-310',
         'url': URL['D'],
 
         'title': 'ReForge old',
