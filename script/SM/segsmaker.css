@@ -394,11 +394,6 @@
 }
 
 .launcher-tunnel-radio > .widget-radio-box-vertical > label {
-  --a: hsl(187.79deg 100% 50%);
-  --b: inset 0 0 2px 2px;
-  --c: 0 0 1px 1px;
-  --d: 0 0 30px 0;
-  --f: var(--b) var(--a), var(--c) var(--a), var(--d) var(--a);
   display: flex;
   flex-direction: row-reverse;
   align-items: center;
@@ -418,6 +413,11 @@
 }
 
 .launcher-tunnel-radio input[type=radio] {
+  --a: hsl(187.79deg 100% 50%);
+  --b: inset 0 0 12px 0;
+  --c: 0 0 2px 2px;
+  --d: 0 0 14px 0;
+  --f: var(--b) var(--a), var(--c) var(--a), var(--d) var(--a);
   appearance: none;
   -moz-appearance: none;
   outline: none;
@@ -436,13 +436,14 @@
   transition: .4s ease;
 }
 
-.launcher-tunnel-radio input[type=radio]:checked {
-  box-shadow: var(--f);
-  background: rgb(36 36 36 / 45%);
-}
-
+.launcher-tunnel-radio input[type=radio]:checked,
 .launcher-tunnel-radio label:hover input:not(:checked) {
   box-shadow: var(--f);
+  filter: drop-shadow(0 0 6px hsl(200deg 100% 50%));
+}
+
+.launcher-tunnel-radio input[type=radio]:checked::after {
+
 }
 
 .launcher-tunnel-radio input[type=radio]::after {
@@ -451,13 +452,19 @@
   inset: 8px;
   border-radius: 0;
   background: var(--a);
-  filter: drop-shadow(0 0 8px var(--a));
+  box-shadow: 0 0 3px 1px var(--a);
   opacity: 0;
-  transition: .4s ease;
+  transition: .6s ease;
 }
 
 .launcher-tunnel-radio input[type=radio]:checked::after {
   opacity: 1;
+  animation: rotateRadioAfter 2s linear infinite;
+}
+
+@keyframes rotateRadioAfter {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 .launcher-tunnel-radio label > span {
