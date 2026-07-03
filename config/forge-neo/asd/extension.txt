@@ -13,3 +13,4 @@ https://github.com/gutris1/sd-simple-dimension-preset
 https://github.com/gutris1/sd-civitai-browser-plus
 https://github.com/gutris1/sd_civitai_extension
 https://github.com/Haoming02/sd-forge-couple
+https://github.com/kiygskr/sd-webui-supermerger-forgeneo-anima
