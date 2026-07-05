@@ -26,7 +26,9 @@ def getArgs():
     RESET = '\033[0m'
     RED = '\033[31m'
     PURPLE = '\033[38;5;135m'
-    ERROR = f'{PURPLE}[{RESET}{RED}ERROR{RESET}{PURPLE}]{RESET}'
+    ERR = f'{PURPLE}[{RESET}{RED}ERROR{RESET}{PURPLE}]{RESET}'
+
+    L = ['A1111', 'Forge', 'ReForge', 'ReForge-old', 'Forge-Classic', 'Forge-Neo', 'ComfyUI', 'SwarmUI']
 
     parser = argparse.ArgumentParser(description='WebUI Installer Script for Kaggle and Google Colab')
     parser.add_argument('--webui', required=True, help='available webui: A1111, Forge, ReForge, ReForge-old, Forge-Classic, Forge-Neo, ComfyUI, SwarmUI')
@@ -39,25 +41,25 @@ def getArgs():
     arg2 = args.civitai_key.strip()
     arg3 = args.hf_read_token.strip() if args.hf_read_token else ''
 
-    if not any(arg1 == option.lower() for option in WEBUI_LIST):
-        print(f'{ERROR}: invalid webui option: "{args.webui}"')
-        print(f'Available webui options: {", ".join(WEBUI_LIST)}')
+    if not any(arg1 == option.lower() for option in L):
+        print(f'{ERR}: invalid webui option: "{args.webui}"')
+        print(f'Available webui options: {", ".join(L)}')
         return None, None, None
 
     if not arg2:
-        print(f'{ERROR}: CivitAI API key is missing.')
+        print(f'{ERR}: CivitAI API key is missing.')
         return None, None, None
     if re.search(r'\s+', arg2):
-        print(f'{ERROR}: CivitAI API key contains spaces "{arg2}" - not allowed.')
+        print(f'{ERR}: CivitAI API key contains spaces "{arg2}" - not allowed.')
         return None, None, None
     if len(arg2) < 32:
-        print(f'{ERROR}: CivitAI API key must be at least 32 characters long.')
+        print(f'{ERR}: CivitAI API key must be at least 32 characters long.')
         return None, None, None
 
     if not arg3: arg3 = ''
     if re.search(r'\s+', arg3): arg3 = ''
 
-    ui = next(option for option in WEBUI_LIST if arg1 == option.lower())
+    ui = next(option for option in L if arg1 == option.lower())
     return ui, arg2, arg3
 
 def getPython():
@@ -139,13 +141,12 @@ def sym_link(M):
     UID['Forge-Neo']['links'] = UID['Forge-Classic']['links']
 
     if ui not in ('ComfyUI', 'SwarmUI'):
-        [(M / d).mkdir(parents=True, exist_ok=True) for d in ['Lora', 'ESRGAN']]
+        [(M / f).mkdir(parents=True, exist_ok=True) for f in ['Lora', 'ESRGAN']]
 
-    [SyS(cmd) for cmd in (
-        [f'rm -rf "{p}"' for p, _ in ui['links']] +
-        ui['sym'] +
-        [f'ln -s {p} {t}' for p, t in ui['links']]
-    )]
+    d = UID[ui]
+
+    for c in d['sym'](M): SyS(c)
+    for p, t in d['links'](M): SyS(f'ln -s {p} {t}')
 
 def webui_req(W, M):
     CD(W)
@@ -280,8 +281,6 @@ def notebook_scripts():
     sys.path.append(str(STR))
 
     for scripts in [nenen, melon, uid, MRK]: get_ipython().run_line_magic('run', str(scripts))
-
-WEBUI_LIST = ['A1111', 'Forge', 'ReForge', 'ReForge-old', 'Forge-Classic', 'Forge-Neo', 'ComfyUI', 'SwarmUI']
 
 G = 'https://raw.githubusercontent.com/gutris1/segsmaker/ssl'
 
