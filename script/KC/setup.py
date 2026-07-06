@@ -13,14 +13,7 @@ CD = os.chdir
 iRON = os.environ
 SyS = get_ipython().system
 
-def getENV():
-    env = {
-        'Colab': ('/content', 'COLAB_JUPYTER_TOKEN'),
-        'Kaggle': ('/kaggle/working', 'KAGGLE_DATA_PROXY_TOKEN')
-    }
-    for name, (home, var) in env.items():
-        if var in iRON: return name, home
-    return None, None, None
+KAGGLE = 'KAGGLE_DATA_PROXY_TOKEN' in iRON
 
 def getArgs():
     RESET = '\033[0m'
@@ -84,7 +77,7 @@ def getPython():
     if BIN not in iRON.get('PATH', ''): iRON['PATH'] = BIN + ':' + iRON.get('PATH', '')
     if PKG not in iRON.get('PYTHONPATH', ''): iRON['PYTHONPATH'] = PKG + ':' + iRON.get('PYTHONPATH', '')
 
-    if ENVNAME == 'Kaggle':
+    if KAGGLE:
         for cmd in (
             'pip install ipywidgets jupyterlab_widgets --upgrade',
             'rm -f /usr/lib/python3.10/sitecustomize.py',
@@ -246,7 +239,7 @@ def webui_installer():
                 say(f"<b>【{{red}} {ui.replace('-', ' ')} Extensions{{d}} 】{{red}}</b>")
                 clone(str(WEBUI / 'asd/extension.txt'))
 
-                if ENVNAME == 'Kaggle': clone('https://github.com/gutris1/sd-image-encryption')
+                if KAGGLE: clone('https://github.com/gutris1/sd-image-encryption')
 
         say('<br><b>【{red} Done{d} 】{red}</b>')
         tempe()
@@ -254,16 +247,15 @@ def webui_installer():
 
 def notebook_scripts():
     for s in [
-        f'{STR} {G}/script/KC/00-startup.py',
+        f'{startup} {G}/script/KC/00-startup.py',
+        f'{cupang} {G}/script/cupang.py',
         f'{uid} {G}/script/_segsmaker_.py',
         f'{nenen} {G}/script/nenen88.py',
         f'{melon} {G}/script/melon00.py',
-        f'{STR} {G}/script/cupang.py',
         f'{MRK} {G}/script/marking.py'
-    ]: SyS(f'curl -sLo {s}')
+    ]: SyS(f'wget -qO {s}')
 
     d = {
-        'ENVNAME': ENVNAME,
         'HOME': HOME,
         'SRC': SRC
     }
@@ -284,18 +276,15 @@ def notebook_scripts():
 
 G = 'https://raw.githubusercontent.com/gutris1/segsmaker/ssl'
 
-ENVNAME, ENVHOME = getENV()
-if not ENVNAME:
-    print('You are not in Kaggle or Google Colab.\nExiting.')
-    sys.exit()
-
 USR = Path('/usr/bin')
 STR = Path('/root/.ipython/profile_default/startup')
+startup = STR / '00-startup.py'
+cupang = STR / 'cupang.py'
+uid = STR / '_segsmaker_.py'
 nenen = STR / 'nenen88.py'
 melon = STR / 'melon00.py'
-uid = STR / '_segsmaker_.py'
 
-HOME = Path(ENVHOME)
+HOME = Path('/kaggle/working' if KAGGLE else '/content')
 SRC = HOME / 'gutris1'
 MRK = SRC / 'marking.py'
 MARK = SRC / 'marking.json'
