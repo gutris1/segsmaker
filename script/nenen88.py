@@ -71,83 +71,6 @@ def say(line):
 
     display(HTML(' '.join(output)))
 
-@register_line_magic
-def download(i):
-    args = i.split()
-    if not args:
-        print('  missing URL, downloading nothing')
-        return
-
-    url = args[0]
-    path = Path(url).expanduser()
-    if url.endswith('.txt') and path.is_file():
-        for l in path.read_text(encoding='utf-8').splitlines(): netorare(l)
-    else: netorare(i)
-
-def netorare(line):
-    fp, fn = None, None
-
-    parts = line.strip().split()
-    if not parts: return
-
-    cwd = Path.cwd()
-    path = lambda s: '/' in s or '~/' in s
-    url = parts[0].replace('\\', '')
-
-    C = bool(CIVITAI.domain(url))
-    H = 'huggingface.co' in url
-    G = 'github.com' in url
-    D = 'drive.google.com' in url
-
-    try:
-        if len(parts) >= 3:
-            a, b = parts[1], parts[2]
-
-            aa = path(a)
-            bb = path(b)
-
-            if bb and not aa: p, f = b, a
-            elif aa and not bb: p, f = a, b
-            elif Path(b).suffix == '' and Path(a).suffix != '': p, f = b, a
-            else: p, f = a, b
-
-            fp = Path(p).expanduser()
-            fn = f
-
-            fp.mkdir(parents=True, exist_ok=True)
-            CD(fp)
-
-        elif len(parts) == 2:
-            a = parts[1]
-
-            if path(a):
-                fp = Path(a).expanduser()
-                fp.mkdir(parents=True, exist_ok=True)
-                CD(fp)
-                fn = (None if (C or D) else Path(urlparse(url).path).name)
-            else:
-                fn = a
-                fp = cwd
-
-        else:
-            fn = (None if (C or D) else Path(urlparse(url).path).name)
-            fp = cwd
-
-        if C or H or G: ariari(url, fp, fn)
-
-        elif D: gdrown(url, fp, fn)
-
-        else:
-            cp = (len(parts) == 2 and fp is not None)
-            cmd = (
-              f"curl -#{'OJL' if len(parts) == 1 or cp else 'JL'} '{url}'" +
-              (f" -o '{fn}'" if fn is not None and not cp else "")
-            )
-            curlly(cmd, fn)
-
-    finally:
-        CD(cwd)
-
 class CIVITAI:
     DOMAINS = ('civitai.com', 'civitai.red',)
 
@@ -308,17 +231,99 @@ class CIVITAI:
 
         threading.Thread(target=t, daemon=True).start()
 
-def get_url(url, fn):
-    civitai = CIVITAI.domain(url)
+@register_line_magic
+def download(i):
+    args = i.split()
+    if not args:
+        print('  missing URL, downloading nothing')
+        return
 
-    if 'github.com' in url:
+    url = args[0]
+    path = Path(url).expanduser()
+    if url.endswith('.txt') and path.is_file():
+        for l in path.read_text(encoding='utf-8').splitlines(): netorare(l)
+    else: netorare(i)
+
+def _url(url):
+    return (
+        CIVITAI.domain(url),
+        'huggingface.co' in url,
+        'github.com' in url or 'raw.githubusercontent.com' in url,
+        'drive.google.com' in url,
+    )
+
+def netorare(line):
+    fp, fn = None, None
+
+    parts = line.strip().split()
+    if not parts: return
+
+    cwd = Path.cwd()
+    path = lambda s: '/' in s or '~/' in s
+    url = parts[0].replace('\\', '')
+
+    civitai, huggingface, github, driveGoogle = _url(url)
+
+    try:
+        if len(parts) >= 3:
+            a, b = parts[1], parts[2]
+
+            aa = path(a)
+            bb = path(b)
+
+            if bb and not aa: p, f = b, a
+            elif aa and not bb: p, f = a, b
+            elif Path(b).suffix == '' and Path(a).suffix != '': p, f = b, a
+            else: p, f = a, b
+
+            fp = Path(p).expanduser()
+            fn = f
+
+            fp.mkdir(parents=True, exist_ok=True)
+            CD(fp)
+
+        elif len(parts) == 2:
+            a = parts[1]
+
+            if path(a):
+                fp = Path(a).expanduser()
+                fp.mkdir(parents=True, exist_ok=True)
+                CD(fp)
+                fn = (None if (civitai or driveGoogle) else Path(urlparse(url).path).name)
+            else:
+                fn = a
+                fp = cwd
+
+        else:
+            fn = (None if (civitai or driveGoogle) else Path(urlparse(url).path).name)
+            fp = cwd
+
+        if civitai or huggingface or github: ariari(url, fp, fn)
+
+        elif driveGoogle: gdrown(url, fp, fn)
+
+        else:
+            cp = (len(parts) == 2 and fp is not None)
+            cmd = (
+              f"curl -#{'OJL' if len(parts) == 1 or cp else 'JL'} '{url}'" +
+              (f" -o '{fn}'" if fn is not None and not cp else '')
+            )
+            curlly(cmd, fn)
+
+    finally:
+        CD(cwd)
+
+def _resolve(url, fn):
+    civitai, huggingface, github, _ = _url(url)
+
+    if github:
         return (url.replace('/blob/', '/raw/'), None, fn)
 
-    elif 'huggingface.co' in url:
+    elif huggingface:
         url = url.split('?')[0]
         headers = {'User-Agent': 'Mozilla/5.0', **({'Authorization': f'Bearer {TOBRUT}'} if TOBRUT else {})}
-        cv = None
         ext = {'.safetensors', '.pt', '.pth'}
+        c = None
 
         if fn and Path(fn).suffix.lower() in ext:
             try:
@@ -329,17 +334,15 @@ def get_url(url, fn):
                 if t:
                     sha256 = t.group(1).lower()
 
-                    for c in CIVITAI.DOMAINS:
+                    for u in CIVITAI.DOMAINS:
                         try:
-                            api_url = f'https://{c}/api/v1/model-versions/by-hash/{sha256}'
+                            api_url = f'https://{u}/api/v1/model-versions/by-hash/{sha256}'
 
                             j = CIVITAI.get_json(api_url)
                             if not j: continue
 
                             r = next((f for f in j.get('files', []) if f.get('hashes', {}).get('SHA256', '').lower() == sha256), None)
-                            if r:
-                                cv = CIVITAI(j, domain=c)
-                                break
+                            if r: c = CIVITAI(j, domain=u); break
 
                         except Exception:
                             continue
@@ -348,9 +351,9 @@ def get_url(url, fn):
                 pass
 
         url = url.replace('/blob/', '/resolve/')
-        return (url, cv, fn)
+        return (url, c, fn)
 
-    elif civitai in url:
+    elif civitai:
         input_url = url
         url = url.split('?token=')[0]
 
@@ -361,10 +364,10 @@ def get_url(url, fn):
             j = CIVITAI.get_json(api_url)
             if not j: return (url, None, None)
 
-            cv = CIVITAI(j, version_id, civitai)
-            if not cv.file: return (url, None, None)
+            c = CIVITAI(j, version_id, civitai)
+            if not c.file: return (url, None, None)
 
-            return (url, cv, fn or cv.filename)
+            return (url, c, fn or c.filename)
 
         elif f'{civitai}/models/' in url:
             version_id = None
@@ -377,26 +380,26 @@ def get_url(url, fn):
             j = CIVITAI.get_json(api_url)
             if not j: return (None, None, None)
 
-            cv = CIVITAI(j, version_id, civitai)
+            c = CIVITAI(j, version_id, civitai)
 
-            if cv.early_access_info(): return (None, None, None)
+            if c.early_access_info(): return (None, None, None)
 
-            if not cv.file:
+            if not c.file:
                 print(f'Unable to find download URL for\n-> {input_url}\n')
                 return (None, None, None)
 
-            return (cv.file['downloadUrl'], cv, fn or cv.filename)
+            return (c.file['downloadUrl'], c, fn or c.filename)
 
     return (url, None, fn)
 
 def ariari(url, fp, fn):
-    url, cv, fn = get_url(url, fn)
+    url, c, fn = _resolve(url, fn)
     if not url: return
 
-    civitai = CIVITAI.domain(url)
+    civitai, huggingface, *_ = _url(url)
     headers = {'User-Agent': (CIVITAI.headers()['User-Agent'] if civitai else 'Mozilla/5.0')}
 
-    if TOKET and f'{civitai}/api/download/models/' in url:
+    if TOKET and civitai and f'{civitai}/api/download/models/' in url:
         headers['Authorization'] = f'Bearer {TOKET}'
 
         try:
@@ -415,20 +418,19 @@ def ariari(url, fp, fn):
         '-c', '-x16', '-s16', '-k1M', '-j5' 
     ]
 
-    if TOBRUT and 'huggingface.co' in url: cmd.append(f'--header=Authorization: Bearer {TOBRUT}')
+    if TOBRUT and huggingface: cmd.append(f'--header=Authorization: Bearer {TOBRUT}')
     if fn: cmd += ['-o', fn]
 
     cmd.append(url)
 
     try:
-        if cv: cv.extras(fp, fn)
+        if c: c.extras(fp, fn)
 
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         aria2_output, bl, error_code, error_line = '', False, [], []
 
         while True:
             lines = p.stderr.readline()
-
             if lines == '' and p.poll() is not None: break
 
             if lines:
@@ -464,93 +466,67 @@ def ariari(url, fp, fn):
                             current, total = sizes.split('/')
                             current = re.sub(r'(\d+(?:\.\d+)?)(\w+)', f'\\1{PURPLE}\\2{RESET}', current)
                             total = re.sub(r'(\d+(?:\.\d+)?)(\w+)', f'\\1{PURPLE}\\2{RESET}', total)
-                            parts.append(f'{current}' f'{CYAN}/{RESET}' f'{total}')
+                            parts.append(f'{current}{CYAN}/{RESET}{total}')
 
                         speed = re.sub(r'(\d+(?:\.\d+)?)(\w+)', f'\\1{PURPLE}\\2{RESET}', speed)
-                        parts.append(f'{CYAN}DL{RESET}:' f'{speed}')
+                        parts.append(f'{CYAN}DL{RESET}:{speed}')
 
-                        if eta:
-                            parts.append(f'{CYAN}ETA{RESET}:' f'{YELLOW}{eta}{RESET}')
+                        if eta: parts.append(f'{CYAN}ETA{RESET}:{YELLOW}{eta}{RESET}')
 
                         body = ' '.join(parts)
 
-                        r = (
-                            f'{fn} '
-                            #f'{MAGENTA}【{RESET}'
-                            f'{body}'
-                            #f'{MAGENTA}】{RESET}'
-                        )
-
-                        print(f"\r{' '*300}\r  {RED}●{RESET} {r}", end='')
+                        print(f"\r{' '*300}\r  {RED}●{RESET} {fn} {body}", end='')
                         sys.stdout.flush()
 
                         bl = True
                         break
 
-        civitai = None
-        error = error_code + error_line
-        for lines in error: print(f'  {lines}')
+        p.wait()
+
+        if p.returncode:
+            for line in error_code + error_line:
+                print(f'  {line}')
 
         for lines in aria2_output.splitlines():
             if '|' in lines and 'OK' in lines:
                 pipe = [p.strip() for p in lines.split('|')]
 
                 if len(pipe) >= 4:
-                    saved = pipe[3]
-                    saved = re.sub(r'/', f'{ORANGE}/{RESET}', saved)
+                    saved = re.sub(r'/', f'{ORANGE}/{RESET}', pipe[3])
                     print(f"\r{' '*300}\r  {GREEN}●{RESET} {saved}")
                     sys.stdout.flush()
                     bl = False
 
         bl and print()
-        p.wait()
 
     except KeyboardInterrupt:
         print(f'\n{"":>2}^ Canceled')
 
 def curlly(cmd, fn):
     try:
-        p = subprocess.Popen(
-            shlex.split(cmd), cwd=str(Path.cwd()),
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-            text=True, bufsize=1
-        )
+        p = subprocess.Popen(shlex.split(cmd), cwd=str(Path.cwd()), stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, bufsize=1)
 
         prog = re.compile(r'(\d+\.\d+)%')
         curl_output = ''
 
-        with tqdm(
-            total=100, desc=f'{fn.ljust(58):>{58 + 2}}', initial=0,
-            bar_format='{desc} 【{bar:20}】【{percentage:3.0f}%】',
-            ascii='▷▶', file=sys.stdout
-        ) as pbar:
-            for line in iter(p.stderr.readline, ''):
-                if line.strip():
-                    match = prog.search(line)
-                    if match:
-                        progress = float(match.group(1))
-                        pbar.update(progress - pbar.n)
-                        pbar.refresh()
-
-                curl_output += line
+        with tqdm(total=100, desc=f'{fn.ljust(58):>{58 + 2}}', initial=0, bar_format='{desc} 【{bar:20}】【{percentage:3.0f}%】', ascii='▷▶', file=sys.stdout) as pbar:
+            for o in iter(p.stderr.readline, ''):
+                if o.strip():
+                    res = prog.search(o)
+                    if res: progress = float(res.group(1)); pbar.update(progress - pbar.n); pbar.refresh()
+                curl_output += o
             pbar.close()
         p.wait()
 
         if p.returncode != 0:
-            if 'curl: (23)' in curl_output:
-                print(
-                    f"{'':>2}^ File already exists; download skipped. "
-                    "Append a custom name after the URL or PATH to overwrite."
-                )
-            elif 'curl: (3)' in curl_output:
-                print('')
-            else:
-                print(f"{'':>2}^ Error: {curl_output}")
+            if 'curl: (23)' in curl_output: print('  ^ File already exists; download skipped. Append a custom name after the URL or PATH to overwrite.')
+            elif 'curl: (3)' in curl_output: print('')
+            else: print(f'  ^ Error: {curl_output}')
         else:
             pass
 
     except KeyboardInterrupt:
-        print(f"{'':>2}^ Canceled")
+        print(f'  ^ Canceled')
 
 def gdrown(url, fp=None, fn=None):
     folder = 'drive.google.com/drive/folders' in url
