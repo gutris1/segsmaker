@@ -11,7 +11,7 @@ import yaml
 import time
 import os
 
-from _segsmaker_ import ENVNAME, HOME, UID
+from _segsmaker_ import HOME, SRC, UID
 from cupang import Tunnel as Alice
 
 SyS = get_ipython().system
@@ -21,9 +21,10 @@ ROOT = Path.home()
 CWD = Path.cwd()
 PW = '82a973c04367123ae98bd9abdf80d9eda9b910e2'
 
-SRC = HOME / 'gutris1'
 MARK = SRC / 'marking.json'
 ui = json.load(MARK.open()).get('ui')
+
+KAGGLE = 'KAGGLE_DATA_PROXY_TOKEN' in iRON
 
 def trashing():
     f = ['ckpt', 'lora', 'controlnet', 'svd', 'z123']
@@ -77,7 +78,7 @@ def webui_launch(launch_args, skip_comfyui_check, ngrok_token=None, zrok_token=N
         launch_args += ' --enable-insecure-extension-access --disable-console-progressbars --theme dark'
 
         if '--share' in launch_args: launch_args = launch_args.replace('--share', '')
-        if ENVNAME == 'Kaggle': launch_args += f' --encrypt-pass={PW}'
+        if KAGGLE: launch_args += f' --encrypt-pass={PW}'
 
         if ui == 'Forge' and not (CWD / 'FT.txt').exists():
             SyS('pip uninstall -qy transformers')
