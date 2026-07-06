@@ -148,13 +148,19 @@ def webui_req(W, M):
 
     else:
         M.mkdir(parents=True, exist_ok=True)
-        for f in ['Stable-Diffusion', 'Lora', 'Embeddings', 'VAE', 'upscale_models']:
-            (M / f).mkdir(parents=True, exist_ok=True)
 
-        download(f'https://dot.net/v1/dotnet-install.sh {W}')
-        dotnet = W / 'dotnet-install.sh'
-        dotnet.chmod(0o755)
-        SyS('bash ./dotnet-install.sh --channel 8.0')
+        for f in [
+            'Stable-Diffusion',
+            'Lora',
+            'Embeddings',
+            'VAE',
+            'upscale_models',
+            'text_encoders'
+        ]: (M / f).mkdir(parents=True, exist_ok=True)
+
+        for a in [
+            'update', 'install -y dotnet-sdk-8.0'
+        ]: SyS(f'sudo apt-get -qq {a} > /dev/null 2>&1')
 
     sym_link(M)
     install_tunnel()
