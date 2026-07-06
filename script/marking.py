@@ -28,11 +28,11 @@ def _del():
 
 
 def _var():
-    default = ('extensions', 'embeddings', 'VAE', 'Stable-diffusion', 'Lora', 'ESRGAN', None)
+    d = ('extensions', 'embeddings', 'VAE', 'Stable-diffusion', 'Lora', 'ESRGAN', None)
 
-    maps = {
-        'A1111': default,
-        'Forge': default,
+    F = {
+        'A1111': d,
+        'Forge': d,
 
         'ReForge': (
             'extensions', 'embeddings', 'VAE',
@@ -40,8 +40,8 @@ def _var():
             'text_encoders'
         ),
 
-        'ReForge-old': default,
-        'Forge-Classic': default,
+        'ReForge-old': d,
+        'Forge-Classic': d,
 
         'Forge-Neo': (
             'extensions', 'embeddings', 'VAE',
@@ -58,42 +58,29 @@ def _var():
         'SwarmUI': (
             'Extensions', 'Embeddings', 'VAE',
             'Stable-Diffusion', 'Lora', 'upscale_models',
-            None
+            'text_encoders'
         )
     }
 
-    ext, embed, vae, ckpt, lora, upscaler, te = maps.get(ui, (None,) * 7)
+    ext, embed, vae, ckpt, lora, ups, te = F[ui]
 
     WebUI = HOME / ui
     Models = WebUI / ('Models' if ui == 'SwarmUI' else 'models')
 
     WebUI_Output = WebUI / (
         'Output' if ui == 'SwarmUI'
-        else 'output' if ui in ['Forge-Classic', 'Forge-Neo', 'ComfyUI', 'SDTrainer']
+        else 'output' if ui in ['Forge-Classic', 'Forge-Neo', 'ComfyUI']
         else 'outputs'
     )
 
-    Extensions = (
-        WebUI / 'src' / ext
-        if ui == 'SwarmUI' and ext
-        else WebUI / ext if ext
-        else None
-    )
+    Extensions = (WebUI / 'src' / ext) if ui == 'SwarmUI' else (WebUI / ext)
+    Embeddings = Models / embed
 
-    Embeddings = (
-        Models / embed
-        if ui in ['Forge-Classic', 'Forge-Neo', 'ComfyUI', 'SwarmUI']
-        else WebUI / embed if embed
-        else None
-    )
-
-    VAE = Models / vae if vae else None
-    CKPT = Models / ckpt if ckpt else None
-    LORA = Models / lora if lora else None
-
-    Upscalers = Models / upscaler if upscaler and ui else None
-
-    TE = Models / te if te and ui in ['Forge-Neo', 'ComfyUI'] else None
+    VAE = Models / vae
+    CKPT = Models / ckpt
+    LORA = Models / lora
+    Upscalers = Models / ups
+    TE = Models / te if te else None
 
     return WebUI, Models, WebUI_Output, Extensions, Embeddings, VAE, CKPT, LORA, Upscalers, TE
 
