@@ -9,8 +9,8 @@ PY = {
         'v': '3.10.20',
         'p': TMP / 'PY-310',
         'url': [
-            'https://huggingface.co/gutris1/webui/resolve/main/env/SSL-PY310-Torch2121-cu130-part1.tar.lz4',
-            'https://huggingface.co/gutris1/webui/resolve/main/env/SSL-PY310-Torch2121-cu130-part2.tar.lz4'
+            'https://huggingface.co/gutris1/webui/resolve/main/env/PY310-Torch2121-cu130-1.tar.lz4',
+            'https://huggingface.co/gutris1/webui/resolve/main/env/PY310-Torch2121-cu130-2.tar.lz4'
         ],
     },
 
@@ -18,8 +18,8 @@ PY = {
         'v': '3.12.13',
         'p': TMP / 'R-F',
         'url': [
-            'https://huggingface.co/gutris1/webui/resolve/main/env/SSL-RF-Torch2121-cu130-part1.tar.lz4',
-            'https://huggingface.co/gutris1/webui/resolve/main/env/SSL-RF-Torch2121-cu130-part2.tar.lz4'
+            'https://huggingface.co/gutris1/webui/resolve/main/env/RF-Torch2121-cu130-1.tar.lz4',
+            'https://huggingface.co/gutris1/webui/resolve/main/env/RF-Torch2121-cu130-2.tar.lz4'
         ],
     },
 
@@ -33,8 +33,8 @@ PY = {
         'v': '3.13.12',
         'p': TMP / 'NEO',
         'url': [
-            'https://huggingface.co/gutris1/webui/resolve/main/env/SSL-FN-Torch2121-cu130-part1.tar.lz4',
-            'https://huggingface.co/gutris1/webui/resolve/main/env/SSL-FN-Torch2121-cu130-part2.tar.lz4'
+            'https://huggingface.co/gutris1/webui/resolve/main/env/FN-Torch2121-cu130-1.tar.lz4',
+            'https://huggingface.co/gutris1/webui/resolve/main/env/FN-Torch2121-cu130-2.tar.lz4'
         ],
     },
 
