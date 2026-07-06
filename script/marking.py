@@ -114,7 +114,7 @@ if SSL:
         from util import restart_kernel
         restart_kernel()
 
-if MARK.exists():
+if ui:
     _del()
 
     WebUI, Models, WebUI_Output, Extensions, Embeddings, VAE, CKPT, LORA, Upscalers, TE = _var()
