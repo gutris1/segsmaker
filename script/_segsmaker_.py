@@ -1,6 +1,5 @@
 from pathlib import Path
 
-ENVNAME = ''
 HOME = Path.home()
 SRC = ''
 TMP = Path('/tmp')
