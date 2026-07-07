@@ -8,51 +8,38 @@ import shlex
 import json
 import sys
 import os
+import re
 
-R = '\033[31m'
-P = '\033[38;5;135m'
-RST = '\033[0m'
-ERR = f'{P}[{RST}{R}ERROR{RST}{P}]{RST}'
-
-python_version = subprocess.run(['python', '--version'], capture_output=True, text=True).stdout.split()[1]
-if tuple(map(int, python_version.split('.'))) < (3, 10, 6):
-    print(f'{ERR}: Python version 3.10.6 or higher required, and you are using Python {python_version}')
-    sys.exit()
-
-from nenen88 import pull, say, download, clone, tempe
-
-SyS = get_ipython().system
-iRON = os.environ
 CD = os.chdir
+iRON = os.environ
+SyS = get_ipython().system
 
-HOME = Path.home()
-SRC = HOME / '.gutris1'
-CSS = SRC / 'segsmaker.css'
-IMG = SRC / 'loading.png'
-MRK = SRC / 'marking.py'
-MARKED = SRC / 'marking.json'
-TMP = Path('/tmp')
+def _check():
+    R = '\033[31m'
+    P = '\033[38;5;135m'
+    RST = '\033[0m'
+    ERR = f'{P}[{RST}{R}ERROR{RST}{P}]{RST}'
 
-uid = HOME / '.ipython/profile_default/startup/ssl_uid.py'
+    v = subprocess.run(['python', '--version'], capture_output=True, text=True).stdout.split()[1]
+    if tuple(map(int, v.split('.'))) < (3, 10, 6):
+        print(f'{ERR}: Python version 3.10.6 or higher required, and you are using Python {v}')
+        sys.exit()
 
-SRC.mkdir(parents=True, exist_ok=True)
+def _cleaning():
+    v = UID[ui]['py']['p']
 
-def load_css():
-    display(HTML(f'<style>{CSS.read_text()}</style>'))
-
-def tmp_cleaning(v):
     for i in TMP.iterdir():
         if i.is_dir() and i != v:
             shutil.rmtree(i)
-        elif i.is_file() and i != v:
+        elif i.is_file():
             i.unlink()
 
-def marking(p, n, i):
-    j = p / n
+def _marking():
+    j = SRC / MARK
 
     if not j.exists():
         j.write_text(json.dumps({
-            'ui': i,
+            'ui': ui,
             'launch_args': '',
             'zrok_token': '',
             'ngrok_token': '',
@@ -61,13 +48,13 @@ def marking(p, n, i):
 
     d = json.loads(j.read_text())
     d.update({
-      'ui': i,
+      'ui': ui,
       'launch_args': ''
     })
 
     j.write_text(json.dumps(d, indent=4))
 
-def install_tunnel():
+def _tunnels():
     tunnel = {
         'zrok2': {
             'bin': HOME / '.zrok2/zrok2',
@@ -104,42 +91,47 @@ def install_tunnel():
         if str(p) not in iRON.get('PATH', ''): iRON['PATH'] += ':' + str(p)
         if binPath.exists(): binPath.chmod(0o755)
 
-def sym_link(U, M):
+def _symlinks(M):
     UID['ReForge-old']['sym'] = UID['ReForge']['sym']
     UID['ReForge-old']['links'] = UID['ReForge']['links']
 
     UID['Forge-Neo']['sym'] = UID['Forge-Classic']['sym']
     UID['Forge-Neo']['links'] = UID['Forge-Classic']['links']
 
-    cfg = UID[U]
+    if ui not in ('ComfyUI', 'SwarmUI'):
+        [(M / f).mkdir(parents=True, exist_ok=True) for f in ['Lora', 'ESRGAN']]
 
-    SyS(f"rm -rf {HOME / 'tmp'} {HOME / '.cache'}/*")
-    for cmd in cfg['sym'](M): SyS(cmd)
+    d = UID[ui]
 
-    if U not in ('ComfyUI', 'SwarmUI'):
-        for d in ('Lora', 'ESRGAN'): (M / d).mkdir(parents=True, exist_ok=True)
+    for c in d['sym'](M): SyS(c)
+    for p, t in d['links'](M): SyS(f'ln -s {p} {t}')
 
-    for src, tg in cfg['links'](M): SyS(f'ln -s {src} {tg}')
-
-def webui_req(U, W, M):
-    vnv = TMP / 'venv'
-    tmp_cleaning(vnv)
+def _reqs(W, M):
     CD(W)
 
-    if U != 'SwarmUI': pull(f'https://github.com/gutris1/segsmaker {U.lower()} {W}')
+    if ui != 'SwarmUI': pull(f'https://github.com/gutris1/segsmaker {ui.lower()} {W}')
+
     else:
         M.mkdir(parents=True, exist_ok=True)
-        for sub in ['Stable-Diffusion', 'Lora', 'Embeddings', 'VAE', 'upscale_models']:
-            (M / sub).mkdir(parents=True, exist_ok=True)
+
+        for f in [
+            'Stable-Diffusion',
+            'Lora',
+            'Embeddings',
+            'VAE',
+            'upscale_models',
+            'text_encoders'
+        ]: (M / f).mkdir(parents=True, exist_ok=True)
 
         download(f'https://dot.net/v1/dotnet-install.sh {W}')
         dotnet = W / 'dotnet-install.sh'
         dotnet.chmod(0o755)
         SyS('bash ./dotnet-install.sh --channel 8.0')
+        print()
 
-    sym_link(U, M)
+    _symlinks(M)
 
-    u = M / 'upscale_models' if U in ['ComfyUI', 'SwarmUI'] else M / 'ESRGAN'
+    u = M / 'upscale_models' if ui in ['ComfyUI', 'SwarmUI'] else M / 'ESRGAN'
     upscalers = [
         f'https://huggingface.co/gutris1/webui/resolve/main/misc/4x-UltraSharp.pth {u}',
         f'https://huggingface.co/gutris1/webui/resolve/main/misc/4x-AnimeSharp.pth {u}',
@@ -152,71 +144,41 @@ def webui_req(U, W, M):
         f'https://huggingface.co/subby2006/NMKD-UltraYandere/resolve/main/4x_NMKD-UltraYandere_300k.pth {u}'
     ]
 
-    for i in sm_script(W) + upscalers: download(i)
+    for i in _scripts(W) + upscalers: download(i)
 
-    if U not in ['SwarmUI', 'ComfyUI']:
-        e = 'jpg' if U in ['Forge-Classic', 'Forge-Neo'] else 'png'
+    if ui not in ['SwarmUI', 'ComfyUI']:
+        e = 'jpg' if ui in ['Forge-Classic', 'Forge-Neo'] else 'png'
         SyS(f'rm -f {W}/html/card-no-preview.{e}')
 
-        for m in [
+        for b in [
             f'https://huggingface.co/gutris1/webui/resolve/main/misc/card-no-preview.png {W}/html card-no-preview.{e}',
             f'{G}/config/NoCrypt_miku.json {W}/tmp/gradio_themes',
             f'{G}/config/user.css {W} user.css'
-        ]: download(m)
+        ]: download(b)
 
-        if U not in ['Forge', 'Forge-Neo']: download(f'{G}/config/config.json {W} config.json')
+        if ui not in ['Forge', 'Forge-Neo']: download(f'{G}/config/config.json {W} config.json')
 
-def installing_webui(U, W):
-    M = W / 'Models' if U == 'SwarmUI' else W / 'models'
-    E = M / 'Embeddings' if U == 'SwarmUI' else (M / 'embeddings' if U in ['Forge-Classic', 'Forge-Neo', 'ComfyUI'] else W / 'embeddings')
-    V = M / 'vae' if U == 'ComfyUI' else M / 'VAE'
-
-    EXT = W / 'custom_nodes' if U == 'ComfyUI' else W / 'extensions'
-
-    webui_req(U, W, M)
-    install_tunnel()
-
-    extras = [
-        f'https://huggingface.co/gutris1/webui/resolve/main/misc/embeddingsXL.zip {W}',
-        f'https://huggingface.co/madebyollin/sdxl-vae-fp16-fix/resolve/main/sdxl.vae.safetensors {V} sdxl_vae.safetensors'
-    ]
-
-    for i in extras: download(i)
-    SyS(f"unzip -qo {W / 'embeddingsXL.zip'} -d {E} && rm {W / 'embeddingsXL.zip'}")
-
-    if U != 'SwarmUI':
-        CD(EXT)
-
-        if U == 'ComfyUI':
-            say('<br><b>【{red} Installing Custom Nodes{d} 】{red}</b>')
-            clone(str(W / 'asd/custom_nodes.txt'))
-            print()
-
-            for f in [
-                f'https://github.com/sczhou/CodeFormer/releases/download/v0.1.0/codeformer.pth {M}/facerestore_models',
-                f'https://github.com/TencentARC/GFPGAN/releases/download/v1.3.4/GFPGANv1.4.pth {M}/facerestore_models'
-            ]: download(f)
-
-        else:
-            say('<br><b>【{red} Installing Extensions{d} 】{red}</b>')
-            clone(str(W / 'asd/extension.txt'))
-
-def webui_setup(ui):
+def _setup():
     setup_panel.layout.display = 'none'
 
-    current_ui = json.load(MARKED.open()).get('ui') if MARKED.exists() else None
+    current_ui = json.load(MARK.open()).get('ui') if MARK.exists() else None
     WEBUI = HOME / ui
+
+    M = WEBUI / 'Models' if ui == 'SwarmUI' else WEBUI / 'models'
+    E = M / 'Embeddings' if ui == 'SwarmUI' else (M / 'embeddings' if ui in ['Forge-Classic', 'Forge-Neo', 'ComfyUI'] else WEBUI / 'embeddings')
+    V = M / 'vae' if ui == 'ComfyUI' else M / 'VAE'
+    EXT = WEBUI / 'custom_nodes' if ui == 'ComfyUI' else WEBUI / 'extensions'
+
+    CD(HOME)
 
     if WEBUI.exists() and (WEBUI / '.git').exists():
         with output:
             CD(WEBUI)
-
-            branch = UID.get(ui, {}).get('branch')
-            if branch: SyS(f'git pull origin {branch}')
+            SyS(f"git pull origin {UID[ui]['branch']}")
             print()
 
-            install_tunnel()
-            for l in sm_script(WEBUI): download(l)
+            _tunnels()
+            for l in _scripts(WEBUI): download(l)
 
     else:
         if current_ui and current_ui != ui and (HOME / current_ui).exists():
@@ -233,11 +195,38 @@ def webui_setup(ui):
             display(Image(filename=str(IMG)))
 
         with output:
-            say(f"<b>【{{red}} Installing {ui.replace('-', ' ')}{{d}} 】{{red}}</b>")
+            say(f"<b>【{{red}} {ui.replace('-', ' ')}{{d}} 】{{red}}</b>")
             clone(UID[ui]['repo'])
 
-            marking(SRC, MARKED, ui)
-            installing_webui(ui, WEBUI)
+            _marking()
+            _cleaning()
+            _reqs(WEBUI, M)
+            _tunnels()
+
+            for e in [
+                f'https://huggingface.co/gutris1/webui/resolve/main/misc/embeddingsXL.zip {WEBUI}',
+                f'https://huggingface.co/madebyollin/sdxl-vae-fp16-fix/resolve/main/sdxl.vae.safetensors {V} sdxl_vae.safetensors'
+            ]: download(e)
+
+            SyS(f"unzip -qo {WEBUI / 'embeddingsXL.zip'} -d {E} && rm {WEBUI / 'embeddingsXL.zip'}")
+
+            if ui != 'SwarmUI':
+                CD(EXT)
+
+                if ui == 'ComfyUI':
+                    say('<br><b>【{red} ComfyUI Custom Nodes{d} 】{red}</b>')
+                    clone(str(WEBUI / 'asd/custom_nodes.txt'))
+                    print()
+
+                    for f in [
+                        f'https://github.com/sczhou/CodeFormer/releases/download/v0.1.0/codeformer.pth {M}/facerestore_models',
+                        f'https://github.com/TencentARC/GFPGAN/releases/download/v1.3.4/GFPGANv1.4.pth {M}/facerestore_models'
+                    ]: download(f)
+
+                else:
+                    say(f"<b>【{{red}} {ui.replace('-', ' ')} Extensions{{d}} 】{{red}}</b>")
+                    clone(str(WEBUI / 'asd/extension.txt'))
+
             tempe(); print()
 
             with loading:
@@ -249,7 +238,7 @@ def webui_setup(ui):
                 say('<b>【{red} Done{d} 】{red}</b>')
                 CD(HOME)
 
-def sm_script(W):
+def _scripts(W):
     return [
         f'{G}/script/SM/venv.py {W}',
         f'{G}/script/SM/segsmaker.py {W}',
@@ -259,7 +248,7 @@ def sm_script(W):
         f'{G}/script/cnxl.py {W}/asd'
     ]
 
-def segsmaker_setup():
+def _widget():
     JS = """
     (() => {
       setTimeout(() => {
@@ -270,36 +259,64 @@ def segsmaker_setup():
 
     SyS(f'curl -sLo {CSS} {G}/script/SM/segsmaker.css')
 
-    load_css()
-    display(HTML(f'<script>{JS}</script>'))
-    display(setup_panel, output, loading)
+    display(
+        HTML(f'<style>{CSS.read_text()}</style><script>{JS}</script>'),
+        setup_panel, output, loading
+    )
 
-G = 'https://raw.githubusercontent.com/gutris1/segsmaker/main'
-
-output = widgets.Output()
-loading = widgets.Output()
-
-def setup_buttons(i, c):
+def _buttons(i, c):
     btn = [widgets.Button(description='') for _ in i]
+
+    def onclick(n):
+        global ui
+        ui = n
+        _setup()
 
     for b, n in zip(btn, i):
         b.add_class(n.lower())
         b.add_class('setup-buttons')
-        b.on_click(lambda _, n=n: webui_setup(n))
+        b.on_click(lambda _, n=n: onclick(n))
 
     box = widgets.Box(btn)
     box.add_class(c)
     return box
 
 setup_panel = widgets.VBox([
-    setup_buttons(['A1111', 'Forge', 'ReForge', 'ReForge-old'], 'setup-box1'),
-    setup_buttons(['Forge-Neo', 'Forge-Classic', 'ComfyUI', 'SwarmUI'], 'setup-box2')
+    _buttons(['A1111', 'Forge', 'ReForge', 'ReForge-old'], 'setup-box1'),
+    _buttons(['Forge-Neo', 'Forge-Classic', 'ComfyUI', 'SwarmUI'], 'setup-box2')
 ])
 
-setup_panel.add_class('setup-panel')
+output = widgets.Output()
+loading = widgets.Output()
 
-if not uid.exists(): SyS(f'curl -sLo {uid} {G}/script/SM/ssl_uid.py')
-from ssl_uid import UID
+for w, c in [
+    (setup_panel, 'setup-panel'),
+    (output, 'ssl-widget-output'),
+    (loading, 'ssl-widget-output')
+]: w.add_class(c)
 
-CD(HOME)
-segsmaker_setup()
+G = 'https://raw.githubusercontent.com/gutris1/segsmaker/main'
+
+HOME = Path.home()
+TMP = Path('/tmp')
+
+SRC = HOME / '.gutris1'
+CSS = SRC / 'segsmaker.css'
+IMG = SRC / 'loading.png'
+MRK = SRC / 'marking.py'
+MARK = SRC / 'marking.json'
+uid = HOME / '.ipython/profile_default/startup/_segsmaker_.py'
+
+SRC.mkdir(parents=True, exist_ok=True)
+
+ui = None
+
+_check()
+
+if not uid.exists(): SyS(f'curl -sLo {uid} {G}/script/_segsmaker_.py')
+uid.write_text(re.sub(r'^SRC\s*=.*$', f'SRC = Path({str(SRC)!r})', uid.read_text(), flags=re.MULTILINE))
+
+from nenen88 import pull, say, download, clone, tempe
+from _segsmaker_ import UID
+
+_widget()
