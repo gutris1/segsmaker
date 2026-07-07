@@ -101,6 +101,8 @@ def storage(line):
             l = size2(s)
             print(f'{p:<{m}} {l:>10}')
 
+    print()
+
 @register_line_magic
 def delete_everything(line):    
     main_output = widgets.Output()
@@ -152,12 +154,10 @@ def delete_everything(line):
 
             display(Image(filename=str(img)))
 
-            if 'LD_PRELOAD' in os.environ: del os.environ['LD_PRELOAD']
-
             folder_list = [
                 'A1111', 'Forge', 'ReForge', 'ReForge-old', 'Forge-Classic', 'Forge-Neo', 'ComfyUI', 'SwarmUI',
-                'tmp/*', 'tmp', '.cache/*', '.config/*', '.ssh', '.zrok', '.ngrok', '.sagemaker',
-                '.conda/*', '.conda', '.ipython/profile_default/startup/*'
+                'tmp/*', 'tmp', '.cache/*', '.config/*', '.ssh', '.zrok', '.zrok2', '.ngrok', '.sagemaker',
+                '.dotnet', '.aspnet', '.conda/*', '.conda', '.ipython/profile_default/startup/*'
             ]
 
             cmd_list = [f"rm -rf {' '.join([str(home / folder) for folder in folder_list])}"]
@@ -355,10 +355,8 @@ def change_api_key(line):
         (hf_box, 'hf-box'),
         (current_hf, 'current-hf'),
         (new_hf, 'new-hf'),
+        (output, 'ssl-widget-output'),
     ]: w.add_class(c)
-
-    def load_css(css):
-        display(HTML(f'<style>{Path(css).read_text()}</style>'))
 
     def key_inject(civitai_key, hf_token):
         SyS(f'curl -sLo {nenen} https://github.com/gutris1/segsmaker/raw/main/script/nenen88.py')
@@ -430,16 +428,16 @@ def change_api_key(line):
 
     def key_check():
         if api_key.exists():
-            load_css(css)
-
             v = json.loads(api_key.read_text())
             civitai_key = v.get('civitai-api-key', '')
             hf_token = v.get('huggingface-read-token', '')
 
             key_widget(civitai_key, hf_token)
 
-            display(HTML(f'<script>{JS}</script>'))
-            display(change_key_box, output)
+            display(
+                HTML(f'<style>{css.read_text()}</style><script>{JS}</script>'),
+                change_key_box, output
+            )
 
         else:
             say('API Key does not exist')
@@ -453,9 +451,6 @@ def zrok_register(line):
         'version': home / '.zrok2/v2.0.4',
         'url': 'https://github.com/openziti/zrok/releases/download/v2.0.4/zrok_2.0.4_linux_amd64.tar.gz'
     }
-
-    def load_css(css):
-        display(HTML(f'<style>{Path(css).read_text()}</style>'))
 
     def zrok_install():
         binPath = zrok['bin']
@@ -557,12 +552,14 @@ def zrok_register(line):
         (email_box, 'zrok-email'),
         (buttons_box, 'zrok-buttons-box'),
         (register_button, 'zrok-button'),
-        (cancel_button, 'zrok-button')
+        (cancel_button, 'zrok-button'),
+        (output, 'ssl-widget-output'),
     ]: w.add_class(c)
 
-    load_css(css)
-    display(HTML(f'<script>{JS}</script>'))
-    display(zrok_box, output)
+    display(
+        HTML(f'<style>{css.read_text()}</style><script>{JS}</script>'),
+        zrok_box, output
+    )
 
     register_button.on_click(register)
     cancel_button.on_click(cancel)
