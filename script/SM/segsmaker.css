@@ -34,6 +34,10 @@
   }
 }
 
+.ssl-widget-outputs {
+  margin: 0 !important;
+}
+
 .widget-output.jupyter-widgets-disconnected::before {
   display: none !important;
 }
