@@ -14,26 +14,15 @@ import sys
 import os
 
 from cupang import Tunnel as Alice
-from ssl_uid import UID
+from _segsmaker_ import HOME, SRC, UID
 
 R = '\033[31m'
 P = '\033[38;5;135m'
 RST = '\033[0m'
 ERR = f'{P}[{RST}{R}ERROR{RST}{P}]{RST}'
 
-SyS = get_ipython().system
 iRON = os.environ
-
-HOME = Path.home()
-SRC = HOME / '.gutris1'
-CSS = SRC / 'segsmaker.css'
-MARK = SRC / 'marking.json'
-IMG = SRC / 'loading.png'
-
-j = json.loads(MARK.read_text())
-
-def load_css():
-    display(HTML(f'<style>{CSS.read_text()}</style>'))
+SyS = get_ipython().system
 
 def save_config():
     j.update({
@@ -51,7 +40,7 @@ def load_config():
 
     ui = j.get('ui')
     tunnel = j.get('tunnel')
-    d = UID.get(ui, {})
+    d = UID[ui]
 
     zrok_token.value = j.get('zrok_token', '')
     ngrok_token.value = j.get('ngrok_token', '')
@@ -65,7 +54,7 @@ def load_config():
 
     tunnel_radio.value = tunnel
 
-    cpu_cb.value = not gpu and j.get('cpu_usage', False)
+    cpu_cb.value = ui != 'SwarmUI' and not gpu and j.get('cpu_usage', False)
     cpu_cb.layout.display = 'none' if gpu or ui == 'SwarmUI' else 'block'
 
     title.value = f"""
@@ -114,51 +103,44 @@ def NGROK_ZROK(T):
     else:
         SyS(E); print()
 
-def setENV(ui):
-    d = UID[ui]
-
-    env = d['env']
+def setENV(d):
+    env = d['py']['p']
     lib = str(env / 'lib')
     bin = str(env / 'bin')
 
     D = '/home/studio-lab-user/.conda/envs/default/lib'
     L = f'{D}/libtcmalloc_minimal.so.4'
 
-    if d.get('cm'):
-        iRON.pop('MPLBACKEND', None)
+    if d.get('cm'): iRON.pop('MPLBACKEND', None)
 
-    iRON['LD_LIBRARY_PATH'] = f'{lib}:{D}:{iRON.get("LD_LIBRARY_PATH", "")}'
+    old = iRON.get('LD_LIBRARY_PATH', '')
+    iRON['LD_LIBRARY_PATH'] = f'{lib}:{old}' if old else lib
 
-    for k, v in d.get('var', {}).items():
-        iRON[k] = v() if callable(v) else v
+    for k, v in d.get('var', {}).items(): iRON[k] = v() if callable(v) else v
 
-    if L not in iRON.get('LD_PRELOAD', ''):
-        iRON['LD_PRELOAD'] = L
-
-    if bin not in iRON.get('PATH', ''):
-        iRON['PATH'] = bin + ':' + iRON.get('PATH', '')
+    if L not in iRON.get('LD_PRELOAD', ''): iRON['LD_PRELOAD'] = L
+    if bin not in iRON.get('PATH', ''): iRON['PATH'] = f'{bin}:{iRON.get("PATH", "")}'
 
     iRON['PYTHONWARNINGS'] = 'ignore'
 
 def launching(ui, skip_comfyui_check=False):
-    args = '' if cpu_cb.value else launch_args.value
-    tunnel = tunnel_radio.value
-
-    get_ipython().run_line_magic('run', 'venv.py')
-
     d = UID[ui]
 
-    py = str(d['env'] / 'bin/python3')
+    get_ipython().run_line_magic('run', 'venv.py')
+    setENV(d)
+
+    py = str(d['py']['p'] / 'bin/python3')
     port = d.get('port', 7860)
 
-    setENV(ui)
-
+    tunnel = tunnel_radio.value
     t = TUNNELS.get(tunnel)
     if t['a']: NGROK_ZROK(tunnel.lower())
 
     Zuberg = Alice(port)
     Zuberg.logger.setLevel(logging.DEBUG)
     Zuberg.add_tunnel(command=t['c'](port), name=t['n'], pattern=t['p'])
+
+    args = '' if cpu_cb.value else launch_args.value
 
     if ui == 'SwarmUI':
         SyS('git pull -q')
@@ -302,6 +284,11 @@ args, unknown = parser.parse_known_args()
 con = Condition()
 ready = Value('b', False)
 
+CSS = SRC / 'segsmaker.css'
+MARK = SRC / 'marking.json'
+
+j = json.loads(MARK.read_text())
+
 if __name__ == '__main__':
     try:
         ui = load_config()
@@ -310,8 +297,7 @@ if __name__ == '__main__':
             launching(ui, skip_comfyui_check=args.skip_comfyui_check)
 
         else:
-            load_css()
-            display(HTML(f'<script>{JS}</script>'))
+            display(HTML(f"<style>{CSS.read_text()}</style><script>{JS}</script>"))
             display(launch_panel)
 
             launch_button.on_click(launch)
