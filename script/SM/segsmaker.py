@@ -297,8 +297,10 @@ if __name__ == '__main__':
             launching(ui, skip_comfyui_check=args.skip_comfyui_check)
 
         else:
-            display(HTML(f"<style>{CSS.read_text()}</style><script>{JS}</script>"))
-            display(launch_panel)
+            display(
+                HTML(f'<style>{CSS.read_text()}</style><script>{JS}</script>'),
+                launch_panel
+            )
 
             launch_button.on_click(launch)
             exit_button.on_click(exit)
