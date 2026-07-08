@@ -4,13 +4,15 @@ HOME = Path.home()
 SRC = ''
 TMP = Path('/tmp')
 
+H = 'https://huggingface.co/gutris1/webui/resolve/main/env'
+
 PY = {
     'D': {
         'v': '3.10.20',
         'p': TMP / 'PY-310',
         'url': [
-            'https://huggingface.co/gutris1/webui/resolve/main/env/PY310-Torch2121-cu130-1.tar.lz4',
-            'https://huggingface.co/gutris1/webui/resolve/main/env/PY310-Torch2121-cu130-2.tar.lz4'
+            f'{H}/PY310-Torch2121-cu130-1.tar.lz4',
+            f'{H}/PY310-Torch2121-cu130-2.tar.lz4'
         ],
     },
 
@@ -18,23 +20,26 @@ PY = {
         'v': '3.12.13',
         'p': TMP / 'R-F',
         'url': [
-            'https://huggingface.co/gutris1/webui/resolve/main/env/RF-Torch2121-cu130-1.tar.lz4',
-            'https://huggingface.co/gutris1/webui/resolve/main/env/RF-Torch2121-cu130-2.tar.lz4'
+            f'{H}/RF-Torch2121-cu130-1.tar.lz4',
+            f'{H}/RF-Torch2121-cu130-2.tar.lz4'
         ],
     },
 
     'FC': {
-        'v': '3.11.12',
+        'v': '3.11.15',
         'p': TMP / 'CLASSIC',
-        'url': 'https://huggingface.co/gutris1/webui/resolve/main/env/SSL-FC-Python311-Torch260-cu124.tar.lz4',
+        'url': [
+            f'{H}/FC-Torch2121-cu130-1.tar.lz4',
+            f'{H}/FC-Torch2121-cu130-2.tar.lz4'
+        ],
     },
 
     'FN': {
         'v': '3.13.12',
         'p': TMP / 'NEO',
         'url': [
-            'https://huggingface.co/gutris1/webui/resolve/main/env/FN-Torch2121-cu130-1.tar.lz4',
-            'https://huggingface.co/gutris1/webui/resolve/main/env/FN-Torch2121-cu130-2.tar.lz4'
+            f'{H}/FN-Torch2121-cu130-1.tar.lz4',
+            f'{H}/FN-Torch2121-cu130-2.tar.lz4'
         ],
     },
 
@@ -42,8 +47,8 @@ PY = {
         'v': '3.12.13',
         'p': TMP / 'Comfy-Swarm',
         'url': [
-            'https://huggingface.co/gutris1/webui/resolve/main/env/CS-Torch2121-cu130-1.tar.lz4',
-            'https://huggingface.co/gutris1/webui/resolve/main/env/CS-Torch2121-cu130-2.tar.lz4'
+            f'{H}/CS-Torch2121-cu130-1.tar.lz4',
+            f'{H}/CS-Torch2121-cu130-2.tar.lz4'
         ],
     },
 }
@@ -53,15 +58,8 @@ UID = {
         'repo': 'https://github.com/gutris1/A1111',
         'branch': 'master',
 
-        'sym': lambda M: [
-            f"rm -rf {M / 'Stable-diffusion/tmp_ckpt'} {M / 'Lora/tmp_lora'} {M / 'ControlNet'}"
-        ],
-        'links': lambda M: [
-            (TMP, HOME / 'tmp'),
-            (TMP / 'ckpt', M / 'Stable-diffusion/tmp_ckpt'),
-            (TMP / 'lora', M / 'Lora/tmp_lora'),
-            (TMP / 'controlnet', M / 'ControlNet')
-        ],
+        'sym': lambda M: ['rm -rf ' + ' '.join(str(M / t) for _, t in LINKS['A1111'])],
+        'links': lambda M: ((TMP / p, M / t) for p, t in LINKS['A1111']),
 
         'py': PY['D'],
 
@@ -74,25 +72,8 @@ UID = {
         'repo': 'https://github.com/lllyasviel/stable-diffusion-webui-forge Forge',
         'branch': 'main',
 
-        'sym': lambda M: [
-            f"rm -rf {M / 'Stable-diffusion/tmp_ckpt'} {M / 'Lora/tmp_lora'} {M / 'ControlNet'}",
-            f"rm -rf {M / 'svd'} {M / 'z123'} {M / 'clip'} {M / 'clip_vision'} {M / 'diffusers'}",
-            f"rm -rf {M / 'diffusion_models'} {M / 'text_encoder'} {M / 'unet'}"
-        ],
-        'links': lambda M: [
-            (TMP, HOME / 'tmp'),
-            (TMP / 'ckpt', M / 'Stable-diffusion/tmp_ckpt'),
-            (TMP / 'lora', M / 'Lora/tmp_lora'),
-            (TMP / 'controlnet', M / 'ControlNet'),
-            (TMP / 'z123', M / 'z123'),
-            (TMP / 'svd', M / 'svd'),
-            (TMP / 'clip', M / 'clip'),
-            (TMP / 'clip_vision', M / 'clip_vision'),
-            (TMP / 'diffusers', M / 'diffusers'),
-            (TMP / 'diffusion_models', M / 'diffusion_models'),
-            (TMP / 'text_encoders', M / 'text_encoder'),
-            (TMP / 'unet', M / 'unet')
-        ],
+        'sym': lambda M: ['rm -rf ' + ' '.join(str(M / t) for _, t in LINKS['Forge'])],
+        'links': lambda M: ((TMP / p, M / t) for p, t in LINKS['Forge']),
 
         'py': PY['D'],
 
@@ -116,18 +97,8 @@ UID = {
         'repo': 'https://github.com/Panchovix/stable-diffusion-webui-reForge ReForge',
         'branch': 'main',
 
-        'sym': lambda M: [
-            f"rm -rf {M / 'Stable-diffusion/tmp_ckpt'} {M / 'Lora/tmp_lora'} {M / 'ControlNet'}",
-            f"rm -rf {M / 'svd'} {M / 'z123'}"
-        ],
-        'links': lambda M: [
-            (TMP, HOME / 'tmp'),
-            (TMP / 'ckpt', M / 'Stable-diffusion/tmp_ckpt'),
-            (TMP / 'lora', M / 'Lora/tmp_lora'),
-            (TMP / 'controlnet', M / 'ControlNet'),
-            (TMP / 'z123', M / 'z123'),
-            (TMP / 'svd', M / 'svd')
-        ],
+        'sym': lambda M: ['rm -rf ' + ' '.join(str(M / t) for _, t in LINKS['ReForge'])],
+        'links': lambda M: ((TMP / p, M / t) for p, t in LINKS['ReForge']),
 
         'py': PY['RF'],
 
@@ -140,15 +111,8 @@ UID = {
         'repo': '-b classic https://github.com/Haoming02/sd-webui-forge-classic Forge-Classic',
         'branch': 'classic',
 
-        'sym': lambda M: [
-            f"rm -rf {M / 'Stable-diffusion/tmp_ckpt'} {M / 'Lora/tmp_lora'} {M / 'ControlNet'}"
-        ],
-        'links': lambda M: [
-            (TMP, HOME / 'tmp'),
-            (TMP / 'ckpt', M / 'Stable-diffusion/tmp_ckpt'),
-            (TMP / 'lora', M / 'Lora/tmp_lora'),
-            (TMP / 'controlnet', M / 'ControlNet')
-        ],
+        'sym': lambda M: ['rm -rf ' + ' '.join(str(M / t) for _, t in LINKS['Forge-Classic'])],
+        'links': lambda M: ((TMP / p, M / t) for p, t in LINKS['Forge-Classic']),
 
         'py': PY['FC'],
 
@@ -173,23 +137,10 @@ UID = {
         'repo': 'https://github.com/comfyanonymous/ComfyUI',
         'branch': 'master',
 
-        'sym': lambda M: [
-            f"rm -rf {M / 'checkpoints/tmp_ckpt'} {M / 'loras/tmp_lora'} {M / 'controlnet'}",
-            f"rm -rf {M / 'clip'} {M / 'clip_vision'} {M / 'diffusers'} {M / 'diffusion_models'}",
-            f"rm -rf {M / 'text_encoders'} {M / 'unet'}"
-        ],
+        'sym': lambda M: ['rm -rf ' + ' '.join(str(M / t) for _, t in LINKS['ComfyUI'])],
         'links': lambda M: [
             (M / 'checkpoints', M / 'checkpoints_symlink'),
-            (TMP, HOME / 'tmp'),
-            (TMP / 'ckpt', M / 'checkpoints/tmp_ckpt'),
-            (TMP / 'lora', M / 'loras/tmp_lora'),
-            (TMP / 'controlnet', M / 'controlnet'),
-            (TMP / 'clip', M / 'clip'),
-            (TMP / 'clip_vision', M / 'clip_vision'),
-            (TMP / 'diffusers', M / 'diffusers'),
-            (TMP / 'diffusion_models', M / 'diffusion_models'),
-            (TMP / 'text_encoders', M / 'text_encoders'),
-            (TMP / 'unet', M / 'unet')
+            *((TMP / p, M / t) for p, t in LINKS['ComfyUI']),
         ],
 
         'py': PY['CS'],
@@ -204,17 +155,10 @@ UID = {
         'repo': 'https://github.com/mcmonkeyprojects/SwarmUI',
         'branch': 'master',
 
-        'sym': lambda M: [
-            f"rm -rf {M / 'Stable-Diffusion/tmp_ckpt'} {M / 'Lora/tmp_lora'} {M / 'controlnet'}",
-            f"rm -rf {M / 'clip'} {M / 'unet'}"
-        ],
+        'sym': lambda M: ['rm -rf ' + ' '.join(str(M / t) for _, t in LINKS['SwarmUI'])],
         'links': lambda M: [
             (TMP, HOME / 'tmp'),
-            (TMP / 'ckpt', M / 'Stable-Diffusion/tmp_ckpt'),
-            (TMP / 'lora', M / 'Lora/tmp_lora'),
-            (TMP / 'controlnet', M / 'controlnet'),
-            (TMP / 'clip', M / 'clip'),
-            (TMP / 'unet', M / 'unet')
+            *((TMP / p, M / t) for p, t in LINKS['SwarmUI']),
         ],
 
         'py': PY['CS'],
@@ -224,4 +168,58 @@ UID = {
         'port': 7801,
         'var': {'SWARMPATH': lambda: str(Path.cwd()), 'SWARM_NO_VENV': 'true'},
     },
+}
+
+LINKS = {
+    'A1111': (
+        ('ckpt', 'Stable-diffusion/tmp_ckpt'),
+        ('lora', 'Lora/tmp_lora'),
+        ('controlnet', 'ControlNet'),
+    ),
+
+    'Forge': (
+        ('ckpt', 'Stable-diffusion/tmp_ckpt'),
+        ('lora', 'Lora/tmp_lora'),
+        ('controlnet', 'ControlNet'),
+        ('z123', 'z123'),
+        ('svd', 'svd'),
+        ('clip', 'clip'),
+        ('clip_vision', 'clip_vision'),
+        ('diffusers', 'diffusers'),
+        ('diffusion_models', 'diffusion_models'),
+        ('unet', 'unet'),
+    ),
+
+    'ReForge': (
+        ('ckpt', 'Stable-diffusion/tmp_ckpt'),
+        ('lora', 'Lora/tmp_lora'),
+        ('controlnet', 'ControlNet'),
+        ('z123', 'z123'),
+        ('svd', 'svd'),
+    ),
+
+    'Forge-Classic': (
+        ('ckpt', 'Stable-diffusion/tmp_ckpt'),
+        ('lora', 'Lora/tmp_lora'),
+        ('controlnet', 'ControlNet'),
+    ),
+
+    'ComfyUI': (
+        ('ckpt', 'checkpoints/tmp_ckpt'),
+        ('lora', 'loras/tmp_lora'),
+        ('controlnet', 'controlnet'),
+        ('clip', 'clip'),
+        ('clip_vision', 'clip_vision'),
+        ('diffusers', 'diffusers'),
+        ('diffusion_models', 'diffusion_models'),
+        ('unet', 'unet'),
+    ),
+
+    'SwarmUI': (
+        ('ckpt', 'Stable-Diffusion/tmp_ckpt'),
+        ('lora', 'Lora/tmp_lora'),
+        ('controlnet', 'controlnet'),
+        ('clip', 'clip'),
+        ('unet', 'unet'),
+    ),
 }
