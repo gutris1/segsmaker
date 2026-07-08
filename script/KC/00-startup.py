@@ -13,8 +13,9 @@ MARK = SRC / 'marking.json'
 ui = json.load(MARK.open()).get('ui')
 
 PY = UID[ui]['py']['p']
+V = UID[ui]['py']['v']
 BIN = str(PY / 'bin')
-PKG = str(next((PY / 'lib').glob('python*/site-packages')))
+PKG = str(PY / 'lib' / f"python{V.rsplit('.', 1)[0]}" / 'site-packages')
 
 sys.path.append('/root/.ipython/profile_default/startup')
 
