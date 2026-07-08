@@ -49,11 +49,11 @@
 }
 
 .setup-panel {
+  height: 0;
   border: 0;
   border-radius: 10px;
   margin: 0;
   background-color: #000;
-  max-height: 0;
   overflow: hidden;
   animation: UndressSetup 1s forwards ease-out;
   padding: 5px;
@@ -62,12 +62,12 @@
 
 @keyframes UndressSetup {
   0% {
-    max-height: 0;
+    height: 0;
     opacity: 0;
     filter: blur(10px);
   }
   100% {
-    max-height: 800px;
+    height: 520px;
     opacity: 1;
     filter: blur(0);
   }
@@ -76,30 +76,28 @@
 .setup-box1,
 .setup-box2 {
   z-index: 1;
-  height: 255px;
+  height: 100%;
   width: 100%;
   overflow: visible !important;
-}
-
-.setup-box1 {
+  transition: height .4s ease;
   animation: UndressBox1 1.2s forwards ease;
-}
-
-.setup-box2 {
-  animation: UndressBox2 1.2s forwards ease;
 }
 
 .setup-box1:hover,
 .setup-box2:hover {
   z-index: 2;
+  height: 120%;
+}
+
+.setup-panel.loaded {
+  height: 520px;
 }
 
 .setup-panel.loaded,
 .setup-box1.loaded,
 .setup-box2.loaded {
-  max-height: 600px;
   transform: translateX(0);
-  overflow: visible !important;
+  overflow: hidden !important;
   animation: none;
 }
 
@@ -119,7 +117,7 @@
   --a: hsl(187.79deg 100% 50%);
   position: relative;
   z-index: 99;
-  height: 250px;
+  height: 100%;
   width: 69%;
   cursor: pointer;
   border: 0;
@@ -151,7 +149,7 @@
 
 .setup-buttons:hover::before {
   z-index: 101;
-  animation: setupHover .4s alternate infinite, BoxShadowPulse 2s linear infinite;
+  animation: setupHover .4s alternate infinite;
 }
 
 @keyframes setupHover {
@@ -160,19 +158,24 @@
 }
 
 .setup-buttons::after {
+  align-self: center;
   display: block;
   font-family: 'Times New Roman', serif;
   text-align: center;
-  font-size: 35px;
+  font-size: 38px;
   color: white;
   position: absolute;
-  bottom: 0;
   width: 100%;
   background: rgb(0 0 0 / 70%);
   border-radius: 0;
   box-shadow: 0 0 5px 1px #000;
   padding: 10px 0;
   transform: scale(1);
+  transition: .4s ease;
+}
+
+.setup-buttons:hover::after {
+  color: var(--a);
 }
 
 .a1111 { background-image: url('https://avatars.githubusercontent.com/u/20920490?v=4'); }
