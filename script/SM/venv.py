@@ -31,7 +31,7 @@ def _unused(env):
 
 def _install():
     py = UID[ui]['py']
-    env, version, url = py['p'], py['v'], py['url']
+    env, ver, url = py['p'], py['v'], py['url']
 
     if env.exists(): return
 
@@ -39,7 +39,7 @@ def _install():
     _check()
 
     clear_output(wait=True)
-    say(f"<b>【{{red}} {ui.replace('-', ' ')} Python {version}{{d}} 】{{red}}</b>")
+    say(f"<b>【{{red}} {ui.replace('-', ' ')} — Python {ver}{{d}} 】{{red}}</b>")
 
     CD(TMP)
 
