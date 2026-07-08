@@ -14,6 +14,5 @@ https://github.com/gutris1/sd-civitai-browser-plus
 https://github.com/gutris1/sd_civitai_extension
 https://github.com/Haoming02/sd-forge-chunk-weights
 https://github.com/Haoming02/sd-forge-layerdiffusion
-https://github.com/Haoming02/sd-forge-negpip
 https://github.com/Haoming02/sd-forge-blockcache
 https://github.com/Haoming02/sd-forge-couple
