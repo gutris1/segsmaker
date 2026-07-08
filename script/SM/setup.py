@@ -214,7 +214,7 @@ def _setup():
                 CD(EXT)
 
                 if ui == 'ComfyUI':
-                    say('<br><b>【{red} ComfyUI Custom Nodes{d} 】{red}</b>')
+                    say('<br><b>【{red} ComfyUI — Custom Nodes{d} 】{red}</b>')
                     clone(str(WEBUI / 'asd/custom_nodes.txt'))
                     print()
 
@@ -224,18 +224,18 @@ def _setup():
                     ]: download(f)
 
                 else:
-                    say(f"<b>【{{red}} {ui.replace('-', ' ')} Extensions{{d}} 】{{red}}</b>")
+                    say(f"<br><b>【{{red}} {ui.replace('-', ' ')} — Extensions{{d}} 】{{red}}</b>")
                     clone(str(WEBUI / 'asd/extension.txt'))
-
-            tempe(); print()
 
             with loading:
                 loading.clear_output(wait=True)
+                tempe()
+
                 get_ipython().run_line_magic('run', str(MRK))
                 get_ipython().run_line_magic('run', str(WEBUI / 'venv.py'))
 
                 loading.clear_output(wait=True)
-                say('<b>【{red} Done{d} 】{red}</b>')
+                say('<br><b>【{red} Done{d} 】{red}</b>')
                 CD(HOME)
 
 def _scripts(W):
