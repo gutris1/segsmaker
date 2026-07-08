@@ -15,7 +15,7 @@ SyS = get_ipython().system
 
 KAGGLE = 'KAGGLE_DATA_PROXY_TOKEN' in iRON
 
-def getArgs():
+def _args():
     RESET = '\033[0m'
     RED = '\033[31m'
     PURPLE = '\033[38;5;135m'
@@ -35,8 +35,7 @@ def getArgs():
     arg3 = args.hf_read_token.strip() if args.hf_read_token else ''
 
     if not any(arg1 == option.lower() for option in L):
-        print(f'{ERR}: invalid webui option: "{args.webui}"')
-        print(f'Available webui options: {", ".join(L)}')
+        print(f'{ERR}: invalid webui option: "{args.webui}"\nAvailable webui options: {", ".join(L)}')
         return None, None, None
 
     if not arg2:
@@ -55,7 +54,7 @@ def getArgs():
     ui = next(option for option in L if arg1 == option.lower())
     return ui, arg2, arg3
 
-def getPython():
+def _python():
     py = UID[ui]['py']
 
     say(f"<b>【{{red}} {ui.replace('-', ' ')} Python {py['v']}{{d}} 】{{red}}</b>")
@@ -85,23 +84,23 @@ def getPython():
 
     clear_output(wait=True)
 
-def marking(p, ui):
+def _marking():
     v = {'ui': ui}
 
-    if not p.exists(): p.write_text(json.dumps(v, indent=4))
+    if not MARK.exists(): MARK.write_text(json.dumps(v, indent=4))
 
-    d = json.loads(p.read_text())
+    d = json.loads(MARK.read_text())
     d.update(v)
-    p.write_text(json.dumps(d, indent=4))
+    MARK.write_text(json.dumps(d, indent=4))
 
-def key_inject(C, H):
+def _inject():
     p = Path(nenen)
     v = p.read_text()
-    v = v.replace("TOKET = ''", f"TOKET = '{C}'")
-    v = v.replace("TOBRUT = ''", f"TOBRUT = '{H}'")
+    v = v.replace("TOKET = ''", f"TOKET = '{civitai_key}'")
+    v = v.replace("TOBRUT = ''", f"TOBRUT = '{hf_read_token}'")
     p.write_text(v)
 
-def install_tunnel():
+def _tunnels():
     SyS(f'wget -qO {USR}/cl https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64')
     SyS(f'chmod +x {USR}/cl')
 
@@ -126,7 +125,7 @@ def install_tunnel():
         SyS(f'tar -xzf {name} -C {USR}')
         SyS(f'rm -f {name}')
 
-def sym_link(M):
+def _symlinks(M):
     UID['ReForge-old']['sym'] = UID['ReForge']['sym']
     UID['ReForge-old']['links'] = UID['ReForge']['links']
 
@@ -136,12 +135,15 @@ def sym_link(M):
     if ui not in ('ComfyUI', 'SwarmUI'):
         [(M / f).mkdir(parents=True, exist_ok=True) for f in ['Lora', 'ESRGAN']]
 
+    t = HOME / 'tmp'
+    SyS(f"rm -rf '{t}' && ln -s /tmp '{t}'")
+
     d = UID[ui]
 
     for c in d['sym'](M): SyS(c)
-    for p, t in d['links'](M): SyS(f'ln -s {p} {t}')
+    for p, f in d['links'](M): SyS(f'ln -s {p} {f}')
 
-def webui_req(W, M):
+def _reqs(W, M):
     CD(W)
 
     if ui != 'SwarmUI': pull(f'https://github.com/gutris1/segsmaker {ui.lower()} {W}')
@@ -158,12 +160,10 @@ def webui_req(W, M):
             'text_encoders'
         ]: (M / f).mkdir(parents=True, exist_ok=True)
 
-        for a in [
-            'update', 'install -y dotnet-sdk-8.0'
-        ]: SyS(f'sudo apt-get -qq {a} > /dev/null 2>&1')
+        for a in ['update', 'install -y dotnet-sdk-8.0']: SyS(f'sudo apt-get -qq {a} > /dev/null 2>&1')
 
-    sym_link(M)
-    install_tunnel()
+    _symlinks(M)
+    _tunnels()
 
     scripts = [
         f'{G}/script/controlnet.py {W}/asd',
@@ -201,11 +201,13 @@ def webui_req(W, M):
 
         if ui not in ['Forge', 'Forge-Neo']: download(f'{G}/config/config.json {W} config.json')
 
-def webui_installer():
+def _setup():
     WEBUI = HOME / ui
+
     M = WEBUI / 'Models' if ui == 'SwarmUI' else WEBUI / 'models'
     E = M / 'Embeddings' if ui == 'SwarmUI' else (M / 'embeddings' if ui in ['Forge-Classic', 'Forge-Neo', 'ComfyUI'] else WEBUI / 'embeddings')
     V = M / 'vae' if ui == 'ComfyUI' else M / 'VAE'
+    EXT = WEBUI / 'custom_nodes' if ui == 'ComfyUI' else WEBUI / 'extensions'
 
     CD(HOME)
 
@@ -217,18 +219,16 @@ def webui_installer():
         say(f"<b>【{{red}} {ui.replace('-', ' ')}{{d}} 】{{red}}</b>")
         clone(UID[ui]['repo'])
 
-        webui_req(WEBUI, M)
+        _reqs(WEBUI, M)
 
-        extras = [
+        for e in [
             f'https://huggingface.co/gutris1/webui/resolve/main/misc/embeddingsXL.zip {WEBUI}',
             f'https://huggingface.co/madebyollin/sdxl-vae-fp16-fix/resolve/main/sdxl.vae.safetensors {V} sdxl_vae.safetensors'
-        ]
+        ]: download(e)
 
-        for i in extras: download(i)
         SyS(f"unzip -qo {WEBUI / 'embeddingsXL.zip'} -d {E} && rm {WEBUI / 'embeddingsXL.zip'}")
 
         if ui != 'SwarmUI':
-            EXT = WEBUI / 'custom_nodes' if ui == 'ComfyUI' else WEBUI / 'extensions'
             CD(EXT)
 
             if ui == 'ComfyUI':
@@ -242,16 +242,16 @@ def webui_installer():
                 ]: download(f)
 
             else:
-                say(f"<b>【{{red}} {ui.replace('-', ' ')} Extensions{{d}} 】{{red}}</b>")
+                say(f"<br><b>【{{red}} {ui.replace('-', ' ')} Extensions{{d}} 】{{red}}</b>")
                 clone(str(WEBUI / 'asd/extension.txt'))
 
                 if KAGGLE: clone('https://github.com/gutris1/sd-image-encryption')
 
         say('<br><b>【{red} Done{d} 】{red}</b>')
-        tempe()
+        tempe(); print()
         CD(HOME)
 
-def notebook_scripts():
+def _scripts():
     for s in [
         f'{startup} {G}/script/KC/00-startup.py',
         f'{cupang} {G}/script/cupang.py',
@@ -274,8 +274,8 @@ def notebook_scripts():
 
     uid.write_text(t)
 
-    key_inject(civitai_key, hf_read_token)
-    marking(MARK, ui)
+    _inject()
+    _marking()
     sys.path.append(str(STR))
 
     for scripts in [nenen, melon, uid, MRK]: get_ipython().run_line_magic('run', str(scripts))
@@ -298,15 +298,13 @@ MARK = SRC / 'marking.json'
 Path('/tmp').mkdir(parents=True, exist_ok=True)
 SRC.mkdir(parents=True, exist_ok=True)
 
-ui, civitai_key, hf_read_token = getArgs()
-if civitai_key is None: sys.exit()
-
-notebook_scripts()
+ui, civitai_key, hf_read_token = _args()
+_scripts()
 
 from nenen88 import clone, say, download, tempe, pull
 from _segsmaker_ import UID
 
 PY = UID[ui]['py']['p']
+PY.exists() or _python()
 
-PY.exists() or getPython()
-webui_installer()
+_setup()
