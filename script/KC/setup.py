@@ -280,7 +280,7 @@ def _scripts():
 
     for scripts in [nenen, melon, uid, MRK]: get_ipython().run_line_magic('run', str(scripts))
 
-G = 'https://raw.githubusercontent.com/gutris1/segsmaker/ssl'
+G = 'https://raw.githubusercontent.com/gutris1/segsmaker/main'
 
 USR = Path('/usr/bin')
 STR = Path('/root/.ipython/profile_default/startup')
