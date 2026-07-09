@@ -248,6 +248,10 @@ def _scripts(W):
         f'{G}/script/cnxl.py {W}/asd'
     ]
 
+def _misc():
+    SyS(f'curl -sLo {uid} {G}/script/_segsmaker_.py')
+    uid.write_text(re.sub(r'^SRC\s*=.*$', f'SRC = Path({str(SRC)!r})', uid.read_text(), flags=re.MULTILINE))
+
 def _widget():
     JS = """
     (() => {
@@ -281,6 +285,8 @@ def _buttons(i, c):
     box.add_class(c)
     return box
 
+_check()
+
 setup_panel = widgets.VBox([
     _buttons(['A1111', 'Forge', 'ReForge', 'ReForge-old'], 'setup-box1'),
     _buttons(['Forge-Neo', 'Forge-Classic', 'ComfyUI', 'SwarmUI'], 'setup-box2')
@@ -311,10 +317,7 @@ SRC.mkdir(parents=True, exist_ok=True)
 
 ui = None
 
-_check()
-
-if not uid.exists(): SyS(f'curl -sLo {uid} {G}/script/_segsmaker_.py')
-uid.write_text(re.sub(r'^SRC\s*=.*$', f'SRC = Path({str(SRC)!r})', uid.read_text(), flags=re.MULTILINE))
+if not uid.exists(): _misc()
 
 from nenen88 import pull, say, download, clone, tempe
 from _segsmaker_ import UID
