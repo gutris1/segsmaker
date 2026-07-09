@@ -5,6 +5,7 @@ from pathlib import Path
 import subprocess
 import shlex
 import json
+import re
 
 SyS = get_ipython().system
 
