@@ -57,7 +57,7 @@ def _args():
 def _python():
     py = UID[ui]['py']
 
-    say(f"<b>【{{red}} {ui.replace('-', ' ')} Python {py['v']}{{d}} 】{{red}}</b>")
+    say(f"<b>【{{red}} {ui.replace('-', ' ')} — Python {py['v']}{{d}} 】{{red}}</b>")
     CD('/')
 
     SyS('sudo apt-get -qq -y install aria2 pv lz4 > /dev/null 2>&1')
@@ -232,7 +232,7 @@ def _setup():
             CD(EXT)
 
             if ui == 'ComfyUI':
-                say('<br><b>【{red} ComfyUI Custom Nodes{d} 】{red}</b>')
+                say('<br><b>【{red} ComfyUI — Custom Nodes{d} 】{red}</b>')
                 clone(str(WEBUI / 'asd/custom_nodes.txt'))
                 print()
 
@@ -242,13 +242,13 @@ def _setup():
                 ]: download(f)
 
             else:
-                say(f"<br><b>【{{red}} {ui.replace('-', ' ')} Extensions{{d}} 】{{red}}</b>")
+                say(f"<br><b>【{{red}} {ui.replace('-', ' ')} — Extensions{{d}} 】{{red}}</b>")
                 clone(str(WEBUI / 'asd/extension.txt'))
 
                 if KAGGLE: clone('https://github.com/gutris1/sd-image-encryption')
 
         say('<br><b>【{red} Done{d} 】{red}</b>')
-        tempe(); print()
+        tempe()
         CD(HOME)
 
 def _scripts():
