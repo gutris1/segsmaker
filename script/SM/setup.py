@@ -101,6 +101,9 @@ def _symlinks(M):
     if ui not in ('ComfyUI', 'SwarmUI'):
         [(M / f).mkdir(parents=True, exist_ok=True) for f in ['Lora', 'ESRGAN']]
 
+    t = HOME / 'tmp'
+    SyS(f"rm -rf '{t}' && ln -s /tmp '{t}'")
+
     d = UID[ui]
 
     for c in d['sym'](M): SyS(c)
@@ -227,15 +230,16 @@ def _setup():
                     say(f"<br><b>【{{red}} {ui.replace('-', ' ')} — Extensions{{d}} 】{{red}}</b>")
                     clone(str(WEBUI / 'asd/extension.txt'))
 
+            tempe(); say('<br>')
+
             with loading:
                 loading.clear_output(wait=True)
-                tempe()
 
                 get_ipython().run_line_magic('run', str(MRK))
                 get_ipython().run_line_magic('run', str(WEBUI / 'venv.py'))
 
                 loading.clear_output(wait=True)
-                say('<br><b>【{red} Done{d} 】{red}</b>')
+                say('<b>【{red} Done{d} 】{red}</b>')
                 CD(HOME)
 
 def _scripts(W):
