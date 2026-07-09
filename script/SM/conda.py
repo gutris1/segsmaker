@@ -17,19 +17,6 @@ PINK = f'\033[38;5;201m{T}'
 RED = f'\033[31m{T}'
 GREEN = f'\033[38;5;35m{T}'
 
-HOME = Path.home()
-SRC = HOME / '.gutris1'
-CSS = SRC / 'segsmaker.css'
-startup = HOME / '.ipython/profile_default/startup'
-nenen = startup / 'nenen88.py'
-api_key = SRC / 'api-key.json'
-IMG = SRC / 'loading.png'
-
-SRC.mkdir(parents=True, exist_ok=True)
-
-def load_css(): 
-    display(HTML(f'<style>{open(CSS).read()}</style>'))
-
 def restart_kernel():
     display(HTML("""
     <script>
@@ -52,7 +39,7 @@ def install_conda():
             with loading:
                 output.clear_output(wait=True)
                 display(Image(filename=str(IMG)))
-    
+
             with output:
                 cmd_list = [
                     (f'rm -rf {HOME}/.condarc', None),
@@ -64,22 +51,22 @@ def install_conda():
                     ('pip install psutil aria2 gdown Pillow pyyaml pickleshare', f'{PINK} Installing Python Packages'),
                     ('conda clean -qy --all', None)
                 ]
-    
+
                 for cmd, msg in cmd_list:
                     if msg is not None: print(msg)
                     subprocess.run(shlex.split(cmd), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    
+
                 SyS(f'rm -rf {HOME}/.cache/* {HOME}/.condarc')
-    
+
                 with output:
                     output.clear_output(wait=True)
-    
+
                 with loading:
                     loading.clear_output(wait=True)
                     print(f'{GREEN} Done')
-    
+
                 restart_kernel()
-    
+
         except KeyboardInterrupt:
             clear_output()
             print('^ Canceled')
@@ -130,9 +117,11 @@ def key_widget(civitai_key='', hf_token=''):
     save_button.on_click(save_key)
 
 def display_widget(civitai_key='', hf_token=''):
-    load_css()
-    display(HTML(f'<script>{JS}</script>'))
-    display(conda_widget, output, loading)
+    display(
+        HTML(f'<style>{CSS.read_text()}</style><script>{JS}</script>'),
+        conda_widget, output, loading
+    )
+
     key_widget(civitai_key, hf_token)
 
 def key_check():
@@ -153,15 +142,18 @@ def key_check():
     install_conda()
 
 def misc():
-    for s in [
+    for f in [
         f'{SRC}/bg.jpg https://i.imgur.com/5Mkdrpw.jpeg',
         f'{IMG} {G}/script/loading.png',
-        f'{startup} {G}/script/cupang.py',
+        f'{CSS} {G}/script/SM/segsmaker.css',
 
-        f'{startup} {G}/script/SM/00-startup.py',
-        f'{startup} {G}/script/SM/util.py',
-        f'{CSS} {G}/script/SM/segsmaker.css'
-    ]: SyS(f'curl -sLo {s}')
+        f'{uid} {G}/script/_segsmaker_.py',
+        f'{STR}/00-startup.py {G}/script/SM/00-startup.py',
+        f'{STR}/cupang.py {G}/script/cupang.py',
+        f'{STR}/util.py {G}/script/SM/util.py'
+    ]: SyS(f'curl -sLo {f}')
+
+    uid.write_text(re.sub(r'^SRC\s*=.*$', f'SRC = Path({str(SRC)!r})', uid.read_text(), flags=re.MULTILINE))
 
 G = 'https://raw.githubusercontent.com/gutris1/segsmaker/main'
 
@@ -197,8 +189,22 @@ for w, c in [
     (civitai_box, 'conda-api-input conda-civitai-box'),
     (hf_box, 'conda-api-input conda-hf-box'),
     (save_button, 'conda-save-button'),
+    (output, 'ssl-widget-output'),
+    (loading, 'ssl-widget-output')
 ]:
     for i in c.split(): w.add_class(i)
+
+HOME = Path.home()
+SRC = HOME / '.gutris1'
+CSS = SRC / 'segsmaker.css'
+IMG = SRC / 'loading.png'
+api_key = SRC / 'api-key.json'
+
+STR = HOME / '.ipython/profile_default/startup'
+uid = STR / '_segsmaker_.py'
+nenen = STR / 'nenen88.py'
+
+SRC.mkdir(parents=True, exist_ok=True)
 
 misc()
 key_check()
