@@ -43,6 +43,7 @@ def load_config():
     launch_args.value = j.get('launch_args') or d['args']
 
     tunnel = j['tunnel'] = j.get('tunnel') or 'Pinggy'
+    if tunnel == 'ZROK': tunnel = j['tunnel'] = 'ZROK2'
     tunnel_radio.value = tunnel
 
     cpu_cb.value = not GPU and ui != 'SwarmUI'
