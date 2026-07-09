@@ -29,37 +29,28 @@ def save_config():
         'zrok_token': zrok_token.value,
         'ngrok_token': ngrok_token.value,
         'launch_args': launch_args.value,
-        'tunnel': tunnel_radio.value,
-        'cpu_usage': cpu_cb.value
+        'tunnel': tunnel_radio.value
     })
 
     MARK.write_text(json.dumps(j, indent=4))
 
 def load_config():
-    gpu = Path('/proc/driver/nvidia').exists()
-
-    ui = j.get('ui')
-    tunnel = j.get('tunnel')
+    ui = j['ui']
     d = UID[ui]
 
     zrok_token.value = j.get('zrok_token', '')
     ngrok_token.value = j.get('ngrok_token', '')
+    launch_args.value = j.get('launch_args') or d['args']
 
-    launch_args.value = j.get('launch_args') or d.get('args', '')
-
-    if tunnel not in TUNNELS:
-        tunnel = 'Pinggy'
-        j['tunnel'] = tunnel
-        MARK.write_text(json.dumps(j, indent=4))
-
+    tunnel = j['tunnel'] = j.get('tunnel') or 'Pinggy'
     tunnel_radio.value = tunnel
 
-    cpu_cb.value = ui != 'SwarmUI' and not gpu and j.get('cpu_usage', False)
-    cpu_cb.layout.display = 'none' if gpu or ui == 'SwarmUI' else 'block'
+    cpu_cb.value = not GPU and ui != 'SwarmUI'
+    cpu_cb.layout.display = 'block' if cpu_cb.value else 'none'
 
     title.value = f"""
     <div class='launcher-title'>
-      {''.join(f"<span class='launch-title-{t.lower()}'>{t}</span>" for t in d.get('title', '').split())}
+      {''.join(f"<span class='launch-title-{t.lower()}'>{t}</span>" for t in d['title'].split())}
     </div>
     """
 
@@ -132,7 +123,7 @@ def launching(ui, skip_comfyui_check=False):
     py = str(d['py']['p'] / 'bin/python3')
     port = d.get('port', 7860)
 
-    tunnel = tunnel_radio.value
+    tunnel = j['tunnel']
     t = TUNNELS.get(tunnel)
     if t['a']: NGROK_ZROK(tunnel.lower())
 
@@ -140,7 +131,8 @@ def launching(ui, skip_comfyui_check=False):
     Zuberg.logger.setLevel(logging.DEBUG)
     Zuberg.add_tunnel(command=t['c'](port), name=t['n'], pattern=t['p'])
 
-    args = '' if cpu_cb.value else launch_args.value
+    cpu = not GPU and ui != 'SwarmUI'
+    args = '' if cpu else j['launch_args']
 
     if ui == 'SwarmUI':
         SyS('git pull -q')
@@ -165,19 +157,24 @@ def launching(ui, skip_comfyui_check=False):
 
             launcher = f'{py} launch.py'
 
-    if cpu_cb.value: args += f" {d.get('cpu', '')}"
+    if cpu: args += f" {d.get('cpu', '')}"
 
     with Zuberg:
         SyS(f'{launcher} {args}')
 
 def waiting(con, ready, ui):
+    global j
+
     with con:
         while not ready.value:
             try:
                 con.wait()
             except KeyboardInterrupt:
-                print(''); clear_output(); sys.exit()
+                print('')
+                clear_output()
+                sys.exit()
 
+    j = json.loads(MARK.read_text())
     launching(ui, skip_comfyui_check=args.skip_comfyui_check)
 
 def launch(b):
@@ -288,6 +285,8 @@ CSS = SRC / 'segsmaker.css'
 MARK = SRC / 'marking.json'
 
 j = json.loads(MARK.read_text())
+
+GPU = Path('/proc/driver/nvidia').exists()
 
 if __name__ == '__main__':
     try:
