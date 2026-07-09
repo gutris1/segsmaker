@@ -83,6 +83,10 @@
   animation: UndressBox1 1.2s forwards ease;
 }
 
+.setup-box2 {
+  animation: UndressBox2 1.2s forwards ease;
+}
+
 .setup-box1:hover,
 .setup-box2:hover {
   z-index: 2;
