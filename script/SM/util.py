@@ -3,7 +3,6 @@ from IPython.display import display, HTML, clear_output, Image
 from IPython import get_ipython
 import ipywidgets as widgets
 from pathlib import Path
-from nenen88 import say
 from tqdm import tqdm
 import subprocess
 import zipfile
@@ -12,6 +11,8 @@ import time
 import json
 import sys
 import os
+
+from nenen88 import say
 
 SyS = get_ipython().system
 
@@ -104,103 +105,90 @@ def storage(line):
     print()
 
 @register_line_magic
-def delete_everything(line):    
-    main_output = widgets.Output()
-    ask = widgets.Label('Delete?')
+def clean_env(line):    
+    output = widgets.Output()
+
+    ask = widgets.Label('Clean environment ?')
     yes = widgets.Button(description='Yes')
     no = widgets.Button(description='No')
 
-    button = widgets.HBox(
-        [no, yes],
-        layout=widgets.Layout(
-            display='flex',
-            flex_flow='row',
-            align_items='center',
-            top='35px',
-            justify_content='space-around',
-            width='100%'
-        )
-    )
+    button_box = widgets.HBox([no, yes])
+    clean_panel = widgets.VBox([ask, button_box])
 
-    boxs = widgets.VBox(
-        [ask, button],
-        layout=widgets.Layout(
-            width='450px',
-            height='150px',
-            display='flex',
-            flex_flow='column',
-            align_items='center',
-            justify_content='space-around',
-            padding='10px'
-        )
-    )
+    for w, c in [
+        (clean_panel, 'clean-panel'),
+        (ask, 'clean-ask'),
+        (button_box, 'button-box'),
+        (yes, 'save-change-key'),
+        (no, 'cancel-change-key'),
+        (output, 'ssl-widget-output'),
+    ]: w.add_class(c)
 
-    ask.add_class('del')
-    yes.add_class('save-button')
-    no.add_class('save-button')
-    boxs.add_class('boxs')
-
-    def load_css(css):
-        display(HTML(f'<style>{Path(css).read_text()}</style>'))
+    def _close():
+        clean_panel.close(); clear_output()
 
     def oh_no(b):
-        boxs.close()
-        main_output.clear_output()
+        _close()
 
     def oh_yes(b):
-        with main_output:
-            boxs.close()
-            clear_output()
+        with output:
+            _close()
 
             display(Image(filename=str(img)))
 
-            folder_list = [
+            paths = ' '.join(str(home / p) for p in (
                 'A1111', 'Forge', 'ReForge', 'ReForge-old', 'Forge-Classic', 'Forge-Neo', 'ComfyUI', 'SwarmUI',
                 'tmp/*', 'tmp', '.cache/*', '.config/*', '.ssh', '.zrok', '.zrok2', '.ngrok', '.sagemaker',
-                '.dotnet', '.aspnet', '.conda/*', '.conda', '.ipython/profile_default/startup/*'
-            ]
+                '.dotnet', '.aspnet', '.nuget', '.conda/*', '.conda', '.ipython/profile_default/startup/*',
+            ))
 
-            cmd_list = [f"rm -rf {' '.join([str(home / folder) for folder in folder_list])}"]
+            SyS(f'rm -rf {paths}')
 
-            for deleting in cmd_list: SyS(deleting)
-
-            is_nb = False
+            nb = False
             try:
                 nb_find = f"find {home} -type d -name '.*' -prune -o -type f -name '*.ipynb' -print"
-                nb_files = subprocess.check_output(nb_find, shell=True, text=True, stderr=subprocess.DEVNULL).strip().split('\n')
+                for p in subprocess.check_output(nb_find, shell=True, text=True, stderr=subprocess.DEVNULL).splitlines():
+                    try:
+                        f = Path(p)
+                        d = json.loads(f.read_text())
 
-                for nb_path in nb_files:
-                    if nb_path:
-                        nb_clear(nb_path)
-                        is_nb = True
+                        d.setdefault('metadata', {})
+                        d['metadata']['kernelspec'] = {
+                            'name': 'conda-env-sagemaker-distribution-py',
+                            'display_name': 'sagemaker-distribution:Python',
+                            'language': 'python',
+                        }
 
-            except subprocess.CalledProcessError:
-                pass
+                        f.write_text(json.dumps(d, indent=1, sort_keys=True))
+                        nb = True
 
-            if is_nb:
-                main_output.clear_output(wait=True)
-                say('Restart JupyterLab Now!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+                    except Exception: pass
+            except subprocess.CalledProcessError: pass
+
+            if nb: output.clear_output(wait=True); say('Restart JupyterLab Now.')
+
+    JS = """
+    (() => {
+      const baseUrl = JSON.parse(document.querySelector("#jupyter-config-data").textContent).baseUrl;
+      document.documentElement.style.setProperty(
+        "--segsmaker-bg",
+        `url(${location.origin}${baseUrl}files/.gutris1/bg.jpg)`
+      );
+
+      setTimeout(() => {
+        const box = document.querySelector('.clean-panel');
+        box && box.classList.add('loaded');
+      }, 500);
+    })();
+    """
 
     no.on_click(oh_no)
     yes.on_click(oh_yes)
 
-    load_css(css)
-    display(boxs, main_output)
-
-def nb_clear(nb_path):
-    try:
-        nb_file = Path(nb_path)
-        nb_contents = json.loads(nb_file.read_text())
-
-        nb_contents['metadata'] = {
-            'language_info': {'name': ''},
-            'kernelspec': {'name': '', 'display_name': ''}
-        }
-
-        nb_file.write_text(json.dumps(nb_contents, indent=1, sort_keys=True))
-
-    except Exception:
-        pass
+    display(
+        HTML(f'<style>{css.read_text()}</style><script>{JS}</script>'),
+        clean_panel, output
+    )
 
 @register_cell_magic
 def zipping(line, cell):
