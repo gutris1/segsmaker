@@ -702,13 +702,7 @@ def pull(line):
 
 @register_line_magic
 def tempe(line=''):
-    try:
-        from KANDANG import TEMPPATH
-        TMP = Path(TEMPPATH)
-    except ImportError:
-        TMP = Path('/tmp')
-
-    DIRS = [
+    l = [
         'ckpt',
         'lora',
         'controlnet',
@@ -722,4 +716,4 @@ def tempe(line=''):
         'unet'
     ]
 
-    for SUB in DIRS: Path(f'{TMP}/{SUB}').mkdir(parents=True, exist_ok=True)
+    for f in l: (Path('/tmp') / f).mkdir(parents=True, exist_ok=True)

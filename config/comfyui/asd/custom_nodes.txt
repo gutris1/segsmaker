@@ -11,3 +11,4 @@ https://github.com/SLAPaper/ComfyUI-Image-Selector
 https://github.com/Derfuu/Derfuu_ComfyUI_ModdedNodes
 https://github.com/FizzleDorf/ComfyUI_FizzNodes
 https://github.com/WASasquatch/was-node-suite-comfyui
+https://github.com/Comfy-Org/comfy-aimdo

@@ -5,14 +5,9 @@ from pathlib import Path
 import subprocess
 import shlex
 import json
+import re
 
-home = Path.home()
-src = home / '.gutris1'
-css = src / 'segsmaker.css'
-startup = home / '.ipython/profile_default/startup'
-nenen = startup / 'nenen88.py'
-key_file = src / 'api-key.json'
-img = src / 'loading.png'
+SyS = get_ipython().system
 
 R = '\033[0m'
 T = f'▶{R}'
@@ -23,66 +18,67 @@ PINK = f'\033[38;5;201m{T}'
 RED = f'\033[31m{T}'
 GREEN = f'\033[38;5;35m{T}'
 
-Path(src).mkdir(parents=True, exist_ok=True)
+def restart_kernel():
+    display(HTML("""
+    <script>
+    (() => {
+      const i = setInterval(() => {
+        const b = document.querySelector('dialog[aria-label*="It will restart automatically"] button');
+        if (b) clearInterval(i), b.click();
+      }, 200);
+    })();
+    </script>
+    """))
 
-SyS = get_ipython().system
+    get_ipython().kernel.do_shutdown(True)
 
-main_output = widgets.Output()
-save_button = widgets.Button(description='Save')
-civitai_key_box = widgets.Text(placeholder='Enter Your Civitai API Key Here', layout=widgets.Layout(width='350px'))
-hf_token_box = widgets.Text(placeholder='Huggingface READ Token (optional)', layout=widgets.Layout(width='350px'))
-input_widget = widgets.Box(
-    [civitai_key_box, hf_token_box, save_button], 
-    layout=widgets.Layout(
-        width='500px',
-        height='200px',
-        display='flex',
-        flex_flow='column',
-        align_items='center',
-        justify_content='space-around',
-        padding='10px'
-    )
-)
+def install_conda():
+    cv = int(subprocess.run(['conda', '--version'], capture_output=True, text=True, check=True).stdout.split()[1].split('.')[0])
 
-save_button.add_class('save-button')
-civitai_key_box.add_class('api-input')
-hf_token_box.add_class('api-input')
-input_widget.add_class('boxs')
+    if cv < 26:
+        try:
+            with loading:
+                output.clear_output(wait=True)
+                display(Image(filename=str(IMG)))
 
-def CondaInstall():
-    try:
-        display(Image(filename=str(img)))
+            with output:
+                cmd_list = [
+                    (f'rm -rf {HOME}/.condarc', None),
+                    ('conda config --add channels conda-forge', None),
+                    ('conda install -qy mamba', f'{BLUE} Installing Anaconda'),
+                    ('mamba install -y conda', None),
+                    ('mamba install -y python=3.10.13', f'{CYAN} Installing Python 3.10'),
+                    ('mamba install -y glib gperftools compilers openssh pv gputil curl', f'{PURPLE} Installing Conda Packages'),
+                    ('pip install psutil aria2 gdown Pillow pyyaml pickleshare', f'{PINK} Installing Python Packages'),
+                    ('conda clean -qy --all', None)
+                ]
 
-        cmd_list = [
-            (f'rm -rf {home}/.condarc', None),
-            ('conda config --add channels conda-forge', None),
-            ('conda install -qy mamba', f'{BLUE} Installing Anaconda'),
-            ('mamba install -y conda', None),
-            ('mamba install -y python=3.10.13', f'{CYAN} Installing Python 3.10'),
-            ('mamba install -y glib gperftools compilers openssh pv gputil curl', f'{PURPLE} Installing Conda Packages'),
-            ('pip install psutil aria2 gdown Pillow pyyaml', f'{PINK} Installing Python Packages'),
-            ('conda clean -qy --all', None)
-        ]
+                for cmd, msg in cmd_list:
+                    if msg is not None: print(msg)
+                    subprocess.run(shlex.split(cmd), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-        for cmd, msg in cmd_list:
-            if msg is not None: print(msg)
-            subprocess.run(shlex.split(cmd), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                SyS(f'rm -rf {HOME}/.cache/* {HOME}/.condarc')
 
-        SyS(f'rm -rf {home}/.cache/* {home}/.condarc')
-        clear_output()
-        print(f'{GREEN} Done')
+                with output:
+                    output.clear_output(wait=True)
 
-        get_ipython().kernel.do_shutdown(True)
+                with loading:
+                    loading.clear_output(wait=True)
+                    print(f'{GREEN} Done')
 
-    except KeyboardInterrupt:
-        clear_output()
-        print('^ Canceled')
+                restart_kernel()
 
-def LoadCSS(): 
-    display(HTML(f'<style>{open(css).read()}</style>'))
+        except KeyboardInterrupt:
+            clear_output()
+            print('^ Canceled')
 
-def KeyInject(civitai_key, hf_token):
-    SyS(f'curl -sLo {nenen} https://github.com/gutris1/segsmaker/raw/main/script/nenen88.py')
+    else:
+        with output:
+            print(f'{GREEN} Done')
+            restart_kernel()
+
+def key_inject(civitai_key, hf_token):
+    SyS(f'curl -sLo {nenen} {G}/script/nenen88.py')
 
     p = Path(nenen)
     v = p.read_text()
@@ -90,15 +86,15 @@ def KeyInject(civitai_key, hf_token):
     v = v.replace("TOBRUT = ''", f"TOBRUT = '{hf_token}'")
     p.write_text(v)
 
-def KeyWidget(civitai_key='', hf_token=''):
-    civitai_key_box.value = civitai_key
-    hf_token_box.value = hf_token
+def key_widget(civitai_key='', hf_token=''):
+    civitai_box.value = civitai_key
+    hf_box.value = hf_token
 
-    def KeyInputs(b):
-        civitai_key = civitai_key_box.value.strip()
-        hf_token = hf_token_box.value.strip()
+    def save_key(b):
+        civitai_key = civitai_box.value.strip()
+        hf_token = hf_box.value.strip()
 
-        with main_output:
+        with output:
             if not civitai_key:
                 print('Please enter your Civitai API Key')
                 return
@@ -107,57 +103,109 @@ def KeyWidget(civitai_key='', hf_token=''):
                 print('API key must be at least 32 characters long')
                 return
 
-            civitai_key_value = {'civitai-api-key': civitai_key}
-            hf_token_value = {'huggingface-read-token': hf_token}
+            api_key.write_text(json.dumps({
+                'civitai-api-key': civitai_key,
+                'huggingface-read-token': hf_token,
+            }, indent=4))
 
-            secrets = {**civitai_key_value, **hf_token_value}
-            key_file.write_text(json.dumps(secrets, indent=4))
+        key_inject(civitai_key, hf_token)
 
-        KeyInject(civitai_key, hf_token)
+        conda_widget.close()
+        output.clear_output()
 
-        input_widget.close()
-        main_output.clear_output()
+        install_conda()
 
-        p = subprocess.run(['conda', '--version'], capture_output=True, text=True, check=True)
-        cv = p.stdout.strip().split()[1]
-        mv = int(cv.split('.')[0])
+    save_button.on_click(save_key)
 
-        with main_output:
-            if mv < 24:
-                CondaInstall()
-            else:
-                print(f'{GREEN} Done')
-                get_ipython().kernel.do_shutdown(True)
+def display_widget(civitai_key='', hf_token=''):
+    display(
+        HTML(f'<style>{CSS.read_text()}</style><script>{JS}</script>'),
+        conda_widget, output, loading
+    )
 
-    save_button.on_click(KeyInputs)
+    key_widget(civitai_key, hf_token)
 
-def KeyCheck():
-    if key_file.exists():
-        v = json.loads(key_file.read_text())
+def key_check():
+    if not api_key.exists():
+        display_widget()
+        return
 
-        civitai_key = v.get('civitai-api-key', '')
-        hf_token = v.get('huggingface-read-token', '')
+    v = json.loads(api_key.read_text())
+    civitai_key = v.get('civitai-api-key', '')
+    hf_token = v.get('huggingface-read-token', '')
 
-        if not civitai_key or not hf_token:
-            display(input_widget, main_output)
-            KeyWidget(civitai_key, hf_token)
-        else:
-            KeyInject(civitai_key, hf_token)
-            display(main_output)
-            CondaInstall()
-    else:
-        display(input_widget, main_output)
-        KeyWidget()
+    if not civitai_key or not hf_token:
+        display_widget(civitai_key, hf_token)
+        return
 
-def CondaMisc():
-    for scr in [
-        f'curl -sLo {css} https://github.com/gutris1/segsmaker/raw/main/script/SM/segsmaker.css',
-        f'curl -sLo {startup}/00-startup.py https://github.com/gutris1/segsmaker/raw/main/script/SM/00-startup.py',
-        f'curl -sLo {startup}/util.py https://github.com/gutris1/segsmaker/raw/main/script/SM/util.py',
-        f'curl -sLo {img} https://github.com/gutris1/segsmaker/raw/main/script/loading.png',
-        f'curl -sLo {startup}/cupang.py https://github.com/gutris1/segsmaker/raw/main/script/cupang.py'
-    ]: SyS(scr)
+    key_inject(civitai_key, hf_token)
+    display(output, loading)
+    install_conda()
 
-CondaMisc()
-LoadCSS()
-KeyCheck()
+def misc():
+    for f in [
+        f'{SRC}/bg.jpg https://i.imgur.com/5Mkdrpw.jpeg',
+        f'{IMG} {G}/script/loading.png',
+        f'{CSS} {G}/script/SM/segsmaker.css',
+
+        f'{uid} {G}/script/_segsmaker_.py',
+        f'{STR}/00-startup.py {G}/script/SM/00-startup.py',
+        f'{STR}/cupang.py {G}/script/cupang.py',
+        f'{STR}/util.py {G}/script/SM/util.py'
+    ]: SyS(f'curl -sLo {f}')
+
+    uid.write_text(re.sub(r'^SRC\s*=.*$', f'SRC = Path({str(SRC)!r})', uid.read_text(), flags=re.MULTILINE))
+
+G = 'https://raw.githubusercontent.com/gutris1/segsmaker/main'
+
+JS = """
+(() => {
+  const baseUrl = JSON.parse(document.querySelector("#jupyter-config-data").textContent).baseUrl;
+  document.documentElement.style.setProperty(
+    "--segsmaker-bg",
+    `url(${location.origin}${baseUrl}files/.gutris1/bg.jpg)`
+  );
+
+  setTimeout(() => {
+    const tokens = document.querySelectorAll('.conda-api-input input');
+    tokens.forEach(el => el.spellcheck = false);
+  }, 100);
+})();
+"""
+
+output = widgets.Output()
+loading = widgets.Output()
+
+civitai_box = widgets.Text(placeholder='Civitai API Key')
+hf_box = widgets.Text(placeholder='Huggingface READ Token (optional)')
+token_box = widgets.VBox([civitai_box, hf_box])
+
+save_button = widgets.Button(description='Save')
+
+conda_widget = widgets.Box([token_box, save_button])
+
+for w, c in [
+    (conda_widget, 'conda-widget'),
+    (token_box, 'conda-token-box'),
+    (civitai_box, 'conda-api-input conda-civitai-box'),
+    (hf_box, 'conda-api-input conda-hf-box'),
+    (save_button, 'conda-save-button'),
+    (output, 'ssl-widget-output'),
+    (loading, 'ssl-widget-output')
+]:
+    for i in c.split(): w.add_class(i)
+
+HOME = Path.home()
+SRC = HOME / '.gutris1'
+CSS = SRC / 'segsmaker.css'
+IMG = SRC / 'loading.png'
+api_key = SRC / 'api-key.json'
+
+STR = HOME / '.ipython/profile_default/startup'
+uid = STR / '_segsmaker_.py'
+nenen = STR / 'nenen88.py'
+
+SRC.mkdir(parents=True, exist_ok=True)
+
+misc()
+key_check()

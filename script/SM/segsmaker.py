@@ -3,324 +3,309 @@ from multiprocessing import Process, Condition, Value
 from IPython import get_ipython
 from ipywidgets import widgets
 from pathlib import Path
+import subprocess
 import argparse
 import logging
+import shlex
 import json
 import yaml
+import time
 import sys
+import os
 
-HOME = Path.home()
-SRC = HOME / '.gutris1'
-CSS = SRC / 'setup.css'
-MARK = SRC / 'marking.json'
-IMG = SRC / 'loading.png'
-
-SyS = get_ipython().system
+from cupang import Tunnel as Alice
+from _segsmaker_ import HOME, SRC, UID
 
 R = '\033[31m'
 P = '\033[38;5;135m'
 RST = '\033[0m'
 ERR = f'{P}[{RST}{R}ERROR{RST}{P}]{RST}'
 
-def get_args(ui):
-    args_line = {
-        'A1111': ('--xformers'),
-        'Forge': ('--disable-xformers --opt-sdp-attention --cuda-stream'),
-        'ReForge': ('--xformers --cuda-stream'),
-        'Forge-Classic': ('--xformers --cuda-stream --persistent-patches'),
-        'ComfyUI': ('--dont-print-server --use-pytorch-cross-attention'),
-        'SwarmUI': ('--launch_mode none'),
-        'FaceFusion': '',
-        'SDTrainer': ''
-    }
+iRON = os.environ
+SyS = get_ipython().system
 
-    return args_line.get(ui, '')
-
-def GPU_check():
-    return Path('/proc/driver/nvidia').exists()
-
-def load_config():
-    global ui
-    config = json.loads(MARK.read_text()) if MARK.exists() else {}
-
-    ui = config.get('ui', None)
-    arg = config.get('launch_args')
-    tunnell = config.get('tunnel')
-    zrok_token.value = config.get('zrok_token', '')
-    ngrok_token.value = config.get('ngrok_token', '')
-
-    if arg:
-        launch_args.value = arg
-    else:
-        launch_args.value = get_args(ui)
-
-    if tunnell in ['Pinggy', 'ZROK', 'NGROK']:
-        tunnel.value = tunnell
-    else:
-        tunnel.value = 'Pinggy'
-        config.update({'tunnel': tunnel.value})
-        MARK.write_text(json.dumps(config, indent=4))
-
-    cpu_cb.value = False if GPU_check() else config.get('cpu_usage', False)
-    cpu_cb.layout.display = 'none' if ui in ['SDTrainer', 'FaceFusion', 'SwarmUI'] or GPU_check() else 'block'
-
-    ui_titles = {
-        'A1111': 'A1111',
-        'Forge': 'Forge',
-        'ReForge': 'ReForge',
-        'Forge-Classic': 'Forge Classic',
-        'ComfyUI': 'ComfyUI',
-        'SwarmUI': 'SwarmUI',
-        'FaceFusion': 'Face Fusion',
-        'SDTrainer': 'SD Trainer'
-    }
-
-    title.value = f"<div class='title'><h1>{ui_titles.get(ui, 'Unknown UI')}</h1></div>"
-
-def save_config(zrok_token, ngrok_token, launch_args, tunnel):
-    config = json.loads(MARK.read_text()) if MARK.exists() else {}
-
-    config.update({
-        'zrok_token': zrok_token,
-        'ngrok_token': ngrok_token,
-        'launch_args': launch_args,
-        'tunnel': tunnel,
+def save_config():
+    j.update({
+        'zrok_token': zrok_token.value,
+        'ngrok_token': ngrok_token.value,
+        'launch_args': launch_args.value,
+        'tunnel': tunnel_radio.value,
         'cpu_usage': cpu_cb.value
     })
 
-    MARK.write_text(json.dumps(config, indent=4))
+    MARK.write_text(json.dumps(j, indent=4))
 
-def load_css():
-    display(HTML(f'<style>{CSS.read_text()}</style>'))
+def load_config():
+    gpu = Path('/proc/driver/nvidia').exists()
 
-options = ['Pinggy', 'ZROK', 'NGROK']
-title = widgets.HTML()
-zrok_token = widgets.Text(placeholder='Your ZROK Token')
-ngrok_token = widgets.Text(placeholder='Your NGROK Token')
-launch_args = widgets.Text(placeholder='Launch Arguments List', layout=widgets.Layout(top='20px'))
-tunnel = widgets.RadioButtons(
-    options=options,
-    layout=widgets.Layout(
-        display='flex',
-        flex_flow='row',
-        justify_content='space-between'
-    )
-)
+    ui = j.get('ui')
+    tunnel = j.get('tunnel')
+    d = UID[ui]
 
-top = widgets.HBox(
-    [tunnel, title],
-    layout=widgets.Layout(
-        display='flex',
-        flex_flow='row',
-        justify_content='space-between'
-    )
-)
+    zrok_token.value = j.get('zrok_token', '')
+    ngrok_token.value = j.get('ngrok_token', '')
 
-launch_button = widgets.Button(description='Launch')
-exit_button = widgets.Button(description='Exit')
-cpu_cb = widgets.Checkbox(value=False, description='CPU', layout=widgets.Layout(left='10px'))
-button_box = widgets.HBox(
-    [launch_button, cpu_cb, exit_button],
-    layout=widgets.Layout(
-        display='flex',
-        flex_flow='row',
-        align_items='center',
-        justify_content='space-between'
-    )
-)
+    launch_args.value = j.get('launch_args') or d.get('args', '')
 
-token_box = widgets.VBox(
-    [zrok_token, ngrok_token, launch_args],
-    layout=widgets.Layout(
-        width='auto',
-        height='auto',
-        flex_flow='column',
-        align_items='center',
-        justify_content='space-between',
-        padding='0'
-    )
-)
+    if tunnel not in TUNNELS:
+        tunnel = 'Pinggy'
+        j['tunnel'] = tunnel
+        MARK.write_text(json.dumps(j, indent=4))
 
-launch_panel = widgets.Box(
-    [top, token_box, button_box],
-    layout=widgets.Layout(
-        width='700px',
-        height='300px',
-        display='flex',
-        flex_flow='column',
-        justify_content='space-between',
-        padding='20px'
-    )
-)
+    tunnel_radio.value = tunnel
 
-cpu_cb.add_class('cpu-cbx')
-tunnel.add_class('tunnel')
-zrok_token.add_class('zrok')
-ngrok_token.add_class('ngrok')
-launch_args.add_class('text-input')
-launch_button.add_class('buttons')
-exit_button.add_class('buttons')
-launch_panel.add_class('launch-panel')
+    cpu_cb.value = ui != 'SwarmUI' and not gpu and j.get('cpu_usage', False)
+    cpu_cb.layout.display = 'none' if gpu or ui == 'SwarmUI' else 'block'
 
-parser = argparse.ArgumentParser()
-parser.add_argument('--skip-comfyui-check', action='store_true', help='Skip checking custom node dependencies for ComfyUI')
-parser.add_argument('--skip-widget', action='store_true', help='Skip displaying the widget')
-args, unknown = parser.parse_known_args()
+    title.value = f"""
+    <div class='launcher-title'>
+      {''.join(f"<span class='launch-title-{t.lower()}'>{t}</span>" for t in d.get('title', '').split())}
+    </div>
+    """
 
-condition = Condition()
-is_ready = Value('b', False)
+    return ui
 
 def NGROK_ZROK(T):
     P = {
-        'zrok': {
-            'B': HOME / '.zrok/bin/zrok',
-            'C': HOME / '.zrok/environment.json',
+        'zrok2': {
+            'B': HOME / '.zrok2/zrok2',
+            'C': HOME / '.zrok2/environment.json',
             't': zrok_token.value
         },
         'ngrok': {
-            'B': HOME / '.ngrok/bin/ngrok',
-            'C': HOME / '.config/ngrok/ngrok.yml',
+            'B': HOME / '.ngrok/ngrok',
+            'C': HOME / '.config/ngrok.yml',
             't': ngrok_token.value
         }
     }
 
-    B, C, t = P[T]['B'], P[T]['C'], P[T]['t']
+    p = P[T]
+    B, C, t = p['B'], p['C'], p['t']
 
     if not t:
         print(f'{ERR}: {T.upper()} Token is empty'); sys.exit()
     if not B.exists():
         print(f'{ERR}: {T.upper()} is not installed'); sys.exit()
 
-    E = f'{T} enable {t}' if T == 'zrok' else f'{T} config add-authtoken {t}'
+    E = f'{T} enable {t}' if T == 'zrok2' else f'{T} config add-authtoken {t}'
 
     if C.exists():
         ct = None
-        if T == 'zrok':
+        if T == 'zrok2':
             ct = json.loads(C.read_text()).get('zrok_token')
         elif T == 'ngrok':
             ct = yaml.safe_load(C.read_text()).get('agent', {}).get('authtoken')
 
         if ct != t:
-            if T == 'zrok':
+            if T == 'zrok2':
                 SyS(f'{T} disable')
             SyS(E); print()
     else:
         SyS(E); print()
 
+def setENV(d):
+    env = d['py']['p']
+    lib = str(env / 'lib')
+    bin = str(env / 'bin')
+
+    D = '/home/studio-lab-user/.conda/envs/default/lib'
+    L = f'{D}/libtcmalloc_minimal.so.4'
+
+    if d.get('cm'): iRON.pop('MPLBACKEND', None)
+
+    old = iRON.get('LD_LIBRARY_PATH', '')
+    iRON['LD_LIBRARY_PATH'] = f'{lib}:{old}' if old else lib
+
+    for k, v in d.get('var', {}).items(): iRON[k] = v() if callable(v) else v
+
+    if L not in iRON.get('LD_PRELOAD', ''): iRON['LD_PRELOAD'] = L
+    if bin not in iRON.get('PATH', ''): iRON['PATH'] = f'{bin}:{iRON.get("PATH", "")}'
+
+    iRON['PYTHONWARNINGS'] = 'ignore'
+
 def launching(ui, skip_comfyui_check=False):
-    args = f'{launch_args.value}'
-    tunnel_name = tunnel.value
+    d = UID[ui]
 
     get_ipython().run_line_magic('run', 'venv.py')
+    setENV(d)
 
-    if ui in ['A1111', 'Forge', 'ReForge', 'Forge-Classic']:
-        port = 7860
-        PY = '/tmp/python311/bin/python3' if ui == 'Forge-Classic' else '/tmp/venv/bin/python3'
-        args += ' --enable-insecure-extension-access --disable-console-progressbars --theme dark'
+    py = str(d['py']['p'] / 'bin/python3')
+    port = d.get('port', 7860)
 
-    elif ui in ['ComfyUI', 'SwarmUI']:
-        PY = '/tmp/venv-comfy-swarm/bin/python3'
+    tunnel = tunnel_radio.value
+    t = TUNNELS.get(tunnel)
+    if t['a']: NGROK_ZROK(tunnel.lower())
 
+    Zuberg = Alice(port)
+    Zuberg.logger.setLevel(logging.DEBUG)
+    Zuberg.add_tunnel(command=t['c'](port), name=t['n'], pattern=t['p'])
+
+    args = '' if cpu_cb.value else launch_args.value
+
+    if ui == 'SwarmUI':
+        SyS('git pull -q')
+        launcher = 'bash ./launch-linux.sh'
+
+    else:
         if ui == 'ComfyUI':
-            port = 8188
-            skip_comfyui_check or (SyS(f'{PY} apotek.py'), clear_output(wait=True))
+            if not skip_comfyui_check: SyS(f'{py} apotek.py'); clear_output(wait=True)
+            launcher = f'{py} main.py'
+
         else:
-            port = 7801
+            iRON.setdefault('IIB_ACCESS_CONTROL', 'disable')
+            iRON.setdefault('IIB_SKIP_OPTIONAL_DEPS', '1')
 
-    elif ui == 'SDTrainer':
-        port = 28000
-        PY = 'HF_HOME=huggingface /tmp/venv-sd-trainer/bin/python3'
+            args += ' --enable-insecure-extension-access --disable-console-progressbars --theme dark'
 
-    elif ui == 'FaceFusion':
-        port = 7860
-        PY = '/tmp/venv-fusion/bin/python3'
+            Path('asd/pinggytimer.txt').write_text(str(int(time.time()) + 3600))
 
-    if cpu_cb.value:
-        if ui == 'A1111':
-            args += ' --use-cpu all --precision full --no-half --skip-torch-cuda-test'
-        elif ui in ['Forge', 'ReForge', 'Forge-Classic']:
-            args += ' --always-cpu --skip-torch-cuda-test'
-        elif ui == 'ComfyUI':
-            args += ' --cpu'
+            if ui == 'Forge':
+                ft = Path('FT.txt')
+                if not ft.exists(): SyS(f'{py} -m pip uninstall -qy transformers'); ft.write_text('tf')
 
-    tunnel_config = {
-        'Pinggy': {
-            'command': f'ssh -o StrictHostKeyChecking=no -p 80 -R0:localhost:{port} a.pinggy.io',
-            'name': 'PINGGY',
-            'pattern': r'https://[\w-]+\.run\.pinggy-free\.link'
-        },
-        'NGROK': {
-            'command': f'ngrok http http://localhost:{port} --log stdout',
-            'name': 'NGROK',
-            'pattern': r'https://[\w-]+\.ngrok-free\.[\w.-]+'
-        },
-        'ZROK': {
-            'command': f'zrok share public localhost:{port} --headless',
-            'name': 'ZROK',
-            'pattern': r'https://[\w-]+\.share\.zrok\.[\w.-]+'
-        }
-    }
+            launcher = f'{py} launch.py'
 
-    c = f'{PY} Launcher.py {args}'
-    cmd = {key: c for key in ['Pinggy', 'ZROK', 'NGROK']}.get(tunnel_name)
-    configs = tunnel_config.get(tunnel_name)
+    if cpu_cb.value: args += f" {d.get('cpu', '')}"
 
-    if cmd and configs:
-        try:
-            from cupang import Tunnel as Alice_Zuberg
+    with Zuberg:
+        SyS(f'{launcher} {args}')
 
-            if tunnel_name == 'ZROK': NGROK_ZROK('zrok')
-            if tunnel_name == 'NGROK': NGROK_ZROK('ngrok')
-
-            Alice_Synthesis_Thirty = Alice_Zuberg(port)
-            Alice_Synthesis_Thirty.logger.setLevel(logging.DEBUG)
-            Alice_Synthesis_Thirty.add_tunnel(command=configs['command'], name=configs['name'], pattern=configs['pattern'])
-
-            with Alice_Synthesis_Thirty: SyS(cmd)
-        except KeyboardInterrupt:
-            pass
-
-def waiting(condition, is_ready):
-    with condition:
-        while not is_ready.value:
+def waiting(con, ready, ui):
+    with con:
+        while not ready.value:
             try:
-                condition.wait()
+                con.wait()
             except KeyboardInterrupt:
-                print('')
-                clear_output()
-                sys.exit()
+                print(''); clear_output(); sys.exit()
 
-    load_config()
     launching(ui, skip_comfyui_check=args.skip_comfyui_check)
 
 def launch(b):
-    global ui, zrok_token, ngrok_token, launch_args, tunnel
     launch_panel.close()
-    save_config(zrok_token.value, ngrok_token.value, launch_args.value, tunnel.value)
-    with condition:
-        is_ready.value = True
-        condition.notify()
+    save_config()
+
+    with con:
+        ready.value = True
+        con.notify()
 
 def exit(b):
     launch_panel.close()
 
-def display_widgets():
-    load_config()
-    load_css()
-    display(launch_panel)
-    launch_button.on_click(launch)
-    exit_button.on_click(exit)
+TUNNELS = {
+    'Pinggy': {
+        'a': False,
+        'n': 'PINGGY',
+        'c': lambda port: f'ssh -o StrictHostKeyChecking=no -p 80 -R0:localhost:{port} a.pinggy.io',
+        'p': r'https://[\w-]+\.run\.pinggy-free\.link'
+    },
+
+    'ZROK2': {
+        'a': True,
+        'n': 'ZROK2',
+        'c': lambda port: f'zrok2 share public localhost:{port} --headless',
+        'p': r'[\w-]+\.shares\.zrok\.io'
+    },
+
+    'NGROK': {
+        'a': True,
+        'n': 'NGROK',
+        'c': lambda port: f'ngrok http http://localhost:{port} --log stdout',
+        'p': r'https://[\w-]+\.ngrok-free\.[\w.-]+'
+    }
+}
+
+JS = """
+(() => {
+  const baseUrl = JSON.parse(document.querySelector("#jupyter-config-data").textContent).baseUrl;
+  document.documentElement.style.setProperty(
+    "--segsmaker-bg",
+    `url(${location.origin}${baseUrl}files/.gutris1/bg.jpg)`
+  );
+
+  setTimeout(() => {
+    document.querySelectorAll('.launcher-tunnel-radio label').forEach(label => {
+      const text = label.childNodes[0];
+      if (text && text.nodeType === Node.TEXT_NODE) {
+        const span = document.createElement('span');
+        span.textContent = text.textContent.trim();
+        label.replaceChild(span, text);
+      }
+    });
+
+    const tokens = document.querySelectorAll('.launcher-zrok-token input, .launcher-ngrok-token input, .launcher-args input');
+    tokens.forEach(el => el.spellcheck = false);
+  }, 100);
+
+  setTimeout(() => {
+    const box = document.querySelector('.launcher-box');
+    box && box.classList.add('loaded');
+  }, 400);
+})();
+"""
+
+tunnel_radio = widgets.RadioButtons(options=list(TUNNELS))
+
+zrok_token = widgets.Text(placeholder='ZROK2 Token')
+ngrok_token = widgets.Text(placeholder='NGROK Token')
+token_box = widgets.VBox([zrok_token, ngrok_token])
+
+title = widgets.HTML()
+top_row = widgets.HBox([tunnel_radio, token_box, title])
+
+launch_args = widgets.Text(placeholder='Launch Arguments List')
+
+launch_button = widgets.Button(description='Launch')
+exit_button = widgets.Button(description='Exit')
+cpu_cb = widgets.Checkbox(value=False, description='CPU')
+bottom_row = widgets.HBox([exit_button, cpu_cb, launch_button])
+
+launch_panel = widgets.Box([top_row, launch_args, bottom_row])
+
+for w, c in [
+    (launch_panel, 'launcher-box'),
+    (title, 'launcher-webui-title'),
+    (top_row, 'launcher-top-row'),
+    (bottom_row, 'launcher-bottom-row'),
+    (cpu_cb, 'launcher-cpu-cb'),
+    (tunnel_radio, 'launcher-tunnel-radio'),
+    (token_box, 'launcher-token-box'),
+    (zrok_token, 'launcher-zrok-token'),
+    (ngrok_token, 'launcher-ngrok-token'),
+    (launch_args, 'launcher-args'),
+    (launch_button, 'launcher-button'),
+    (exit_button, 'launcher-button')
+]: w.add_class(c)
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--skip-comfyui-check', action='store_true', help='Skip checking custom node dependencies for ComfyUI')
+parser.add_argument('--skip-widget', action='store_true', help='Skip displaying the widget')
+args, unknown = parser.parse_known_args()
+
+con = Condition()
+ready = Value('b', False)
+
+CSS = SRC / 'segsmaker.css'
+MARK = SRC / 'marking.json'
+
+j = json.loads(MARK.read_text())
 
 if __name__ == '__main__':
     try:
+        ui = load_config()
+
         if args.skip_widget:
-            load_config()
             launching(ui, skip_comfyui_check=args.skip_comfyui_check)
 
         else:
-            display_widgets()
-            p = Process(target=waiting, args=(condition, is_ready))
-            p.start()
+            display(
+                HTML(f'<style>{CSS.read_text()}</style><script>{JS}</script>'),
+                launch_panel
+            )
+
+            launch_button.on_click(launch)
+            exit_button.on_click(exit)
+
+            Process(target=waiting, args=(con, ready, ui)).start()
 
     except KeyboardInterrupt:
         pass

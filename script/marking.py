@@ -1,28 +1,24 @@
 from IPython.core.magic import register_line_magic
 from IPython import get_ipython
 from pathlib import Path
-from nenen88 import tempe
 import json
 import os
 
-SM = None
+from _segsmaker_ import HOME, SRC
+from nenen88 import tempe
 
-try:
-    from KANDANG import TEMPPATH, HOMEPATH
-    TMP = Path(TEMPPATH)
-    HOME = Path(HOMEPATH)
-    SM = False
-except ImportError:
-    TMP = Path('/tmp')
-    HOME = Path.home()
-    SM = True
-
-marked = Path(__file__).parent / 'marking.json'
-
-SyS = get_ipython().system
 CD = os.chdir
+iRON = os.environ
+SyS = get_ipython().system
 
-def purgeVAR():
+TMP = Path('/tmp')
+MARK = SRC / 'marking.json'
+
+ui = json.load(MARK.open()).get('ui')
+
+SSL = 'SAGEMAKER_INTERNAL_IMAGE_URI' in iRON
+
+def _del():
     l = [
         'WebUI', 'Models', 'WebUI_Output', 'Extensions', 'Embeddings', 'UNET', 'CLIP', 'VAE', 'TE',
         'CKPT', 'LORA', 'TMP_CKPT', 'TMP_LORA', 'Forge_SVD', 'Controlnet_Widget', 'Upscalers'
@@ -30,15 +26,13 @@ def purgeVAR():
     for v in l:
         if v in globals(): del globals()[v]
 
-def getWebUIName(path):
-    return json.load(open(path, 'r')).get('ui', None)
 
-def setWebUIVAR(ui):
-    default = ('extensions', 'embeddings', 'VAE', 'Stable-diffusion', 'Lora', 'ESRGAN', None)
+def _var():
+    d = ('extensions', 'embeddings', 'VAE', 'Stable-diffusion', 'Lora', 'ESRGAN', None)
 
-    maps = {
-        'A1111': default,
-        'Forge': default,
+    F = {
+        'A1111': d,
+        'Forge': d,
 
         'ReForge': (
             'extensions', 'embeddings', 'VAE',
@@ -46,8 +40,8 @@ def setWebUIVAR(ui):
             'text_encoders'
         ),
 
-        'ReForge-old': default,
-        'Forge-Classic': default,
+        'ReForge-old': d,
+        'Forge-Classic': d,
 
         'Forge-Neo': (
             'extensions', 'embeddings', 'VAE',
@@ -64,82 +58,56 @@ def setWebUIVAR(ui):
         'SwarmUI': (
             'Extensions', 'Embeddings', 'VAE',
             'Stable-Diffusion', 'Lora', 'upscale_models',
-            None
-        ),
-
-        'FaceFusion': (None,) * 7,
-        'SDTrainer': (None, None, 'VAE', 'sd-models', None, None, None)
+            'text_encoders'
+        )
     }
 
-    ext, embed, vae, ckpt, lora, upscaler, te = maps.get(ui, (None,) * 7)
+    ext, embed, vae, ckpt, lora, ups, te = F[ui]
 
     WebUI = HOME / ui
     Models = WebUI / ('Models' if ui == 'SwarmUI' else 'models')
 
     WebUI_Output = WebUI / (
         'Output' if ui == 'SwarmUI'
-        else 'output' if ui in ['Forge-Classic', 'Forge-Neo', 'ComfyUI', 'SDTrainer']
+        else 'output' if ui in ['Forge-Classic', 'Forge-Neo', 'ComfyUI']
         else 'outputs'
     )
 
-    Extensions = (
-        WebUI / 'src' / ext
-        if ui == 'SwarmUI' and ext
-        else WebUI / ext if ext
-        else None
-    )
+    Extensions = (WebUI / 'src' / ext) if ui == 'SwarmUI' else (WebUI / ext)
+    Embeddings = Models / embed
 
-    Embeddings = (
-        Models / embed
-        if ui in ['Forge-Classic', 'Forge-Neo', 'ComfyUI', 'SwarmUI']
-        else WebUI / embed if embed
-        else None
-    )
-
-    VAE = Models / vae if vae else None
-    CKPT = Models / ckpt if ckpt else None
-    LORA = Models / lora if lora else None
-
-    Upscalers = (
-        Models / upscaler
-        if upscaler and ui not in ['FaceFusion', 'SDTrainer']
-        else None
-    )
-
-    TE = (
-        Models / te
-        if te and ui in ['Forge-Neo', 'ComfyUI']
-        else None
-    )
+    VAE = Models / vae
+    CKPT = Models / ckpt
+    LORA = Models / lora
+    Upscalers = Models / ups
+    TE = Models / te if te else None
 
     return WebUI, Models, WebUI_Output, Extensions, Embeddings, VAE, CKPT, LORA, Upscalers, TE
 
-if SM:
+if SSL:
     @register_line_magic
     def clear_output_images(line):
-        ui = getWebUIName(marked)
-        _, _, output, _, _, _, _, _, _, _ = setWebUIVAR(ui)
-        SyS(f"rm -rf {output}/* {HOME / '.cache/*'}")
-        CD(HOME)
+        _, _, output, _, _, _, _, _, _, _ = _var()
+        SyS(f'rm -rf {output}/* ~/.cache/*')
         print(f'{ui} outputs cleared.')
+        CD(HOME)
 
     @register_line_magic
     def uninstall_webui(line):
-        ui = getWebUIName(marked)
-        webui, _, _, _, _, _, _, _, _, _ = setWebUIVAR(ui)
-        SyS(f"rm -rf {webui} {HOME / 'tmp'} {HOME / '.cache/*'}")
+        SyS(f'rm -rf ~/{ui} ~/tmp ~/.cache/*')
         print(f'{ui} uninstalled.')
         CD(HOME)
-        get_ipython().kernel.do_shutdown(True)
 
-if marked.exists():
-    purgeVAR()
+        from util import restart_kernel
+        restart_kernel()
 
-    ui = getWebUIName(marked)
+if ui:
+    _del()
 
-    WebUI, Models, WebUI_Output, Extensions, Embeddings, VAE, CKPT, LORA, Upscalers, TE = setWebUIVAR(ui)
+    WebUI, Models, WebUI_Output, Extensions, Embeddings, VAE, CKPT, LORA, Upscalers, TE = _var()
 
     Controlnet_Widget = WebUI / 'asd/controlnet.py' if WebUI else None
+
     Forge_SVD = TMP / 'svd' if ui in ['Forge', 'ReForge', 'ReForge-old'] else None
     UNET = TMP / 'unet' if ui in ['Forge', 'ComfyUI', 'SwarmUI'] else None
     CLIP = TMP / 'clip' if ui in ['Forge', 'ComfyUI', 'SwarmUI'] else None
