@@ -114,7 +114,7 @@ def setENV(d):
     if d.get('cm'): iRON.pop('MPLBACKEND', None)
 
     old = iRON.get('LD_LIBRARY_PATH', '')
-    iRON['LD_LIBRARY_PATH'] = f'{lib}:{old}' if old else lib
+    iRON['LD_LIBRARY_PATH'] = f'{lib}:{D}:{old}' if old else f'{lib}:{D}'
 
     for k, v in d.get('var', {}).items(): iRON[k] = v() if callable(v) else v
 
