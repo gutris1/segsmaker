@@ -449,10 +449,6 @@
   filter: drop-shadow(0 0 6px hsl(200deg 100% 50%));
 }
 
-.launcher-tunnel-radio input[type=radio]:checked::after {
-
-}
-
 .launcher-tunnel-radio input[type=radio]::after {
   content: '';
   position: absolute;
@@ -1103,4 +1099,68 @@
   box-shadow: 0 0 10px 1px cyan !important;
   background-color: cyan !important;
   color: #000 !important;
+}
+
+/* CLEAN ENV ################################################################################################################## */
+
+.clean-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  height: 140px;
+  width: 400px;
+  margin: 0;
+  padding: 10px;
+  border: 0;
+  border-radius: 14px;
+  overflow: hidden;
+  animation: loadPanel .4s forwards ease;
+}
+
+.clean-panel.loaded {
+  animation: none;
+  transform: scale(1);
+  opacity: 1;
+}
+
+.clean-panel::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  border-radius: 14px;
+  background-image: var(--segsmaker-bg);
+  background-size: cover;
+  background-position: center;
+  filter: saturate(1) blur(0);
+  transition: .4s ease;
+}
+
+.clean-panel:hover::before {
+  filter: saturate(.7) blur(2px);
+}
+
+.clean-panel::after {
+  content: '';
+  pointer-events: none;
+  z-index: 1;
+  inset: 0;
+  position: absolute;
+  border-radius: 14px;
+  box-shadow: inset 0 0 20px 2px hsl(0 100% 50%);
+  transition: .4s ease;
+  animation: BoxShadowPulse 5s linear infinite;
+}
+
+.clean-ask {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 86px !important;
+  width: 100%;
+  font-size: 30px;
+  filter: drop-shadow(2px 4px 2px #000) drop-shadow(0 0 12px #000);
+  border: 0;
+  padding: 0;
+  margin: 0;
 }
