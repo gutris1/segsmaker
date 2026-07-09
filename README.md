@@ -11,7 +11,7 @@
 | Colab | [![Open in Google Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/gutris1/segsmaker/blob/main/notebook/Segsmaker_COLAB.ipynb) |
 | :---------------------------------------- | :-----------------------------------------------------------------------------------------------------------------: |
 | Kaggle | [![Open in Kaggle](https://kaggle.com/static/images/open-in-kaggle.svg)](https://www.kaggle.com/code/jejejojo/asdasd) |
-| SageMaker Studio Lab | ![Status](https://img.shields.io/badge/☠️-DEAD-darkred) |
+| SageMaker Studio Lab | [![Open in Studio Lab](https://studiolab.sagemaker.aws/studiolab.svg)](https://studiolab.sagemaker.aws/import/github/gutris1/segsmaker/blob/main/notebook/Segsmaker.ipynb) |
 <br>
 <p align="center">
   <img src="https://github.com/user-attachments/assets/e5c54a3a-69b4-4835-9d4b-cf9302b15b62", max-width=1000px>
