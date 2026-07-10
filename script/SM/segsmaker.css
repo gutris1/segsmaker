@@ -207,8 +207,8 @@
   flex-direction: column;
   gap: 30px;
   position: relative;
-  height: 350px;
-  width: 650px;
+  height: 360px;
+  width: 660px;
   border: 0;
   border-radius: 20px;
   margin: 0;
@@ -338,7 +338,7 @@
   line-height: 2.5;
   font-family: 'Segoe UI', sans-serif;
   font-size: 16px;
-  text-align: left;
+  text-align: center;
   height: 30px;
   color: white;
   border: 0;
@@ -357,18 +357,20 @@
 
 .launcher-ngrok-token,
 .launcher-ngrok-token input[type='text'] {
-  width: 460px;
+  width: 480px;
 }
 
 .launcher-args,
 .launcher-args input[type='text'] {
-  width: 96%;
   align-self: center;
+  text-align: left;
+  width: 98%;
 }
-  
-.launcher-zrok-token input::placeholder,
-.launcher-ngrok-token input::placeholder,
-.launcher-args input::placeholder {
+
+.launcher-zrok-token input[type='text']::placeholder,
+.launcher-ngrok-token input[type='text']::placeholder,
+.launcher-args input[type='text']::placeholder {
+  text-align: left;
   color: grey;
 }
 
@@ -516,7 +518,7 @@
   justify-content: space-between;
   align-self: center;
   height: 100%;
-  width: 96%;
+  width: 98%;
 }
 
 .launcher-button {
