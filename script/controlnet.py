@@ -1,30 +1,24 @@
+from contextlib import nullcontext as null
 from IPython.display import display, HTML
-from nenen88 import download, tempe
 from IPython import get_ipython
 from ipywidgets import widgets
 from pathlib import Path
 import os
 
+from nenen88 import download, tempe
+from _segsmaker_ import HOME
+
 from cn15 import controlnet_15_list
 from cnxl import controlnet_xl_list
 
-SyS = get_ipython().system
 CD = os.chdir
-SM = None
+iRON = os.environ
+SyS = get_ipython().system
 
-CSS = Path(__file__).parent / 'controlnet.css'
+CSS = Path(__file__).with_suffix('.css')
+TMPCN = Path('/tmp/controlnet')
 
-try:
-    from KANDANG import TEMPPATH, HOMEPATH
-    TMPCN = Path(TEMPPATH) / 'controlnet'
-    HOME = Path(HOMEPATH)
-    SM = False
-except ImportError:
-    TMPCN = '/tmp/controlnet'
-    HOME = Path.home()
-    SM = True
-
-output = widgets.Output()
+COLAB = 'COLAB_GPU' in iRON
 
 PANELS = [
     {
@@ -108,85 +102,84 @@ def _build_panel(cfg):
         'download_btn': download_btn,
     }
 
-panels = [_build_panel(cfg) for cfg in PANELS]
-cn_box = {p['cfg']['btn_class']: p['panel'] for p in panels}
-
-main_panel = widgets.HBox(layout=widgets.Layout(width='466px', height='405px'))
-main_panel.add_class('cn-main-panel')
-
-buttons = []
-for p in panels:
-    btn_class = p['cfg']['btn_class']
-    button = widgets.Button(description='')
-    button.add_class(btn_class)
-    button.on_click(lambda x, bc=btn_class: Controlnet_Buttons(bc))
-    buttons.append(button)
-
-def Controlnet_Buttons(btn_class):
-    main_panel.close()
+def cn_button(btn_class):
+    cn_panel.close()
     cn_box[btn_class].layout.display = 'flex'
 
-def selection():
+def cn_set(v):
     for p in panels:
         if p['panel'].layout.display == 'flex':
-            return p['checkbox1'].children + p['checkbox2'].children
-    return []
+            boxes = p['checkbox1'].children + p['checkbox2'].children
+            for cb in (boxes if v else boxes[::-1]): cb.value = v
+            return
 
-def set_(v: bool):
-    boxes = selection()
-    if not v: boxes = boxes[::-1]
-    for cb in boxes:
-        cb.value = v
+def cn_download(b):
+    cn_panel.close(); tempe(); CD(TMPCN)
 
-def SelectAll(b):
-    set_(True)
-
-def UnselectAll(b):
-    set_(False)
-
-def Download_Model(b):
-    tempe()
-    download_list = []
+    L = []
 
     for p in panels:
         pw = p['panel']
+
         if pw.layout.display == 'flex':
             pw.layout.display = 'none'
+
             l = p['cfg']['model_list']
             c = p['checkbox1'].children + p['checkbox2'].children
+
             for cb, k in zip(c, list(l.keys())):
-                if cb.value: download_list.extend(l[k])
+                if cb.value: L.extend(l[k])
             break
 
-    with output:
-        CD(TMPCN)
-        for url in download_list: download(url)
-        CD(HOME)
+    with (output if not COLAB else null()):
+        for u in L: download(u)
 
-def load_css():
-    if SM or not Path(CSS).exists(): SyS(f'curl -sLo {CSS} https://github.com/gutris1/segsmaker/raw/main/script/controlnet.css')
-    display(HTML(f'<style>{Path(CSS).read_text()}</style>'))
+    CD(HOME)
 
-def cn_loaded():
-    display(HTML("""
-    <script>
-    setTimeout(() => {
-      const c = 'loaded',
-        box = document.querySelector('.cn-main-panel'),
-        btn15 = document.querySelector('.btn-cn-15'),
-        btnxl = document.querySelector('.btn-cn-xl');
+def cn_widgets():
+    JS = """
+    (() => {
+      setTimeout(() => {
+        ['.cn-main-panel', '.btn-cn-15', '.btn-cn-xl']
+          .forEach(s => document.querySelector(s)?.classList.add('loaded'));
+      }, 1000);
+    })();
+    """
 
-      [box, btn15, btnxl].forEach(el => el?.classList.add(c));
-    }, 1000);
-    </script>
-    """))
+    SyS(f'curl -sLo {CSS} https://github.com/gutris1/segsmaker/raw/main/script/controlnet.css')
+
+    display(
+        HTML(f'<style>{CSS.read_text()}</style><script>{JS}</script>'),
+        cn_panel,
+        *[p['panel'] for p in panels],
+        *((output,) if not COLAB else ())
+    )
+
+output = widgets.Output()
+
+panels = [_build_panel(cfg) for cfg in PANELS]
+cn_box = {p['cfg']['btn_class']: p['panel'] for p in panels}
+
+cn_panel = widgets.HBox(layout=widgets.Layout(width='466px', height='405px'))
+cn_panel.add_class('cn-main-panel')
+
+buttons = []
 
 for p in panels:
-    p['select_all_btn'].on_click(SelectAll)
-    p['unselect_all_btn'].on_click(UnselectAll)
-    p['download_btn'].on_click(Download_Model)
+    btn_class = p['cfg']['btn_class']
 
-load_css()
-main_panel.children = buttons
-cn_loaded()
-display(main_panel, *[p['panel'] for p in panels], output)
+    button = widgets.Button(description='')
+    button.add_class(btn_class)
+    button.on_click(lambda _, bc=btn_class: cn_button(bc))
+    buttons.append(button)
+
+    for p in panels:
+        for n, f in (
+            ('select_all_btn', lambda _, v=True: cn_set(v)),
+            ('unselect_all_btn', lambda _, v=False: cn_set(v)),
+            ('download_btn', cn_download),
+        ): p[n].on_click(f)
+
+cn_panel.children = buttons
+
+cn_widgets()
