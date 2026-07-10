@@ -7,24 +7,13 @@ import os
 
 from cn15 import controlnet_15_list
 from cnxl import controlnet_xl_list
+from _segsmaker_ import HOME
 
-SyS = get_ipython().system
 CD = os.chdir
-SM = None
+SyS = get_ipython().system
 
-CSS = Path(__file__).parent / 'controlnet.css'
-
-try:
-    from KANDANG import TEMPPATH, HOMEPATH
-    TMPCN = Path(TEMPPATH) / 'controlnet'
-    HOME = Path(HOMEPATH)
-    SM = False
-except ImportError:
-    TMPCN = '/tmp/controlnet'
-    HOME = Path.home()
-    SM = True
-
-output = widgets.Output()
+CSS = Path(__file__).with_suffix('.css')
+TMPCN = Path('/tmp/controlnet')
 
 PANELS = [
     {
@@ -108,22 +97,8 @@ def _build_panel(cfg):
         'download_btn': download_btn,
     }
 
-panels = [_build_panel(cfg) for cfg in PANELS]
-cn_box = {p['cfg']['btn_class']: p['panel'] for p in panels}
-
-main_panel = widgets.HBox(layout=widgets.Layout(width='466px', height='405px'))
-main_panel.add_class('cn-main-panel')
-
-buttons = []
-for p in panels:
-    btn_class = p['cfg']['btn_class']
-    button = widgets.Button(description='')
-    button.add_class(btn_class)
-    button.on_click(lambda x, bc=btn_class: Controlnet_Buttons(bc))
-    buttons.append(button)
-
 def Controlnet_Buttons(btn_class):
-    main_panel.close()
+    cn_panel.close()
     cn_box[btn_class].layout.display = 'flex'
 
 def selection():
@@ -163,30 +138,47 @@ def Download_Model(b):
         for url in download_list: download(url)
         CD(HOME)
 
-def load_css():
-    if SM or not Path(CSS).exists(): SyS(f'curl -sLo {CSS} https://github.com/gutris1/segsmaker/raw/main/script/controlnet.css')
-    display(HTML(f'<style>{Path(CSS).read_text()}</style>'))
+def display_widgets():
+    JS = """
+    (() => {
+      setTimeout(() => {
+        ['.cn-main-panel', '.btn-cn-15', '.btn-cn-xl']
+          .forEach(s => document.querySelector(s)?.classList.add('loaded'));
+      }, 1000);
+    })();
+    """
 
-def cn_loaded():
-    display(HTML("""
-    <script>
-    setTimeout(() => {
-      const c = 'loaded',
-        box = document.querySelector('.cn-main-panel'),
-        btn15 = document.querySelector('.btn-cn-15'),
-        btnxl = document.querySelector('.btn-cn-xl');
+    SyS(f'curl -sLo {CSS} https://github.com/gutris1/segsmaker/raw/main/script/controlnet.css')
 
-      [box, btn15, btnxl].forEach(el => el?.classList.add(c));
-    }, 1000);
-    </script>
-    """))
+    display(
+        HTML(f'<style>{CSS.read_text()}</style><script>{JS}</script>'),
+        cn_panel, *[p['panel'] for p in panels], output
+    )
+
+output = widgets.Output()
+
+panels = [_build_panel(cfg) for cfg in PANELS]
+cn_box = {p['cfg']['btn_class']: p['panel'] for p in panels}
+
+cn_panel = widgets.HBox(layout=widgets.Layout(width='466px', height='405px'))
+cn_panel.add_class('cn-main-panel')
+
+buttons = []
 
 for p in panels:
-    p['select_all_btn'].on_click(SelectAll)
-    p['unselect_all_btn'].on_click(UnselectAll)
-    p['download_btn'].on_click(Download_Model)
+    btn_class = p['cfg']['btn_class']
 
-load_css()
-main_panel.children = buttons
-cn_loaded()
-display(main_panel, *[p['panel'] for p in panels], output)
+    button = widgets.Button(description='')
+    button.add_class(btn_class)
+    button.on_click(lambda _, bc=btn_class: Controlnet_Buttons(bc))
+    buttons.append(button)
+
+    for n, f in (
+        ('select_all_btn', SelectAll),
+        ('unselect_all_btn', UnselectAll),
+        ('download_btn', Download_Model),
+    ): p[n].on_click(f)
+
+cn_panel.children = buttons
+
+display_widgets()
