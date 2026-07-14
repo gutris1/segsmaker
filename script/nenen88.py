@@ -14,6 +14,7 @@ import requests
 import zipfile
 import shlex
 import json
+import time
 import sys
 import re
 import os
@@ -414,74 +415,82 @@ def ariari(url, fp, fn):
     cmd = [
         'aria2c',
         f"--header=User-Agent: {headers['User-Agent']}",
-        '--allow-overwrite=true', '--console-log-level=error', '--stderr=true',
-        '-c', '-x16', '-s16', '-k1M', '-j5' 
+        *([f'--header=Authorization: Bearer {TOBRUT}'] if TOBRUT and huggingface else ()),
+        '--allow-overwrite=true',
+        '--console-log-level=error',
+        '--stderr=true',
+        '-c', '-x16', '-s16', '-k1M',
+        *(['-o', fn] if fn else ()),
+        url,
     ]
-
-    if TOBRUT and huggingface: cmd.append(f'--header=Authorization: Bearer {TOBRUT}')
-    if fn: cmd += ['-o', fn]
-
-    cmd.append(url)
 
     try:
         if c: c.extras(fp, fn)
 
-        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        aria2_output, bl, error_code, error_line = '', False, [], []
+        for i in range(20 if huggingface else 1):
+            p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            aria2_output, bl, error_code, error_line = '', False, [], []
 
-        while True:
-            lines = p.stderr.readline()
-            if lines == '' and p.poll() is not None: break
+            while True:
+                lines = p.stderr.readline()
+                if lines == '' and p.poll() is not None:
+                    break
 
-            if lines:
-                aria2_output += lines
+                if lines:
+                    aria2_output += lines
 
-                for prog in lines.splitlines():
-                    if 'errorCode' in prog or 'Exception' in prog:
-                        error_code.append(prog)
+                    for prog in lines.splitlines():
+                        if 'errorCode' in prog or 'Exception' in prog:
+                            error_code.append(prog)
 
-                    if '|' in prog and 'error_line' in prog:
-                        prog = re.sub(r'(\|\s*)(error_line)(\s*\|)', f'\\1{RED}\\2{RESET}\\3', prog)
-                        first, _, last = prog.rpartition('|')
-                        last = re.sub(r'/', f'{CYAN}/{RESET}', last)
-                        prog = f'{first}|{last}'
-                        error_line.append(prog)
+                        if '|' in prog and 'error_line' in prog:
+                            prog = re.sub(r'(\|\s*)(error_line)(\s*\|)', f'\\1{RED}\\2{RESET}\\3', prog)
+                            first, _, last = prog.rpartition('|')
+                            last = re.sub(r'/', f'{CYAN}/{RESET}', last)
+                            prog = f'{first}|{last}'
+                            error_line.append(prog)
 
-                    m = re.match(
-                        r'\[#\w+\s+'
-                        r'(?:(\d+(?:\.\d+)?\w+/\d+(?:\.\d+)?\w+))?'
-                        r'\((\d+%)\)'
-                        r'.*?DL:(\d+(?:\.\d+)?\w+)'
-                        r'(?:.*?ETA:(\d+\w+))?',
-                        prog
-                    )
+                        m = re.match(
+                            r'\[#\w+\s+'
+                            r'(?:(\d+(?:\.\d+)?\w+/\d+(?:\.\d+)?\w+))?'
+                            r'\((\d+%)\)'
+                            r'.*?DL:(\d+(?:\.\d+)?\w+)'
+                            r'(?:.*?ETA:(\d+\w+))?',
+                            prog
+                        )
 
-                    if m:
-                        sizes, percent, speed, eta = m.groups()
+                        if m:
+                            sizes, percent, speed, eta = m.groups()
 
-                        percent = re.sub(r'(\d+)(%)', f'\\1{PURPLE}\\2{RESET}', percent)
-                        parts = [f'{MAGENTA}({RESET}{percent}{MAGENTA}){RESET}']
+                            percent = re.sub(r'(\d+)(%)', f'\\1{PURPLE}\\2{RESET}', percent)
+                            parts = [f'{MAGENTA}({RESET}{percent}{MAGENTA}){RESET}']
 
-                        if sizes:
-                            current, total = sizes.split('/')
-                            current = re.sub(r'(\d+(?:\.\d+)?)(\w+)', f'\\1{PURPLE}\\2{RESET}', current)
-                            total = re.sub(r'(\d+(?:\.\d+)?)(\w+)', f'\\1{PURPLE}\\2{RESET}', total)
-                            parts.append(f'{current}{CYAN}/{RESET}{total}')
+                            if sizes:
+                                current, total = sizes.split('/')
+                                current = re.sub(r'(\d+(?:\.\d+)?)(\w+)', f'\\1{PURPLE}\\2{RESET}', current)
+                                total = re.sub(r'(\d+(?:\.\d+)?)(\w+)', f'\\1{PURPLE}\\2{RESET}', total)
+                                parts.append(f'{current}{CYAN}/{RESET}{total}')
 
-                        speed = re.sub(r'(\d+(?:\.\d+)?)(\w+)', f'\\1{PURPLE}\\2{RESET}', speed)
-                        parts.append(f'{CYAN}DL{RESET}:{speed}')
+                            speed = re.sub(r'(\d+(?:\.\d+)?)(\w+)', f'\\1{PURPLE}\\2{RESET}', speed)
+                            parts.append(f'{CYAN}DL{RESET}:{speed}')
 
-                        if eta: parts.append(f'{CYAN}ETA{RESET}:{YELLOW}{eta}{RESET}')
+                            if eta:
+                                parts.append(f'{CYAN}ETA{RESET}:{YELLOW}{eta}{RESET}')
 
-                        body = ' '.join(parts)
+                            body = ' '.join(parts)
 
-                        print(f"\r{' '*300}\r  {RED}●{RESET} {fn} {body}", end='')
-                        sys.stdout.flush()
+                            print(f"\r{' '*300}\r  {RED}●{RESET} {fn} {body}", end='')
+                            sys.stdout.flush()
 
-                        bl = True
-                        break
+                            bl = True
+                            break
 
-        p.wait()
+            p.wait()
+
+            if not (huggingface and p.returncode and 'xet-bridge' in aria2_output and 'status=403' in aria2_output):
+                print('\r' + ' ' * 80 + '\r', end=''); sys.stdout.flush(); break
+
+            print(f'\r  retrying {fn or url} [{i+1}/20]', end=''); sys.stdout.flush(); time.sleep(1)
 
         if p.returncode:
             for line in error_code + error_line:
@@ -497,10 +506,11 @@ def ariari(url, fp, fn):
                     sys.stdout.flush()
                     bl = False
 
-        bl and print()
+        if bl:
+            print()
 
     except KeyboardInterrupt:
-        print(f'\n{"":>2}^ Canceled')
+        print('\n  ^ Canceled')
 
 def curlly(cmd, fn):
     try:
@@ -611,7 +621,7 @@ def gdrown(url, fp=None, fn=None):
     except KeyboardInterrupt:
         try: p.terminate()
         except: pass
-        print(f'\n{"":>2}^ Canceled')
+        print('\n  ^ Canceled')
 
 @register_line_magic
 def clone(i):
