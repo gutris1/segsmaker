@@ -150,7 +150,7 @@ class CIVITAI:
 
         return obj
 
-    def __init__(self, data, version_id=None, file_id=None, domain=None):
+    def __init__(self, data, version_id=None, file_id=None, domain=None, sha256=None):
         self.data = data
         self.domain_name = domain
         self.version = self.whichVersion(version_id)
@@ -158,7 +158,7 @@ class CIVITAI:
         self.direct_download = False
         self.selected_file = None
 
-        self.resolve(file_id)
+        self.resolve(file_id, sha256)
 
     def whichVersion(self, version_id=None):
         if 'modelVersions' not in self.data: return self.data
@@ -166,8 +166,8 @@ class CIVITAI:
 
         return self.data['modelVersions'][0]
 
-    def resolve(self, file_id=None):
-        sha256 = self.get_sha256(file_id)
+    def resolve(self, file_id=None, sha256=None):
+        sha256 = sha256 or self.get_sha256(file_id)
 
         if not sha256:
             self.selected_file = next((f for f in self.version.get('files', []) if f.get('downloadUrl')), None)
@@ -417,7 +417,7 @@ def _resolve(url, fn):
                             if not j: continue
 
                             r = next((f for f in j.get('files', []) if f.get('hashes', {}).get('SHA256', '').lower() == sha256), None)
-                            if r: c = CIVITAI(j, domain=u); break
+                            if r: c = CIVITAI(j, domain=u, sha256=sha256); break
 
                         except Exception:
                             continue
