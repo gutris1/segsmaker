@@ -3,7 +3,7 @@ TOBRUT = ''
 
 from IPython.core.magic import register_line_magic
 from IPython.display import display, HTML
-from urllib.parse import urlparse
+from urllib.parse import urlparse, parse_qs
 from IPython import get_ipython
 from datetime import datetime
 from pathlib import Path
@@ -112,27 +112,95 @@ class CIVITAI:
         except Exception:
             return None
 
-    def __init__(self, data, version_id=None, domain=None):
+    @classmethod
+    def from_url(c, url):
+        url = url.split('?token=')[0]
+
+        domain = c.domain(url)
+        if not domain:
+            return None
+
+        query = parse_qs(urlparse(url).query)
+        file_id = query.get('fileId', [None])[0]
+
+        dl = f'{domain}/api/download/models/' in url
+
+        if dl:
+            version_id = url.split('models/')[1].split('/')[0].split('?')[0]
+            api_url = f'https://{domain}/api/v1/model-versions/{version_id}'
+
+        elif f'{domain}/models/' in url:
+            version_id = query.get('modelVersionId', [None])[0]
+            model_id = url.split('models/')[1].split('/')[0].split('?')[0]
+
+            api_url = (
+                f'https://{domain}/api/v1/model-versions/{version_id}'
+                if version_id else
+                f'https://{domain}/api/v1/models/{model_id}'
+            )
+
+        else:
+            return None
+
+        j = c.get_json(api_url)
+        if not j: return None
+
+        obj = c(j, version_id, file_id, domain)
+        obj.direct_download = dl
+
+        return obj
+
+    def __init__(self, data, version_id=None, file_id=None, domain=None):
         self.data = data
         self.domain_name = domain
         self.version = self.whichVersion(version_id)
 
+        self.direct_download = False
+        self.selected_file = None
+
+        self.resolve(file_id)
+
     def whichVersion(self, version_id=None):
         if 'modelVersions' not in self.data: return self.data
-
-        if version_id:
-            v = next((mv for mv in self.data['modelVersions'] if str(mv.get('id')) == str(version_id)), None)
-            if v: return v
+        if version_id: return next((mv for mv in self.data['modelVersions'] if str(mv.get('id')) == str(version_id)), self.data['modelVersions'][0])
 
         return self.data['modelVersions'][0]
 
+    def resolve(self, file_id=None):
+        sha256 = self.get_sha256(file_id)
+
+        if not sha256:
+            self.selected_file = next((f for f in self.version.get('files', []) if f.get('downloadUrl')), None)
+            return
+
+        api = f'https://{self.domain_name}/api/v1/model-versions/by-hash/{sha256}'
+        j = self.get_json(api)
+
+        if not j: return
+
+        self.data = j
+        self.version = self.whichVersion(self.version_id)
+
+        self.selected_file = next((f for f in self.version.get('files', []) if f.get('hashes', {}).get('SHA256', '').lower() == sha256.lower()), None)
+
+    def get_sha256(self, file_id=None):
+        if file_id: return next((f.get('hashes', {}).get('SHA256') for f in self.version.get('files', []) if str(f.get('id')) == str(file_id)), None)
+
+        api = f'https://{self.domain_name}/api/v1/model-versions/mini/{self.version_id}'
+        j = self.get_json(api)
+        if j: return j.get('hashes', {}).get('SHA256')
+
+        return None
+
     @property
     def exists(self):
-        return self.version is not None
+        return self.file is not None
 
     @property
     def model_id(self):
-        return (self.data.get('id') or self.version.get('modelId'))
+        if 'modelVersions' in self.data: return self.data.get('id')
+
+        return self.data.get('modelId')
 
     @property
     def version_id(self):
@@ -140,16 +208,19 @@ class CIVITAI:
 
     @property
     def file(self):
-        return next((f for f in self.version.get('files', []) if f.get('downloadUrl')), None)
+        return self.selected_file
 
     @property
     def filename(self):
-        f = self.file
-        return ((f.get('name') if f else None) or self.version.get('name'))
+        return (self.file.get('name') if self.file else None) or self.version.get('name')
 
     @property
     def sha256(self):
-        return (self.version.get('files', [{}])[0].get('hashes', {}).get('SHA256'))
+        return self.file.get('hashes', {}).get('SHA256') if self.file else None
+
+    @property
+    def download_url(self):
+        return self.file.get('downloadUrl') if self.file else None
 
     @property
     def preview_url(self):
@@ -174,11 +245,12 @@ class CIVITAI:
 
     @property
     def sd_version(self):
-        return next((s for k, s in self.BaseList.items() if k in self.version.get('baseModel', '')), '')
+        base = self.version.get('baseModel', '')
+        return next((s for k, s in self.BaseList.items() if k in base), '')
 
     @property
     def early_access(self):
-        return (self.version.get('availability') == 'EarlyAccess' or bool(self.version.get('earlyAccessEndsAt')))
+        return self.version.get('availability') == 'EarlyAccess' or bool(self.version.get('earlyAccessEndsAt'))
 
     def early_access_info(self):
         if not self.early_access: return False
@@ -186,14 +258,16 @@ class CIVITAI:
         page = f'https://{self.domain_name}/models/{self.model_id}?modelVersionId={self.version_id}'
         ends = self.version.get('earlyAccessEndsAt')
         if ends: ends = datetime.fromisoformat(ends.replace('Z', '+00:00')).strftime('%d %B %Y')
+
         print(f'{page}\n-> The model is in early access{f", ending at {ends}" if ends else ""}.')
+
         return True
 
     def model_json(self, folder, filename=None):
         name = filename or self.filename
         if not name: return
 
-        info = (Path(folder) / f'{Path(name).stem}.json')
+        info = Path(folder) / f'{Path(name).stem}.json'
         if info.exists(): return
 
         data = {
@@ -201,7 +275,7 @@ class CIVITAI:
             'sd version': self.sd_version,
             'modelId': self.model_id,
             'modelVersionId': self.version_id,
-            'sha256':self.sha256
+            'sha256': self.sha256,
         }
 
         info.write_text(json.dumps(data, indent=4))
@@ -213,7 +287,7 @@ class CIVITAI:
         preview = self.preview_url
         if not preview: return
 
-        path = (Path(folder) / f'{Path(name).stem}.preview.png')
+        path = Path(folder) / f'{Path(name).stem}.preview.png'
         if path.exists(): return
 
         r = requests.get(preview, headers=self.headers()).content
@@ -355,41 +429,15 @@ def _resolve(url, fn):
         return (url, c, fn)
 
     elif civitai:
-        input_url = url
-        url = url.split('?token=')[0]
+        c = CIVITAI.from_url(url)
 
-        if f'{civitai}/api/download/models/' in url:
-            version_id = url.split('models/')[1].split('/')[0].split('?')[0]
-            api_url = f'https://{civitai}/api/v1/model-versions/{version_id}'
+        if not c:
+            return (None, None, None)
 
-            j = CIVITAI.get_json(api_url)
-            if not j: return (url, None, None)
+        if c.early_access_info():
+            return (None, None, None)
 
-            c = CIVITAI(j, version_id, civitai)
-            if not c.file: return (url, None, None)
-
-            return (url, c, fn or c.filename)
-
-        elif f'{civitai}/models/' in url:
-            version_id = None
-            model_id = url.split('models/')[1].split('/')[0].split('?')[0]
-
-            if '?modelVersionId=' in url: version_id = url.split('?modelVersionId=')[1].split('&')[0]
-
-            api_url = (f'https://{civitai}/api/v1/model-versions/{version_id}' if version_id else f'https://{civitai}/api/v1/models/{model_id}')
-
-            j = CIVITAI.get_json(api_url)
-            if not j: return (None, None, None)
-
-            c = CIVITAI(j, version_id, civitai)
-
-            if c.early_access_info(): return (None, None, None)
-
-            if not c.file:
-                print(f'Unable to find download URL for\n-> {input_url}\n')
-                return (None, None, None)
-
-            return (c.file['downloadUrl'], c, fn or c.filename)
+        return (c.download_url, c, fn or c.filename)
 
     return (url, None, fn)
 
