@@ -114,7 +114,7 @@ class CIVITAI:
 
     @classmethod
     def from_url(c, url):
-        url = url.split('?token=')[0]
+        url = re.sub(r'([?&])token=[^&]+', '', url).rstrip('?&')
 
         domain = c.domain(url)
         if not domain:
@@ -145,52 +145,73 @@ class CIVITAI:
         j = c.get_json(api_url)
         if not j: return None
 
-        obj = c(j, version_id, file_id, domain)
-        obj.direct_download = dl
+        obj = c(j, version_id, file_id, domain, url=url)
+        obj.direct_link = dl
 
         return obj
 
-    def __init__(self, data, version_id=None, file_id=None, domain=None, sha256=None):
+    @classmethod
+    def from_sha(c, sha256):
+        for domain in c.DOMAINS:
+            api = f'https://{domain}/api/v1/model-versions/by-hash/{sha256}'
+            j = c.get_json(api)
+
+            if j:
+                obj = c(j, domain=domain, sha256=sha256)
+                if obj.exists: return obj
+
+        return None
+
+    def __init__(self, data, version_id=None, file_id=None, domain=None, sha256=None, url=None):
         self.data = data
         self.domain_name = domain
-        self.version = self.whichVersion(version_id)
+        self.version = self._v(version_id)
 
-        self.direct_download = False
-        self.selected_file = None
+        self.direct_link = False
+        self._file = None
 
-        self.resolve(file_id, sha256)
+        self._r(file_id, sha256, url)
 
-    def whichVersion(self, version_id=None):
+    def _v(self, version_id=None):
         if 'modelVersions' not in self.data: return self.data
         if version_id: return next((mv for mv in self.data['modelVersions'] if str(mv.get('id')) == str(version_id)), self.data['modelVersions'][0])
 
         return self.data['modelVersions'][0]
 
-    def resolve(self, file_id=None, sha256=None):
-        sha256 = sha256 or self.get_sha256(file_id)
+    def _r(self, file_id=None, sha256=None, url=None):
+        if file_id or ('?' in (url or '') and 'type=' in url):
+            self._file = self._f(file_id, url)
+            sha256 = sha256 or (self._file.get('hashes', {}).get('SHA256') if self._file else None)
+        else:
+            sha256 = sha256 or self._s(file_id, url)
 
         if not sha256:
-            self.selected_file = next((f for f in self.version.get('files', []) if f.get('downloadUrl')), None)
+            self._file = next((f for f in self.version.get('files', []) if f.get('downloadUrl')), None)
             return
 
-        api = f'https://{self.domain_name}/api/v1/model-versions/by-hash/{sha256}'
-        j = self.get_json(api)
-
+        j = self.get_json(f'https://{self.domain_name}/api/v1/model-versions/by-hash/{sha256}')
         if not j: return
 
         self.data = j
-        self.version = self.whichVersion(self.version_id)
+        self.version = self._v(self.version_id)
 
-        self.selected_file = next((f for f in self.version.get('files', []) if f.get('hashes', {}).get('SHA256', '').lower() == sha256.lower()), None)
+        if not self._file: self._file = next((f for f in self.version.get('files', []) if f.get('hashes', {}).get('SHA256', '').lower() == sha256.lower()), None)
 
-    def get_sha256(self, file_id=None):
+    def _s(self, file_id=None, url=None):
         if file_id: return next((f.get('hashes', {}).get('SHA256') for f in self.version.get('files', []) if str(f.get('id')) == str(file_id)), None)
 
-        api = f'https://{self.domain_name}/api/v1/model-versions/mini/{self.version_id}'
-        j = self.get_json(api)
-        if j: return j.get('hashes', {}).get('SHA256')
+        if url:
+            file = next((f for f in self.version.get('files', []) if f.get('downloadUrl') == url), None)
+            if file: return file.get('hashes', {}).get('SHA256')
 
-        return None
+        j = self.get_json(f'https://{self.domain_name}/api/v1/model-versions/mini/{self.version_id}')
+        return j.get('hashes', {}).get('SHA256') if j else None
+
+    def _f(self, file_id=None, url=None):
+        if file_id: return next((f for f in self.version.get('files', []) if str(f.get('id')) == str(file_id)), None)
+        if url: return next((f for f in self.version.get('files', []) if f.get('downloadUrl') == url), None)
+
+        return next((f for f in self.version.get('files', []) if f.get('downloadUrl')), None)
 
     @property
     def exists(self):
@@ -208,7 +229,7 @@ class CIVITAI:
 
     @property
     def file(self):
-        return self.selected_file
+        return self._file
 
     @property
     def filename(self):
@@ -263,7 +284,7 @@ class CIVITAI:
 
         return True
 
-    def model_json(self, folder, filename=None):
+    def _json(self, folder, filename=None):
         name = filename or self.filename
         if not name: return
 
@@ -280,7 +301,7 @@ class CIVITAI:
 
         info.write_text(json.dumps(data, indent=4))
 
-    def model_preview(self, folder, filename=None):
+    def _preview(self, folder, filename=None):
         name = filename or self.filename
         if not name: return
 
@@ -301,31 +322,26 @@ class CIVITAI:
 
     def extras(self, path, filename):
         def t():
-            self.model_json(path, filename)
-            self.model_preview(path, filename)
+            self._json(path, filename)
+            self._preview(path, filename)
 
         threading.Thread(target=t, daemon=True).start()
 
 @register_line_magic
 def download(i):
-    args = i.split()
-    if not args:
-        print('  missing URL, downloading nothing')
-        return
+    i = i.split('#', 1)[0].strip()
 
+    if not i: return
+
+    args = i.split()
     url = args[0]
     path = Path(url).expanduser()
-    if url.endswith('.txt') and path.is_file():
-        for l in path.read_text(encoding='utf-8').splitlines(): netorare(l)
-    else: netorare(i)
 
-def _url(url):
-    return (
-        CIVITAI.domain(url),
-        'huggingface.co' in url,
-        'github.com' in url or 'raw.githubusercontent.com' in url,
-        'drive.google.com' in url,
-    )
+    if url.endswith('.txt') and path.is_file():
+        for l in path.read_text(encoding='utf-8').splitlines():
+            netorare(l.split('#', 1)[0].strip())
+    else:
+        netorare(i)
 
 def netorare(line):
     fp, fn = None, None
@@ -388,7 +404,15 @@ def netorare(line):
     finally:
         CD(cwd)
 
-def _resolve(url, fn):
+def _url(url):
+    return (
+        CIVITAI.domain(url),
+        'huggingface.co' in url,
+        'github.com' in url or 'raw.githubusercontent.com' in url,
+        'drive.google.com' in url,
+    )
+
+def _res(url, fn):
     civitai, huggingface, github, _ = _url(url)
 
     if github:
@@ -402,25 +426,11 @@ def _resolve(url, fn):
 
         if fn and Path(fn).suffix.lower() in ext:
             try:
-                raw_url = re.sub(r'/(resolve|blob)/', '/raw/', url)
-                res = requests.get(raw_url, headers=headers, timeout=15)
-                t = re.search(r'oid sha256:([a-fA-F0-9]{64})', res.text)
+                raw = re.sub(r'/(resolve|blob)/', '/raw/', url)
+                r = requests.get(raw, headers=headers, timeout=15)
 
-                if t:
-                    sha256 = t.group(1).lower()
-
-                    for u in CIVITAI.DOMAINS:
-                        try:
-                            api_url = f'https://{u}/api/v1/model-versions/by-hash/{sha256}'
-
-                            j = CIVITAI.get_json(api_url)
-                            if not j: continue
-
-                            r = next((f for f in j.get('files', []) if f.get('hashes', {}).get('SHA256', '').lower() == sha256), None)
-                            if r: c = CIVITAI(j, domain=u, sha256=sha256); break
-
-                        except Exception:
-                            continue
+                if t := re.search(r'oid sha256:([a-fA-F0-9]{64})', r.text):
+                    c = CIVITAI.from_sha(t.group(1).lower())
 
             except Exception:
                 pass
@@ -431,18 +441,15 @@ def _resolve(url, fn):
     elif civitai:
         c = CIVITAI.from_url(url)
 
-        if not c:
-            return (None, None, None)
-
-        if c.early_access_info():
-            return (None, None, None)
+        if not c: return (None, None, None)
+        if c.early_access_info(): return (None, None, None)
 
         return (c.download_url, c, fn or c.filename)
 
     return (url, None, fn)
 
 def ariari(url, fp, fn):
-    url, c, fn = _resolve(url, fn)
+    url, c, fn = _res(url, fn)
     if not url: return
 
     civitai, huggingface, *_ = _url(url)
